@@ -1,6 +1,8 @@
 node_modules/
 dist/
-lib/
+# Salida de compilación de las funciones. La ruta va anclada a propósito: un
+# patrón suelto `lib/` también excluiría apps/web/src/lib/, que sí es código.
+/functions/lib/
 .env.local
 *.log
 .DS_Store
