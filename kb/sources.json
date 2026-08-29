@@ -1,0 +1,83 @@
+{
+  "$comment": [
+    "Manifiesto de las fuentes crudas de la base de conocimiento.",
+    "Los archivos NO viven en git (1,1 GB); viven en la carpeta declarada en 'raw_dir'.",
+    "Cada entrada trae su sha256: si un archivo cambia, el build lo detecta y falla.",
+    "La precedencia manda cuando dos fuentes describen el mismo alimento:",
+    "mayor 'precedence' gana. La curación manual (100) gana siempre."
+  ],
+  "kb_schema_version": 1,
+  "raw_dir": "..",
+  "sources": [
+    {
+      "id": "usda_sr_legacy",
+      "name": "USDA FoodData Central — SR Legacy",
+      "file": "FoodData_Central_sr_legacy_food_csv_2018-04.zip",
+      "released": "2018-04",
+      "sha256": "b80817294b8850530aaedf2e515c02593b1824f763a0ff356e5c2081643e6fd0",
+      "bytes": 6074592,
+      "precedence": 10,
+      "role": "Base amplia: ~7.800 alimentos genéricos con perfil completo y porciones típicas (food_portion.csv).",
+      "license": "Dominio público (obra del gobierno de EE.UU., 17 U.S.C. §105)",
+      "url": "https://fdc.nal.usda.gov/download-datasets.html"
+    },
+    {
+      "id": "usda_foundation",
+      "name": "USDA FoodData Central — Foundation Foods",
+      "file": "FoodData_Central_foundation_food_csv_2026-04-30.zip",
+      "released": "2026-04-30",
+      "sha256": "70457ee9d9342f43bda2010318c85f04210c689fdeb9cd2da4c513b0e8dbc655",
+      "bytes": 3825741,
+      "precedence": 20,
+      "role": "Análisis de laboratorio más recientes. Pisa a SR Legacy donde el alimento exista en ambas.",
+      "license": "Dominio público (obra del gobierno de EE.UU., 17 U.S.C. §105)",
+      "url": "https://fdc.nal.usda.gov/download-datasets.html"
+    },
+    {
+      "id": "usda_fndds",
+      "name": "USDA FoodData Central — Survey (FNDDS)",
+      "file": "FoodData_Central_survey_food_csv_2024-10-31.zip",
+      "released": "2024-10-31",
+      "sha256": "5ccc25ec2777a8982fbb61378a42f415316173eb11e48c9a8ba4cb19f5a4f29c",
+      "bytes": 3325692,
+      "precedence": 30,
+      "role": "Alimentos 'como se comen': platos compuestos y recetas con sus porciones. La fuente más cercana a lo que muestra una foto de un plato servido.",
+      "license": "Dominio público (obra del gobierno de EE.UU., 17 U.S.C. §105)",
+      "url": "https://fdc.nal.usda.gov/download-datasets.html"
+    }
+  ],
+  "descartados": [
+    {
+      "file": "FoodData_Central_branded_food_csv_2026-04-30.zip",
+      "motivo": "Productos envasados identificados por código de barras. NutriScann mira platos servidos, no etiquetas. Reconsiderar solo si se agrega escaneo de código de barras."
+    },
+    {
+      "file": "FoodData_Central_csv_2026-04-30.zip",
+      "motivo": "Es la unión de todos los datasets anteriores: redundante con las tres fuentes ya declaradas."
+    },
+    {
+      "file": "*_json_*.zip",
+      "motivo": "Mismo contenido que los CSV en otro formato. El build parsea CSV."
+    }
+  ],
+  "referencias_normativas": [
+    {
+      "id": "ops_perfil_nutrientes_2016",
+      "name": "Modelo de perfil de nutrientes de la OPS",
+      "file": "9789275318737_spa.pdf",
+      "uso": "Umbrales citables (azúcares libres, grasas totales/saturadas, sodio) para las reglas de recomendación en config/app. No aporta datos por alimento."
+    },
+    {
+      "id": "ops_ultraprocesados",
+      "name": "Alimentos y bebidas ultraprocesados en América Latina (OPS)",
+      "file": "9789275320327_spa.pdf",
+      "uso": "Contexto e investigación. No operativo."
+    },
+    {
+      "id": "oms_necesidades_1975",
+      "name": "Manual sobre necesidades nutricionales del hombre (OMS, 1975)",
+      "file": "9243400614_es.pdf",
+      "uso": "Referencia histórica. Para los objetivos personalizados de la v2 se usan fórmulas vigentes (Mifflin-St Jeor), no este documento."
+    }
+  ]
+}

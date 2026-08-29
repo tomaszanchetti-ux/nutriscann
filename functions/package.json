@@ -1,0 +1,26 @@
+{
+  "name": "@nutriscann/functions",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Backend de NutriScann — Cloud Functions v2 (Node 22)",
+  "main": "lib/index.js",
+  "type": "commonjs",
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions,firestore",
+    "lint": "tsc --noEmit",
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.71.0",
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^6.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

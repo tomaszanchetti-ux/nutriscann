@@ -1,0 +1,19 @@
+node_modules/
+dist/
+lib/
+.env.local
+*.log
+.DS_Store
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Fuentes crudas de la base de conocimiento: NO van a git (1,1 GB).
+# Se declaran en kb/sources.json con su hash; se descargan aparte.
+kb/sources/
+*.zip
+
+# Credenciales: nunca al repo. La key de Anthropic vive en Secret Manager.
+serviceAccount*.json
+*.pem

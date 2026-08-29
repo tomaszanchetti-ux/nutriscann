@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+/**
+ * Sistema visual de NutriScann.
+ *
+ * Dark-first a propósito: la comida fotografiada resalta sobre fondo oscuro.
+ * Los colores de macros son SEMÁNTICOS y fijos — el mismo tono significa lo
+ * mismo en el gráfico, en las tarjetas y en la recomendación, siempre.
+ */
+@theme {
+  --color-ground: #12160f;
+  --color-surface: #1a2017;
+  --color-surface-2: #212820;
+  --color-line: #2d362b;
+
+  --color-ink: #e8ece4;
+  --color-ink-soft: #b3bcae;
+  --color-ink-faint: #7d877c;
+
+  --color-accent: #4fbe82;
+  --color-accent-deep: #2f9e63;
+  --color-accent-soft: #1e3328;
+
+  --color-protein: #ec7b64;
+  --color-carbs: #e7b354;
+  --color-fat: #a98fe4;
+
+  --font-display: "Bricolage Grotesque", Georgia, serif;
+  --font-sans: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Spline Sans Mono", ui-monospace, monospace;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background-color: var(--color-ground);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

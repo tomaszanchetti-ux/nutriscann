@@ -1,0 +1,12 @@
+{
+  "name": "NutriScann",
+  "short_name": "NutriScann",
+  "description": "Sacá una foto de tu plato y conocé su valor nutricional al instante.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#12160f",
+  "theme_color": "#12160f",
+  "lang": "es",
+  "icons": []
+}

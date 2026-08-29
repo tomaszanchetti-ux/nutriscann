@@ -1,0 +1,23 @@
+rules_version = '2';
+
+// NutriScann — Storage. Las fotos de los platos.
+//
+// El cliente sube su foto a su propia carpeta; nadie más la ve. El backend
+// (Admin SDK) lee para analizar. Límite de tamaño y tipo aplicados acá:
+// una foto de plato comprimida no pasa de ~2 MB.
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    match /scans/{ownerId}/{scanId} {
+      allow read: if request.auth != null && request.auth.uid == ownerId;
+      allow write: if request.auth != null
+                   && request.auth.uid == ownerId
+                   && request.resource.size < 8 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,82 @@
+name: Deploy
+
+# Un solo camino a producción: merge a main. Nada se despliega a mano.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verificar
+    runs-on: ubuntu-latest
+    outputs:
+      credencial-lista: ${{ steps.credencial.outputs.lista }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Instalar dependencias
+        run: npm run install:all
+
+      - name: Chequeo de tipos
+        run: npm run lint
+
+      - name: Compilar
+        run: npm run build
+
+      # El secreto FIREBASE_SERVICE_ACCOUNT se carga una sola vez, en la Fase 0.
+      # Mientras no exista, el despliegue se saltea con un aviso claro en vez de
+      # fallar: un check en rojo que no significa "el código está mal" es ruido.
+      - name: ¿Hay credencial de despliegue?
+        id: credencial
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -n "$SA" ]; then
+            echo "lista=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "lista=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Falta el secreto FIREBASE_SERVICE_ACCOUNT. Se omite el despliegue."
+          fi
+
+  deploy:
+    name: Desplegar
+    needs: verify
+    if: >-
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      needs.verify.outputs.credencial-lista == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Instalar dependencias
+        run: npm run install:all
+
+      - name: Compilar
+        run: npm run build
+
+      - name: Desplegar a Firebase
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json"
+          npx --yes firebase-tools@15 deploy \
+            --only hosting,firestore,storage,functions \
+            --project nutriscann-f809e \
+            --non-interactive
+          rm -f "$RUNNER_TEMP/sa.json"

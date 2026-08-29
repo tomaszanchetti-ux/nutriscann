@@ -1,0 +1,49 @@
+rules_version = '2';
+
+// NutriScann — reglas de seguridad.
+//
+// Postura: TODO cerrado por defecto. El cliente nunca escribe datos de negocio;
+// escribe solo el backend (Admin SDK, que se saltea estas reglas por diseño).
+// El cliente lee su propio material y el catálogo público, nada más.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Catálogo nutricional: lectura pública (la app lo consulta para mostrar
+    // detalle de alimentos). Escritura SOLO por el pipeline de seed vía Admin SDK.
+    match /foods/{foodId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Configuración de la app (copy, umbrales, reglas de recomendación).
+    // Lectura pública: la UI se arma con esto. Escritura solo backend/consola.
+    match /config/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Los escaneos son del dueño. En v1 el dueño es un uid anónimo (un
+    // dispositivo); en v2 es el usuario autenticado. La estructura NO cambia:
+    // ese es el aislamiento que hereda premium sin migración.
+    match /owners/{ownerId}/scans/{scanId} {
+      allow read: if request.auth != null && request.auth.uid == ownerId;
+      allow write: if false; // solo el backend escribe scans
+    }
+
+    match /owners/{ownerId}/{document=**} {
+      allow read: if request.auth != null && request.auth.uid == ownerId;
+      allow write: if false;
+    }
+
+    // Cola de curación: alimentos no catalogados detectados en runtime.
+    // Nadie la lee ni la escribe desde el cliente.
+    match /curation_queue/{itemId} {
+      allow read, write: if false;
+    }
+
+    // Cierre explícito: cualquier ruta no declarada arriba queda negada.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
