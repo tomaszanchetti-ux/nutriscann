@@ -11,12 +11,18 @@ concurrency:
   group: deploy-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  PROJECT_ID: nutriscann-f809e
+  # Autenticación SIN LLAVES (Workload Identity Federation): GitHub presenta un
+  # token efímero firmado por sí mismo y GCP lo canjea. No hay ningún secreto
+  # guardado en el repo, y la federación solo acepta a este repositorio.
+  WIF_PROVIDER: projects/590554450084/locations/global/workloadIdentityPools/github/providers/github-nutriscann
+  DEPLOY_SA: github-deploy@nutriscann-f809e.iam.gserviceaccount.com
+
 jobs:
   verify:
     name: Verificar
     runs-on: ubuntu-latest
-    outputs:
-      credencial-lista: ${{ steps.credencial.outputs.lista }}
     steps:
       - uses: actions/checkout@v5
 
@@ -33,29 +39,14 @@ jobs:
       - name: Compilar
         run: npm run build
 
-      # El secreto FIREBASE_SERVICE_ACCOUNT se carga una sola vez, en la Fase 0.
-      # Mientras no exista, el despliegue se saltea con un aviso claro en vez de
-      # fallar: un check en rojo que no significa "el código está mal" es ruido.
-      - name: ¿Hay credencial de despliegue?
-        id: credencial
-        env:
-          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: |
-          if [ -n "$SA" ]; then
-            echo "lista=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "lista=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::Falta el secreto FIREBASE_SERVICE_ACCOUNT. Se omite el despliegue."
-          fi
-
   deploy:
     name: Desplegar
     needs: verify
-    if: >-
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main' &&
-      needs.verify.outputs.credencial-lista == 'true'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # necesario para pedirle el token OIDC a GitHub
     steps:
       - uses: actions/checkout@v5
 
@@ -63,20 +54,28 @@ jobs:
         with:
           node-version: 22
 
+      - name: Autenticarse en GCP (sin llaves)
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.DEPLOY_SA }}
+
       - name: Instalar dependencias
         run: npm run install:all
 
       - name: Compilar
         run: npm run build
 
+      # Objetivos del despliegue.
+      #
+      # `functions` y `storage` requieren el plan Blaze del proyecto, que todavía
+      # no está activo. Desplegarlos ahora haría fallar el pipeline por una razón
+      # que no es del código. En cuanto Blaze esté activo y Storage inicializado,
+      # esta línea pasa a:
+      #     --only hosting,firestore,storage,functions
       - name: Desplegar a Firebase
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
-          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json"
           npx --yes firebase-tools@15 deploy \
-            --only hosting,firestore,storage,functions \
-            --project nutriscann-f809e \
+            --only hosting,firestore \
+            --project "$PROJECT_ID" \
             --non-interactive
-          rm -f "$RUNNER_TEMP/sa.json"
