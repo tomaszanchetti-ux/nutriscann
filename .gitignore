@@ -19,3 +19,6 @@ kb/sources/
 # Credenciales: nunca al repo. La key de Anthropic vive en Secret Manager.
 serviceAccount*.json
 *.pem
+
+# Caché incremental de TypeScript: artefacto de compilación.
+*.tsbuildinfo
