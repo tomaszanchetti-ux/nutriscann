@@ -3,7 +3,28 @@
 Una foto del plato → un reporte nutricional visual con una recomendación en una
 línea. Dos interacciones de UX; arquitectura seria detrás.
 
-**Plan maestro:** `~/Documents/Proyectos Claudio/NutriScann/PLAN.md` (SSOT del alcance y las fases).
+**Documentación (toda dentro del repo, versionada):**
+- `docs/PLAN.md` — plan maestro: alcance, arquitectura y fases. **SSOT.**
+- `docs/DEUDAS.md` — lo que falta, con dueño. Se cierra editando la fila, no borrándola.
+- Este archivo — reglas y convenciones de trabajo.
+
+## Mecánica de sesión: toda fase abre con un Bloque 0
+
+**Una sesión = una fase. Toda fase arranca con un Bloque 0 de investigación, y
+recién con lo medido se definen las cards.** Nunca al revés.
+
+El Bloque 0 no es leer el plan: es **medir la realidad** — abrir los datos, contar
+filas, correr el código, mirar el esquema. El plan dice qué queremos; el Bloque 0
+dice con qué contamos de verdad. Cuando los dos difieren, gana lo medido y las
+cards se redefinen antes de escribir una línea.
+
+Al abrir la sesión, Claude expone el resultado del Bloque 0 y la lista de cards
+propuesta, y **espera el OK de Tomás antes de ejecutar**. Recién ahí se avanza
+card por card ("perf" = seguir con la siguiente).
+
+**Por qué:** planificar sobre supuestos produce cards que hay que rehacer. Una
+suposición cuesta barata cuando se mide antes y cara cuando se descubre a mitad
+de la implementación.
 
 ## Reglas duras
 
@@ -56,8 +77,11 @@ npm run build         # compilar ambos
 npm run emulators     # suite local de Firebase
 ```
 
-## Mecánica de trabajo
+## Convenciones de trabajo
 
-Una fase por sesión, branch por fase (`fase/NN-descripcion`), commits atómicos,
-QA al cierre. **Merge a `main` solo con OK explícito de Tomás.**
+Branch por fase (`fase/NN-descripcion`), commits atómicos, QA al cierre.
+**Merge a `main` solo con OK explícito de Tomás.**
 Explicar en cristiano: Tomás no es técnico.
+
+Lo que se descubre y queda fuera de alcance va a `docs/DEUDAS.md` con dueño,
+no a un comentario `TODO` en el código.

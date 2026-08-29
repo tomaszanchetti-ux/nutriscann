@@ -33,9 +33,14 @@ npm run dev
 
 Requiere Node 22+ y la CLI de Firebase autenticada.
 
+## Documentación
+
+- [`docs/PLAN.md`](docs/PLAN.md) — plan maestro: arquitectura, fases y roadmap.
+- [`docs/DEUDAS.md`](docs/DEUDAS.md) — lo pendiente, con dueño y orden de destrabe.
+- [`CLAUDE.md`](CLAUDE.md) — reglas y convenciones de trabajo.
+
 ## Estado
 
-**Fase 0 — Fundaciones.** Andamiaje desplegado de punta a punta. El motor de
-análisis llega en la Fase 2; la interfaz de captura, en la Fase 3.
-
-Convenciones y reglas del proyecto: ver `CLAUDE.md`.
+**Fase 0 — Fundaciones, cerrada.** La app está desplegada y el pipeline publica solo
+en cada merge a `main`. El backend espera a que se active el plan Blaze del proyecto
+(deuda DT-1). Sigue la **Fase 1**: la base de conocimiento.
