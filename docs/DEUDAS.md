@@ -13,6 +13,7 @@ registro también sirve para ver qué se destrabó y cuándo.
 | DT-3 | 🔴 abierta | Inicializar Cloud Storage y desplegar sus reglas | Claude (tras DT-1) |
 | DT-4 | 🟡 diferida | Presupuesto de GCP con alertas de gasto | Tomás (junto con DT-1) |
 | DT-5 | 🟡 diferida | Íconos de la PWA (el manifiesto los declara vacíos) | Claude (Fase 3) |
+| DT-6 | 🟡 diferida | Recalibrar la regla de azúcares (totales vs libres) y el sodio con datos reales de uso; resolver en la UI el caso "el tag acusa y el texto absuelve" | Claude (Fases 2-3) |
 
 ---
 

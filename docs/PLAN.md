@@ -60,7 +60,7 @@ owners/{ownerId}/scans/{scanId}     ← ownerId = uid del usuario logueado (Goog
   meta: { model: "claude-sonnet-5", latency_ms, tokens_in, tokens_out }
 
 config/app                          ← NADA HARDCODEADO: reglas de negocio en DB
-  recommendation_rules: [ { if: "carbs_pct > 50", tag: "entrenamiento", ... } ]
+  recommendation_rules: [ { if: "carbs_pct >= 55", tag: "entrenamiento", ... } ]
   thresholds, copy de la UI, límites de rate (scans/día por dispositivo)
 ```
 
