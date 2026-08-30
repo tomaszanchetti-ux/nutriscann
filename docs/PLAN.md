@@ -52,7 +52,7 @@ foods/{foodId}                      ← LA BASE DE CONOCIMIENTO (~1.000 docs)
   portion_hints: { "unidad mediana": 150, "filete": 120 }   # gramos típicos
   source: "USDA #171077"                       # trazabilidad: de dónde salió cada número
 
-owners/{ownerId}/scans/{scanId}     ← ownerId = uid anónimo en v1, usuario real en v2
+owners/{ownerId}/scans/{scanId}     ← ownerId = uid del usuario logueado (Google/email) desde v1
   created_at, image_ref (Storage), status: "processing" | "done" | "error"
   items: [ { food_id, name, grams_estimated, confidence, nutrients: {...} } ]
   totals: { kcal, protein_g, carbs_g, fat_g, protein_pct, carbs_pct, fat_pct }
@@ -241,7 +241,7 @@ Sesión A: captura + compresión de imagen + animación de escaneo. Sesión B: p
 **Sale cuando:** el flujo foto→reporte funciona en TU teléfono contra el backend real.
 
 ### Fase 4 — Hardening + salida a producción (1 sesión)
-Firebase **App Check** (solo tu app puede llamar al endpoint) + auth anónima (cada dispositivo un uid → dueño de sus scans) + rate limit desde `config/` (ej. 10 scans/día por dispositivo — es tu API key la que paga) + logging estructurado + presupuesto de facturación GCP con alertas + QA E2E con el golden set.
+Firebase **App Check** (solo tu app puede llamar al endpoint) + **login real desde v1** (decisión 30/08: Google + email vía Firebase Auth, como en Prode — SIN perfil ni configuración en v1; el registro existe para saber quiénes son los usuarios y que cada uno sea dueño de sus scans) + rate limit desde `config/` (ej. 10 scans/día por usuario — es tu API key la que paga) + logging estructurado + presupuesto de facturación GCP con alertas + QA E2E con el golden set.
 **Sale cuando:** URL pública, protegida, con costos acotados. **v1 VIVA.**
 
 **Total estimado: 6-8 sesiones de trabajo.**
@@ -252,7 +252,7 @@ Firebase **App Check** (solo tu app puede llamar al endpoint) + auth anónima (c
 
 La v1 deja los cimientos exactos para esto; nada de lo anterior se tira:
 
-1. **Auth real** (Google Sign-In) → el `ownerId` anónimo pasa a ser el uid del usuario; sus scans anónimos se migran a su cuenta al registrarse.
+1. ~~Auth real~~ **Ya existe desde v1** (decisión 30/08): el login Google/email llega en v1 y el `ownerId` es el uid real desde el primer scan — no hay migración de scans anónimos.
 2. **Perfil** en `owners/{uid}/profile`: peso, altura, edad, sexo, deportes, frecuencia, objetivo (bajar/mantener/rendir). → TDEE y targets diarios de macros calculados por fórmula (Mifflin-St Jeor — determinística, no LLM).
 3. **Aislamiento real por workspace:** ya existe estructuralmente (subcolecciones por owner desde v1); en v2 se endurece con security rules por uid + el contexto del perfil viaja SOLO en la llamada de ese usuario. Sin contaminación cruzada por construcción.
 4. **Recomendación contextual:** el paso 3 del motor recibe además el perfil + el historial del día → "Vas 40g de proteína abajo de tu target; esta cena alta en proteína te viene perfecta."
