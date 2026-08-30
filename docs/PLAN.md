@@ -2,7 +2,7 @@
 
 > **Norte:** una app donde el usuario saca UNA foto de su plato y recibe un reporte nutricional visual (calorías, macros en pie chart, recomendación de una línea). UX de 2 interacciones. Arquitectura seria desde el día 1: nada hardcodeado, todo DB + APIs + endpoints.
 >
-> **Estado:** Fase 0 cerrada (salvo el plan Blaze, DT-1). Sigue la **Fase 1**, que abre con su Bloque 0. Última actualización: 29/08/2026.
+> **Estado:** Fase 0 cerrada (salvo el plan Blaze, DT-1). **Fase 1 en curso:** Bloque 0 medido y cards definidas (30/08/2026). Última actualización: 30/08/2026.
 >
 > **Mecánica:** toda fase arranca midiendo (Bloque 0) y recién después define sus cards. Ver `CLAUDE.md`.
 >
@@ -145,33 +145,59 @@ Foto → [1] Sonnet 5 (visión): "¿QUÉ hay en el plato y CUÁNTO?"
 
 ### Fase 1 — Base de conocimiento (1-2 sesiones) ← **la próxima**
 
-#### Bloque 0 — lo que hay que medir antes de definir las cards
+#### Bloque 0 — medido el 30/08/2026 ✅ (con verificación independiente de los números críticos)
 
-No sabemos todavía con qué contamos de verdad. Antes de escribir el pipeline, medir
-sobre los CSV reales y traer números, no impresiones:
+| # | Medición | Resultado |
+|---|---|---|
+| 1 | Alimentos servibles (kcal + 4 macros completos) | **13.601** (SR 7.793 · FNDDS 5.431 · Foundation 377) — sobra 13× para el objetivo de ~1.000 |
+| 2 | Solapamiento entre fuentes | **1,5%** — marginal; solo 18 alimentos están en los tres datasets |
+| 3 | Usabilidad de FNDDS | **70,5% platos compuestos reales** (≥2 ingredientes), 99,3% con porción, descripciones en lenguaje de plato |
+| 4 | Identificación de nutrientes | ⚠️ **NO estable**: FNDDS clava `nutrient_nbr` donde los otros usan `nutrient.id` (65/65 verificado) |
+| 5 | Cobertura de porciones | SR 96,7% · FNDDS 99,3% · **Foundation 24,7%** |
+| 6 | Candado de Atwater | Con tolerancia 10% + margen ±20 kcal descarta 0,5–2,8% → filtro sano. El alcohol (7 kcal/g) explica la mayoría de los fallos |
+| 7 | Vocabulario español | ~968 descripciones = **glosario de ~650 términos** reutilizados 6,5× cada uno |
 
-1. **Cuántos alimentos hay servibles.** Filas en cada dataset, y cuántas sobreviven a
-   exigir los cuatro macros + kcal completos. El "~1.000 alimentos" del plan es una
-   estimación: hay que confirmarla o corregirla.
-2. **Cuánto se pisan las tres fuentes.** Cuántos alimentos aparecen en más de un
-   dataset. Si el solapamiento es marginal, la regla de precedencia sobra; si es alto,
-   es la decisión central del build.
-3. **Qué tan usable es FNDDS.** Es la fuente apostada para platos servidos: ¿cuántos de
-   sus alimentos son platos compuestos reales y con qué porciones vienen?
-4. **Cómo se identifican los nutrientes.** Los ids de nutriente de USDA y sus unidades
-   —y si son estables entre los tres datasets, que están fechados en 2018, 2024 y 2026.
-5. **Cobertura de porciones.** Qué fracción de los alimentos trae `food_portion`, que es
-   de dónde salen los `portion_hints`. Si es baja, hay que decidir de dónde más sacarlos.
-6. **Prueba del candado de Atwater sobre datos reales.** Cuántos alimentos NO cierran
-   (kcal ≈ 4·prot + 4·carb + 9·grasa) y con qué tolerancia. Define si el candado es un
-   filtro razonable o si dejaría el catálogo vacío.
-7. **El vocabulario en español.** USDA está en inglés. Medir cuánto trabajo real es
-   traducir el subconjunto elegido, porque de ahí sale el tamaño de la card de curación.
+**Lo que la medición cambió del plan (gana lo medido):**
 
-**Sale del Bloque 0 cuando:** hay una tabla con esos siete números y la lista de cards
-de la Fase 1 redefinida sobre ellos, con el OK de Tomás.
+1. **La Fase 1 es selección y curación, no ingesta.** La materia prima sobra 13×.
+2. **La precedencia SR < Foundation < FNDDS casi no se ejerce** (resolvería ~200 casos
+   de 13.500). La decisión central es el *reparto de territorios*: **FNDDS gobierna los
+   platos como se comen** (el caso de uso de una foto), **SR Legacy los ingredientes
+   crudos**, y **Foundation se degrada a desempate puntual de valores** — no aporta
+   entradas propias (24,7% de porciones, energía calculada por factores Atwater en 243
+   de sus 469 alimentos, 65 descripciones duplicadas).
+3. **Trampa mortal detectada:** FNDDS referencia nutrientes por `nutrient_nbr`, no por
+   `nutrient.id`. Un mapeo único para los tres datasets no falla: **devuelve vacío en
+   silencio** para la fuente más valiosa. → mapeo por dataset + test de aceptación que
+   exige un mínimo de filas POR FUENTE, no solo "corrió sin excepción".
+4. **Atwater afinado:** tolerancia 10% + margen absoluto ±20 kcal (salva a las verduras
+   de la división chica) + el predictor suma 7 kcal/g de alcohol. Los residuales
+   (salvados, cacao, polioles/edulcorantes) van marcados a curación manual, nunca
+   descartados en silencio.
+5. **Porciones FNDDS:** el 100% usa `measure_unit_id=9999` (unidad en texto libre). Se
+   usa `gram_weight` directo con la descripción como etiqueta; `Quantity not specified`
+   (la más frecuente) trae gramos reales y es el `portion_hint` por defecto.
+6. **Bilingüe EN/ES en el catálogo, no en el endpoint** (decisión 30/08): `name_en`
+   viene de USDA y es la clave de matching contra la visión; `name` (ES) y aliases salen
+   de la curación, una sola vez. Nada se traduce en runtime.
+7. **Esquema preparado para v2 y para las reglas OPS:** `per_100g` incluye además
+   fibra, grasas saturadas, azúcares y sodio (opcionales, con provenance) — están
+   gratis en los mismos CSVs y agregarlos después obligaría a re-correr todo.
 
-#### El pipeline (a construir, sujeto a lo que diga el Bloque 0)
+#### Las cards de la Fase 1 (definidas sobre lo medido)
+
+| Card | Qué entrega | Estado |
+|---|---|---|
+| **1.1 — Criterio de selección** | El reparto de territorios hecho lista: ~1.000 `fdc_id` candidatos con fuente y categoría, generado por criterio declarado (no a mano) | 🔵 en curso |
+| **1.2 — Build del pipeline** | Script TS determinístico: CSVs → `foods.canonical.json` con provenance por campo, mapeo de nutrientes POR dataset, candado de Atwater afinado, tests de aceptación por fuente | ⚪ |
+| **1.3 — Curación en español** | Glosario ~650 términos + composición + aliases + portion_hints (`kb/curation/*.json`) | ⚪ (‖ con 1.2) |
+| **1.4 — Reglas de recomendación** | Umbrales citables del PDF OPS 2016 → `config/` | ⚪ (‖ con 1.2) |
+| **1.5 — Seed a Firestore** | Publicación idempotente con `kb_version` (Firestore anda en Spark: DT-1 no bloquea) | ⚪ (tras 1.2) |
+
+Las cards 1.2, 1.3 y 1.4 tocan carpetas disjuntas (`kb/src`, `kb/curation`, `config`) y
+corren en paralelo con agentes distintos (mecánica multiagente WS02+, estrenada 30/08).
+
+#### El pipeline
 
 **Principio rector (aprendizaje Arc One): la tabla de Firestore se DERIVA — correcta por construcción, no por disciplina.** La fuente de verdad (SSOT) es el catálogo canónico versionado en git; Firestore es solo la copia de servicio. Nadie edita Firestore a mano, jamás.
 
