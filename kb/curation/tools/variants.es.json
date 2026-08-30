@@ -1,0 +1,375 @@
+{
+ "$comment": "Variantes regionales del español (España + Argentina, Chile, Uruguay, Colombia). La clave es la palabra tal como aparece en el 'name' neutro de names.es.json; los valores son las formas que dice la misma persona en otra región. El generador de aliases sustituye UNA clave por vez, respetando palabra completa y mayúscula inicial, y el resultado va al campo 'aliases'. No es un diccionario de sinónimos: solo entra la variante que un usuario REAL escribiría o buscaría.",
+ "$skip": [
+  "Banana split",
+  "Torta de maíz",
+  "Bola de queso",
+  "Sándwich de yogur helado",
+  "Maíz mote blanco en lata",
+  [
+   "Queso crema",
+   "nata"
+  ],
+  [
+   "Queso crema light",
+   "nata"
+  ],
+  [
+   "Queso crema sin grasa",
+   "nata"
+  ],
+  [
+   "Queso crema para untar",
+   "nata"
+  ],
+  [
+   "Crema de mariscos",
+   "nata"
+  ],
+  [
+   "Crema de maní con menos azúcar",
+   "nata"
+  ],
+  [
+   "Crema de mesa",
+   "nata"
+  ],
+  [
+   "Sándwich de carne al jugo",
+   "zumo"
+  ]
+ ],
+ "$extra": {
+  "2710327": [
+   "Barra de chocolate"
+  ],
+  "2710335": [
+   "Barra de chocolate negro"
+  ],
+  "2710329": [
+   "Barra de chocolate con nueces"
+  ]
+ },
+ "banana": [
+  "plátano",
+  "guineo"
+ ],
+ "bananas": [
+  "plátanos",
+  "guineos"
+ ],
+ "aguacate": [
+  "palta"
+ ],
+ "fresa": [
+  "frutilla"
+ ],
+ "fresas": [
+  "frutillas"
+ ],
+ "durazno": [
+  "melocotón"
+ ],
+ "duraznos": [
+  "melocotones"
+ ],
+ "albaricoque": [
+  "damasco",
+  "chabacano"
+ ],
+ "piña": [
+  "ananá"
+ ],
+ "papaya": [
+  "lechosa",
+  "mamón"
+ ],
+ "maracuyá": [
+  "parchita",
+  "fruta de la pasión"
+ ],
+ "pomelo": [
+  "toronja"
+ ],
+ "sandía": [
+  "patilla"
+ ],
+ "maní": [
+  "cacahuete",
+  "cacahuate"
+ ],
+ "papa": [
+  "patata"
+ ],
+ "papas": [
+  "patatas"
+ ],
+ "batata": [
+  "camote",
+  "boniato"
+ ],
+ "maíz": [
+  "choclo",
+  "elote"
+ ],
+ "arvejas": [
+  "guisantes",
+  "chícharos"
+ ],
+ "judías verdes": [
+  "chauchas",
+  "ejotes",
+  "porotos verdes",
+  "vainitas"
+ ],
+ "frijoles": [
+  "porotos",
+  "alubias",
+  "judías",
+  "caraotas"
+ ],
+ "camarón": [
+  "gamba",
+  "langostino"
+ ],
+ "camarones": [
+  "gambas",
+  "langostinos"
+ ],
+ "jugo": [
+  "zumo"
+ ],
+ "mantequilla": [
+  "manteca"
+ ],
+ "crema": [
+  "nata"
+ ],
+ "repollo": [
+  "col"
+ ],
+ "remolacha": [
+  "betabel",
+  "betarraga"
+ ],
+ "champiñones": [
+  "hongos",
+  "setas"
+ ],
+ "calabaza": [
+  "zapallo",
+  "auyama"
+ ],
+ "palomitas de maíz": [
+  "pochoclo",
+  "cabritas",
+  "crispetas",
+  "canchita"
+ ],
+ "refresco": [
+  "gaseosa",
+  "soda"
+ ],
+ "hot dog": [
+  "pancho",
+  "perro caliente",
+  "completo"
+ ],
+ "sándwich": [
+  "bocadillo",
+  "emparedado"
+ ],
+ "pastel": [
+  "torta",
+  "tarta"
+ ],
+ "galleta": [
+  "galletita"
+ ],
+ "galletas": [
+  "galletitas"
+ ],
+ "dona": [
+  "donut",
+  "rosquilla"
+ ],
+ "tocino": [
+  "panceta",
+  "beicon",
+  "bacon"
+ ],
+ "salame": [
+  "salami"
+ ],
+ "aderezo": [
+  "aliño"
+ ],
+ "quinoa": [
+  "quinua"
+ ],
+ "yogur": [
+  "yoghurt"
+ ],
+ "cebollín": [
+  "cebollino",
+  "ciboulette"
+ ],
+ "panqueques": [
+  "tortitas",
+  "hot cakes",
+  "panquecas"
+ ],
+ "waffle": [
+  "gofre"
+ ],
+ "ricota": [
+  "ricotta"
+ ],
+ "mozzarella": [
+  "muzzarella"
+ ],
+ "kétchup": [
+  "catsup"
+ ],
+ "yuca": [
+  "mandioca",
+  "casava"
+ ],
+ "plátano macho": [
+  "plátano de freír"
+ ],
+ "nueces pecanas": [
+  "pacanas"
+ ],
+ "bife": [
+  "filete",
+  "bistec"
+ ],
+ "carne de res": [
+  "carne de vaca"
+ ],
+ "carne molida": [
+  "carne picada"
+ ],
+ "chuleta": [
+  "costeleta"
+ ],
+ "pimiento": [
+  "morrón",
+  "ají"
+ ],
+ "pimientos": [
+  "morrones",
+  "ajíes"
+ ],
+ "sirope": [
+  "jarabe"
+ ],
+ "mermelada": [
+  "jalea"
+ ],
+ "dulce de leche": [
+  "manjar",
+  "arequipe",
+  "cajeta"
+ ],
+ "batido": [
+  "licuado",
+  "malteada"
+ ],
+ "tortilla de trigo": [
+  "tortilla de harina"
+ ],
+ "bizcocho salado": [
+  "bísquet"
+ ],
+ "cerdo": [
+  "chancho",
+  "puerco"
+ ],
+ "pavo": [
+  "guajolote"
+ ],
+ "leche chocolatada": [
+  "chocolatada",
+  "leche con chocolate"
+ ],
+ "panecillo": [
+  "bollo"
+ ],
+ "puerro": [
+  "ajo porro"
+ ],
+ "rúcula": [
+  "arúgula"
+ ],
+ "jícama": [
+  "nabo mexicano"
+ ],
+ "chucrut": [
+  "col fermentada"
+ ],
+ "hamburguesa": [
+  "burger"
+ ],
+ "tarta": [
+  "pay",
+  "pastel"
+ ],
+ "palitos de pan": [
+  "grisines",
+  "colines"
+ ],
+ "anacardos": [
+  "castañas de cajú",
+  "marañón",
+  "nuez de la India"
+ ],
+ "frijoles de Lima": [
+  "pallares",
+  "porotos pallares",
+  "garrofón"
+ ],
+ "arroz rojo": [
+  "arroz a la mexicana"
+ ],
+ "bife de chorizo": [
+  "entrecot",
+  "New York strip"
+ ],
+ "papas doradas ralladas": [
+  "hash browns"
+ ],
+ "mastuerzo": [
+  "berro de jardín"
+ ],
+ "mondongo": [
+  "callos",
+  "guatitas"
+ ],
+ "fetas": [
+  "lonchas"
+ ],
+ "semidescremada": [
+  "semidesnatada"
+ ],
+ "rábanos": [
+  "rabanitos"
+ ],
+ "cebolla de verdeo": [
+  "cebolleta",
+  "cebolla de cambray"
+ ],
+ "tirabeques": [
+  "arvejas chinas"
+ ],
+ "salsa golf": [
+  "salsa rosa"
+ ],
+ "asado al spiedo": [
+  "rostizado"
+ ],
+ "salami": [
+  "salame"
+ ]
+}

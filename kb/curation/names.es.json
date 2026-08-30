@@ -1,0 +1,4884 @@
+{
+ "2705384": {
+  "name": "Leche",
+  "aliases": []
+ },
+ "2705400": {
+  "name": "Leche evaporada baja en grasa",
+  "aliases": []
+ },
+ "2705819": {
+  "name": "Carne",
+  "aliases": []
+ },
+ "2705822": {
+  "name": "Carne de res",
+  "aliases": [
+   "Carne de vaca"
+  ]
+ },
+ "2705824": {
+  "name": "Bife",
+  "aliases": [
+   "Filete",
+   "Bistec"
+  ]
+ },
+ "2705835": {
+  "name": "Bife de chorizo",
+  "aliases": [
+   "Entrecot",
+   "New York strip"
+  ]
+ },
+ "2705828": {
+  "name": "Bife de ojo",
+  "aliases": [
+   "Filete de ojo",
+   "Bistec de ojo"
+  ]
+ },
+ "2705862": {
+  "name": "Cerdo",
+  "aliases": [
+   "Chancho",
+   "Puerco"
+  ]
+ },
+ "2705893": {
+  "name": "Costillas de cerdo",
+  "aliases": [
+   "Costillas de chancho",
+   "Costillas de puerco"
+  ]
+ },
+ "2705866": {
+  "name": "Chuleta de cerdo",
+  "aliases": [
+   "Costeleta de cerdo",
+   "Chuleta de chancho",
+   "Chuleta de puerco"
+  ]
+ },
+ "2705873": {
+  "name": "Bife de cerdo",
+  "aliases": [
+   "Bife de chancho",
+   "Bife de puerco",
+   "Filete de cerdo",
+   "Bistec de cerdo"
+  ]
+ },
+ "2706224": {
+  "name": "Pescado",
+  "aliases": []
+ },
+ "2706227": {
+  "name": "Pescado frito",
+  "aliases": []
+ },
+ "2706228": {
+  "name": "Pescado al vapor",
+  "aliases": []
+ },
+ "2706225": {
+  "name": "Pescado al horno",
+  "aliases": []
+ },
+ "2706226": {
+  "name": "Pescado empanado al horno",
+  "aliases": []
+ },
+ "2706240": {
+  "name": "Bacalao",
+  "aliases": []
+ },
+ "2706294": {
+  "name": "Lubina",
+  "aliases": []
+ },
+ "2706309": {
+  "name": "Atún",
+  "aliases": []
+ },
+ "2706270": {
+  "name": "Perca",
+  "aliases": []
+ },
+ "2706302": {
+  "name": "Trucha",
+  "aliases": []
+ },
+ "2706721": {
+  "name": "Guiso",
+  "aliases": []
+ },
+ "2706369": {
+  "name": "Carne a la barbacoa",
+  "aliases": []
+ },
+ "2706579": {
+  "name": "Pastel de carne",
+  "aliases": [
+   "Torta de carne",
+   "Tarta de carne"
+  ]
+ },
+ "2706473": {
+  "name": "Carne con salsa de carne",
+  "aliases": []
+ },
+ "2706467": {
+  "name": "Albóndigas con salsa",
+  "aliases": []
+ },
+ "2706580": {
+  "name": "Albóndigas empanadas con salsa de carne",
+  "aliases": []
+ },
+ "2706373": {
+  "name": "Chili",
+  "aliases": []
+ },
+ "2707095": {
+  "name": "Plato congelado",
+  "aliases": []
+ },
+ "2706584": {
+  "name": "Picadillo",
+  "aliases": []
+ },
+ "2707096": {
+  "name": "Plato congelado de carne",
+  "aliases": []
+ },
+ "2708514": {
+  "name": "Taco",
+  "aliases": []
+ },
+ "2708534": {
+  "name": "Burrito",
+  "aliases": []
+ },
+ "2708529": {
+  "name": "Taco de pescado",
+  "aliases": []
+ },
+ "2708533": {
+  "name": "Taco solo de queso",
+  "aliases": []
+ },
+ "2708554": {
+  "name": "Burrito solo de queso",
+  "aliases": []
+ },
+ "2708530": {
+  "name": "Taco de carne sin queso",
+  "aliases": []
+ },
+ "2708535": {
+  "name": "Burrito de carne y queso",
+  "aliases": []
+ },
+ "2709144": {
+  "name": "Sopa",
+  "aliases": []
+ },
+ "2709145": {
+  "name": "Sopa de fideos",
+  "aliases": []
+ },
+ "2707453": {
+  "name": "Sopa de frijoles",
+  "aliases": [
+   "Sopa de porotos",
+   "Sopa de alubias",
+   "Sopa de judías",
+   "Sopa de caraotas"
+  ]
+ },
+ "2709146": {
+  "name": "Sopa de arroz",
+  "aliases": []
+ },
+ "2710115": {
+  "name": "Sopa de carne",
+  "aliases": []
+ },
+ "2707132": {
+  "name": "Caldo",
+  "aliases": []
+ },
+ "2709311": {
+  "name": "Sopa de fruta",
+  "aliases": []
+ },
+ "2706339": {
+  "name": "Almejas",
+  "aliases": []
+ },
+ "2706360": {
+  "name": "Camarón",
+  "aliases": [
+   "Gamba",
+   "Langostino"
+  ]
+ },
+ "2706336": {
+  "name": "Mariscos",
+  "aliases": []
+ },
+ "2706335": {
+  "name": "Carne de tortuga",
+  "aliases": []
+ },
+ "2706331": {
+  "name": "Pulpo",
+  "aliases": []
+ },
+ "2706337": {
+  "name": "Abulón",
+  "aliases": []
+ },
+ "2707347": {
+  "name": "Frijoles",
+  "aliases": [
+   "Porotos",
+   "Alubias",
+   "Judías",
+   "Caraotas"
+  ]
+ },
+ "2707407": {
+  "name": "Frijoles con carne",
+  "aliases": [
+   "Porotos con carne",
+   "Alubias con carne",
+   "Judías con carne",
+   "Caraotas con carne"
+  ]
+ },
+ "2707348": {
+  "name": "Frijoles secos cocidos con grasa",
+  "aliases": [
+   "Porotos secos cocidos con grasa",
+   "Alubias secas cocidas con grasa",
+   "Judías secas cocidas con grasa",
+   "Caraotas secas cocidas con grasa"
+  ]
+ },
+ "2707350": {
+  "name": "Frijoles en lata con grasa",
+  "aliases": [
+   "Porotos en lata con grasa",
+   "Alubias en lata con grasa",
+   "Judías en lata con grasa",
+   "Caraotas en lata con grasa"
+  ]
+ },
+ "2707349": {
+  "name": "Frijoles secos cocidos sin grasa",
+  "aliases": [
+   "Porotos secos cocidos sin grasa",
+   "Alubias secas cocidas sin grasa",
+   "Judías secas cocidas sin grasa",
+   "Caraotas secas cocidas sin grasa"
+  ]
+ },
+ "2707351": {
+  "name": "Frijoles en lata sin grasa",
+  "aliases": [
+   "Porotos en lata sin grasa",
+   "Alubias en lata sin grasa",
+   "Judías en lata sin grasa",
+   "Caraotas en lata sin grasa"
+  ]
+ },
+ "2707352": {
+  "name": "Frijoles de restaurante",
+  "aliases": [
+   "Porotos de restaurante",
+   "Alubias de restaurante",
+   "Judías de restaurante",
+   "Caraotas de restaurante"
+  ]
+ },
+ "2707423": {
+  "name": "Lentejas",
+  "aliases": []
+ },
+ "2707414": {
+  "name": "Garbanzos",
+  "aliases": []
+ },
+ "2707368": {
+  "name": "Frijoles de Lima",
+  "aliases": [
+   "Pallares",
+   "Porotos pallares",
+   "Garrofón"
+  ]
+ },
+ "2708363": {
+  "name": "Sémola de maíz",
+  "aliases": [
+   "Sémola de choclo",
+   "Sémola de elote"
+  ]
+ },
+ "2708433": {
+  "name": "Sémola de trigo",
+  "aliases": []
+ },
+ "2708373": {
+  "name": "Polenta",
+  "aliases": []
+ },
+ "2708367": {
+  "name": "Sémola de maíz con queso",
+  "aliases": [
+   "Sémola de choclo con queso",
+   "Sémola de elote con queso"
+  ]
+ },
+ "2708959": {
+  "name": "Sushi",
+  "aliases": []
+ },
+ "2708724": {
+  "name": "Bao",
+  "aliases": []
+ },
+ "2708962": {
+  "name": "Roll de sushi de anguila",
+  "aliases": []
+ },
+ "2708965": {
+  "name": "Roll de sushi de atún",
+  "aliases": []
+ },
+ "2709213": {
+  "name": "Fruta",
+  "aliases": []
+ },
+ "2709289": {
+  "name": "Cóctel de frutas en lata",
+  "aliases": []
+ },
+ "2709268": {
+  "name": "Ruibarbo",
+  "aliases": []
+ },
+ "2709286": {
+  "name": "Ensalada de frutas con crema",
+  "aliases": [
+   "Ensalada de frutas con nata"
+  ]
+ },
+ "2709236": {
+  "name": "Higo en lata",
+  "aliases": []
+ },
+ "2709266": {
+  "name": "Ciruela en lata",
+  "aliases": []
+ },
+ "2710177": {
+  "name": "Salsa",
+  "aliases": []
+ },
+ "2709307": {
+  "name": "Guacamole",
+  "aliases": []
+ },
+ "2705618": {
+  "name": "Dip",
+  "aliases": []
+ },
+ "2707149": {
+  "name": "Salsa de carne",
+  "aliases": []
+ },
+ "2707401": {
+  "name": "Dip en capas",
+  "aliases": []
+ },
+ "2705786": {
+  "name": "Dip de queso",
+  "aliases": []
+ },
+ "2707151": {
+  "name": "Salsa mole",
+  "aliases": []
+ },
+ "2705784": {
+  "name": "Dip de mariscos",
+  "aliases": []
+ },
+ "2710175": {
+  "name": "Salsa pesto",
+  "aliases": []
+ },
+ "2710325": {
+  "name": "Caramelos",
+  "aliases": []
+ },
+ "2710350": {
+  "name": "Caramelos sin chocolate",
+  "aliases": []
+ },
+ "2710358": {
+  "name": "Caramelos de menta",
+  "aliases": []
+ },
+ "2705414": {
+  "name": "Yogur",
+  "aliases": [
+   "Yoghurt"
+  ]
+ },
+ "2705417": {
+  "name": "Yogur natural",
+  "aliases": [
+   "Yoghurt natural"
+  ]
+ },
+ "2705425": {
+  "name": "Yogur de fruta",
+  "aliases": [
+   "Yoghurt de fruta"
+  ]
+ },
+ "2705704": {
+  "name": "Queso",
+  "aliases": []
+ },
+ "2705722": {
+  "name": "Queso mozzarella",
+  "aliases": [
+   "Queso muzzarella"
+  ]
+ },
+ "2705781": {
+  "name": "Bola de queso",
+  "aliases": []
+ },
+ "2705740": {
+  "name": "Queso paneer",
+  "aliases": []
+ },
+ "2705764": {
+  "name": "Queso americano",
+  "aliases": []
+ },
+ "2705713": {
+  "name": "Queso Colby Jack",
+  "aliases": []
+ },
+ "2705730": {
+  "name": "Queso parmesano en trozo",
+  "aliases": []
+ },
+ "2705728": {
+  "name": "Queso parmesano rallado seco",
+  "aliases": []
+ },
+ "2705771": {
+  "name": "Queso procesado con verduras",
+  "aliases": []
+ },
+ "2706104": {
+  "name": "Pavo",
+  "aliases": [
+   "Guajolote"
+  ]
+ },
+ "2706147": {
+  "name": "Paloma cocida",
+  "aliases": []
+ },
+ "2705928": {
+  "name": "Carne de avestruz",
+  "aliases": []
+ },
+ "2706148": {
+  "name": "Paloma frita",
+  "aliases": []
+ },
+ "2706127": {
+  "name": "Cuello de pavo",
+  "aliases": [
+   "Cuello de guajolote"
+  ]
+ },
+ "2706130": {
+  "name": "Cola de pavo",
+  "aliases": [
+   "Cola de guajolote"
+  ]
+ },
+ "2706131": {
+  "name": "Espalda de pavo",
+  "aliases": [
+   "Espalda de guajolote"
+  ]
+ },
+ "2706723": {
+  "name": "Paella",
+  "aliases": []
+ },
+ "2709087": {
+  "name": "Arroz rojo",
+  "aliases": [
+   "Arroz a la mexicana"
+  ]
+ },
+ "2708996": {
+  "name": "Arroz blanco con maíz",
+  "aliases": [
+   "Arroz blanco con choclo",
+   "Arroz blanco con elote"
+  ]
+ },
+ "2708999": {
+  "name": "Arroz blanco con arvejas",
+  "aliases": [
+   "Arroz blanco con guisantes",
+   "Arroz blanco con chícharos"
+  ]
+ },
+ "2709037": {
+  "name": "Arroz integral con maíz",
+  "aliases": [
+   "Arroz integral con choclo",
+   "Arroz integral con elote"
+  ]
+ },
+ "2709040": {
+  "name": "Arroz integral con arvejas",
+  "aliases": [
+   "Arroz integral con guisantes",
+   "Arroz integral con chícharos"
+  ]
+ },
+ "2709095": {
+  "name": "Arroz blanco con salsa de carne",
+  "aliases": []
+ },
+ "2709104": {
+  "name": "Arroz integral con salsa de carne",
+  "aliases": []
+ },
+ "2709002": {
+  "name": "Arroz blanco con zanahoria",
+  "aliases": []
+ },
+ "2709029": {
+  "name": "Arroz blanco con lentejas",
+  "aliases": []
+ },
+ "2708576": {
+  "name": "Nachos",
+  "aliases": []
+ },
+ "2708580": {
+  "name": "Nachos de pollo",
+  "aliases": []
+ },
+ "2708603": {
+  "name": "Fajita",
+  "aliases": []
+ },
+ "2708570": {
+  "name": "Tamal",
+  "aliases": []
+ },
+ "2708565": {
+  "name": "Enchilada",
+  "aliases": []
+ },
+ "2708590": {
+  "name": "Quesadilla",
+  "aliases": []
+ },
+ "2708555": {
+  "name": "Bowl de burrito",
+  "aliases": []
+ },
+ "2708506": {
+  "name": "Frito pie",
+  "aliases": []
+ },
+ "2708505": {
+  "name": "Chilaquiles",
+  "aliases": []
+ },
+ "2708585": {
+  "name": "Gordita de carne",
+  "aliases": []
+ },
+ "2705913": {
+  "name": "Carne de venado",
+  "aliases": []
+ },
+ "2705905": {
+  "name": "Cordero",
+  "aliases": []
+ },
+ "2705908": {
+  "name": "Carne de cabra",
+  "aliases": []
+ },
+ "2708380": {
+  "name": "Avena cocida",
+  "aliases": []
+ },
+ "2708398": {
+  "name": "Avena cocida multicereal",
+  "aliases": []
+ },
+ "2708397": {
+  "name": "Avena cocida con menos azúcar",
+  "aliases": []
+ },
+ "2709271": {
+  "name": "Frutos rojos",
+  "aliases": []
+ },
+ "2709272": {
+  "name": "Frutos rojos congelados",
+  "aliases": []
+ },
+ "2706880": {
+  "name": "Sándwich",
+  "aliases": [
+   "Bocadillo",
+   "Emparedado"
+  ]
+ },
+ "2706881": {
+  "name": "Wrap",
+  "aliases": []
+ },
+ "2707055": {
+  "name": "Sándwich de Spam",
+  "aliases": [
+   "Bocadillo de Spam",
+   "Emparedado de Spam"
+  ]
+ },
+ "2706952": {
+  "name": "Sándwich Reuben",
+  "aliases": [
+   "Bocadillo Reuben",
+   "Emparedado Reuben"
+  ]
+ },
+ "2706970": {
+  "name": "Wrap de jamón",
+  "aliases": []
+ },
+ "2706957": {
+  "name": "Sándwich de carne al jugo",
+  "aliases": [
+   "Bocadillo de carne al jugo",
+   "Emparedado de carne al jugo"
+  ]
+ },
+ "2706987": {
+  "name": "Wrap de pavo",
+  "aliases": [
+   "Wrap de guajolote"
+  ]
+ },
+ "2706964": {
+  "name": "Sándwich de jamón en pan blanco",
+  "aliases": [
+   "Bocadillo de jamón en pan blanco",
+   "Emparedado de jamón en pan blanco"
+  ]
+ },
+ "2706966": {
+  "name": "Sándwich de jamón en pan integral",
+  "aliases": [
+   "Bocadillo de jamón en pan integral",
+   "Emparedado de jamón en pan integral"
+  ]
+ },
+ "2707822": {
+  "name": "Tortilla de trigo",
+  "aliases": [
+   "Tortilla de harina"
+  ]
+ },
+ "2707827": {
+  "name": "Taco crujiente de harina",
+  "aliases": []
+ },
+ "2708062": {
+  "name": "Dona",
+  "aliases": [
+   "Donut",
+   "Rosquilla"
+  ]
+ },
+ "2707669": {
+  "name": "Pan dulce",
+  "aliases": []
+ },
+ "2708029": {
+  "name": "Profiterol o éclair relleno de crema",
+  "aliases": [
+   "Profiterol o éclair relleno de nata"
+  ]
+ },
+ "2708058": {
+  "name": "Bollo de desayuno",
+  "aliases": []
+ },
+ "2707682": {
+  "name": "Brioche",
+  "aliases": []
+ },
+ "2708070": {
+  "name": "Churros",
+  "aliases": []
+ },
+ "2708071": {
+  "name": "Buñuelo francés",
+  "aliases": []
+ },
+ "2707704": {
+  "name": "Panetone",
+  "aliases": []
+ },
+ "2708038": {
+  "name": "Tamal dulce",
+  "aliases": []
+ },
+ "2708024": {
+  "name": "Buñuelo",
+  "aliases": []
+ },
+ "2710626": {
+  "name": "Cóctel",
+  "aliases": []
+ },
+ "2710698": {
+  "name": "Glögg",
+  "aliases": []
+ },
+ "2710632": {
+  "name": "Gimlet",
+  "aliases": []
+ },
+ "2710644": {
+  "name": "Mojito",
+  "aliases": []
+ },
+ "2710623": {
+  "name": "Licor",
+  "aliases": []
+ },
+ "2710639": {
+  "name": "Martini",
+  "aliases": []
+ },
+ "2710648": {
+  "name": "Rob Roy",
+  "aliases": []
+ },
+ "2710677": {
+  "name": "Mai Tai",
+  "aliases": []
+ },
+ "2710629": {
+  "name": "Cape Cod",
+  "aliases": []
+ },
+ "2710630": {
+  "name": "Daiquiri",
+  "aliases": []
+ },
+ "2705629": {
+  "name": "Helado",
+  "aliases": []
+ },
+ "2705647": {
+  "name": "Cono de helado",
+  "aliases": []
+ },
+ "2705664": {
+  "name": "Helado light",
+  "aliases": []
+ },
+ "2705451": {
+  "name": "Yogur helado",
+  "aliases": [
+   "Yoghurt helado"
+  ]
+ },
+ "2705658": {
+  "name": "Copa de helado",
+  "aliases": []
+ },
+ "2705674": {
+  "name": "Paleta de chocolate",
+  "aliases": []
+ },
+ "2705660": {
+  "name": "Banana split",
+  "aliases": []
+ },
+ "2705663": {
+  "name": "Helado frito",
+  "aliases": []
+ },
+ "2705456": {
+  "name": "Sándwich de yogur helado",
+  "aliases": []
+ },
+ "2710153": {
+  "name": "Grasa para untar",
+  "aliases": []
+ },
+ "2710154": {
+  "name": "Mantequilla",
+  "aliases": [
+   "Manteca"
+  ]
+ },
+ "2710158": {
+  "name": "Margarina",
+  "aliases": []
+ },
+ "2710164": {
+  "name": "Aceite o grasa para untar",
+  "aliases": []
+ },
+ "2705410": {
+  "name": "Leche de almendras",
+  "aliases": []
+ },
+ "2705403": {
+  "name": "Leche vegetal",
+  "aliases": []
+ },
+ "2705412": {
+  "name": "Leche de avena",
+  "aliases": []
+ },
+ "2708475": {
+  "name": "Cereal en aritos",
+  "aliases": []
+ },
+ "2708448": {
+  "name": "Cereal de aritos simple",
+  "aliases": []
+ },
+ "2708454": {
+  "name": "Cereal de maíz inflado",
+  "aliases": [
+   "Cereal de choclo inflado",
+   "Cereal de elote inflado"
+  ]
+ },
+ "2709315": {
+  "name": "Jugo de fruta",
+  "aliases": [
+   "Zumo de fruta"
+  ]
+ },
+ "2709323": {
+  "name": "Jugo de arándanos",
+  "aliases": [
+   "Zumo de arándanos"
+  ]
+ },
+ "2709325": {
+  "name": "Jugo de uva natural",
+  "aliases": [
+   "Zumo de uva natural"
+  ]
+ },
+ "2705820": {
+  "name": "Carne molida",
+  "aliases": [
+   "Carne picada"
+  ]
+ },
+ "2705854": {
+  "name": "Carne de res molida",
+  "aliases": [
+   "Carne de vaca molida"
+  ]
+ },
+ "2709256": {
+  "name": "Pera en lata",
+  "aliases": []
+ },
+ "2709254": {
+  "name": "Pera",
+  "aliases": []
+ },
+ "2709799": {
+  "name": "Pimientos crudos",
+  "aliases": [
+   "Morrones crudos",
+   "Ajíes crudos"
+  ]
+ },
+ "2709763": {
+  "name": "Verdura cruda",
+  "aliases": []
+ },
+ "2709838": {
+  "name": "Espárragos frescos cocidos con grasa",
+  "aliases": []
+ },
+ "2709939": {
+  "name": "Champiñones frescos cocidos con grasa",
+  "aliases": [
+   "Hongos frescos cocidos con grasa",
+   "Setas frescas cocidas con grasa"
+  ]
+ },
+ "2709839": {
+  "name": "Espárragos congelados cocidos con grasa",
+  "aliases": []
+ },
+ "2709840": {
+  "name": "Espárragos de lata cocidos con grasa",
+  "aliases": []
+ },
+ "2709900": {
+  "name": "Coliflor fresca cocida con grasa",
+  "aliases": []
+ },
+ "2709901": {
+  "name": "Coliflor congelada cocida con grasa",
+  "aliases": []
+ },
+ "2710016": {
+  "name": "Verduras mixtas congeladas cocidas con grasa",
+  "aliases": []
+ },
+ "2710017": {
+  "name": "Verduras mixtas de lata cocidas con grasa",
+  "aliases": []
+ },
+ "2710299": {
+  "name": "Mermelada",
+  "aliases": [
+   "Jalea"
+  ]
+ },
+ "2710272": {
+  "name": "Sirope",
+  "aliases": [
+   "Jarabe"
+  ]
+ },
+ "2710295": {
+  "name": "Dip dulce",
+  "aliases": []
+ },
+ "2710307": {
+  "name": "Dulce de guayaba",
+  "aliases": []
+ },
+ "2710278": {
+  "name": "Almíbar",
+  "aliases": []
+ },
+ "2708481": {
+  "name": "Cereal",
+  "aliases": []
+ },
+ "2708445": {
+  "name": "Cereal listo para comer",
+  "aliases": []
+ },
+ "2708447": {
+  "name": "Cereal crujiente",
+  "aliases": []
+ },
+ "2709250": {
+  "name": "Durazno en lata",
+  "aliases": [
+   "Melocotón en lata"
+  ]
+ },
+ "2709251": {
+  "name": "Durazno en lata en almíbar",
+  "aliases": [
+   "Melocotón en lata en almíbar"
+  ]
+ },
+ "2709816": {
+  "name": "Ensalada de repollo",
+  "aliases": [
+   "Ensalada de col"
+  ]
+ },
+ "2709815": {
+  "name": "Ensalada de repollo con mayonesa",
+  "aliases": [
+   "Ensalada de col con mayonesa"
+  ]
+ },
+ "2710056": {
+  "name": "Ensalada de arvejas",
+  "aliases": [
+   "Ensalada de guisantes",
+   "Ensalada de chícharos"
+  ]
+ },
+ "2710180": {
+  "name": "Aceite vegetal",
+  "aliases": []
+ },
+ "2710215": {
+  "name": "Aderezo para ensalada light",
+  "aliases": [
+   "Aliño para ensalada light"
+  ]
+ },
+ "2710237": {
+  "name": "Aderezo para ensalada sin grasa",
+  "aliases": [
+   "Aliño para ensalada sin grasa"
+  ]
+ },
+ "2710195": {
+  "name": "Aderezo para ensalada",
+  "aliases": [
+   "Aliño para ensalada"
+  ]
+ },
+ "2710186": {
+  "name": "Aceite de oliva",
+  "aliases": []
+ },
+ "2710214": {
+  "name": "Aderezo de frutas",
+  "aliases": [
+   "Aliño de frutas"
+  ]
+ },
+ "2710209": {
+  "name": "Aderezo italiano cremoso",
+  "aliases": [
+   "Aliño italiano cremoso"
+  ]
+ },
+ "2710228": {
+  "name": "Aderezo o marinada coreana",
+  "aliases": [
+   "Aliño o marinada coreana"
+  ]
+ },
+ "2705466": {
+  "name": "Leche chocolatada",
+  "aliases": [
+   "Leche con chocolate"
+  ]
+ },
+ "2705472": {
+  "name": "Chocolate caliente",
+  "aliases": []
+ },
+ "2705513": {
+  "name": "Batido de frutas",
+  "aliases": [
+   "Licuado de frutas",
+   "Malteada de frutas"
+  ]
+ },
+ "2710607": {
+  "name": "Atole",
+  "aliases": []
+ },
+ "2710604": {
+  "name": "Frescavena",
+  "aliases": []
+ },
+ "2710504": {
+  "name": "Bebida de maíz",
+  "aliases": [
+   "Bebida de choclo",
+   "Bebida de elote"
+  ]
+ },
+ "2709137": {
+  "name": "Sándwich de mermelada",
+  "aliases": [
+   "Sándwich de jalea",
+   "Bocadillo de mermelada",
+   "Emparedado de mermelada"
+  ]
+ },
+ "2707549": {
+  "name": "Sándwich de mantequilla de maní",
+  "aliases": [
+   "Sándwich de manteca de maní",
+   "Bocadillo de mantequilla de maní",
+   "Emparedado de mantequilla de maní",
+   "Sándwich de mantequilla de cacahuete",
+   "Sándwich de mantequilla de cacahuate"
+  ]
+ },
+ "2707554": {
+  "name": "Sándwich de mantequilla de maní y mermelada",
+  "aliases": [
+   "Sándwich de manteca de maní y mermelada",
+   "Sándwich de mantequilla de maní y jalea",
+   "Bocadillo de mantequilla de maní y mermelada",
+   "Emparedado de mantequilla de maní y mermelada",
+   "Sándwich de mantequilla de cacahuete y mermelada",
+   "Sándwich de mantequilla de cacahuate y mermelada"
+  ]
+ },
+ "2709172": {
+  "name": "Naranja en lata",
+  "aliases": []
+ },
+ "2709171": {
+  "name": "Naranja",
+  "aliases": []
+ },
+ "2705495": {
+  "name": "Leche de fresa",
+  "aliases": [
+   "Leche de frutilla"
+  ]
+ },
+ "2705477": {
+  "name": "Leche chocolatada Nesquik",
+  "aliases": [
+   "Leche con chocolate Nesquik"
+  ]
+ },
+ "2705794": {
+  "name": "Sándwich de queso",
+  "aliases": [
+   "Bocadillo de queso",
+   "Emparedado de queso"
+  ]
+ },
+ "2705801": {
+  "name": "Sándwich de queso caliente",
+  "aliases": [
+   "Bocadillo de queso caliente",
+   "Emparedado de queso caliente"
+  ]
+ },
+ "2707853": {
+  "name": "Pastel o cupcake",
+  "aliases": [
+   "Torta o cupcake",
+   "Tarta o cupcake"
+  ]
+ },
+ "2707993": {
+  "name": "Tarta",
+  "aliases": [
+   "Pay",
+   "Pastel"
+  ]
+ },
+ "2708044": {
+  "name": "Baklava",
+  "aliases": []
+ },
+ "2705702": {
+  "name": "Tiramisú",
+  "aliases": []
+ },
+ "2708045": {
+  "name": "Basbousa",
+  "aliases": []
+ },
+ "2707995": {
+  "name": "Tarta de manzana",
+  "aliases": [
+   "Pay de manzana",
+   "Pastel de manzana"
+  ]
+ },
+ "2707997": {
+  "name": "Tarta de frutos rojos",
+  "aliases": [
+   "Pay de frutos rojos",
+   "Pastel de frutos rojos"
+  ]
+ },
+ "2708000": {
+  "name": "Tarta de limón",
+  "aliases": [
+   "Pay de limón",
+   "Pastel de limón"
+  ]
+ },
+ "2708002": {
+  "name": "Tarta de durazno",
+  "aliases": [
+   "Tarta de melocotón",
+   "Pay de durazno",
+   "Pastel de durazno"
+  ]
+ },
+ "2708015": {
+  "name": "Tarta de nuez pecana",
+  "aliases": [
+   "Pay de nuez pecana",
+   "Pastel de nuez pecana"
+  ]
+ },
+ "2708399": {
+  "name": "Quinoa",
+  "aliases": [
+   "Quinua"
+  ]
+ },
+ "2708440": {
+  "name": "Bulgur",
+  "aliases": []
+ },
+ "2708361": {
+  "name": "Cebada",
+  "aliases": []
+ },
+ "2706882": {
+  "name": "Sándwich de carne a la barbacoa",
+  "aliases": [
+   "Bocadillo de carne a la barbacoa",
+   "Emparedado de carne a la barbacoa"
+  ]
+ },
+ "2706962": {
+  "name": "Gyros",
+  "aliases": []
+ },
+ "2706977": {
+  "name": "Sándwich de cerdo",
+  "aliases": [
+   "Bocadillo de cerdo",
+   "Emparedado de cerdo",
+   "Sándwich de chancho",
+   "Sándwich de puerco"
+  ]
+ },
+ "2709261": {
+  "name": "Piña en lata",
+  "aliases": [
+   "Ananá en lata"
+  ]
+ },
+ "2709262": {
+  "name": "Piña en lata en almíbar",
+  "aliases": [
+   "Ananá en lata en almíbar"
+  ]
+ },
+ "2709186": {
+  "name": "Jugo de naranja natural",
+  "aliases": [
+   "Zumo de naranja natural"
+  ]
+ },
+ "2709177": {
+  "name": "Jugo de pomelo natural",
+  "aliases": [
+   "Jugo de toronja natural",
+   "Zumo de pomelo natural"
+  ]
+ },
+ "2709399": {
+  "name": "Papa en lata",
+  "aliases": [
+   "Patata en lata"
+  ]
+ },
+ "2709400": {
+  "name": "Papa en lata con grasa",
+  "aliases": [
+   "Patata en lata con grasa"
+  ]
+ },
+ "2709393": {
+  "name": "Papa hervida con cáscara",
+  "aliases": [
+   "Patata hervida con cáscara"
+  ]
+ },
+ "2709403": {
+  "name": "Papa asada con cáscara",
+  "aliases": [
+   "Patata asada con cáscara"
+  ]
+ },
+ "2709387": {
+  "name": "Papa hervida sin cáscara",
+  "aliases": [
+   "Patata hervida sin cáscara"
+  ]
+ },
+ "2709409": {
+  "name": "Papa asada sin cáscara",
+  "aliases": [
+   "Patata asada sin cáscara"
+  ]
+ },
+ "2709394": {
+  "name": "Papa hervida con cáscara, con grasa",
+  "aliases": [
+   "Patata hervida con cáscara, con grasa"
+  ]
+ },
+ "2710267": {
+  "name": "Endulzante en polvo",
+  "aliases": []
+ },
+ "2710268": {
+  "name": "Endulzante líquido",
+  "aliases": []
+ },
+ "2707155": {
+  "name": "Huevo frito",
+  "aliases": []
+ },
+ "2707164": {
+  "name": "Huevo al horno",
+  "aliases": []
+ },
+ "2707169": {
+  "name": "Clara de huevo cocida",
+  "aliases": []
+ },
+ "2707162": {
+  "name": "Huevo frito con grasa",
+  "aliases": []
+ },
+ "2707173": {
+  "name": "Yema de huevo cocida",
+  "aliases": []
+ },
+ "2707198": {
+  "name": "Huevo revuelto o tortilla",
+  "aliases": []
+ },
+ "2707153": {
+  "name": "Huevo cocido",
+  "aliases": []
+ },
+ "2707204": {
+  "name": "Huevo revuelto o tortilla con grasa",
+  "aliases": []
+ },
+ "2707283": {
+  "name": "Clara de huevo revuelta o frita",
+  "aliases": []
+ },
+ "2707213": {
+  "name": "Huevo revuelto o tortilla con carne",
+  "aliases": []
+ },
+ "2708403": {
+  "name": "Arroz blanco cocido",
+  "aliases": []
+ },
+ "2708409": {
+  "name": "Arroz integral cocido",
+  "aliases": []
+ },
+ "2708419": {
+  "name": "Arroz amarillo cocido",
+  "aliases": []
+ },
+ "2708423": {
+  "name": "Arroz salvaje cocido",
+  "aliases": []
+ },
+ "2709503": {
+  "name": "Puré de papa instantáneo",
+  "aliases": [
+   "Puré de patata instantáneo"
+  ]
+ },
+ "2709492": {
+  "name": "Puré de papa",
+  "aliases": [
+   "Puré de patata"
+  ]
+ },
+ "2709448": {
+  "name": "Papas gratinadas",
+  "aliases": [
+   "Patatas gratinadas"
+  ]
+ },
+ "2709499": {
+  "name": "Puré de papa casero",
+  "aliases": [
+   "Puré de patata casero"
+  ]
+ },
+ "2709507": {
+  "name": "Puré de papa listo para calentar",
+  "aliases": [
+   "Puré de patata listo para calentar"
+  ]
+ },
+ "2709553": {
+  "name": "Lefse",
+  "aliases": []
+ },
+ "2709552": {
+  "name": "Tortita de papa",
+  "aliases": [
+   "Tortita de patata"
+  ]
+ },
+ "2709554": {
+  "name": "Papas guisadas",
+  "aliases": [
+   "Patatas guisadas"
+  ]
+ },
+ "2709698": {
+  "name": "Batata al horno",
+  "aliases": [
+   "Camote al horno",
+   "Boniato al horno"
+  ]
+ },
+ "2709701": {
+  "name": "Batata hervida",
+  "aliases": [
+   "Camote hervido",
+   "Boniato hervido"
+  ]
+ },
+ "2709705": {
+  "name": "Batata en lata",
+  "aliases": [
+   "Camote en lata",
+   "Boniato en lata"
+  ]
+ },
+ "2709855": {
+  "name": "Judías verdes cocidas",
+  "aliases": [
+   "Chauchas cocidas",
+   "Ejotes cocidos",
+   "Porotos verdes cocidos",
+   "Vainitas cocidas"
+  ]
+ },
+ "2709856": {
+  "name": "Judías verdes frescas cocidas con grasa",
+  "aliases": [
+   "Chauchas frescas cocidas con grasa",
+   "Ejotes frescos cocidos con grasa",
+   "Porotos verdes frescos cocidos con grasa",
+   "Vainitas frescas cocidas con grasa"
+  ]
+ },
+ "2709857": {
+  "name": "Judías verdes congeladas cocidas con grasa",
+  "aliases": [
+   "Chauchas congeladas cocidas con grasa",
+   "Ejotes congelados cocidos con grasa",
+   "Porotos verdes congelados cocidos con grasa",
+   "Vainitas congeladas cocidas con grasa"
+  ]
+ },
+ "2707056": {
+  "name": "Hot dog en pan de viena",
+  "aliases": [
+   "Pancho en pan de viena",
+   "Perro caliente en pan de viena",
+   "Completo en pan de viena"
+  ]
+ },
+ "2707057": {
+  "name": "Hot dog en pan de viena integral",
+  "aliases": [
+   "Pancho en pan de viena integral",
+   "Perro caliente en pan de viena integral",
+   "Completo en pan de viena integral"
+  ]
+ },
+ "2707058": {
+  "name": "Hot dog en pan blanco",
+  "aliases": [
+   "Pancho en pan blanco",
+   "Perro caliente en pan blanco",
+   "Completo en pan blanco"
+  ]
+ },
+ "2707059": {
+  "name": "Hot dog en pan integral",
+  "aliases": [
+   "Pancho en pan integral",
+   "Perro caliente en pan integral",
+   "Completo en pan integral"
+  ]
+ },
+ "2708760": {
+  "name": "Ravioles sin salsa",
+  "aliases": []
+ },
+ "2708762": {
+  "name": "Ravioles con salsa de crema",
+  "aliases": [
+   "Ravioles con salsa de nata"
+  ]
+ },
+ "2708761": {
+  "name": "Ravioles con salsa de tomate",
+  "aliases": []
+ },
+ "2709141": {
+  "name": "Plato congelado de espaguetis con albóndigas",
+  "aliases": []
+ },
+ "2708828": {
+  "name": "Pasta con salsa",
+  "aliases": []
+ },
+ "2708930": {
+  "name": "Pasta saborizada",
+  "aliases": []
+ },
+ "2708949": {
+  "name": "Pudín de fideos",
+  "aliases": []
+ },
+ "2708721": {
+  "name": "Ñoquis de queso",
+  "aliases": []
+ },
+ "2708722": {
+  "name": "Ñoquis de papa",
+  "aliases": [
+   "Ñoquis de patata"
+  ]
+ },
+ "2708755": {
+  "name": "Lasaña con carne y espinaca",
+  "aliases": []
+ },
+ "2710196": {
+  "name": "Aderezo tipo mayonesa para sándwich",
+  "aliases": [
+   "Aderezo tipo mayonesa para bocadillo",
+   "Aderezo tipo mayonesa para emparedado",
+   "Aliño tipo mayonesa para sándwich"
+  ]
+ },
+ "2710173": {
+  "name": "Salsa tártara",
+  "aliases": []
+ },
+ "2705885": {
+  "name": "Tocino cocido",
+  "aliases": [
+   "Panceta cocida",
+   "Beicon cocido",
+   "Bacon cocido"
+  ]
+ },
+ "2705887": {
+  "name": "Tocino de cerdo cocido",
+  "aliases": [
+   "Panceta de cerdo cocido",
+   "Beicon de cerdo cocido",
+   "Bacon de cerdo cocido",
+   "Tocino de chancho cocido",
+   "Tocino de puerco cocido"
+  ]
+ },
+ "2705939": {
+  "name": "Pollo guisado con piel",
+  "aliases": []
+ },
+ "2705947": {
+  "name": "Pollo salteado con piel",
+  "aliases": []
+ },
+ "2705936": {
+  "name": "Pollo asado al spiedo con piel",
+  "aliases": [
+   "Pollo rostizado con piel"
+  ]
+ },
+ "2705940": {
+  "name": "Pollo guisado sin piel",
+  "aliases": []
+ },
+ "2705948": {
+  "name": "Pollo salteado sin piel",
+  "aliases": []
+ },
+ "2705937": {
+  "name": "Pollo asado al spiedo sin piel",
+  "aliases": [
+   "Pollo rostizado sin piel"
+  ]
+ },
+ "2705938": {
+  "name": "Pollo guisado",
+  "aliases": []
+ },
+ "2705930": {
+  "name": "Pollo con piel",
+  "aliases": []
+ },
+ "2705945": {
+  "name": "Pollo a la parrilla con salsa, con piel",
+  "aliases": []
+ },
+ "2705935": {
+  "name": "Pollo asado al spiedo",
+  "aliases": [
+   "Pollo rostizado"
+  ]
+ },
+ "2708127": {
+  "name": "Barra sustitutiva de comida",
+  "aliases": []
+ },
+ "2708118": {
+  "name": "Barra energética Clif Bar",
+  "aliases": []
+ },
+ "2709561": {
+  "name": "Plátano macho cocido con grasa",
+  "aliases": [
+   "Plátano de freír cocido con grasa"
+  ]
+ },
+ "2709963": {
+  "name": "Arvejas frescas cocidas con grasa",
+  "aliases": [
+   "Guisantes frescos cocidos con grasa",
+   "Chícharos frescos cocidos con grasa"
+  ]
+ },
+ "2709964": {
+  "name": "Arvejas congeladas cocidas con grasa",
+  "aliases": [
+   "Guisantes congelados cocidos con grasa",
+   "Chícharos congelados cocidos con grasa"
+  ]
+ },
+ "2709965": {
+  "name": "Arvejas de lata cocidas con grasa",
+  "aliases": [
+   "Guisantes de lata cocidas con grasa",
+   "Chícharos de lata cocidas con grasa"
+  ]
+ },
+ "2709973": {
+  "name": "Arvejas de lata bajas en sodio con grasa",
+  "aliases": [
+   "Guisantes de lata bajas en sodio con grasa",
+   "Chícharos de lata bajas en sodio con grasa"
+  ]
+ },
+ "2709962": {
+  "name": "Arvejas cocidas",
+  "aliases": [
+   "Guisantes cocidos",
+   "Chícharos cocidos"
+  ]
+ },
+ "2709098": {
+  "name": "Arroz blanco con salsa de soja",
+  "aliases": []
+ },
+ "2709107": {
+  "name": "Arroz integral con salsa de soja",
+  "aliases": []
+ },
+ "2706872": {
+  "name": "Chow mein o chop suey sin fideos",
+  "aliases": []
+ },
+ "2706722": {
+  "name": "Chow mein o chop suey con fideos",
+  "aliases": []
+ },
+ "2709116": {
+  "name": "Arroz blanco con verduras y salsa de soja",
+  "aliases": []
+ },
+ "2709125": {
+  "name": "Arroz integral con verduras y salsa de soja",
+  "aliases": []
+ },
+ "2709914": {
+  "name": "Maíz fresco cocido con grasa",
+  "aliases": [
+   "Choclo fresco cocido con grasa",
+   "Elote fresco cocido con grasa"
+  ]
+ },
+ "2709915": {
+  "name": "Maíz congelado cocido con grasa",
+  "aliases": [
+   "Choclo congelado cocido con grasa",
+   "Elote congelado cocido con grasa"
+  ]
+ },
+ "2709916": {
+  "name": "Maíz de lata cocido con grasa",
+  "aliases": [
+   "Choclo de lata cocido con grasa",
+   "Elote de lata cocido con grasa"
+  ]
+ },
+ "2709621": {
+  "name": "Espinaca fresca cocida con grasa",
+  "aliases": []
+ },
+ "2709622": {
+  "name": "Espinaca congelada cocida con grasa",
+  "aliases": []
+ },
+ "2709670": {
+  "name": "Zanahorias frescas cocidas con grasa",
+  "aliases": []
+ },
+ "2709671": {
+  "name": "Zanahorias congeladas cocidas con grasa",
+  "aliases": []
+ },
+ "2709672": {
+  "name": "Zanahorias de lata cocidas con grasa",
+  "aliases": []
+ },
+ "2709890": {
+  "name": "Repollo verde cocido con grasa",
+  "aliases": [
+   "Col verde cocida con grasa"
+  ]
+ },
+ "2709893": {
+  "name": "Repollo rojo cocido",
+  "aliases": [
+   "Col roja cocida"
+  ]
+ },
+ "2709580": {
+  "name": "Berza fresca cocida con grasa",
+  "aliases": []
+ },
+ "2709581": {
+  "name": "Berza congelada cocida con grasa",
+  "aliases": []
+ },
+ "2709602": {
+  "name": "Col rizada cocida",
+  "aliases": []
+ },
+ "2709595": {
+  "name": "Verduras de hoja cocidas",
+  "aliases": []
+ },
+ "2709579": {
+  "name": "Berza cocida",
+  "aliases": []
+ },
+ "2709609": {
+  "name": "Hojas de mostaza cocidas",
+  "aliases": []
+ },
+ "2709636": {
+  "name": "Hojas de nabo cocidas",
+  "aliases": []
+ },
+ "2709648": {
+  "name": "Brócoli fresco cocido con grasa",
+  "aliases": []
+ },
+ "2709649": {
+  "name": "Brócoli congelado cocido con grasa",
+  "aliases": []
+ },
+ "2707007": {
+  "name": "Sándwich de pollo de comida rápida",
+  "aliases": [
+   "Bocadillo de pollo de comida rápida",
+   "Emparedado de pollo de comida rápida"
+  ]
+ },
+ "2707000": {
+  "name": "Sándwich de filete de pollo",
+  "aliases": [
+   "Bocadillo de filete de pollo",
+   "Emparedado de filete de pollo"
+  ]
+ },
+ "2706992": {
+  "name": "Wrap de ensalada de pollo",
+  "aliases": []
+ },
+ "2707484": {
+  "name": "Frutos secos",
+  "aliases": []
+ },
+ "2707521": {
+  "name": "Nueces pecanas",
+  "aliases": [
+   "Pacanas"
+  ]
+ },
+ "2707485": {
+  "name": "Almendras",
+  "aliases": []
+ },
+ "2707493": {
+  "name": "Anacardos",
+  "aliases": [
+   "Castañas de cajú",
+   "Marañón",
+   "Nuez de la India"
+  ]
+ },
+ "2707512": {
+  "name": "Maní",
+  "aliases": [
+   "Cacahuete",
+   "Cacahuate"
+  ]
+ },
+ "2707574": {
+  "name": "Mezcla de frutos secos",
+  "aliases": []
+ },
+ "2707504": {
+  "name": "Frutos secos mixtos",
+  "aliases": []
+ },
+ "2707579": {
+  "name": "Semillas de calabaza",
+  "aliases": [
+   "Semillas de zapallo",
+   "Semillas de auyama"
+  ]
+ },
+ "2707527": {
+  "name": "Pistachos",
+  "aliases": []
+ },
+ "2707585": {
+  "name": "Semillas de girasol",
+  "aliases": []
+ },
+ "2708341": {
+  "name": "Crepe",
+  "aliases": []
+ },
+ "2708312": {
+  "name": "Waffle",
+  "aliases": [
+   "Gofre"
+  ]
+ },
+ "2708294": {
+  "name": "Panqueques",
+  "aliases": [
+   "Tortitas",
+   "Hot cakes",
+   "Panquecas"
+  ]
+ },
+ "2708331": {
+  "name": "Tostada francesa",
+  "aliases": []
+ },
+ "2708347": {
+  "name": "Dosa simple",
+  "aliases": []
+ },
+ "2708342": {
+  "name": "Crepe simple",
+  "aliases": []
+ },
+ "2708325": {
+  "name": "Waffle simple",
+  "aliases": [
+   "Gofre simple"
+  ]
+ },
+ "2708326": {
+  "name": "Waffle de fruta",
+  "aliases": [
+   "Gofre de fruta"
+  ]
+ },
+ "2709736": {
+  "name": "Salsa mexicana",
+  "aliases": []
+ },
+ "2709733": {
+  "name": "Kétchup",
+  "aliases": [
+   "Catsup"
+  ]
+ },
+ "2710257": {
+  "name": "Azúcar",
+  "aliases": []
+ },
+ "2710261": {
+  "name": "Azúcar con canela",
+  "aliases": []
+ },
+ "2706195": {
+  "name": "Salami",
+  "aliases": [
+   "Salame"
+  ]
+ },
+ "2706183": {
+  "name": "Pastrami",
+  "aliases": []
+ },
+ "2706185": {
+  "name": "Pepperoni",
+  "aliases": []
+ },
+ "2706205": {
+  "name": "Fiambre",
+  "aliases": []
+ },
+ "2706220": {
+  "name": "Paté de carne",
+  "aliases": []
+ },
+ "2705878": {
+  "name": "Jamón",
+  "aliases": []
+ },
+ "2707829": {
+  "name": "Muffin",
+  "aliases": []
+ },
+ "2707801": {
+  "name": "Bizcocho salado",
+  "aliases": [
+   "Bísquet"
+  ]
+ },
+ "2707808": {
+  "name": "Scone",
+  "aliases": []
+ },
+ "2707846": {
+  "name": "Popover",
+  "aliases": []
+ },
+ "2707820": {
+  "name": "Torta de maíz",
+  "aliases": []
+ },
+ "2707821": {
+  "name": "Pudín de maíz",
+  "aliases": [
+   "Pudín de choclo",
+   "Pudín de elote"
+  ]
+ },
+ "2707848": {
+  "name": "Pan de nueces",
+  "aliases": []
+ },
+ "2707899": {
+  "name": "Galleta",
+  "aliases": [
+   "Galletita"
+  ]
+ },
+ "2707903": {
+  "name": "Brownie",
+  "aliases": []
+ },
+ "2707906": {
+  "name": "Brownie bajo en grasa",
+  "aliases": []
+ },
+ "2707947": {
+  "name": "Galleta de avena baja en grasa",
+  "aliases": [
+   "Galletita de avena baja en grasa"
+  ]
+ },
+ "2707902": {
+  "name": "Biscotti",
+  "aliases": []
+ },
+ "2707941": {
+  "name": "Merengue",
+  "aliases": []
+ },
+ "2707935": {
+  "name": "Barrita de limón",
+  "aliases": []
+ },
+ "2707992": {
+  "name": "Galletas puertorriqueñas",
+  "aliases": [
+   "Galletitas puertorriqueñas"
+  ]
+ },
+ "2707898": {
+  "name": "Masa cruda de galleta",
+  "aliases": [
+   "Masa cruda de galletita"
+  ]
+ },
+ "2707949": {
+  "name": "Galleta de avena con chispas de chocolate",
+  "aliases": [
+   "Galletita de avena con chispas de chocolate"
+  ]
+ },
+ "2710088": {
+  "name": "Aceitunas",
+  "aliases": []
+ },
+ "2710097": {
+  "name": "Pepinillos",
+  "aliases": []
+ },
+ "2709982": {
+  "name": "Chucrut",
+  "aliases": [
+   "Col fermentada"
+  ]
+ },
+ "2710073": {
+  "name": "Relish de maíz",
+  "aliases": [
+   "Relish de choclo",
+   "Relish de elote"
+  ]
+ },
+ "2706166": {
+  "name": "Hot dog",
+  "aliases": [
+   "Pancho",
+   "Perro caliente",
+   "Completo"
+  ]
+ },
+ "2706169": {
+  "name": "Hot dog bajo en grasa",
+  "aliases": [
+   "Pancho bajo en grasa",
+   "Perro caliente bajo en grasa",
+   "Completo bajo en grasa"
+  ]
+ },
+ "2706190": {
+  "name": "Salchicha",
+  "aliases": []
+ },
+ "2706204": {
+  "name": "Salchicha encurtida",
+  "aliases": []
+ },
+ "2706194": {
+  "name": "Salchicha de cerdo y res",
+  "aliases": [
+   "Salchicha de chancho y res",
+   "Salchicha de puerco y res"
+  ]
+ },
+ "2708216": {
+  "name": "Palomitas de maíz",
+  "aliases": [
+   "Pochoclo",
+   "Cabritas",
+   "Crispetas",
+   "Canchita"
+  ]
+ },
+ "2708223": {
+  "name": "Palomitas de maíz para microondas",
+  "aliases": [
+   "Pochoclo para microondas",
+   "Cabritas para microondas",
+   "Crispetas para microondas",
+   "Canchita para microondas"
+  ]
+ },
+ "2708231": {
+  "name": "Palomitas de maíz listas para comer",
+  "aliases": [
+   "Pochoclo listo para comer",
+   "Cabritas listas para comer",
+   "Crispetas listas para comer",
+   "Canchita lista para comer"
+  ]
+ },
+ "2708239": {
+  "name": "Palomitas de maíz acarameladas",
+  "aliases": [
+   "Pochoclo acaramelado",
+   "Cabritas acarameladas",
+   "Crispetas acarameladas",
+   "Canchita acaramelada"
+  ]
+ },
+ "2708132": {
+  "name": "Galletas saladas",
+  "aliases": [
+   "Galletitas saladas"
+  ]
+ },
+ "2707690": {
+  "name": "Palitos de pan duros",
+  "aliases": [
+   "Grisines duros",
+   "Colines duros"
+  ]
+ },
+ "2708166": {
+  "name": "Papel de arroz",
+  "aliases": []
+ },
+ "2708184": {
+  "name": "Galletas saladas integrales",
+  "aliases": [
+   "Galletitas saladas integrales"
+  ]
+ },
+ "2708157": {
+  "name": "Galletas de pan plano",
+  "aliases": [
+   "Galletitas de pan plano"
+  ]
+ },
+ "2708180": {
+  "name": "Galletas integrales tipo rejilla",
+  "aliases": [
+   "Galletitas integrales tipo rejilla"
+  ]
+ },
+ "2708164": {
+  "name": "Galletas de arroz y nueces",
+  "aliases": [
+   "Galletitas de arroz y nueces"
+  ]
+ },
+ "2708140": {
+  "name": "Galletas de desayuno",
+  "aliases": [
+   "Galletitas de desayuno"
+  ]
+ },
+ "2708247": {
+  "name": "Pretzels",
+  "aliases": []
+ },
+ "2708248": {
+  "name": "Pretzels duros",
+  "aliases": []
+ },
+ "2708267": {
+  "name": "Pretzels blandos",
+  "aliases": []
+ },
+ "2708259": {
+  "name": "Pretzels duros empanados",
+  "aliases": []
+ },
+ "2708264": {
+  "name": "Pretzels duros rellenos",
+  "aliases": []
+ },
+ "2708277": {
+  "name": "Pretzels blandos congelados",
+  "aliases": []
+ },
+ "2708268": {
+  "name": "Pretzels blandos listos para comer",
+  "aliases": []
+ },
+ "2708709": {
+  "name": "Empanada",
+  "aliases": []
+ },
+ "2708734": {
+  "name": "Empanadilla rellena",
+  "aliases": []
+ },
+ "2709130": {
+  "name": "Vada",
+  "aliases": []
+ },
+ "2708723": {
+  "name": "Knish",
+  "aliases": []
+ },
+ "2708730": {
+  "name": "Samosa",
+  "aliases": []
+ },
+ "2710319": {
+  "name": "Paleta de agua",
+  "aliases": []
+ },
+ "2710315": {
+  "name": "Yokan",
+  "aliases": []
+ },
+ "2709314": {
+  "name": "Sorbete",
+  "aliases": []
+ },
+ "2706920": {
+  "name": "Hamburguesa",
+  "aliases": [
+   "Burger"
+  ]
+ },
+ "2706888": {
+  "name": "Hamburguesa con queso",
+  "aliases": [
+   "Burger con queso"
+  ]
+ },
+ "2706926": {
+  "name": "Mini hamburguesa",
+  "aliases": [
+   "Mini burger"
+  ]
+ },
+ "2706894": {
+  "name": "Mini hamburguesa con queso",
+  "aliases": [
+   "Mini burger con queso"
+  ]
+ },
+ "2706922": {
+  "name": "Hamburguesa de Burger King",
+  "aliases": []
+ },
+ "2706923": {
+  "name": "Whopper Jr de Burger King",
+  "aliases": []
+ },
+ "2706890": {
+  "name": "Hamburguesa con queso de Burger King",
+  "aliases": []
+ },
+ "2706919": {
+  "name": "Mini hamburguesa de comida rápida",
+  "aliases": [
+   "Mini burger de comida rápida"
+  ]
+ },
+ "2706925": {
+  "name": "Hamburguesa de comedor escolar",
+  "aliases": [
+   "Burger de comedor escolar"
+  ]
+ },
+ "2709153": {
+  "name": "Ramen",
+  "aliases": []
+ },
+ "2709160": {
+  "name": "Sopa wonton",
+  "aliases": []
+ },
+ "2710536": {
+  "name": "Refresco",
+  "aliases": [
+   "Gaseosa",
+   "Soda"
+  ]
+ },
+ "2710541": {
+  "name": "Refresco de cola",
+  "aliases": [
+   "Gaseosa de cola",
+   "Soda de cola"
+  ]
+ },
+ "2707689": {
+  "name": "Palitos de pan",
+  "aliases": [
+   "Grisines",
+   "Colines"
+  ]
+ },
+ "2707692": {
+  "name": "Palitos de pan blandos",
+  "aliases": [
+   "Grisines blandos",
+   "Colines blandos"
+  ]
+ },
+ "2707595": {
+  "name": "Panecillo",
+  "aliases": [
+   "Bollo"
+  ]
+ },
+ "2707596": {
+  "name": "Panecillo duro",
+  "aliases": [
+   "Bollo duro"
+  ]
+ },
+ "2707597": {
+  "name": "Panecillo de salvado",
+  "aliases": [
+   "Bollo de salvado"
+  ]
+ },
+ "2709511": {
+  "name": "Croquetas de papa",
+  "aliases": [
+   "Croquetas de patata"
+  ]
+ },
+ "2709491": {
+  "name": "Cáscaras de papa rellenas",
+  "aliases": [
+   "Cáscaras de patata rellenas"
+  ]
+ },
+ "2709472": {
+  "name": "Papas salteadas caseras",
+  "aliases": [
+   "Patatas salteadas caseras"
+  ]
+ },
+ "2709477": {
+  "name": "Papas doradas ralladas",
+  "aliases": [
+   "Hash browns"
+  ]
+ },
+ "2709456": {
+  "name": "Papas fritas",
+  "aliases": [
+   "Patatas fritas"
+  ]
+ },
+ "2709517": {
+  "name": "Croquetas de papa congeladas",
+  "aliases": [
+   "Croquetas de patata congeladas"
+  ]
+ },
+ "2707193": {
+  "name": "Egg foo yung",
+  "aliases": []
+ },
+ "2706743": {
+  "name": "Carne Kung Pao",
+  "aliases": []
+ },
+ "2706763": {
+  "name": "Cerdo Kung Pao",
+  "aliases": [
+   "Chancho Kung Pao",
+   "Puerco Kung Pao"
+  ]
+ },
+ "2706387": {
+  "name": "Bife teriyaki",
+  "aliases": [
+   "Filete teriyaki",
+   "Bistec teriyaki"
+  ]
+ },
+ "2706797": {
+  "name": "Pollo con almendras",
+  "aliases": []
+ },
+ "2706462": {
+  "name": "Camarones teriyaki",
+  "aliases": [
+   "Gambas teriyaki",
+   "Langostinos teriyaki"
+  ]
+ },
+ "2706795": {
+  "name": "Moo Goo Gai Pan",
+  "aliases": []
+ },
+ "2706857": {
+  "name": "Camarones Kung Pao",
+  "aliases": [
+   "Gambas Kung Pao",
+   "Langostinos Kung Pao"
+  ]
+ },
+ "2706738": {
+  "name": "Carne con brócoli",
+  "aliases": []
+ },
+ "2707195": {
+  "name": "Egg foo yung de cerdo",
+  "aliases": [
+   "Egg foo yung de chancho",
+   "Egg foo yung de puerco"
+  ]
+ },
+ "2707626": {
+  "name": "Pan de ajo",
+  "aliases": []
+ },
+ "2707591": {
+  "name": "Pan",
+  "aliases": []
+ },
+ "2707592": {
+  "name": "Pan tostado",
+  "aliases": []
+ },
+ "2707593": {
+  "name": "Pan de panadería",
+  "aliases": []
+ },
+ "2707594": {
+  "name": "Pan tostado de panadería",
+  "aliases": []
+ },
+ "2707790": {
+  "name": "Pan de soja",
+  "aliases": []
+ },
+ "2707714": {
+  "name": "Puri",
+  "aliases": []
+ },
+ "2707633": {
+  "name": "Pan de cebolla",
+  "aliases": []
+ },
+ "2707644": {
+  "name": "Pan con pasas",
+  "aliases": []
+ },
+ "2707650": {
+  "name": "Pan de verduras",
+  "aliases": []
+ },
+ "2709340": {
+  "name": "Néctar de fruta",
+  "aliases": []
+ },
+ "2709342": {
+  "name": "Néctar de banana",
+  "aliases": [
+   "Néctar de plátano",
+   "Néctar de guineo"
+  ]
+ },
+ "2710568": {
+  "name": "Agua de tamarindo",
+  "aliases": []
+ },
+ "2710611": {
+  "name": "Shirley Temple",
+  "aliases": []
+ },
+ "2709343": {
+  "name": "Néctar de melón",
+  "aliases": []
+ },
+ "2710576": {
+  "name": "Granizado",
+  "aliases": []
+ },
+ "2710606": {
+  "name": "Jugo de caña",
+  "aliases": [
+   "Zumo de caña"
+  ]
+ },
+ "2709421": {
+  "name": "Papas fritas de paquete",
+  "aliases": [
+   "Patatas fritas de paquete"
+  ]
+ },
+ "2709443": {
+  "name": "Papas fritas de paquete infladas",
+  "aliases": [
+   "Patatas fritas de paquete infladas"
+  ]
+ },
+ "2709438": {
+  "name": "Papas fritas de paquete sin sal",
+  "aliases": [
+   "Patatas fritas de paquete sin sal"
+  ]
+ },
+ "2709445": {
+  "name": "Papas paja saborizadas",
+  "aliases": [
+   "Patatas paja saborizadas"
+  ]
+ },
+ "2710771": {
+  "name": "Bebida deportiva",
+  "aliases": []
+ },
+ "2710776": {
+  "name": "Bebida de rehidratación con 5% de glucosa",
+  "aliases": []
+ },
+ "2710756": {
+  "name": "Bebida energética",
+  "aliases": []
+ },
+ "2707026": {
+  "name": "Sándwich de pescado",
+  "aliases": [
+   "Bocadillo de pescado",
+   "Emparedado de pescado"
+  ]
+ },
+ "2707033": {
+  "name": "Sándwich de sardina",
+  "aliases": [
+   "Bocadillo de sardina",
+   "Emparedado de sardina"
+  ]
+ },
+ "2707022": {
+  "name": "Sándwich de torta de cangrejo",
+  "aliases": [
+   "Bocadillo de torta de cangrejo",
+   "Emparedado de torta de cangrejo"
+  ]
+ },
+ "2708114": {
+  "name": "Barra de desayuno",
+  "aliases": []
+ },
+ "2708101": {
+  "name": "Barra de cereal",
+  "aliases": []
+ },
+ "2708102": {
+  "name": "Barra de cereal baja en grasa",
+  "aliases": []
+ },
+ "2708104": {
+  "name": "Barra de cereal con menos azúcar",
+  "aliases": []
+ },
+ "2708107": {
+  "name": "Barra de cereal bañada en chocolate",
+  "aliases": []
+ },
+ "2705599": {
+  "name": "Crema para café",
+  "aliases": [
+   "Nata para café"
+  ]
+ },
+ "2705592": {
+  "name": "Crema",
+  "aliases": [
+   "Nata"
+  ]
+ },
+ "2705595": {
+  "name": "Crema ligera de sabores",
+  "aliases": [
+   "Nata ligera de sabores"
+  ]
+ },
+ "2705747": {
+  "name": "Queso cottage",
+  "aliases": []
+ },
+ "2705750": {
+  "name": "Ricota",
+  "aliases": [
+   "Ricotta"
+  ]
+ },
+ "2706092": {
+  "name": "Nuggets de pollo",
+  "aliases": []
+ },
+ "2706098": {
+  "name": "Tiras de pollo",
+  "aliases": []
+ },
+ "2710373": {
+  "name": "Café",
+  "aliases": []
+ },
+ "2710374": {
+  "name": "Café preparado",
+  "aliases": []
+ },
+ "2710451": {
+  "name": "Café descafeinado",
+  "aliases": []
+ },
+ "2710381": {
+  "name": "Café cubano",
+  "aliases": []
+ },
+ "2710386": {
+  "name": "Café latte",
+  "aliases": []
+ },
+ "2710377": {
+  "name": "Café turco",
+  "aliases": []
+ },
+ "2710487": {
+  "name": "Bebida de achicoria",
+  "aliases": []
+ },
+ "2710382": {
+  "name": "Café macchiato",
+  "aliases": []
+ },
+ "2710410": {
+  "name": "Café moca",
+  "aliases": []
+ },
+ "2710431": {
+  "name": "Latte helado",
+  "aliases": []
+ },
+ "2710537": {
+  "name": "Refresco light",
+  "aliases": [
+   "Gaseosa light",
+   "Soda light"
+  ]
+ },
+ "2710542": {
+  "name": "Refresco light de cola",
+  "aliases": [
+   "Gaseosa light de cola",
+   "Soda light de cola"
+  ]
+ },
+ "2707468": {
+  "name": "Pollo vegetariano",
+  "aliases": []
+ },
+ "2707545": {
+  "name": "Mantequilla de soja",
+  "aliases": [
+   "Manteca de soja"
+  ]
+ },
+ "2707452": {
+  "name": "Postre helado sin lácteos",
+  "aliases": []
+ },
+ "2705679": {
+  "name": "Pudín de chocolate",
+  "aliases": []
+ },
+ "2705681": {
+  "name": "Pudín de otros sabores",
+  "aliases": []
+ },
+ "2705683": {
+  "name": "Flan",
+  "aliases": []
+ },
+ "2705698": {
+  "name": "Mousse",
+  "aliases": []
+ },
+ "2710327": {
+  "name": "Chocolate",
+  "aliases": [
+   "Barra de chocolate"
+  ]
+ },
+ "2710335": {
+  "name": "Chocolate negro",
+  "aliases": [
+   "Barra de chocolate negro"
+  ]
+ },
+ "2710329": {
+  "name": "Chocolate con nueces",
+  "aliases": [
+   "Barra de chocolate con nueces"
+  ]
+ },
+ "2710740": {
+  "name": "Polvo nutricional",
+  "aliases": []
+ },
+ "2710745": {
+  "name": "Polvo nutricional de proteína",
+  "aliases": []
+ },
+ "2710742": {
+  "name": "Polvo nutricional de suero de leche",
+  "aliases": []
+ },
+ "2709183": {
+  "name": "Jugo de lima natural",
+  "aliases": [
+   "Zumo de lima natural"
+  ]
+ },
+ "2709180": {
+  "name": "Jugo de limón natural",
+  "aliases": [
+   "Zumo de limón natural"
+  ]
+ },
+ "2709309": {
+  "name": "Chutney",
+  "aliases": []
+ },
+ "2710176": {
+  "name": "Salsa golf",
+  "aliases": [
+   "Salsa rosa"
+  ]
+ },
+ "2709720": {
+  "name": "Tomate cocido",
+  "aliases": []
+ },
+ "2709719": {
+  "name": "Tomate crudo",
+  "aliases": []
+ },
+ "2707105": {
+  "name": "Plato congelado de pollo",
+  "aliases": []
+ },
+ "2706427": {
+  "name": "Chili blanco",
+  "aliases": []
+ },
+ "2706445": {
+  "name": "Pollo Kiev",
+  "aliases": []
+ },
+ "2706437": {
+  "name": "Pollo al curry",
+  "aliases": []
+ },
+ "2706678": {
+  "name": "Guiso de pollo",
+  "aliases": []
+ },
+ "2706434": {
+  "name": "Pollo a la barbacoa",
+  "aliases": []
+ },
+ "2706703": {
+  "name": "Pastel de pollo",
+  "aliases": [
+   "Torta de pollo",
+   "Tarta de pollo"
+  ]
+ },
+ "2708958": {
+  "name": "Adobo con arroz",
+  "aliases": []
+ },
+ "2706430": {
+  "name": "Pavo con salsa de carne",
+  "aliases": [
+   "Guajolote con salsa de carne"
+  ]
+ },
+ "2708745": {
+  "name": "Pan de maíz con pollo",
+  "aliases": [
+   "Pan de choclo con pollo",
+   "Pan de elote con pollo"
+  ]
+ },
+ "2705398": {
+  "name": "Leche evaporada",
+  "aliases": []
+ },
+ "2705397": {
+  "name": "Leche en polvo reconstituida entera",
+  "aliases": []
+ },
+ "2705421": {
+  "name": "Yogur griego natural",
+  "aliases": [
+   "Yoghurt griego natural"
+  ]
+ },
+ "2705429": {
+  "name": "Yogur griego de fruta",
+  "aliases": [
+   "Yoghurt griego de fruta"
+  ]
+ },
+ "2710725": {
+  "name": "Bebida nutricional lista para beber",
+  "aliases": []
+ },
+ "2710726": {
+  "name": "Bebida nutricional con proteína extra",
+  "aliases": []
+ },
+ "2708614": {
+  "name": "Pizza de queso",
+  "aliases": []
+ },
+ "2708638": {
+  "name": "Pizza con pepperoni",
+  "aliases": []
+ },
+ "2708649": {
+  "name": "Pizza con carne",
+  "aliases": []
+ },
+ "2705789": {
+  "name": "Cobertura de pizza de carne",
+  "aliases": []
+ },
+ "2705787": {
+  "name": "Cobertura de pizza de queso",
+  "aliases": []
+ },
+ "2705788": {
+  "name": "Cobertura de pizza de verduras",
+  "aliases": []
+ },
+ "2708674": {
+  "name": "Pizza sin queso, masa fina",
+  "aliases": []
+ },
+ "2708675": {
+  "name": "Pizza sin queso, masa gruesa",
+  "aliases": []
+ },
+ "2708685": {
+  "name": "Calzone con carne y queso",
+  "aliases": []
+ },
+ "2708684": {
+  "name": "Calzone de queso",
+  "aliases": []
+ },
+ "2705394": {
+  "name": "Kéfir",
+  "aliases": []
+ },
+ "2705387": {
+  "name": "Leche baja en grasa",
+  "aliases": []
+ },
+ "2706156": {
+  "name": "Corazón",
+  "aliases": []
+ },
+ "2706162": {
+  "name": "Mondongo",
+  "aliases": [
+   "Callos",
+   "Guatitas"
+  ]
+ },
+ "2709935": {
+  "name": "Puerro",
+  "aliases": [
+   "Ajo porro"
+  ]
+ },
+ "2709795": {
+  "name": "Cebolla cruda",
+  "aliases": []
+ },
+ "2710066": {
+  "name": "Pakora",
+  "aliases": []
+ },
+ "2709565": {
+  "name": "Yuca frita",
+  "aliases": [
+   "Mandioca frita",
+   "Casava frita"
+  ]
+ },
+ "2710642": {
+  "name": "Mimosa",
+  "aliases": []
+ },
+ "2710695": {
+  "name": "Sangría",
+  "aliases": []
+ },
+ "2706463": {
+  "name": "Ceviche",
+  "aliases": []
+ },
+ "2706873": {
+  "name": "Lau lau",
+  "aliases": []
+ },
+ "2706460": {
+  "name": "Pescado al curry",
+  "aliases": []
+ },
+ "2706466": {
+  "name": "Guiso de pescado",
+  "aliases": []
+ },
+ "2706549": {
+  "name": "Torta de cangrejo",
+  "aliases": []
+ },
+ "2706824": {
+  "name": "Ensalada de cangrejo",
+  "aliases": []
+ },
+ "2706850": {
+  "name": "Lomi salmón",
+  "aliases": []
+ },
+ "2706551": {
+  "name": "Gefilte fish",
+  "aliases": []
+ },
+ "2706564": {
+  "name": "Almejas Casino",
+  "aliases": []
+ },
+ "2706567": {
+  "name": "Tostada de camarón",
+  "aliases": [
+   "Tostada de gamba",
+   "Tostada de langostino"
+  ]
+ },
+ "2707408": {
+  "name": "Falafel",
+  "aliases": []
+ },
+ "2707409": {
+  "name": "Torta de frijol",
+  "aliases": []
+ },
+ "2707431": {
+  "name": "Curry de lentejas",
+  "aliases": []
+ },
+ "2710641": {
+  "name": "Michelada",
+  "aliases": []
+ },
+ "2710622": {
+  "name": "Hard seltzer",
+  "aliases": []
+ },
+ "2707428": {
+  "name": "Chips de frijol",
+  "aliases": []
+ },
+ "2709447": {
+  "name": "Chips de verdura",
+  "aliases": []
+ },
+ "2708196": {
+  "name": "Nachos de maíz simples",
+  "aliases": [
+   "Nachos de choclo simples",
+   "Nachos de elote simples"
+  ]
+ },
+ "2709710": {
+  "name": "Chips de batata",
+  "aliases": [
+   "Chips de camote",
+   "Chips de boniato"
+  ]
+ },
+ "2708197": {
+  "name": "Nachos de maíz saborizados",
+  "aliases": [
+   "Nachos de choclo saborizados",
+   "Nachos de elote saborizados"
+  ]
+ },
+ "2707438": {
+  "name": "Salsa de miso",
+  "aliases": []
+ },
+ "2707439": {
+  "name": "Miso",
+  "aliases": []
+ },
+ "2707652": {
+  "name": "Bruschetta",
+  "aliases": []
+ },
+ "2707483": {
+  "name": "Sándwich de falafel",
+  "aliases": [
+   "Bocadillo de falafel",
+   "Emparedado de falafel"
+  ]
+ },
+ "2709215": {
+  "name": "Manzana cruda",
+  "aliases": []
+ },
+ "2709220": {
+  "name": "Manzana al horno",
+  "aliases": []
+ },
+ "2709682": {
+  "name": "Jugo de remolacha",
+  "aliases": [
+   "Jugo de betabel",
+   "Jugo de betarraga",
+   "Zumo de remolacha"
+  ]
+ },
+ "2709810": {
+  "name": "Jugo de verduras mixtas",
+  "aliases": [
+   "Zumo de verduras mixtas"
+  ]
+ },
+ "2707343": {
+  "name": "Burrito de huevo",
+  "aliases": []
+ },
+ "2708602": {
+  "name": "Taquito de huevo",
+  "aliases": []
+ },
+ "2708597": {
+  "name": "Quesadilla de huevo",
+  "aliases": []
+ },
+ "2707334": {
+  "name": "Sándwich de clara de huevo",
+  "aliases": [
+   "Bocadillo de clara de huevo",
+   "Emparedado de clara de huevo"
+  ]
+ },
+ "2708744": {
+  "name": "Bizcocho con salsa de carne",
+  "aliases": []
+ },
+ "2707338": {
+  "name": "Sándwich de jamón en bizcocho",
+  "aliases": [
+   "Bocadillo de jamón en bizcocho",
+   "Emparedado de jamón en bizcocho"
+  ]
+ },
+ "2707328": {
+  "name": "Sándwich de huevo en bagel",
+  "aliases": [
+   "Bocadillo de huevo en bagel",
+   "Emparedado de huevo en bagel"
+  ]
+ },
+ "2707444": {
+  "name": "Yogur de soja",
+  "aliases": [
+   "Yoghurt de soja"
+  ]
+ },
+ "2707570": {
+  "name": "Yogur de almendras",
+  "aliases": [
+   "Yoghurt de almendras"
+  ]
+ },
+ "2709224": {
+  "name": "Banana",
+  "aliases": [
+   "Plátano",
+   "Guineo"
+  ]
+ },
+ "2709225": {
+  "name": "Banana al horno",
+  "aliases": [
+   "Plátano al horno",
+   "Guineo al horno"
+  ]
+ },
+ "2709237": {
+  "name": "Uvas crudas",
+  "aliases": []
+ },
+ "2709632": {
+  "name": "Channa Saag",
+  "aliases": []
+ },
+ "2710028": {
+  "name": "Ratatouille",
+  "aliases": []
+ },
+ "2709631": {
+  "name": "Palak Paneer",
+  "aliases": []
+ },
+ "2707479": {
+  "name": "Guiso vegetariano",
+  "aliases": []
+ },
+ "2709629": {
+  "name": "Suflé de espinaca",
+  "aliases": []
+ },
+ "2710507": {
+  "name": "Té de jengibre",
+  "aliases": []
+ },
+ "2710508": {
+  "name": "Bubble tea",
+  "aliases": []
+ },
+ "2710509": {
+  "name": "Kombucha",
+  "aliases": []
+ },
+ "2710506": {
+  "name": "Té caliente con leche",
+  "aliases": []
+ },
+ "2710512": {
+  "name": "Té helado con limonada",
+  "aliases": []
+ },
+ "2710514": {
+  "name": "Té helado con limonada light",
+  "aliases": []
+ },
+ "2710493": {
+  "name": "Té negro helado instantáneo sin azúcar",
+  "aliases": []
+ },
+ "2707140": {
+  "name": "Crema de mariscos",
+  "aliases": []
+ },
+ "2707547": {
+  "name": "Sopa de maní",
+  "aliases": [
+   "Sopa de cacahuete",
+   "Sopa de cacahuate"
+  ]
+ },
+ "2709789": {
+  "name": "Lechuga cruda",
+  "aliases": []
+ },
+ "2709949": {
+  "name": "Lechuga cocida",
+  "aliases": []
+ },
+ "2709206": {
+  "name": "Papaya seca",
+  "aliases": [
+   "Lechosa seca",
+   "Mamón seco"
+  ]
+ },
+ "2709209": {
+  "name": "Caqui seco",
+  "aliases": []
+ },
+ "2709227": {
+  "name": "Melón congelado",
+  "aliases": []
+ },
+ "2709226": {
+  "name": "Melón cantalupo",
+  "aliases": []
+ },
+ "2709243": {
+  "name": "Mango en lata",
+  "aliases": []
+ },
+ "2709247": {
+  "name": "Papaya en lata",
+  "aliases": [
+   "Lechosa en lata",
+   "Mamón en lata"
+  ]
+ },
+ "2705598": {
+  "name": "Crema montada",
+  "aliases": [
+   "Nata montada"
+  ]
+ },
+ "2705762": {
+  "name": "Queso crema light",
+  "aliases": []
+ },
+ "2709320": {
+  "name": "Jugo de manzana natural",
+  "aliases": [
+   "Zumo de manzana natural"
+  ]
+ },
+ "2709319": {
+  "name": "Sidra de manzana",
+  "aliases": []
+ },
+ "2707685": {
+  "name": "Bagel con pasas",
+  "aliases": []
+ },
+ "2707700": {
+  "name": "Muffin inglés de queso",
+  "aliases": []
+ },
+ "2707734": {
+  "name": "Bagel integral con pasas",
+  "aliases": []
+ },
+ "2707699": {
+  "name": "Muffin inglés con pasas",
+  "aliases": []
+ },
+ "2705507": {
+  "name": "Batido de leche con malta",
+  "aliases": [
+   "Licuado de leche con malta",
+   "Malteada de leche con malta"
+  ]
+ },
+ "2705657": {
+  "name": "Soda con helado de chocolate",
+  "aliases": []
+ },
+ "2705496": {
+  "name": "Leche de fresa entera",
+  "aliases": [
+   "Leche de frutilla entera"
+  ]
+ },
+ "2705479": {
+  "name": "Leche chocolatada entera con menos azúcar",
+  "aliases": [
+   "Leche con chocolate entera con menos azúcar"
+  ]
+ },
+ "2710768": {
+  "name": "Bebida energética sin azúcar",
+  "aliases": []
+ },
+ "2710774": {
+  "name": "Bebida deportiva baja en calorías",
+  "aliases": []
+ },
+ "2706470": {
+  "name": "Salsa para pasta con carne",
+  "aliases": []
+ },
+ "2706422": {
+  "name": "Salsa para pasta con pollo",
+  "aliases": []
+ },
+ "2710597": {
+  "name": "Bebida con sabor a fruta light",
+  "aliases": []
+ },
+ "2710577": {
+  "name": "Granizado sin azúcar añadido",
+  "aliases": []
+ },
+ "2708811": {
+  "name": "Macarrones o fideos con queso",
+  "aliases": []
+ },
+ "2708822": {
+  "name": "Macarrones o fideos con queso y huevo",
+  "aliases": []
+ },
+ "2705396": {
+  "name": "Leche en polvo reconstituida sin grasa",
+  "aliases": []
+ },
+ "2705388": {
+  "name": "Leche sin grasa",
+  "aliases": []
+ },
+ "2705499": {
+  "name": "Leche de fresa sin grasa",
+  "aliases": [
+   "Leche de frutilla sin grasa"
+  ]
+ },
+ "2705482": {
+  "name": "Leche chocolatada sin grasa con menos azúcar",
+  "aliases": [
+   "Leche con chocolate sin grasa con menos azúcar"
+  ]
+ },
+ "2708143": {
+  "name": "Galletas saltinas bajas en sodio",
+  "aliases": [
+   "Galletitas saltinas bajas en sodio"
+  ]
+ },
+ "2708160": {
+  "name": "Galletas saladas tipo ostra",
+  "aliases": [
+   "Galletitas saladas tipo ostra"
+  ]
+ },
+ "2710538": {
+  "name": "Agua tónica",
+  "aliases": []
+ },
+ "2710539": {
+  "name": "Agua con gas",
+  "aliases": []
+ },
+ "2709283": {
+  "name": "Fresas crudas",
+  "aliases": [
+   "Frutillas crudas"
+  ]
+ },
+ "2709284": {
+  "name": "Fresas en lata",
+  "aliases": [
+   "Frutillas en lata"
+  ]
+ },
+ "2710712": {
+  "name": "Agua vitaminada light",
+  "aliases": []
+ },
+ "2710711": {
+  "name": "Agua vitaminada",
+  "aliases": []
+ },
+ "2710252": {
+  "name": "Cebolla para sándwich",
+  "aliases": [
+   "Cebolla para bocadillo",
+   "Cebolla para emparedado"
+  ]
+ },
+ "2710253": {
+  "name": "Pimiento para sándwich",
+  "aliases": [
+   "Pimiento para bocadillo",
+   "Pimiento para emparedado",
+   "Morrón para sándwich",
+   "Ají para sándwich"
+  ]
+ },
+ "167747": {
+  "name": "Jugo de limón recién exprimido",
+  "aliases": [
+   "Zumo de limón recién exprimido"
+  ]
+ },
+ "173944": {
+  "name": "Banana cruda",
+  "aliases": [
+   "Plátano crudo",
+   "Guineo crudo"
+  ]
+ },
+ "169094": {
+  "name": "Aceitunas negras en lata",
+  "aliases": []
+ },
+ "169124": {
+  "name": "Piña cruda",
+  "aliases": [
+   "Ananá crudo"
+  ]
+ },
+ "168156": {
+  "name": "Jugo de lima recién exprimido",
+  "aliases": [
+   "Zumo de lima recién exprimido"
+  ]
+ },
+ "171705": {
+  "name": "Aguacate crudo",
+  "aliases": [
+   "Palta cruda"
+  ]
+ },
+ "167748": {
+  "name": "Jugo de limón de concentrado envasado",
+  "aliases": [
+   "Zumo de limón de concentrado envasado"
+  ]
+ },
+ "169130": {
+  "name": "Plátano macho crudo",
+  "aliases": [
+   "Plátano de freír crudo"
+  ]
+ },
+ "169097": {
+  "name": "Naranja cruda",
+  "aliases": []
+ },
+ "167765": {
+  "name": "Sandía cruda",
+  "aliases": [
+   "Patilla cruda"
+  ]
+ },
+ "169092": {
+  "name": "Melón cantalupo crudo",
+  "aliases": []
+ },
+ "169910": {
+  "name": "Mango crudo",
+  "aliases": []
+ },
+ "171711": {
+  "name": "Arándanos crudos",
+  "aliases": []
+ },
+ "171710": {
+  "name": "Moras congeladas sin azúcar",
+  "aliases": []
+ },
+ "169928": {
+  "name": "Durazno crudo",
+  "aliases": [
+   "Melocotón crudo"
+  ]
+ },
+ "167766": {
+  "name": "Cerezas al marrasquino escurridas",
+  "aliases": []
+ },
+ "169105": {
+  "name": "Mandarina cruda",
+  "aliases": []
+ },
+ "168157": {
+  "name": "Jugo de lima envasado sin azúcar",
+  "aliases": [
+   "Zumo de lima envasado sin azúcar"
+  ]
+ },
+ "169949": {
+  "name": "Ciruela cruda",
+  "aliases": []
+ },
+ "169926": {
+  "name": "Papaya cruda",
+  "aliases": [
+   "Lechosa cruda",
+   "Mamón crudo"
+  ]
+ },
+ "167755": {
+  "name": "Frambuesas crudas",
+  "aliases": []
+ },
+ "168117": {
+  "name": "Jugo de arándanos rojos sin azúcar",
+  "aliases": [
+   "Zumo de arándanos rojos sin azúcar"
+  ]
+ },
+ "173021": {
+  "name": "Higos crudos",
+  "aliases": []
+ },
+ "168155": {
+  "name": "Lima cruda",
+  "aliases": []
+ },
+ "167785": {
+  "name": "Néctar de mango en lata",
+  "aliases": []
+ },
+ "169107": {
+  "name": "Néctar de papaya en lata",
+  "aliases": [
+   "Néctar de lechosa en lata",
+   "Néctar de mamón en lata"
+  ]
+ },
+ "167787": {
+  "name": "Jugo de granada embotellado",
+  "aliases": [
+   "Zumo de granada embotellado"
+  ]
+ },
+ "171719": {
+  "name": "Cerezas dulces crudas",
+  "aliases": []
+ },
+ "168153": {
+  "name": "Kiwi crudo",
+  "aliases": []
+ },
+ "169911": {
+  "name": "Melón verde crudo",
+  "aliases": []
+ },
+ "169941": {
+  "name": "Caqui japonés crudo",
+  "aliases": []
+ },
+ "171689": {
+  "name": "Manzana cruda sin piel",
+  "aliases": []
+ },
+ "169109": {
+  "name": "Jugo de maracuyá morado recién exprimido",
+  "aliases": [
+   "Jugo de parchita morado recién exprimido",
+   "Jugo de fruta de la pasión morado recién exprimido",
+   "Zumo de maracuyá morado recién exprimido"
+  ]
+ },
+ "168197": {
+  "name": "Jugo de manzana y uva",
+  "aliases": [
+   "Zumo de manzana y uva"
+  ]
+ },
+ "169118": {
+  "name": "Pera cruda",
+  "aliases": []
+ },
+ "167758": {
+  "name": "Ruibarbo crudo",
+  "aliases": []
+ },
+ "169086": {
+  "name": "Lichi crudo",
+  "aliases": []
+ },
+ "168154": {
+  "name": "Kumquat crudo",
+  "aliases": []
+ },
+ "171697": {
+  "name": "Albaricoque crudo",
+  "aliases": [
+   "Damasco crudo",
+   "Chabacano crudo"
+  ]
+ },
+ "169914": {
+  "name": "Nectarina cruda",
+  "aliases": []
+ },
+ "171714": {
+  "name": "Fruta del pan cruda",
+  "aliases": []
+ },
+ "171722": {
+  "name": "Arándanos rojos crudos",
+  "aliases": []
+ },
+ "169134": {
+  "name": "Granada cruda",
+  "aliases": []
+ },
+ "173946": {
+  "name": "Moras crudas",
+  "aliases": []
+ },
+ "167753": {
+  "name": "Jugo de ciruela pasa en lata",
+  "aliases": [
+   "Zumo de ciruela pasa en lata"
+  ]
+ },
+ "174686": {
+  "name": "Puré de guayaba cocido",
+  "aliases": []
+ },
+ "169925": {
+  "name": "Jugo de mandarina recién exprimido",
+  "aliases": [
+   "Zumo de mandarina recién exprimido"
+  ]
+ },
+ "168196": {
+  "name": "Néctar de guanábana en lata",
+  "aliases": []
+ },
+ "173947": {
+  "name": "Jugo de mora en lata",
+  "aliases": [
+   "Zumo de mora en lata"
+  ]
+ },
+ "169230": {
+  "name": "Ajo crudo",
+  "aliases": []
+ },
+ "169988": {
+  "name": "Apio crudo",
+  "aliases": []
+ },
+ "170054": {
+  "name": "Salsa de tomate en lata",
+  "aliases": []
+ },
+ "170005": {
+  "name": "Cebolla de verdeo cruda",
+  "aliases": [
+   "Cebolleta cruda",
+   "Cebolla de cambray cruda"
+  ]
+ },
+ "169231": {
+  "name": "Jengibre crudo",
+  "aliases": []
+ },
+ "168561": {
+  "name": "Relish de pepinillo dulce",
+  "aliases": []
+ },
+ "170393": {
+  "name": "Zanahorias crudas",
+  "aliases": []
+ },
+ "168409": {
+  "name": "Pepino crudo con cáscara",
+  "aliases": []
+ },
+ "170416": {
+  "name": "Perejil fresco",
+  "aliases": []
+ },
+ "169997": {
+  "name": "Cilantro crudo",
+  "aliases": []
+ },
+ "168576": {
+  "name": "Jalapeños crudos",
+  "aliases": []
+ },
+ "170379": {
+  "name": "Brócoli crudo",
+  "aliases": []
+ },
+ "170026": {
+  "name": "Papas crudas con cáscara",
+  "aliases": [
+   "Patatas crudas con cáscara"
+  ]
+ },
+ "169975": {
+  "name": "Repollo crudo",
+  "aliases": [
+   "Col cruda"
+  ]
+ },
+ "168559": {
+  "name": "Pimiento morrón en lata",
+  "aliases": [
+   "Ají morrón en lata"
+  ]
+ },
+ "169248": {
+  "name": "Lechuga iceberg cruda",
+  "aliases": []
+ },
+ "169986": {
+  "name": "Coliflor cruda",
+  "aliases": []
+ },
+ "170419": {
+  "name": "Arvejas crudas",
+  "aliases": [
+   "Guisantes crudos",
+   "Chícharos crudos"
+  ]
+ },
+ "168458": {
+  "name": "Alga nori cruda",
+  "aliases": []
+ },
+ "169254": {
+  "name": "Champiñones de lata",
+  "aliases": [
+   "Hongos de lata",
+   "Setas de lata"
+  ]
+ },
+ "168556": {
+  "name": "Kétchup común",
+  "aliases": [
+   "Catsup común"
+  ]
+ },
+ "169768": {
+  "name": "Puré de papa listo para comer",
+  "aliases": [
+   "Puré de patata listo para comer"
+  ]
+ },
+ "170390": {
+  "name": "Repollo chino crudo",
+  "aliases": [
+   "Col china cruda"
+  ]
+ },
+ "168558": {
+  "name": "Pepinillos en eneldo o kosher",
+  "aliases": []
+ },
+ "168462": {
+  "name": "Espinaca cruda",
+  "aliases": []
+ },
+ "169228": {
+  "name": "Berenjena cruda",
+  "aliases": []
+ },
+ "168450": {
+  "name": "Calabaza en lata sin sal",
+  "aliases": [
+   "Zapallo en lata sin sal",
+   "Auyama en lata sin sal"
+  ]
+ },
+ "169212": {
+  "name": "Brotes de bambú de lata",
+  "aliases": []
+ },
+ "169308": {
+  "name": "Taro crudo",
+  "aliases": []
+ },
+ "170406": {
+  "name": "Berza cruda",
+  "aliases": []
+ },
+ "168389": {
+  "name": "Espárragos crudos",
+  "aliases": []
+ },
+ "168485": {
+  "name": "Batata de lata al vacío",
+  "aliases": [
+   "Camote de lata al vacío",
+   "Boniato de lata al vacío"
+  ]
+ },
+ "168448": {
+  "name": "Calabaza cruda",
+  "aliases": [
+   "Zapallo crudo",
+   "Auyama cruda"
+  ]
+ },
+ "169985": {
+  "name": "Yuca cruda",
+  "aliases": [
+   "Mandioca cruda",
+   "Casava cruda"
+  ]
+ },
+ "169276": {
+  "name": "Rábanos crudos",
+  "aliases": [
+   "Rabanitos crudos"
+  ]
+ },
+ "170496": {
+  "name": "Alga wakame cruda",
+  "aliases": []
+ },
+ "170047": {
+  "name": "Bolitas de papa congeladas sin cocinar",
+  "aliases": [
+   "Bolitas de patata congeladas sin cocinar"
+  ]
+ },
+ "169207": {
+  "name": "Espárragos de lata escurridos",
+  "aliases": []
+ },
+ "168446": {
+  "name": "Harina de papa",
+  "aliases": [
+   "Harina de patata"
+  ]
+ },
+ "168421": {
+  "name": "Col rizada cruda",
+  "aliases": []
+ },
+ "169260": {
+  "name": "Okra cruda",
+  "aliases": []
+ },
+ "169145": {
+  "name": "Remolacha cruda",
+  "aliases": [
+   "Betabel crudo",
+   "Betarraga cruda"
+  ]
+ },
+ "169994": {
+  "name": "Cebollín crudo",
+  "aliases": [
+   "Cebollino crudo",
+   "Ciboulette crudo"
+  ]
+ },
+ "168571": {
+  "name": "Nopales crudos",
+  "aliases": []
+ },
+ "170465": {
+  "name": "Nabo crudo",
+  "aliases": []
+ },
+ "170068": {
+  "name": "Berro crudo",
+  "aliases": []
+ },
+ "168575": {
+  "name": "Hojas de parra crudas",
+  "aliases": []
+ },
+ "169974": {
+  "name": "Raíz de bardana cruda",
+  "aliases": []
+ },
+ "169256": {
+  "name": "Hojas de mostaza crudas",
+  "aliases": []
+ },
+ "170383": {
+  "name": "Coles de Bruselas crudas",
+  "aliases": []
+ },
+ "167708": {
+  "name": "Jugo de tomate y verduras bajo en sodio",
+  "aliases": [
+   "Zumo de tomate y verduras bajo en sodio"
+  ]
+ },
+ "169977": {
+  "name": "Repollo rojo crudo",
+  "aliases": [
+   "Col roja cruda"
+  ]
+ },
+ "168457": {
+  "name": "Alga kelp cruda",
+  "aliases": []
+ },
+ "168431": {
+  "name": "Lechuga morada cruda",
+  "aliases": []
+ },
+ "169249": {
+  "name": "Lechuga de hoja verde cruda",
+  "aliases": []
+ },
+ "170010": {
+  "name": "Tirabeques crudos",
+  "aliases": [
+   "Arvejas chinas crudas"
+  ]
+ },
+ "170458": {
+  "name": "Jugo de tomate en lata con sal",
+  "aliases": [
+   "Zumo de tomate en lata con sal"
+  ]
+ },
+ "169279": {
+  "name": "Chucrut de lata",
+  "aliases": [
+   "Col fermentada de lata"
+  ]
+ },
+ "169246": {
+  "name": "Puerro crudo",
+  "aliases": [
+   "Ajo porro crudo"
+  ]
+ },
+ "169378": {
+  "name": "Pepinillos dulces",
+  "aliases": []
+ },
+ "168424": {
+  "name": "Colinabo crudo",
+  "aliases": []
+ },
+ "168454": {
+  "name": "Nabo sueco crudo",
+  "aliases": []
+ },
+ "170375": {
+  "name": "Hojas de remolacha crudas",
+  "aliases": [
+   "Hojas de betabel crudas",
+   "Hojas de betarraga crudas"
+  ]
+ },
+ "169381": {
+  "name": "Kétchup bajo en sodio",
+  "aliases": [
+   "Catsup bajo en sodio"
+  ]
+ },
+ "170381": {
+  "name": "Grelos crudos",
+  "aliases": []
+ },
+ "170491": {
+  "name": "Jugo de zanahoria en lata",
+  "aliases": [
+   "Zumo de zanahoria en lata"
+  ]
+ },
+ "169226": {
+  "name": "Hojas de diente de león crudas",
+  "aliases": []
+ },
+ "170063": {
+  "name": "Jugo de verduras en lata",
+  "aliases": [
+   "Zumo de verduras en lata"
+  ]
+ },
+ "169385": {
+  "name": "Hinojo crudo",
+  "aliases": []
+ },
+ "169991": {
+  "name": "Acelga cruda",
+  "aliases": []
+ },
+ "168407": {
+  "name": "Mastuerzo crudo",
+  "aliases": [
+   "Berro de jardín crudo"
+  ]
+ },
+ "169389": {
+  "name": "Coliflor verde cruda",
+  "aliases": []
+ },
+ "169242": {
+  "name": "Champiñones shiitake crudos",
+  "aliases": [
+   "Hongos shiitake crudos",
+   "Setas shiitake crudas"
+  ]
+ },
+ "169766": {
+  "name": "Pimientos picantes encurtidos",
+  "aliases": [
+   "Morrones picantes encurtidos",
+   "Ajíes picantes encurtidos"
+  ]
+ },
+ "169966": {
+  "name": "Remolacha de lata",
+  "aliases": [
+   "Betabel de lata",
+   "Betarraga de lata"
+  ]
+ },
+ "167717": {
+  "name": "Extracto de levadura para untar",
+  "aliases": []
+ },
+ "169387": {
+  "name": "Rúcula cruda",
+  "aliases": [
+   "Arúgula cruda"
+  ]
+ },
+ "168564": {
+  "name": "Radicchio crudo",
+  "aliases": []
+ },
+ "170392": {
+  "name": "Kimchi",
+  "aliases": []
+ },
+ "168487": {
+  "name": "Hojas de taro crudas",
+  "aliases": []
+ },
+ "170073": {
+  "name": "Jícama cruda",
+  "aliases": [
+   "Nabo mexicano crudo"
+  ]
+ },
+ "174277": {
+  "name": "Salsa de soja",
+  "aliases": []
+ },
+ "172449": {
+  "name": "Tofu blando con nigari",
+  "aliases": []
+ },
+ "174287": {
+  "name": "Hamburguesa vegetal cruda",
+  "aliases": [
+   "Burger vegetal crudo"
+  ]
+ },
+ "172458": {
+  "name": "Mantequilla de maní cremosa baja en grasa",
+  "aliases": [
+   "Manteca de maní cremosa baja en grasa",
+   "Mantequilla de cacahuete cremosa baja en grasa",
+   "Mantequilla de cacahuate cremosa baja en grasa"
+  ]
+ },
+ "172470": {
+  "name": "Mantequilla de maní cremosa sin sal",
+  "aliases": [
+   "Manteca de maní cremosa sin sal",
+   "Mantequilla de cacahuete cremosa sin sal",
+   "Mantequilla de cacahuate cremosa sin sal"
+  ]
+ },
+ "174275": {
+  "name": "Harina de soja desgrasada",
+  "aliases": []
+ },
+ "172420": {
+  "name": "Lentejas crudas",
+  "aliases": []
+ },
+ "169893": {
+  "name": "Trocitos de tocino vegetarianos",
+  "aliases": [
+   "Trocitos de panceta vegetarianos",
+   "Trocitos de beicon vegetarianos",
+   "Trocitos de bacon vegetarianos"
+  ]
+ },
+ "169887": {
+  "name": "Salchicha frankfurt vegetariana",
+  "aliases": []
+ },
+ "172430": {
+  "name": "Maní crudo",
+  "aliases": [
+   "Cacahuete crudo",
+   "Cacahuate crudo"
+  ]
+ },
+ "172451": {
+  "name": "Tofu frito",
+  "aliases": []
+ },
+ "174289": {
+  "name": "Hummus",
+  "aliases": []
+ },
+ "172457": {
+  "name": "Crema de maní con menos azúcar",
+  "aliases": [
+   "Crema de cacahuete con menos azúcar",
+   "Crema de cacahuate con menos azúcar"
+  ]
+ },
+ "172438": {
+  "name": "Frijoles refritos de lata",
+  "aliases": [
+   "Porotos refritos de lata",
+   "Alubias refritas de lata",
+   "Judías refritas de lata",
+   "Caraotas refritas de lata"
+  ]
+ },
+ "172443": {
+  "name": "Natto",
+  "aliases": []
+ },
+ "167722": {
+  "name": "Yogur de tofu",
+  "aliases": [
+   "Yoghurt de tofu"
+  ]
+ },
+ "169068": {
+  "name": "Filetes vegetarianos",
+  "aliases": []
+ },
+ "172439": {
+  "name": "Tocino vegetariano",
+  "aliases": [
+   "Panceta vegetariana",
+   "Beicon vegetariano",
+   "Bacon vegetariano"
+  ]
+ },
+ "169886": {
+  "name": "Pollo vegetariano de soja",
+  "aliases": []
+ },
+ "174269": {
+  "name": "Salchicha vegetariana",
+  "aliases": []
+ },
+ "169067": {
+  "name": "Albóndigas vegetarianas",
+  "aliases": []
+ },
+ "169083": {
+  "name": "Tofu",
+  "aliases": []
+ },
+ "169066": {
+  "name": "Fiambre vegetariano en fetas",
+  "aliases": [
+   "Fiambre vegetariano en lonchas"
+  ]
+ },
+ "169884": {
+  "name": "Fideos finos de soja",
+  "aliases": []
+ },
+ "172473": {
+  "name": "Salsa de soja baja en sodio",
+  "aliases": []
+ },
+ "174273": {
+  "name": "Harina de soja entera cruda",
+  "aliases": []
+ },
+ "172459": {
+  "name": "Mantequilla de maní cremosa fortificada",
+  "aliases": [
+   "Manteca de maní cremosa fortificada",
+   "Mantequilla de cacahuete cremosa fortificada",
+   "Mantequilla de cacahuate cremosa fortificada"
+  ]
+ },
+ "172452": {
+  "name": "Okara",
+  "aliases": []
+ },
+ "174272": {
+  "name": "Tempeh",
+  "aliases": []
+ },
+ "174268": {
+  "name": "Extensor de carne",
+  "aliases": []
+ },
+ "173779": {
+  "name": "Yogur de soja SILK de durazno",
+  "aliases": [
+   "Yogur de soja SILK de melocotón",
+   "Yoghurt de soja SILK de durazno"
+  ]
+ },
+ "173782": {
+  "name": "Crema para café SILK de avellana",
+  "aliases": [
+   "Nata para café SILK de avellana"
+  ]
+ },
+ "175227": {
+  "name": "Yogur de soja SILK natural",
+  "aliases": [
+   "Yoghurt de soja SILK natural"
+  ]
+ },
+ "175231": {
+  "name": "Crema para café SILK original",
+  "aliases": [
+   "Nata para café SILK original"
+  ]
+ },
+ "174288": {
+  "name": "Harina de garbanzo",
+  "aliases": []
+ },
+ "175229": {
+  "name": "Yogur de soja SILK de lima",
+  "aliases": [
+   "Yoghurt de soja SILK de lima"
+  ]
+ },
+ "173778": {
+  "name": "Yogur de soja SILK de frambuesa",
+  "aliases": [
+   "Yoghurt de soja SILK de frambuesa"
+  ]
+ },
+ "173781": {
+  "name": "Yogur de soja SILK de arándanos",
+  "aliases": [
+   "Yoghurt de soja SILK de arándanos"
+  ]
+ },
+ "175228": {
+  "name": "Yogur de soja SILK de fresa",
+  "aliases": [
+   "Yogur de soja SILK de frutilla",
+   "Yoghurt de soja SILK de fresa"
+  ]
+ },
+ "175232": {
+  "name": "Crema para café SILK de vainilla francesa",
+  "aliases": [
+   "Nata para café SILK de vainilla francesa"
+  ]
+ },
+ "173780": {
+  "name": "Yogur de soja SILK de cereza negra",
+  "aliases": [
+   "Yoghurt de soja SILK de cereza negra"
+  ]
+ },
+ "173787": {
+  "name": "Tofu blando HOUSE FOODS",
+  "aliases": []
+ },
+ "173788": {
+  "name": "Tofu firme HOUSE FOODS",
+  "aliases": []
+ },
+ "170187": {
+  "name": "Nueces",
+  "aliases": []
+ },
+ "170182": {
+  "name": "Nueces pecanas crudas",
+  "aliases": [
+   "Pacanas crudas"
+  ]
+ },
+ "170567": {
+  "name": "Almendras crudas",
+  "aliases": []
+ },
+ "170172": {
+  "name": "Leche de coco",
+  "aliases": []
+ },
+ "170591": {
+  "name": "Piñones secos",
+  "aliases": []
+ },
+ "170169": {
+  "name": "Pulpa de coco cruda",
+  "aliases": []
+ },
+ "170581": {
+  "name": "Avellanas",
+  "aliases": []
+ },
+ "169412": {
+  "name": "Semillas de sésamo",
+  "aliases": []
+ },
+ "169414": {
+  "name": "Semillas de lino",
+  "aliases": []
+ },
+ "170160": {
+  "name": "Pasta de almendras",
+  "aliases": []
+ },
+ "170554": {
+  "name": "Semillas de chía",
+  "aliases": []
+ },
+ "170174": {
+  "name": "Agua de coco",
+  "aliases": []
+ },
+ "170157": {
+  "name": "Bellotas crudas",
+  "aliases": []
+ },
+ "170565": {
+  "name": "Bellotas secas",
+  "aliases": []
+ },
+ "170590": {
+  "name": "Nueces pili secas",
+  "aliases": []
+ },
+ "170593": {
+  "name": "Nueces acarameladas",
+  "aliases": []
+ },
+ "170161": {
+  "name": "Hayucos secos",
+  "aliases": []
+ },
+ "170162": {
+  "name": "Anacardos crudos",
+  "aliases": [
+   "Castañas de cajú crudas",
+   "Marañón crudo",
+   "Nuez de la India cruda"
+  ]
+ },
+ "169698": {
+  "name": "Almidón de maíz",
+  "aliases": [
+   "Almidón de choclo",
+   "Almidón de elote"
+  ]
+ },
+ "169714": {
+  "name": "Harina de arroz blanca sin enriquecer",
+  "aliases": []
+ },
+ "168914": {
+  "name": "Fideos de arroz cocidos",
+  "aliases": []
+ },
+ "168905": {
+  "name": "Fideos chow mein",
+  "aliases": []
+ },
+ "169726": {
+  "name": "Arroz salvaje crudo",
+  "aliases": []
+ },
+ "168897": {
+  "name": "Arroz salvaje hervido",
+  "aliases": []
+ },
+ "168917": {
+  "name": "Quinoa cocida",
+  "aliases": [
+   "Quinua cocida"
+  ]
+ },
+ "170287": {
+  "name": "Bulgur cocido",
+  "aliases": []
+ },
+ "169717": {
+  "name": "Tapioca seca en perlas",
+  "aliases": []
+ },
+ "170688": {
+  "name": "Bulgur seco",
+  "aliases": []
+ },
+ "169736": {
+  "name": "Pasta seca enriquecida",
+  "aliases": []
+ },
+ "169701": {
+  "name": "Maíz mote blanco en lata",
+  "aliases": []
+ },
+ "170285": {
+  "name": "Cebada perlada cocida",
+  "aliases": []
+ },
+ "168871": {
+  "name": "Mijo cocido",
+  "aliases": []
+ },
+ "169700": {
+  "name": "Cuscús cocido",
+  "aliases": []
+ },
+ "170687": {
+  "name": "Harina de trigo sarraceno integral",
+  "aliases": []
+ },
+ "170686": {
+  "name": "Granos de trigo sarraceno tostados y cocidos",
+  "aliases": []
+ },
+ "168884": {
+  "name": "Grano de centeno",
+  "aliases": []
+ },
+ "169718": {
+  "name": "Triticale",
+  "aliases": []
+ },
+ "170286": {
+  "name": "Trigo sarraceno",
+  "aliases": []
+ },
+ "172023": {
+  "name": "Harina de mijo",
+  "aliases": []
+ },
+ "170684": {
+  "name": "Harina de arrurruz",
+  "aliases": []
+ },
+ "169740": {
+  "name": "Harina de malta de cebada",
+  "aliases": []
+ },
+ "173410": {
+  "name": "Mantequilla con sal",
+  "aliases": [
+   "Manteca con sal"
+  ]
+ },
+ "171247": {
+  "name": "Queso parmesano rallado",
+  "aliases": []
+ },
+ "170859": {
+  "name": "Crema para montar",
+  "aliases": [
+   "Nata para montar"
+  ]
+ },
+ "170851": {
+  "name": "Ricota de leche entera",
+  "aliases": [
+   "Ricotta de leche entera"
+  ]
+ },
+ "172200": {
+  "name": "Salsa de queso casera",
+  "aliases": []
+ },
+ "173430": {
+  "name": "Mantequilla sin sal",
+  "aliases": [
+   "Manteca sin sal"
+  ]
+ },
+ "171257": {
+  "name": "Crema agria",
+  "aliases": [
+   "Nata agria"
+  ]
+ },
+ "171255": {
+  "name": "Crema ligera",
+  "aliases": [
+   "Nata ligera"
+  ]
+ },
+ "173412": {
+  "name": "Mantequilla clarificada",
+  "aliases": [
+   "Manteca clarificada"
+  ]
+ },
+ "171263": {
+  "name": "Sustituto de crema en polvo",
+  "aliases": [
+   "Sustituto de nata en polvo"
+  ]
+ },
+ "171251": {
+  "name": "Queso suizo",
+  "aliases": []
+ },
+ "173418": {
+  "name": "Queso crema",
+  "aliases": []
+ },
+ "173462": {
+  "name": "Sustituto de huevo sin grasa",
+  "aliases": []
+ },
+ "170886": {
+  "name": "Yogur natural bajo en grasa",
+  "aliases": [
+   "Yoghurt natural bajo en grasa"
+  ]
+ },
+ "171284": {
+  "name": "Yogur natural de leche entera",
+  "aliases": [
+   "Yoghurt natural de leche entera"
+  ]
+ },
+ "170857": {
+  "name": "Crema de mesa",
+  "aliases": []
+ },
+ "173443": {
+  "name": "Crema agria light",
+  "aliases": [
+   "Nata agria light"
+  ]
+ },
+ "171248": {
+  "name": "Ricota semidescremada",
+  "aliases": [
+   "Ricota semidesnatada",
+   "Ricotta semidescremada"
+  ]
+ },
+ "173420": {
+  "name": "Queso feta",
+  "aliases": []
+ },
+ "171274": {
+  "name": "Suero de mantequilla en polvo",
+  "aliases": [
+   "Suero de manteca en polvo"
+  ]
+ },
+ "168097": {
+  "name": "Sustituto de crema líquido light",
+  "aliases": [
+   "Sustituto de nata líquido light"
+  ]
+ },
+ "171254": {
+  "name": "Queso americano para untar",
+  "aliases": []
+ },
+ "173416": {
+  "name": "Queso Colby",
+  "aliases": []
+ },
+ "171242": {
+  "name": "Queso gruyere",
+  "aliases": []
+ },
+ "171283": {
+  "name": "Suero de leche en polvo",
+  "aliases": []
+ },
+ "170868": {
+  "name": "Cobertura para postres semisólida congelada",
+  "aliases": []
+ },
+ "171261": {
+  "name": "Sustituto de crema líquido con aceite vegetal",
+  "aliases": [
+   "Sustituto de nata líquido con aceite vegetal"
+  ]
+ },
+ "171258": {
+  "name": "Ponche de huevo",
+  "aliases": []
+ },
+ "172175": {
+  "name": "Queso azul",
+  "aliases": []
+ },
+ "171241": {
+  "name": "Queso gouda",
+  "aliases": []
+ },
+ "169081": {
+  "name": "Queso crema para untar",
+  "aliases": []
+ },
+ "172206": {
+  "name": "Queso parmesano para espolvorear sin grasa",
+  "aliases": []
+ },
+ "172207": {
+  "name": "Queso crema sin grasa",
+  "aliases": []
+ },
+ "167687": {
+  "name": "Crema batida congelada baja en grasa",
+  "aliases": [
+   "Nata batida congelada baja en grasa"
+  ]
+ },
+ "173466": {
+  "name": "Palito de helado bañado en chocolate",
+  "aliases": []
+ },
+ "173461": {
+  "name": "Dulce de leche",
+  "aliases": [
+   "Manjar",
+   "Arequipe",
+   "Cajeta"
+  ]
+ },
+ "172177": {
+  "name": "Queso brie",
+  "aliases": []
+ },
+ "172176": {
+  "name": "Queso Brick",
+  "aliases": []
+ },
+ "170843": {
+  "name": "Queso Fontina",
+  "aliases": []
+ },
+ "171245": {
+  "name": "Queso Muenster",
+  "aliases": []
+ },
+ "171243": {
+  "name": "Queso Limburger",
+  "aliases": []
+ },
+ "172178": {
+  "name": "Queso camembert",
+  "aliases": []
+ },
+ "173444": {
+  "name": "Crema agria sin grasa",
+  "aliases": [
+   "Nata agria sin grasa"
+  ]
+ },
+ "170892": {
+  "name": "Suplemento nutricional líquido para diabéticos",
+  "aliases": []
+ },
+ "172188": {
+  "name": "Huevo entero en polvo",
+  "aliases": []
+ },
+ "168141": {
+  "name": "Queso suizo bajo en grasa",
+  "aliases": []
+ },
+ "168098": {
+  "name": "Queso Monterey Jack bajo en grasa",
+  "aliases": []
+ },
+ "171009": {
+  "name": "Mayonesa",
+  "aliases": []
+ },
+ "172336": {
+  "name": "Aceite de canola",
+  "aliases": []
+ },
+ "173594": {
+  "name": "Mayonesa light",
+  "aliases": []
+ },
+ "171401": {
+  "name": "Manteca de cerdo",
+  "aliases": [
+   "Manteca de chancho",
+   "Manteca de puerco"
+  ]
+ },
+ "173564": {
+  "name": "Grasa de pollo",
+  "aliases": []
+ },
+ "171016": {
+  "name": "Aceite de sésamo",
+  "aliases": []
+ },
+ "173592": {
+  "name": "Aderezo ranch",
+  "aliases": [
+   "Aliño ranch"
+  ]
+ },
+ "171411": {
+  "name": "Aceite de soja",
+  "aliases": []
+ },
+ "167684": {
+  "name": "Aderezo cremoso bajo en calorías",
+  "aliases": [
+   "Aliño cremoso bajo en calorías"
+  ]
+ },
+ "167700": {
+  "name": "Aderezo tipo mayonesa sin grasa",
+  "aliases": [
+   "Aliño tipo mayonesa sin grasa"
+  ]
+ },
+ "171430": {
+  "name": "Aceite en spray",
+  "aliases": []
+ },
+ "169056": {
+  "name": "Aderezo para ensalada de repollo",
+  "aliases": [
+   "Aderezo para ensalada de col",
+   "Aliño para ensalada de repollo"
+  ]
+ },
+ "173569": {
+  "name": "Grasa vegetal industrial",
+  "aliases": []
+ },
+ "171412": {
+  "name": "Aceite de coco",
+  "aliases": []
+ },
+ "173571": {
+  "name": "Grasa de pavo",
+  "aliases": [
+   "Grasa de guajolote"
+  ]
+ },
+ "171400": {
+  "name": "Sebo de vaca",
+  "aliases": []
+ },
+ "172345": {
+  "name": "Grasa de tocino",
+  "aliases": [
+   "Grasa de panceta",
+   "Grasa de beicon",
+   "Grasa de bacon"
+  ]
+ },
+ "171024": {
+  "name": "Aceite de semilla de algodón",
+  "aliases": []
+ },
+ "173590": {
+  "name": "Aderezo italiano sin grasa",
+  "aliases": [
+   "Aliño italiano sin grasa"
+  ]
+ },
+ "171417": {
+  "name": "Aderezo casero de aceite y vinagre",
+  "aliases": [
+   "Aliño casero de aceite y vinagre"
+  ]
+ },
+ "171006": {
+  "name": "Aderezo de sésamo",
+  "aliases": [
+   "Aliño de sésamo"
+  ]
+ },
+ "167699": {
+  "name": "Aderezo de queso azul sin grasa",
+  "aliases": [
+   "Aliño de queso azul sin grasa"
+  ]
+ },
+ "171030": {
+  "name": "Aceite de nuez",
+  "aliases": []
+ },
+ "171031": {
+  "name": "Aceite de almendras",
+  "aliases": []
+ },
+ "171014": {
+  "name": "Aceite de germen de trigo",
+  "aliases": []
+ },
+ "167704": {
+  "name": "Aderezo de tocino y tomate",
+  "aliases": [
+   "Aliño de tocino y tomate",
+   "Aderezo de panceta y tomate",
+   "Aderezo de beicon y tomate",
+   "Aderezo de bacon y tomate"
+  ]
+ },
+ "171005": {
+  "name": "Aderezo ruso",
+  "aliases": [
+   "Aliño ruso"
+  ]
+ },
+ "171003": {
+  "name": "Mayonesa sin grasa KRAFT",
+  "aliases": []
+ },
+ "167702": {
+  "name": "Aceite de lino de primera prensada",
+  "aliases": []
+ },
+ "171410": {
+  "name": "Aceite de maní",
+  "aliases": [
+   "Aceite de cacahuete",
+   "Aceite de cacahuate"
+  ]
+ },
+ "171045": {
+  "name": "Aderezo césar sin grasa",
+  "aliases": [
+   "Aliño césar sin grasa"
+  ]
+ },
+ "171044": {
+  "name": "Aderezo cremoso de semillas de amapola",
+  "aliases": [
+   "Aliño cremoso de semillas de amapola"
+  ]
+ },
+ "171046": {
+  "name": "Aderezo de miel y mostaza sin grasa",
+  "aliases": [
+   "Aliño de miel y mostaza sin grasa"
+  ]
+ },
+ "169877": {
+  "name": "Aderezo césar bajo en calorías",
+  "aliases": [
+   "Aliño césar bajo en calorías"
+  ]
+ },
+ "169057": {
+  "name": "Aderezo green goddess",
+  "aliases": [
+   "Aliño green goddess"
+  ]
+ },
+ "171043": {
+  "name": "Aderezo de miel y mostaza",
+  "aliases": [
+   "Aliño de miel y mostaza"
+  ]
+ },
+ "169894": {
+  "name": "Sustituto de mantequilla en polvo",
+  "aliases": [
+   "Sustituto de manteca en polvo"
+  ]
+ },
+ "171443": {
+  "name": "Mayonesa baja en grasa con aceite de oliva",
+  "aliases": []
+ },
+ "169055": {
+  "name": "Aderezo césar",
+  "aliases": [
+   "Aliño césar"
+  ]
+ }
+}
