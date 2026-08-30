@@ -14,6 +14,7 @@ registro también sirve para ver qué se destrabó y cuándo.
 | DT-4 | 🟡 diferida | Presupuesto de GCP con alertas de gasto | Tomás (junto con DT-1) |
 | DT-5 | 🟡 diferida | Íconos de la PWA (el manifiesto los declara vacíos) | Claude (Fase 3) |
 | DT-6 | 🟡 diferida | Recalibrar la regla de azúcares (totales vs libres) y el sodio con datos reales de uso; resolver en la UI el caso "el tag acusa y el texto absuelve" | Claude (Fases 2-3) |
+| DT-7 | 🟡 diferida | Desambiguar los pares FNDDS/SR de nombre casi igual ("Banana" / "Banana cruda"): la diferencia visible no es la real (ambas crudas; difiere la fuente). Decidir un desambiguador con significado antes de que lo vea un usuario | Tomás + Claude (WS03) |
 
 ---
 
