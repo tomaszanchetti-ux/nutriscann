@@ -2,7 +2,7 @@
 
 > **Norte:** una app donde el usuario saca UNA foto de su plato y recibe un reporte nutricional visual (calorías, macros en pie chart, recomendación de una línea). UX de 2 interacciones. Arquitectura seria desde el día 1: nada hardcodeado, todo DB + APIs + endpoints.
 >
-> **Estado:** Fase 0 cerrada (salvo el plan Blaze, DT-1). **Fase 1 en curso:** Bloque 0 medido y cards definidas (30/08/2026). Última actualización: 30/08/2026.
+> **Estado:** Fase 0 cerrada (salvo el plan Blaze, DT-1). **Fase 1: cards 1.1–1.4 COMPLETAS con Q/A (WS02, 30/08/2026)** — catálogo canónico compilado y curado en `kb/build/`. Quedan la 1.5 (seed) y la 1.6 (regional) + merge para la **WS03**. Última actualización: 30/08/2026.
 >
 > **Mecánica:** toda fase arranca midiendo (Bloque 0) y recién después define sus cards. Ver `CLAUDE.md`.
 >
@@ -188,12 +188,12 @@ Foto → [1] Sonnet 5 (visión): "¿QUÉ hay en el plato y CUÁNTO?"
 
 | Card | Qué entrega | Estado |
 |---|---|---|
-| **1.1 — Criterio de selección** | El reparto de territorios hecho lista: ~1.000 `fdc_id` candidatos con fuente y categoría, generado por criterio declarado (no a mano) | 🔵 en curso |
-| **1.2 — Build del pipeline** | Script TS determinístico: CSVs → `foods.canonical.json` con provenance por campo, mapeo de nutrientes POR dataset, candado de Atwater afinado, tests de aceptación por fuente | ⚪ |
-| **1.3 — Curación en español** | Glosario ~650 términos + composición + aliases + portion_hints (`kb/curation/*.json`) | ⚪ (‖ con 1.2) |
-| **1.4 — Reglas de recomendación** | Umbrales citables del PDF OPS 2016 → `config/` | ⚪ (‖ con 1.2) |
-| **1.5 — Seed a Firestore** | Publicación idempotente con `kb_version` (Firestore anda en Spark: DT-1 no bloquea) | ⚪ (tras 1.2) |
-| **1.6 — Cobertura regional ES/AR/IT/PT-BR** | Medido 30/08 sobre 42 platos típicos: 19 match directo + 22 gemelo nutricional + 1 ausente (salmorejo). Promover ~24 `fdc_id` del universo a la selección + aliases regionales **validados por composición, no por nombre** (gotchas medidos: `Octopus` es pulpo rebozado, `Ribs, NFS` es 85% cerdo, `Ham croquette` no tiene bechamel) + campo de confianza por alias | ⚪ (tras 1.2+1.3) |
+| **1.1 — Criterio de selección** | El reparto de territorios hecho lista: 975 `fdc_id` (675 FNDDS + 300 SR), criterio v2 por uso real en recetas | ✅ 30/08 |
+| **1.2 — Build del pipeline** | Script TS determinístico: CSVs → `foods.canonical.json` con provenance por campo, mapeo POR dataset, 5 candados, 62 tests. Q/A: recomputación independiente 64/64 | ✅ 30/08 |
+| **1.3 — Curación en español** | 975 nombres + glosario ~1.000 términos + 609 aliases regionales + 18 porciones curadas. Q/A con censo completo | ✅ 30/08 |
+| **1.4 — Reglas de recomendación** | 3 umbrales OPS citados + 3 criterios propios declarados → `config/`. Q/A: citas verificadas palabra por palabra | ✅ 30/08 |
+| **1.5 — Seed a Firestore** | Publicación idempotente con `kb_version` (Firestore anda en Spark: DT-1 no bloquea) | ⚪ **WS03** |
+| **1.6 — Cobertura regional ES/AR/IT/PT-BR** | Medido 30/08 sobre 42 platos típicos: 19 match directo + 22 gemelo nutricional + 1 ausente (salmorejo). Promover ~24 `fdc_id` del universo a la selección + aliases regionales **validados por composición, no por nombre** (gotchas medidos: `Octopus` es pulpo rebozado, `Ribs, NFS` es 85% cerdo, `Ham croquette` no tiene bechamel) + campo de confianza por alias | ⚪ **WS03** |
 
 Las cards 1.2, 1.3 y 1.4 tocan carpetas disjuntas (`kb/src`, `kb/curation`, `config`) y
 corren en paralelo con agentes distintos (mecánica multiagente WS02+, estrenada 30/08).
