@@ -1,0 +1,21 @@
+{
+  "name": "@nutriscann/kb",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pipeline de la base de conocimiento: CSVs de USDA -> catálogo canónico",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=22"
+  },
+  "$comment": "Sin workspaces de npm (regla del repo) y sin dependencias de runtime: el build solo usa la librería estándar de Node. El parser de CSV es propio porque los CSVs de USDA traen comas dentro de comillas y una dependencia externa sería más superficie de la que ahorra.",
+  "scripts": {
+    "compile": "tsc",
+    "lint": "tsc --noEmit",
+    "build": "npm run compile && node dist/index.js",
+    "test": "npm run compile && node --test dist/*.test.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "typescript": "^5.9.3"
+  }
+}
