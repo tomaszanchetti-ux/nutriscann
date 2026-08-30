@@ -13,7 +13,7 @@ import { assemble, pickFoundationCandidate, type AssembleInput } from "./canonic
 import type { Curation } from "./curation";
 import type { NutrientBundle } from "./nutrients";
 import type { FoundationOverride, Selection } from "./selection";
-import type { FoodSource, PortionHint } from "./types";
+import type { PortionHint, UsdaFoodSource } from "./types";
 
 const BANANA = 173944;
 
@@ -34,7 +34,16 @@ const USDA_HINTS: PortionHint[] = [
 ];
 
 function emptyCuration(): Curation {
-  return { names: new Map(), portions: new Map(), filesFound: [], problems: [] };
+  return {
+    names: new Map(),
+    portions: new Map(),
+    regionalAliases: new Map(),
+    manualFoods: [],
+    transforms: new Map(),
+    recipes: [],
+    filesFound: [],
+    problems: [],
+  };
 }
 
 interface FoundationSetup {
@@ -61,7 +70,7 @@ function input(curation: Curation, foundation?: FoundationSetup): AssembleInput 
     foundation_overrides: foundation?.overrides ?? [],
     flagged_atwater: [],
   };
-  const empty = <T>(): Record<FoodSource, Map<number, T>> => ({
+  const empty = <T>(): Record<UsdaFoodSource, Map<number, T>> => ({
     usda_fndds: new Map<number, T>(),
     usda_sr_legacy: new Map<number, T>(),
   });

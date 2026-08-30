@@ -4,14 +4,22 @@
     python3 tools/verify_curation.py
 
 Chequea:
-  1. JSON estricto en los cuatro archivos (sin comas colgantes, sin claves repetidas).
-  2. Cobertura exacta: un nombre por cada fdc_id de selection.v1.json, ni uno mas.
+  1. JSON estricto en los archivos de curacion (sin comas colgantes, sin claves repetidas).
+  2. Cobertura exacta: un nombre por cada fdc_id de la seleccion COMPLETA
+     (selection.v1.json + regional.v1.json), ni uno mas.
   3. Nombres unicos: dos alimentos distintos no pueden llamarse igual.
   4. Estilo: capitalizacion tipo oracion, sin punto final, sin marcadores USDA.
   5. Aliases: sin colision entre alimentos, sin chocar con el nombre de otro,
      sin palabra repetida y concordando en numero con su propia cabeza.
+     Los aliases regionales (aliases.regional.json) entran al mismo censo: un
+     alias con confianza tampoco puede pisar el nombre de otro alimento.
   6. Porciones: cubre TODAS las portion_needs_review (puede corregir mas, como
      las porciones de recetario >=200 g), con etiqueta de estilo uniforme.
+  7. Confianza: cada alias regional usa uno de los cuatro peldanos declarados.
+  8. TODA RESERVA ES VISIBLE: cada plato de los coverage con confianza < 1,0 tiene
+     su alias emitido en aliases.regional.json con esa misma confianza. Una reserva
+     que se queda en el archivo de medicion y no llega al catalogo no existe para
+     el motor: es exactamente el agujero que dejo el gazpacho.
 """
 from __future__ import annotations
 
@@ -28,6 +36,16 @@ import build_aliases  # noqa: E402  (mismo directorio: comparte las reglas de co
 HERE = Path(__file__).resolve().parent
 CURATION = HERE.parent
 SELECTION = CURATION.parent / "selection/selection.v1.json"
+# La card 1.6 no reescribe la seleccion de la 1.1: le suma bloques con criterio
+# propio y le resta las exclusiones de la DT-7. La curacion tiene que cubrir el
+# resultado, no el primer archivo.
+BLOQUES = [CURATION.parent / "selection/regional.v1.json",
+           CURATION.parent / "selection/es.sweep.v1.json",
+           CURATION.parent / "selection/ingredientes.v1.json"]
+EXCLUSIONES = CURATION.parent / "selection/exclusions.dt7.json"
+CONFIANZAS = (1, 0.8, 0.6, 0.5)
+COVERAGE = [CURATION.parent / "selection/regional.coverage.json",
+            CURATION.parent / "selection/es.sweep.coverage.json"]
 MARKERS = re.compile(r"\bNFS\b|\bNS as to\b|\?\?", re.IGNORECASE)
 
 
@@ -43,9 +61,21 @@ def strict_load(path: Path):
 def main() -> int:
     errors: list[str] = []
     selection = strict_load(SELECTION)["entries"]
+    for bloque in BLOQUES:
+        if bloque.exists():
+            selection = selection + strict_load(bloque)["entries"]
+    heredados: dict[str, list[str]] = {}
+    if EXCLUSIONES.exists():
+        fuera = strict_load(EXCLUSIONES)["exclusions"]
+        excluidos = {e["fdc_id"] for e in fuera}
+        selection = [e for e in selection if e["fdc_id"] not in excluidos]
+        for e in fuera:
+            heredados.setdefault(str(e["duplicado_de"]), []).extend(e["aliases_heredados"])
     names = strict_load(CURATION / "names.es.json")
     strict_load(CURATION / "glossary.es.json")
     portions = strict_load(CURATION / "portions.overrides.json")
+    regional_file = CURATION / "aliases.regional.json"
+    regionales = strict_load(regional_file)["aliases"] if regional_file.exists() else {}
 
     expected = {str(e["fdc_id"]) for e in selection}
     faltan, sobran = expected - set(names), set(names) - expected
@@ -73,17 +103,54 @@ def main() -> int:
             errors.append(f"{fdc}: 'aliases' no es una lista")
 
     # --- aliases ---
+    # Los regionales entran al MISMO censo que los de la card 1.3: un alias con
+    # confianza que pisa el nombre de otro alimento rompe el matching igual de
+    # feo que uno sin confianza. Lo unico que no se les exige es la concordancia
+    # de genero y numero: son nombres propios de plato ("Milanesa a la
+    # napolitana"), no sintagmas compuestos por el generador.
+    todos: dict[str, list[tuple[str, bool]]] = {}
+    for fdc, entry in names.items():
+        todos.setdefault(fdc, []).extend((a, True) for a in entry.get("aliases", []))
+    # El vocabulario que hereda una ficha que se queda tras una exclusion de la
+    # DT-7 lo aplica el BUILD desde exclusions.dt7.json (una sola fuente de
+    # verdad), pero tiene que entrar al mismo censo: si pisara el nombre de otro
+    # alimento, el catalogo saldria con dos alimentos respondiendo a lo mismo.
+    for fdc, lista in heredados.items():
+        if fdc not in names:
+            errors.append(f"{fdc}: hereda aliases pero no esta en la seleccion")
+            continue
+        for alias in lista:
+            todos.setdefault(fdc, []).append((alias, False))
+
+    for fdc, lista in regionales.items():
+        if fdc not in names:
+            errors.append(f"{fdc}: tiene alias regional pero no esta en la seleccion")
+            continue
+        for item in lista:
+            alias, conf = item.get("alias", ""), item.get("confidence")
+            if not alias:
+                errors.append(f"{fdc}: alias regional sin texto")
+                continue
+            if conf not in CONFIANZAS:
+                errors.append(f"{fdc}: '{alias}' tiene confianza {conf}, fuera de {CONFIANZAS}")
+            todos.setdefault(fdc, []).append((alias, False))
+
     stems = build_aliases.adjective_stems()
     owner: dict[str, str] = {}
-    for fdc, entry in names.items():
-        for alias in entry.get("aliases", []):
-            if alias == entry["name"]:
+    for fdc, lista in todos.items():
+        entry = names[fdc]
+        for alias, concuerda in lista:
+            if alias == entry["name"] and concuerda:
+                # Un alias en texto plano igual al nombre no agrega nada. Uno
+                # REGIONAL igual al nombre si: es el que carga la reserva.
                 errors.append(f"{fdc}: alias igual al propio nombre ('{alias}')")
             if alias in seen and seen[alias] != fdc:
                 errors.append(f"{fdc}: el alias '{alias}' es el NOMBRE de {seen[alias]}")
             if alias in owner and owner[alias] != fdc:
                 errors.append(f"alias repetido '{alias}' en {owner[alias]} y {fdc}")
             owner[alias] = fdc
+            if not concuerda:
+                continue
             words = [w.lower().rstrip(",") for w in alias.split(" ")]
             if any(words[i] == words[i + 1] for i in range(len(words) - 1)):
                 errors.append(f"{fdc}: '{alias}' repite una palabra")
@@ -98,6 +165,34 @@ def main() -> int:
                     errors.append(f"{fdc}: '{alias}' no concuerda en numero ('{word}')")
                 if ("f" if word.rstrip("s").endswith("a") else "m") != gender:
                     errors.append(f"{fdc}: '{alias}' no concuerda en genero ('{word}')")
+
+    # --- candado 8: toda reserva llega al catalogo ---
+    # `veredicto` y `confianza` son ORTOGONALES a proposito: USDA puede nombrar el
+    # plato (directo) y aun asi medir una receta que le falta algo (el gazpacho, a
+    # 0,8). Lo que no puede pasar es que esa reserva se quede escrita solo en el
+    # coverage. Cuando el alimento YA se llama como el plato, el alias homonimo con
+    # su confianza es el unico lugar donde la reserva se puede decir.
+    emitidos = {(fdc, a.get("alias")): a.get("confidence")
+                for fdc, lista in regionales.items() for a in lista}
+    for archivo in COVERAGE:
+        if not archivo.exists():
+            continue
+        for fila in strict_load(archivo)["cobertura"]:
+            conf, alias, fdc = fila.get("confianza"), fila.get("alias"), fila.get("fdc_id")
+            if conf is None or alias is None or fdc is None:
+                continue
+            if conf not in CONFIANZAS:
+                errors.append(f"{archivo.name}: '{fila['plato']}' tiene confianza {conf}, fuera de {CONFIANZAS}")
+            if conf == 1:
+                continue
+            got = emitidos.get((str(fdc), alias))
+            if got is None:
+                errors.append(
+                    f"{archivo.name}: '{fila['plato']}' declara confianza {conf} sobre fdc-{fdc} "
+                    f"y el alias '{alias}' NO esta en aliases.regional.json: la reserva no llega al catalogo")
+            elif got != conf:
+                errors.append(
+                    f"{archivo.name}: '{fila['plato']}' declara {conf} y el alias '{alias}' se emitio con {got}")
 
     # --- porciones ---
     needs = {str(e["fdc_id"]) for e in selection if e.get("portion_needs_review")}
@@ -116,7 +211,9 @@ def main() -> int:
 
     print(f"{len(names)}/{len(expected)} alimentos con nombre · "
           f"{len(set(seen))} nombres unicos · "
-          f"{sum(len(e['aliases']) for e in names.values())} aliases · "
+          f"{sum(len(e['aliases']) for e in names.values())} aliases "
+          f"+ {sum(len(v) for v in regionales.values())} regionales con confianza "
+          f"+ {sum(len(v) for v in heredados.values())} heredados de la DT-7 · "
           f"{len(needs & set(portions))}/{len(needs)} porciones obligatorias "
           f"+ {len(set(portions) - needs)} de recetario corregidas")
     for e in errors:

@@ -1,0 +1,99 @@
+{
+ "$comment": [
+  "Fichas que SALEN de la selección por la DT-7. La evidencia de cada una está en",
+  "kb/selection/dt7.pairs.json. No se edita selection.v1.json: sigue siendo el",
+  "entregable de la card 1.1 y su diff tiene que seguir siendo el de esa card.",
+  "Los aliases heredados son el vocabulario entero que perdía la ficha excluida",
+  "—su nombre y sus propios aliases—: excluir no puede achicar el vocabulario."
+ ],
+ "criteria_version": "dt7-v1",
+ "generated": "2026-08-30",
+ "exclusions": [
+  {
+   "fdc_id": 2707485,
+   "source": "fndds",
+   "description": "Almonds, NFS",
+   "duplicado_de": 170567,
+   "aliases_heredados": [
+    "Almendras"
+   ],
+   "motivo": "Mismo alimento en el mismo estado: 3 % de diferencia en calorías y las mismas grasas. Dos fichas para una almendra cruda."
+  },
+  {
+   "fdc_id": 2707493,
+   "source": "fndds",
+   "description": "Cashews, NFS",
+   "duplicado_de": 170162,
+   "aliases_heredados": [
+    "Anacardos",
+    "Castañas de cajú",
+    "Marañón",
+    "Nuez de la India"
+   ],
+   "motivo": "Mismo anacardo crudo: 2 % en calorías. La grasa difiere un 16 %, pero es la dispersión propia de un fruto seco entre dos campañas de muestreo, no dos alimentos."
+  },
+  {
+   "fdc_id": 2709224,
+   "source": "fndds",
+   "description": "Banana, raw",
+   "duplicado_de": 173944,
+   "aliases_heredados": [
+    "Banana",
+    "Plátano",
+    "Guineo"
+   ],
+   "motivo": "La misma banana cruda medida dos veces: 8 % en calorías. La de SR Legacy es además uno de los cinco casos dorados del build."
+  },
+  {
+   "fdc_id": 2709226,
+   "source": "fndds",
+   "description": "Cantaloupe, raw",
+   "duplicado_de": 169092,
+   "aliases_heredados": [
+    "Melón cantalupo"
+   ],
+   "motivo": "Mismo melón crudo: sodio y azúcares IDÉNTICOS (30 mg y 7,88 g), solo 4 kcal de diferencia."
+  },
+  {
+   "fdc_id": 2709171,
+   "source": "fndds",
+   "description": "Orange, raw",
+   "duplicado_de": 169097,
+   "aliases_heredados": [
+    "Naranja"
+   ],
+   "motivo": "Misma naranja cruda: 6 % en calorías, mismos azúcares."
+  },
+  {
+   "fdc_id": 2707521,
+   "source": "fndds",
+   "description": "Pecans, NFS",
+   "duplicado_de": 170182,
+   "aliases_heredados": [
+    "Nueces pecanas",
+    "Pacanas"
+   ],
+   "motivo": "Misma pecana cruda: 8 % en calorías, azúcares idénticos (3,97 g)."
+  },
+  {
+   "fdc_id": 2709254,
+   "source": "fndds",
+   "description": "Pear, raw",
+   "duplicado_de": 169118,
+   "aliases_heredados": [
+    "Pera"
+   ],
+   "motivo": "Misma pera cruda: 3 % en calorías, azúcares prácticamente iguales (9,73 vs 9,75 g)."
+  },
+  {
+   "fdc_id": 2710097,
+   "source": "fndds",
+   "description": "Pickles, NFS",
+   "duplicado_de": 168558,
+   "aliases_heredados": [
+    "Pepinillos"
+   ],
+   "motivo": "El `Pickles, NFS` de FNDDS es 100 % `Pickles, dill` — el mismo pepinillo en eneldo de SR Legacy. Sodio, azúcares y grasa IDÉNTICOS (808 mg · 1,28 g · 0,43 g); solo 2 kcal de diferencia."
+  }
+ ]
+}

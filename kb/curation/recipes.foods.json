@@ -1,0 +1,475 @@
+{
+ "$comment": [
+  "Fichas derivadas de RECETA COMPUESTA (card 1.7). El mecanismo por defecto para todo",
+  "hueco del catálogo: en vez de copiar números de una etiqueta, se declara de qué está",
+  "hecho el plato y el build deriva los valores de las fichas que ya existen.",
+  "",
+  "NADIE TIPEA UN NÚMERO NUTRICIONAL ACÁ. Lo único que se declara es qué ingredientes,",
+  "cuántos gramos y con qué método se cocina; el per_100g lo calcula el build:",
+  "  nutriente = Σ(nutriente_ingrediente × gramos / 100) / peso_final × 100",
+  "El peso final sale de kb/curation/cooking.transforms.json, que declara cada método con",
+  "su fuente medida. Una receta puede sobrescribirlo con `rendimiento_declarado_g`, y",
+  "entonces DEBE declarar `rendimiento_motivo`: el candado lo exige.",
+  "",
+  "Cada ingrediente apunta a una ficha REAL del catálogo (`ref`). Si un ingrediente esencial",
+  "no tiene ficha, la receta no se fuerza: queda bloqueada y se reporta. Preferimos un hueco",
+  "declarado a una ficha dudosa.",
+  "",
+  "El agua que se queda en el plato entra como ingrediente (fdc-2710707):",
+  "pesa y diluye. El agua que se evapora no entra: la representa el factor del método.",
+  "",
+  "Las cantidades son una RECETA ESTÁNDAR con criterio culinario declarado, no la medición",
+  "de un plato concreto. Todas las fichas lo dicen en sus caveats."
+ ],
+ "criteria_version": "1.7-recetas-v1",
+ "generated": "2026-08-30",
+ "recipes": [
+  {
+   "id": "receta-migas",
+   "names": {
+    "en": "Migas, Spanish fried breadcrumbs with garlic and pork belly",
+    "es": "Migas"
+   },
+   "aliases": [
+    "Migas extremeñas",
+    "Migas de pastor"
+   ],
+   "category": "Yeast breads",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {
+     "ref": "fdc-2707593",
+     "grams": 300,
+     "$nota": "pan del día anterior, desmigado"
+    },
+    {
+     "ref": "fdc-2710186",
+     "grams": 60
+    },
+    {
+     "ref": "fdc-169230",
+     "grams": 15
+    },
+    {
+     "ref": "fdc-2705887",
+     "grams": 100,
+     "$nota": "torreznos"
+    }
+   ],
+   "portion_hints": [
+    {
+     "grams": 200,
+     "label_en": "1 plate",
+     "label_es": "1 plato"
+    },
+    {
+     "grams": 100,
+     "label_en": "1 tapa portion",
+     "label_es": "1 tapa"
+    }
+   ],
+   "default_portion_g": 200,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 300 g de pan del día anterior, 60 g de aceite de oliva, 15 g de ajo y 100 g de torreznos.",
+    "El aceite va declarado como ingrediente, así que el método es `mezclado` y NO se le suma la absorción de `frito`: contarla dos veces duplicaría la grasa.",
+    "El agua con la que se humedece el pan no entra: se evapora en la sartén.",
+    "Las migas admiten uvas, chorizo o pimentón según la comarca; esta es la versión de pan, ajo y torreznos."
+   ]
+  },
+  {
+   "id": "receta-ajoblanco",
+   "names": {
+    "en": "Ajoblanco, Andalusian chilled almond and garlic soup",
+    "es": "Ajoblanco"
+   },
+   "aliases": [
+    "Ajo blanco malagueño"
+   ],
+   "category": "Soups, broth-based",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {
+     "ref": "fdc-170567",
+     "grams": 100
+    },
+    {
+     "ref": "fdc-2707593",
+     "grams": 50,
+     "$nota": "miga de pan remojada"
+    },
+    {
+     "ref": "fdc-169230",
+     "grams": 5
+    },
+    {
+     "ref": "fdc-2710186",
+     "grams": 50
+    },
+    {
+     "ref": "fdc-2709351",
+     "grams": 15
+    },
+    {
+     "ref": "fdc-2710707",
+     "grams": 700,
+     "$nota": "el agua SE QUEDA en el plato: es sopa fría"
+    },
+    {
+     "ref": "fdc-173468",
+     "grams": 5
+    }
+   ],
+   "portion_hints": [
+    {
+     "grams": 250,
+     "label_en": "1 bowl",
+     "label_es": "1 plato hondo"
+    },
+    {
+     "grams": 150,
+     "label_en": "1 small glass",
+     "label_es": "1 vaso pequeño"
+    }
+   ],
+   "default_portion_g": 250,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 100 g de almendra cruda, 50 g de miga de pan, 5 g de ajo, 50 g de aceite de oliva, 15 g de vinagre, 700 g de agua y 5 g de sal.",
+    "El agua entra como ingrediente porque se queda en el plato: es una sopa fría, y el agua diluye aunque no aporte nada.",
+    "Se sirve con uvas o melón, que no entran en la ficha."
+   ]
+  },
+  {
+   "id": "receta-merluza-en-salsa-verde",
+   "names": {
+    "en": "Hake in green sauce (merluza en salsa verde)",
+    "es": "Merluza en salsa verde"
+   },
+   "aliases": [
+    "Pescadilla en salsa verde"
+   ],
+   "category": "Seafood mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {
+     "ref": "fdc-2706313",
+     "grams": 500,
+     "$nota": "pescadilla — el pariente más cercano de la merluza que USDA sí mide"
+    },
+    {
+     "ref": "fdc-2710186",
+     "grams": 40
+    },
+    {
+     "ref": "fdc-169230",
+     "grams": 15
+    },
+    {
+     "ref": "fdc-170416",
+     "grams": 10
+    },
+    {
+     "ref": "fdc-2707132",
+     "grams": 200,
+     "$nota": "el caldo se queda: es una salsa"
+    }
+   ],
+   "portion_hints": [
+    {
+     "grams": 250,
+     "label_en": "1 serving",
+     "label_es": "1 ración"
+    },
+    {
+     "grams": 180,
+     "label_en": "1 small serving",
+     "label_es": "1 ración pequeña"
+    }
+   ],
+   "default_portion_g": 250,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 500 g de pescado, 40 g de aceite de oliva, 15 g de ajo, 10 g de perejil y 200 g de caldo.",
+    "RESERVA DE ESPECIE: USDA no mide merluza en ninguno de los tres datasets. Se usa `Fish, whiting` (pescadilla), que es el pariente más cercano — mismo orden, carne blanca magra — y que en España es literalmente la merluza pequeña. No es la misma especie.",
+    "La harina que liga la salsa no tiene ficha en el catálogo y no entra: la ficha subestima los hidratos en torno a 1 g por 100 g.",
+    "El caldo entra como ingrediente porque se queda en el plato como salsa."
+   ]
+  },
+  {
+   "id": "receta-gazpachuelo",
+   "names": {
+    "en": "Gazpachuelo, Malaga fish soup with mayonnaise",
+    "es": "Gazpachuelo"
+   },
+   "aliases": [
+    "Gazpachuelo malagueño"
+   ],
+   "category": "Soups, broth-based",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {
+     "ref": "fdc-2707132",
+     "grams": 700,
+     "$nota": "caldo de pescado"
+    },
+    {
+     "ref": "fdc-2709387",
+     "grams": 250
+    },
+    {
+     "ref": "fdc-171009",
+     "grams": 60
+    },
+    {
+     "ref": "fdc-2707152",
+     "grams": 50,
+     "$nota": "el huevo se cuaja en el caldo caliente"
+    },
+    {
+     "ref": "fdc-2709351",
+     "grams": 10
+    }
+   ],
+   "portion_hints": [
+    {
+     "grams": 300,
+     "label_en": "1 bowl",
+     "label_es": "1 plato hondo"
+    }
+   ],
+   "default_portion_g": 300,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 700 g de caldo, 250 g de papa hervida, 60 g de mayonesa, 50 g de huevo y 10 g de vinagre.",
+    "El caldo del catálogo (fdc-2707132) es de carne o ave, no de pescado: USDA no tiene fumet. Aporta 6 kcal por 100 g, así que el efecto sobre la energía es despreciable, pero el sodio del gazpachuelo real depende del fumet y puede diferir.",
+    "El caldo entra como ingrediente porque es la mayor parte del plato."
+   ]
+  },
+  {
+   "id": "receta-escalivada",
+   "names": {
+    "en": "Escalivada, Catalan roasted eggplant and pepper",
+    "es": "Escalivada"
+   },
+   "aliases": [
+    "Verduras asadas catalanas"
+   ],
+   "category": "Vegetable dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {
+     "ref": "fdc-169228",
+     "grams": 400
+    },
+    {
+     "ref": "fdc-2709801",
+     "grams": 300
+    },
+    {
+     "ref": "fdc-2710186",
+     "grams": 30
+    },
+    {
+     "ref": "fdc-173468",
+     "grams": 3
+    }
+   ],
+   "portion_hints": [
+    {
+     "grams": 150,
+     "label_en": "1 serving",
+     "label_es": "1 ración"
+    },
+    {
+     "grams": 80,
+     "label_en": "1 tapa portion",
+     "label_es": "1 tapa"
+    }
+   ],
+   "default_portion_g": 150,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 400 g de berenjena, 300 g de pimiento rojo, 30 g de aceite de oliva y 3 g de sal.",
+    "LÍMITE CONOCIDO: la escalivada se ASA y pierde bastante agua, pero el método aplicado es `mezclado` (factor 1,000). El motivo está medido: SR Legacy solo trae tres pares crudo/asado de verdura (rendimientos 0,71 · 1,07 · 1,11), y una muestra de tres que se contradice no sostiene ningún número. Antes que inventar un factor, la ficha usa la convención de FNDDS y avisa que por eso SUBESTIMA la densidad calórica del plato real.",
+    "Cuando haya una fuente de rendimiento para verdura asada, esta ficha se recalcula sin tocar un solo gramo de la receta."
+   ]
+  },
+  {
+   "id": "receta-tarta-de-santiago",
+   "names": {
+    "en": "Tarta de Santiago, Galician almond cake",
+    "es": "Tarta de Santiago"
+   },
+   "aliases": [
+    "Torta de almendra gallega"
+   ],
+   "category": "Cakes and pies",
+   "metodo": "horneado_masa",
+   "ingredientes": [
+    {
+     "ref": "fdc-170567",
+     "grams": 250,
+     "$nota": "almendra molida"
+    },
+    {
+     "ref": "fdc-2710257",
+     "grams": 250
+    },
+    {
+     "ref": "fdc-2707152",
+     "grams": 200,
+     "$nota": "cuatro huevos"
+    }
+   ],
+   "portion_hints": [
+    {
+     "grams": 90,
+     "label_en": "1 slice",
+     "label_es": "1 porción"
+    },
+    {
+     "grams": 700,
+     "label_en": "1 whole cake",
+     "label_es": "1 tarta entera"
+    }
+   ],
+   "default_portion_g": 90,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: partes iguales de almendra molida y azúcar (250 g cada una) y cuatro huevos (200 g). Sin harina, que es lo que define a la tarta de Santiago.",
+    "RESERVA DEL RENDIMIENTO: se aplica `horneado_masa` (0,891), medido sobre tres masas de tarta de SR Legacy — 0,871 · 0,891 · 0,905, pares idénticos salvo por el token `unbaked`/`baked`. Las tres son masa QUEBRADA DE HARINA DE TRIGO y esta tarta es un bizcocho de almendra SIN harina, que retiene el agua de otra manera: el factor es el más cercano que hay medido, no el propio.",
+    "La ronda anterior usaba `mezclado` (1,000) y declaraba que subestimaba, sobre la afirmación falsa de que no había ningún par de masa en los datasets. Los había: se buscó con los sufijos de la carne (`cooked, baked`) y las masas usan `unbaked`/`baked`. Con el factor correcto la ficha pasa de 391 a 439 kcal por 100 g.",
+    "El azúcar glas de encima no entra en la ficha."
+   ]
+  },
+  {
+   "id": "receta-bocadillo-de-calamares",
+   "names": {
+    "en": "Fried calamari sandwich (bocadillo de calamares)",
+    "es": "Bocadillo de calamares"
+   },
+   "aliases": [
+    "Bocata de calamares"
+   ],
+   "category": "Seafood mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {
+     "ref": "fdc-2707593",
+     "grams": 100
+    },
+    {
+     "ref": "fdc-2706334",
+     "grams": 120
+    }
+   ],
+   "portion_hints": [
+    {
+     "grams": 220,
+     "label_en": "1 sandwich",
+     "label_es": "1 bocadillo"
+    }
+   ],
+   "default_portion_g": 220,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 100 g de pan y 120 g de calamares rebozados.",
+    "Las dos piezas ya estaban en el catálogo por separado; lo que aporta la ficha es la proporción del bocadillo de Madrid, para no tener que sumarlas a mano.",
+    "Sin alioli ni limón, que es como se sirve en la mayoría de las barras."
+   ]
+  },
+  {
+   "id": "receta-huevos-rotos",
+   "names": {
+    "en": "Broken eggs over fried potatoes (huevos rotos)",
+    "es": "Huevos rotos"
+   },
+   "aliases": [
+    "Huevos estrellados"
+   ],
+   "category": "Eggs and omelets",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {
+     "ref": "fdc-2709456",
+     "grams": 250
+    },
+    {
+     "ref": "fdc-2707155",
+     "grams": 110
+    }
+   ],
+   "portion_hints": [
+    {
+     "grams": 360,
+     "label_en": "1 plate to share",
+     "label_es": "1 plato para compartir"
+    },
+    {
+     "grams": 180,
+     "label_en": "1 individual serving",
+     "label_es": "1 ración individual"
+    }
+   ],
+   "default_portion_g": 360,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 250 g de patatas fritas y 110 g de huevo frito (dos huevos).",
+    "Las dos piezas ya estaban en el catálogo por separado; lo que aporta la ficha es la proporción del plato.",
+    "Sin jamón ni chorizo, que son las versiones más habituales fuera de la básica."
+   ]
+  },
+  {
+   "id": "receta-turron",
+   "names": {
+    "en": "Turron de Alicante, Spanish hard almond nougat",
+    "es": "Turrón"
+   },
+   "aliases": [
+    "Turrón de Alicante",
+    "Turrón duro"
+   ],
+   "category": "Candy not containing chocolate",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {
+     "ref": "fdc-170567",
+     "grams": 300,
+     "$nota": "almendra marcona tostada — la ficha es cruda"
+    },
+    {
+     "ref": "fdc-169640",
+     "grams": 75
+    },
+    {
+     "ref": "fdc-2710257",
+     "grams": 100
+    },
+    {
+     "ref": "fdc-2707152",
+     "grams": 25,
+     "$nota": "la receta lleva solo la clara"
+    }
+   ],
+   "portion_hints": [
+    {
+     "grams": 30,
+     "label_en": "1 bar portion",
+     "label_es": "1 porción"
+    },
+    {
+     "grams": 15,
+     "label_en": "1 thin slice",
+     "label_es": "1 lonja fina"
+    }
+   ],
+   "default_portion_g": 30,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 300 g de almendra, 75 g de miel, 100 g de azúcar y 25 g de huevo — las proporciones del turrón de Alicante (60 % almendra).",
+    "RESERVA DE INGREDIENTE: la receta lleva solo CLARA de huevo y la ficha usa huevo entero (fdc-2707152), porque el catálogo no tiene clara cruda — la única clara que hay está cocida con grasa. Sobre 25 g de 500, el efecto es de décimas.",
+    "RESERVA DEL RENDIMIENTO: el turrón se cuece —el almíbar de miel y azúcar pierde agua— y se aplica `mezclado` (1,000), que no modela esa pérdida. La ficha SUBESTIMA la densidad real. No hay ningún par crudo/cocido de confitería en los tres datasets con el que medir el factor.",
+    "La almendra de la ficha es cruda y la del turrón va tostada; tostar concentra un poco.",
+    "Estuvo BLOQUEADA una ronda por falta de una ficha de miel. El bloqueo era autoinfligido: `Honey` (fdc-169640) estaba en SR Legacy y no se había buscado."
+   ]
+  }
+ ],
+ "$bloqueadas": {
+  "$comment": "Recetas que se evaluaron y NO se fichan. Preferimos un hueco declarado a una ficha dudosa.",
+  "lomo-embuchado": "BLOQUEADA POR EL CORTE, no por falta de dato. El motivo publicado en la ronda anterior era FALSO: comparaba cocido contra cocido usando un jamón de salmuera y concluía que el curado ganaba peso. El par correcto es crudo contra crudo, y existe: `Pork, cured, ham, center slice, country-style, separable lean only, raw` (fdc-168282, 27,80 g de proteína) contra los 13 lomos de cerdo frescos crudos lean-only de SR Legacy (20,95–22,81 g) da rendimientos de 0,747 a 0,854, mediana 0,784, y en la dirección correcta. Con ese factor la receta se derivaría, y aun así no se ficha: 0,784 es el secado de un jamón de tipo campo, y un lomo embuchado se seca bastante más. Derivarlo daría un producto con la proteína del jamón (27,8 g) y no la de un embuchado, y no hay ningún curado en seco de lomo en los tres datasets con el que acotar esa diferencia. El hueco declarado es más honesto que una ficha que sabemos baja y no sabemos cuánto.",
+  "acai-pulpa-congelada": "BLOQUEADA por circularidad. Derivarla del açaí en polvo liofilizado (manual-acai-en-polvo, 247 kcal) exige una proporción de rehidratación, y no hay ninguna fuente que la dé. La única forma de elegirla sería ajustarla hasta que el resultado caiga en las 60-80 kcal/100 g que ya sabemos que tiene la pulpa: eso no es derivar, es escribir la respuesta y disfrazarla de cálculo.",
+  "turron": "DESBLOQUEADA en esta ronda. Ver `receta-turron`: entró la ficha de miel (fdc-169640) que faltaba. Los dos candidatos de USDA siguen rechazados por composición y su medición está en es.sweep.coverage.json."
+ }
+}

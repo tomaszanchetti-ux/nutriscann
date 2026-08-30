@@ -21,6 +21,15 @@ Un catálogo correcto **por construcción**, no por disciplina.
                         mismas fuentes ⇒ mismo resultado, siempre.
                         Precedencia declarada en sources.json.
                         Cada campo registra de qué fuente salió.
+                        Además de los datasets, el build materializa dos fuentes
+                        propias: los alimentos MANUALES (curation/manual.foods.json,
+                        precedencia máxima, p.ej. una etiqueta comercial) y las
+                        RECETAS COMPUESTAS (curation/recipes.foods.json), cuyos
+                        valores DERIVA de otras fichas del catálogo aplicando las
+                        transformaciones de cocción de curation/cooking.transforms.json
+                        (rendimientos medidos de los propios datasets: frito absorbe
+                        aceite, horneado pierde agua…). En una ficha receta nadie
+                        tipea un número: ingredientes + gramos + método ⇒ per_100g.
                         → build/foods.canonical.json  (COMMITEADO)
 
 3. CURACIÓN             curation/*.json — nombres en español, aliases, etiquetas
@@ -59,17 +68,19 @@ El build **falla** —y por lo tanto no hay seed— si:
 
 1. **Esquema.** Un alimento no valida: los cuatro macros y las calorías tienen
    que estar y ser números finitos. Nada de `NaN` ni de `Infinity`.
-2. **Aceptación por fuente.** Menos de 600 alimentos de FNDDS o menos de 250 de
-   SR Legacy con nutrientes resueltos. Este candado existe por una trampa
-   medida: FNDDS referencia los nutrientes por `nutrient_nbr` y los otros dos
-   datasets por `nutrient.id`. Un mapeo único no lanza ninguna excepción —
+2. **Aceptación por fuente.** Menos de 600 alimentos de FNDDS, 250 de SR Legacy,
+   1 manual o 1 receta con nutrientes resueltos. Este candado existe por una
+   trampa medida: FNDDS referencia los nutrientes por `nutrient_nbr` y los otros
+   dos datasets por `nutrient.id`. Un mapeo único no lanza ninguna excepción —
    devuelve VACÍO EN SILENCIO para la fuente más valiosa. Exigir un piso por
    fuente convierte ese fallo silencioso en una explosión.
 3. **Atwater.** Las calorías declaradas no cierran con los propios macros del
    alimento (4×proteína + 4×carbohidratos + 9×grasa + 7×alcohol), con tolerancia
    del 10 % *y* ±20 kcal — hay que fallar las dos para que salte, porque en una
-   lechuga de 15 kcal el porcentaje se dispara por nada.
-4. **Casos dorados.** Cinco alimentos conocidos contra su valor de referencia,
+   lechuga de 15 kcal el porcentaje se dispara por nada. **Los alimentos manuales
+   solo tienen el brazo del 10 %**: el margen absoluto está pensado para las
+   verduras de USDA, no para etiquetas curadas a mano.
+4. **Casos dorados.** Seis alimentos conocidos contra su valor de referencia,
    ±15 % (`manzana ≈ 52 kcal/100 g`). No prueban que USDA esté bien: prueban que
    el pipeline leyó la columna correcta.
 5. **Idempotencia.** Dos corridas completas del pipeline tienen que producir el
@@ -109,6 +120,22 @@ refactorizar el catálogo ni migrar Firestore.
 `names.es` y `label_es` valen `null` mientras la curación no los haya escrito:
 el catálogo se publica igual y el seed no espera a nadie. Los cuatro macros y
 las calorías, en cambio, nunca son `null` — sin ellos el alimento no entra.
+
+Cuatro extensiones del contrato (todas aditivas, desde la card 1.6/1.7):
+
+- **`source`** puede valer además `manual` (etiqueta comercial o referencia web,
+  con el matiz declarado en su provenance) y `receta` (valores derivados por el
+  build de otras fichas). Los ids propios son `manual-…` y `receta-…`.
+- **`aliases.es`** admite dos formas por entrada: el string pelado (confianza
+  1,0 implícita) o el objeto `{ "alias": "Milanesa", "confidence": 0.6 }` con la
+  escala cerrada 1,0 · 0,8 · 0,6 · 0,5 — un gemelo aproximado declara cuánto se
+  parece, y esa reserva viaja hasta el usuario.
+- **`caveats`** (solo en alimentos `manual` y `receta`, es candado): las
+  salvedades de la ficha en texto plano ("valores por 100 ml", "receta estándar
+  declarada, no medición de laboratorio").
+- **`receta`** (solo en alimentos `receta`): los ingredientes con sus gramos y
+  refs, el método de cocción aplicado y los pesos de entrada/salida — todo lo
+  necesario para rehacer la cuenta a mano.
 
 ### Qué dice exactamente `provenance`
 
@@ -159,6 +186,8 @@ que el resto de las porciones sigue declarando su origen USDA.
 
 ## Estado
 
-**Capas 1, 2 y 3 en pie (card 1.2).** El build compila los 975 alimentos de la
-selección con los cinco candados en verde. Falta la capa 4: el seed a Firestore
-(card 1.5) y la curación en español (card 1.3), que corre en paralelo.
+**Las cuatro capas en pie (WS03, 30/08/2026).** El build compila 1.025 alimentos
+(703 FNDDS + 307 SR Legacy + 6 manuales + 9 recetas compuestas) con los cinco
+candados en verde, la curación en español completa y las transformaciones de
+cocción medidas de los propios datasets. La capa 4 es `seed/` (card 1.5): la
+publicación idempotente a Firestore, con su propio README.

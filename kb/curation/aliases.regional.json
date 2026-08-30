@@ -1,0 +1,340 @@
+{
+ "$comment": [
+  "Aliases regionales CON CONFIANZA (card 1.6). Formato aditivo: los aliases en texto plano de",
+  "names.es.json siguen valiendo confianza 1,0 y no se tocan; acá viven los que necesitan",
+  "declarar una reserva. La escala (1 · 0,8 · 0,6 · 0,5) está en kb/curation/README.md y la",
+  "evidencia de cada uno en kb/selection/regional.coverage.json y es.sweep.coverage.json.",
+  "Un alias que dice lo mismo que el nombre del alimento NO se escribe: el plato ya está",
+  "cubierto por el nombre, con confianza 1,0."
+ ],
+ "aliases": {
+  "167987": [
+   {
+    "alias": "Brigadeiro",
+    "confidence": 0.6
+   }
+  ],
+  "168043": [
+   {
+    "alias": "Locro",
+    "confidence": 0.5
+   }
+  ],
+  "169510": [
+   {
+    "alias": "Asado",
+    "confidence": 0.8
+   }
+  ],
+  "171417": [
+   {
+    "alias": "Chimichurri",
+    "confidence": 0.6
+   }
+  ],
+  "174249": [
+   {
+    "alias": "Pulpo a la gallega",
+    "confidence": 0.6
+   }
+  ],
+  "2705683": [
+   {
+    "alias": "Crema catalana",
+    "confidence": 0.6
+   }
+  ],
+  "2705730": [
+   {
+    "alias": "Queso manchego",
+    "confidence": 0.5
+   }
+  ],
+  "2705733": [
+   {
+    "alias": "Provoleta",
+    "confidence": 0.6
+   }
+  ],
+  "2705833": [
+   {
+    "alias": "Picanha",
+    "confidence": 0.6
+   }
+  ],
+  "2705843": [
+   {
+    "alias": "Rabo de toro",
+    "confidence": 0.6
+   }
+  ],
+  "2705879": [
+   {
+    "alias": "Jamón serrano",
+    "confidence": 0.8
+   }
+  ],
+  "2705882": [
+   {
+    "alias": "Cochinillo",
+    "confidence": 0.5
+   }
+  ],
+  "2705905": [
+   {
+    "alias": "Cordero asado",
+    "confidence": 0.6
+   }
+  ],
+  "2706089": [
+   {
+    "alias": "Milanesa",
+    "confidence": 0.5
+   }
+  ],
+  "2706162": [
+   {
+    "alias": "Callos",
+    "confidence": 0.5
+   }
+  ],
+  "2706179": [
+   {
+    "alias": "Chorizo",
+    "confidence": 0.6
+   }
+  ],
+  "2706195": [
+   {
+    "alias": "Salchichón",
+    "confidence": 0.8
+   }
+  ],
+  "2706232": [
+   {
+    "alias": "Boquerones",
+    "confidence": 0.6
+   }
+  ],
+  "2706245": [
+   {
+    "alias": "Bacalao",
+    "confidence": 0.8
+   }
+  ],
+  "2706293": [
+   {
+    "alias": "Sardinas",
+    "confidence": 0.6
+   }
+  ],
+  "2706310": [
+   {
+    "alias": "Atún a la plancha",
+    "confidence": 0.8
+   }
+  ],
+  "2706334": [
+   {
+    "alias": "Calamares a la romana",
+    "confidence": 0.8
+   }
+  ],
+  "2706362": [
+   {
+    "alias": "Gambas al ajillo",
+    "confidence": 0.6
+   }
+  ],
+  "2706417": [
+   {
+    "alias": "Milanesa a la napolitana",
+    "confidence": 0.8
+   }
+  ],
+  "2706459": [
+   {
+    "alias": "Moqueca",
+    "confidence": 0.6
+   }
+  ],
+  "2706467": [
+   {
+    "alias": "Albóndigas",
+    "confidence": 0.8
+   }
+  ],
+  "2706964": [
+   {
+    "alias": "Bocadillo de jamón",
+    "confidence": 0.8
+   }
+  ],
+  "2707053": [
+   {
+    "alias": "Choripán",
+    "confidence": 0.8
+   }
+  ],
+  "2707198": [
+   {
+    "alias": "Tortilla francesa",
+    "confidence": 0.8
+   }
+  ],
+  "2707366": [
+   {
+    "alias": "Feijoada",
+    "confidence": 0.8
+   }
+  ],
+  "2707407": [
+   {
+    "alias": "Fabada",
+    "confidence": 0.6
+   }
+  ],
+  "2707414": [
+   {
+    "alias": "Cocido madrileño",
+    "confidence": 0.5
+   },
+   {
+    "alias": "Garbanzos guisados",
+    "confidence": 1
+   }
+  ],
+  "2707423": [
+   {
+    "alias": "Lentejas con chorizo",
+    "confidence": 0.6
+   }
+  ],
+  "2707652": [
+   {
+    "alias": "Pan con tomate",
+    "confidence": 0.8
+   }
+  ],
+  "2707963": [
+   {
+    "alias": "Alfajor",
+    "confidence": 0.5
+   }
+  ],
+  "2708024": [
+   {
+    "alias": "Croqueta",
+    "confidence": 0.6
+   }
+  ],
+  "2708331": [
+   {
+    "alias": "Torrijas",
+    "confidence": 0.6
+   }
+  ],
+  "2708405": [
+   {
+    "alias": "Risotto",
+    "confidence": 0.5
+   }
+  ],
+  "2708614": [
+   {
+    "alias": "Pizza margarita",
+    "confidence": 0.8
+   }
+  ],
+  "2708709": [
+   {
+    "alias": "Pastel brasileño",
+    "confidence": 0.6
+   }
+  ],
+  "2708722": [
+   {
+    "alias": "Ñoquis",
+    "confidence": 1
+   }
+  ],
+  "2708755": [
+   {
+    "alias": "Lasaña",
+    "confidence": 0.8
+   }
+  ],
+  "2708795": [
+   {
+    "alias": "Canelones",
+    "confidence": 0.8
+   }
+  ],
+  "2708828": [
+   {
+    "alias": "Espaguetis a la boloñesa",
+    "confidence": 0.8
+   }
+  ],
+  "2708862": [
+   {
+    "alias": "Carbonara",
+    "confidence": 0.5
+   }
+  ],
+  "2708977": [
+   {
+    "alias": "Arroz negro",
+    "confidence": 0.6
+   }
+  ],
+  "2708994": [
+   {
+    "alias": "Arroz con frijoles",
+    "confidence": 0.8
+   }
+  ],
+  "2709073": [
+   {
+    "alias": "Pimientos rellenos",
+    "confidence": 0.8
+   }
+  ],
+  "2709456": [
+   {
+    "alias": "Patatas bravas",
+    "confidence": 0.5
+   }
+  ],
+  "2709532": [
+   {
+    "alias": "Ensaladilla rusa",
+    "confidence": 0.6
+   }
+  ],
+  "2710028": [
+   {
+    "alias": "Pisto",
+    "confidence": 0.8
+   }
+  ],
+  "2710106": [
+   {
+    "alias": "Gazpacho",
+    "confidence": 0.8
+   }
+  ],
+  "2710114": [
+   {
+    "alias": "Minestrone",
+    "confidence": 1
+   }
+  ],
+  "2710175": [
+   {
+    "alias": "Pesto",
+    "confidence": 1
+   }
+  ]
+ }
+}

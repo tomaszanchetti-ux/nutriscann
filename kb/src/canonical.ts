@@ -9,51 +9,83 @@
  */
 import { createHash } from "node:crypto";
 
-import type { Curation } from "./curation";
-import { OPTIONAL_KEYS, REQUIRED_KEYS, type NutrientBundle, type NutrientKey } from "./nutrients";
+import type { Curation, ManualFood, Recipe } from "./curation";
+import { derivarReceta, type ResolvedIngredient } from "./transforms";
+import { OPTIONAL_KEYS, REQUIRED_KEYS, type NutrientBundle } from "./nutrients";
 import { groupOverrides, toSourceId, type Selection } from "./selection";
+import { aliasConfidence, aliasText } from "./types";
 import type {
+  Alias,
   CanonicalFood,
   Catalog,
-  FoodSource,
+  ManualProvenance,
   Per100g,
   PortionHint,
   Provenance,
   SourceId,
+  UsdaFoodSource,
 } from "./types";
 
 /** Qué clave del catálogo alimenta cada nutriente, y en qué orden se escribe. */
-const PER_100G_ORDER: NutrientKey[] = [...REQUIRED_KEYS, ...OPTIONAL_KEYS];
+const PER_100G_ORDER = [...REQUIRED_KEYS, ...OPTIONAL_KEYS];
 
 export interface AssembleInput {
   selection: Selection;
   sourceIds: SourceId[];
-  descriptions: Record<FoodSource, Map<number, string>>;
-  nutrients: Record<FoodSource, Map<number, NutrientBundle>>;
-  portions: Record<FoodSource, Map<number, PortionHint[]>>;
+  descriptions: Record<UsdaFoodSource, Map<number, string>>;
+  nutrients: Record<UsdaFoodSource, Map<number, NutrientBundle>>;
+  portions: Record<UsdaFoodSource, Map<number, PortionHint[]>>;
   /** Nutrientes de los alimentos de Foundation que pisan valores puntuales. */
   foundationNutrients: Map<number, NutrientBundle>;
   curation: Curation;
+  /** Nombres que heredan las fichas que quedan tras las exclusiones de la DT-7. */
+  inheritedAliases?: Map<number, string[]>;
+  /** Nombres ANTERIORES de las fichas que la DT-7 renombró, por id. */
+  dt7OldNames?: Map<string, string>;
 }
 
 export interface BuildStats {
   foods: number;
-  bySource: Record<FoodSource, number>;
+  bySource: Record<UsdaFoodSource, number>;
   /** Alimentos con los cuatro macros + kcal resueltos, por fuente. */
-  resolvedBySource: Record<FoodSource, number>;
+  resolvedBySource: Record<UsdaFoodSource, number>;
   /** Cobertura de los campos extendidos (fibra, saturadas, azúcares, sodio). */
   coverage: Record<string, number>;
   /** Alimentos que la selección pidió y no se pudieron resolver: rompen el build. */
-  unresolved: { fdc_id: number; source: FoodSource; description: string; missing: string[] }[];
+  unresolved: { fdc_id: number; source: UsdaFoodSource; description: string; missing: string[] }[];
   /** Overrides de Foundation aplicados, campo por campo. */
   overridesByField: Record<string, number>;
   overridesFoods: number;
   /** Alimentos con más de un candidato de Foundation y cuál ganó. */
   overrideCollisions: { fdc_id: number; candidates: number[]; winner: number }[];
   /** Alimentos sin `names.es`: la lista de pendientes para la curación. */
-  pendingCuration: { fdc_id: number; source: FoodSource; description: string }[];
+  pendingCuration: { fdc_id: number; source: UsdaFoodSource; description: string }[];
   curatedNames: number;
   curatedAliases: number;
+  /** Aliases regionales con confianza aplicados (card 1.6). */
+  regionalAliases: number;
+  /** Aliases heredados de una ficha excluida por la DT-7. */
+  inheritedAliases: number;
+  /**
+   * Aliases de confianza 1,0 que resucitan el nombre viejo de una ficha que la
+   * DT-7 renombró. Rompen el build: el nombre entraría por la ventana.
+   */
+  staleAliases: { id: string; alias: string; renombrada: string }[];
+  /**
+   * Aliases regionales apuntando a un fdc_id que NO está en la selección.
+   * Rompen el build: un alias huérfano no falla, simplemente NUNCA matchea, y
+   * ese silencio es el mismo del que nos defiende el candado por fuente.
+   */
+  orphanRegionalAliases: number[];
+  /** Alimentos que entraron enteros por curación manual. */
+  manualFoods: number;
+  /** Alimentos derivados de una receta compuesta (card 1.7). */
+  recipeFoods: number;
+  /** Recetas que no se pudieron derivar, con el motivo. Rompen el build. */
+  recipeFailures: { id: string; motivo: string }[];
+  /** Alimentos de USDA cuyos valores pisó una entrada manual, campo a campo. */
+  manualOverridesByField: Record<string, number>;
+  manualOverrideFoods: number;
   /** Alimentos cuya porción por defecto la corrigió la curación. */
   curatedPortions: number;
   /** Porciones que recibieron su etiqueta en español desde la curación. */
@@ -118,6 +150,15 @@ export function assemble(input: AssembleInput): AssembleResult {
     pendingCuration: [],
     curatedNames: 0,
     curatedAliases: 0,
+    regionalAliases: 0,
+    inheritedAliases: 0,
+    staleAliases: [],
+    orphanRegionalAliases: [],
+    manualFoods: 0,
+    recipeFoods: 0,
+    recipeFailures: [],
+    manualOverridesByField: {},
+    manualOverrideFoods: 0,
     curatedPortions: 0,
     curatedPortionLabels: 0,
     portionNeedsReview: [],
@@ -195,7 +236,16 @@ export function assemble(input: AssembleInput): AssembleResult {
 
     const curated = curation.names.get(entry.fdc_id);
     const nameEs = curated?.name ?? null;
-    const aliases = curated?.aliases ?? [];
+    // Los aliases en texto plano de `names.es.json` valen confianza 1,0 y no se
+    // tocan; detrás van los regionales, que declaran la suya. Aditivo: sumar la
+    // card 1.6 no reescribió ni uno de los 609 aliases que ya estaban.
+    const regional = curation.regionalAliases.get(entry.fdc_id) ?? [];
+    // El nombre que perdió una ficha excluida por la DT-7 vale confianza 1,0:
+    // no es un gemelo, es el mismo alimento con otro nombre.
+    const heredados = input.inheritedAliases?.get(entry.fdc_id) ?? [];
+    const aliases: Alias[] = [...(curated?.aliases ?? []), ...heredados, ...regional];
+    stats.regionalAliases += regional.length;
+    stats.inheritedAliases += heredados.length;
     if (nameEs !== null) {
       provenance["names.es"] = "curation";
       stats.curatedNames += 1;
@@ -208,7 +258,7 @@ export function assemble(input: AssembleInput): AssembleResult {
     }
     if (aliases.length > 0) {
       provenance["aliases.es"] = "curation";
-      stats.curatedAliases += aliases.length;
+      stats.curatedAliases += curated?.aliases.length ?? 0;
     }
 
     // --- Porciones ----------------------------------------------------------
@@ -278,6 +328,39 @@ export function assemble(input: AssembleInput): AssembleResult {
     if (values.alcohol_g !== undefined) alcohol.set(id, values.alcohol_g);
   }
 
+  // Ningún alias de confianza 1,0 puede ser el nombre ANTERIOR de una ficha que la
+  // DT-7 renombró por mentir sobre su composición. Renombrar la ficha y dejarle el
+  // nombre viejo de alias no arregla nada: el usuario cae en el mismo lugar.
+  const viejos = new Map<string, string>();
+  for (const [id, nombre] of input.dt7OldNames ?? []) viejos.set(plano(nombre), id);
+  for (const food of foods) {
+    for (const alias of food.aliases.es) {
+      if (aliasConfidence(alias) !== 1) continue;
+      const renombrada = viejos.get(plano(aliasText(alias)));
+      if (renombrada === undefined) continue;
+      stats.staleAliases.push({ id: food.id, alias: aliasText(alias), renombrada });
+    }
+  }
+
+  // Un alias regional que apunta afuera de la selección no explota: no matchea
+  // nunca. Igual que con el mapeo de FNDDS vacío, el silencio es el problema.
+  const enSeleccion = new Set(selection.entries.map((e) => e.fdc_id));
+  for (const fdcId of curation.regionalAliases.keys()) {
+    if (!enSeleccion.has(fdcId)) stats.orphanRegionalAliases.push(fdcId);
+  }
+  stats.orphanRegionalAliases.sort((a, b) => a - b);
+
+  // --- Curación manual: la precedencia más alta del pipeline ----------------
+  // Va DESPUÉS de USDA y de Foundation a propósito: el orden del código es el
+  // orden declarado en sources.json (SR < Foundation < FNDDS < curación manual)
+  // y quien lea esta función lo ve en el orden en que pasa.
+  applyManualFoods(foods, curation.manualFoods, stats, alcohol);
+
+  // --- Recetas compuestas: el catálogo se compone a sí mismo -----------------
+  // Va al final porque una receta puede apuntar a una ficha manual (o a otra que
+  // acaba de entrar): los ingredientes tienen que estar todos resueltos antes.
+  applyRecipes(foods, curation, stats);
+
   // Orden estable: por id, comparado como texto (el id es el que viaja a
   // Firestore, así que el orden del archivo es el orden del catálogo).
   foods.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
@@ -287,13 +370,228 @@ export function assemble(input: AssembleInput): AssembleResult {
     selection: selection.criteria_version,
     sources: input.sourceIds,
   };
-  const kbVersion = `1.0.0+${contentHash({ generated_from: generatedFrom, foods })}`;
+  // 2.1.0 con la card 1.7.
+  //
+  // El 2.0.0 lo justificó la DT-7: retiró ocho alimentos del catálogo y renombró
+  // veintiuno, y un menor promete que lo que estaba sigue estando. Después se
+  // sumaron seis renombres más por la misma regla —el patrón `fat added` que el
+  // primer barrido no vio—, hasta los veintisiete de hoy, y una fuente nueva
+  // —`receta`— con una clave nueva y opcional en el contrato (`receta`, solo en
+  // los alimentos derivados).
+  //
+  // Es MENOR y no un segundo mayor por una razón concreta: el 2.0.0 nunca se
+  // publicó a Firestore, así que no hay consumidor que lo haya leído y no hay
+  // promesa que romper. Los seis renombres son la misma ola que el mayor ya
+  // anunció, antes de que llegara a nadie. Lo que sí cambia el contrato —la clave
+  // `receta` y el valor `receta` en `source`— es aditivo: quien lea el catálogo
+  // como lo leía en 2.0.0 no pierde un solo campo.
+  const kbVersion = `2.1.0+${contentHash({ generated_from: generatedFrom, foods })}`;
 
   return {
     catalog: { kb_version: kbVersion, generated_from: generatedFrom, foods },
     stats,
     alcohol,
   };
+}
+
+/**
+ * Mezcla los alimentos de curación manual con precedencia máxima.
+ *
+ * Dos caminos, una sola puerta:
+ *  - el `id` coincide con un alimento del catálogo ⇒ PISA sus valores campo a
+ *    campo (los que la entrada declara; un `null` es "la fuente no lo dice" y
+ *    no toca nada). Nombre y porciones se dejan como estaban: vinieron de USDA
+ *    y la entrada manual está corrigiendo NÚMEROS, no vocabulario.
+ *  - el `id` no coincide con nadie ⇒ entra como un alimento nuevo, con su
+ *    fuente propia (`manual`) y todo su provenance apuntando al origen que
+ *    declaró (`manual/etiqueta-comercial`).
+ *
+ * Los candados se aplican igual: un alimento manual cuyas calorías no cierran
+ * con sus propios macros rompe el build como cualquier otro. Que el dato lo
+ * haya escrito una persona no lo exime de ser coherente.
+ */
+export function applyManualFoods(
+  foods: CanonicalFood[],
+  manualFoods: ManualFood[],
+  stats: BuildStats,
+  alcohol: Map<string, number>,
+): void {
+  const byId = new Map(foods.map((food) => [food.id, food]));
+
+  for (const manual of manualFoods) {
+    const origin: ManualProvenance = `manual/${manual.origen}`;
+    const existing = byId.get(manual.id);
+
+    if (existing !== undefined) {
+      let touched = false;
+      for (const key of PER_100G_ORDER) {
+        const value = manual.per_100g[key];
+        if (value === null || value === undefined) continue;
+        existing.per_100g[key] = value;
+        existing.provenance[`per_100g.${key}`] = origin;
+        stats.manualOverridesByField[key] = (stats.manualOverridesByField[key] ?? 0) + 1;
+        touched = true;
+      }
+      if (manual.aliases.length > 0) {
+        existing.aliases.es = [...existing.aliases.es, ...manual.aliases];
+        existing.provenance["aliases.es"] = "curation";
+      }
+      if (manual.caveats.length > 0) existing.caveats = [...manual.caveats];
+      existing.provenance = sortKeys(existing.provenance);
+      if (touched) stats.manualOverrideFoods += 1;
+      continue;
+    }
+
+    const provenance: Record<string, Provenance> = {
+      "names.en": origin,
+      "names.es": origin,
+      category: origin,
+      default_portion_g: origin,
+      portion_hints: origin,
+    };
+    for (const key of PER_100G_ORDER) {
+      if (manual.per_100g[key] !== null) provenance[`per_100g.${key}`] = origin;
+    }
+    if (manual.aliases.length > 0) provenance["aliases.es"] = origin;
+
+    const food: CanonicalFood = {
+      id: manual.id,
+      source: "manual",
+      source_ref: manual.source_ref,
+      names: { en: manual.name_en, es: manual.name_es },
+      aliases: { es: [...manual.aliases] },
+      category: manual.category,
+      per_100g: { ...manual.per_100g },
+      portion_hints: manual.portion_hints.map((hint) => ({ ...hint })),
+      default_portion_g: manual.default_portion_g,
+      provenance: sortKeys(provenance),
+      deprecated: false,
+    };
+    if (manual.caveats.length > 0) food.caveats = [...manual.caveats];
+    foods.push(food);
+    byId.set(food.id, food);
+    stats.manualFoods += 1;
+    // Sin alcohol declarado: el predictor de Atwater lo toma como 0, que es
+    // lo que corresponde para un alimento que no lo mide.
+    alcohol.delete(food.id);
+  }
+}
+
+/**
+ * Deriva los alimentos declarados como receta compuesta (card 1.7).
+ *
+ * El build no acepta ni un número nutricional escrito a mano acá: cada valor sale
+ * de las fichas que la receta referencia, con la aritmética pura de
+ * `transforms.ts`. Lo que la receta declara es de QUÉ está hecho el plato; lo que
+ * vale, lo calcula el pipeline. Por eso una receta se puede auditar rehaciendo la
+ * cuenta, y por eso `receta` viaja al catálogo con los ingredientes y los gramos.
+ *
+ * Una receta que no se puede derivar NO se salta en silencio: se anota en
+ * `recipeFailures` y el candado de esquema rompe el build. Un plato que se
+ * publica con los valores de ayer porque hoy su ingrediente desapareció es
+ * exactamente el fallo silencioso del que nos defiende todo el resto.
+ */
+export function applyRecipes(foods: CanonicalFood[], curation: Curation, stats: BuildStats): void {
+  const byId = new Map(foods.map((food) => [food.id, food]));
+
+  for (const recipe of curation.recipes) {
+    const fallo = (motivo: string): void => {
+      stats.recipeFailures.push({ id: recipe.id, motivo });
+    };
+    if (byId.has(recipe.id)) {
+      fallo(`el id ya existe en el catálogo`);
+      continue;
+    }
+    const transform = curation.transforms.get(recipe.metodo);
+    if (transform === undefined) {
+      fallo(`el método "${recipe.metodo}" no está declarado en cooking.transforms.json`);
+      continue;
+    }
+
+    const ingredientes: ResolvedIngredient[] = [];
+    let roto = false;
+    for (const item of recipe.ingredientes) {
+      const ficha = byId.get(item.ref);
+      if (ficha === undefined) {
+        fallo(`el ingrediente ${item.ref} no está en el catálogo`);
+        roto = true;
+        break;
+      }
+      if (ficha.deprecated) {
+        fallo(`el ingrediente ${item.ref} está deprecado`);
+        roto = true;
+        break;
+      }
+      ingredientes.push({ ref: item.ref, grams: item.grams, per_100g: ficha.per_100g });
+    }
+    if (roto) continue;
+
+    let aceite = null;
+    if (transform.aceite_absorbido_pct > 0) {
+      const ficha = transform.aceite_ref === null ? undefined : byId.get(transform.aceite_ref);
+      if (ficha === undefined) {
+        fallo(`el aceite del método "${recipe.metodo}" (${String(transform.aceite_ref)}) no está en el catálogo`);
+        continue;
+      }
+      aceite = ficha.per_100g;
+    }
+
+    let derivada;
+    try {
+      derivada = derivarReceta({
+        ingredientes,
+        transform,
+        aceite,
+        rendimiento_declarado: recipe.rendimiento_declarado_g,
+      });
+    } catch (error) {
+      fallo((error as Error).message);
+      continue;
+    }
+
+    const provenance: Record<string, Provenance> = {
+      "names.en": "curation",
+      "names.es": "curation",
+      category: "curation",
+      default_portion_g: "curation",
+      portion_hints: "curation",
+    };
+    for (const key of PER_100G_ORDER) {
+      if (derivada.per_100g[key] !== null) provenance[`per_100g.${key}`] = "receta";
+    }
+    if (recipe.aliases.length > 0) provenance["aliases.es"] = "curation";
+
+    const food: CanonicalFood = {
+      id: recipe.id,
+      source: "receta",
+      source_ref: `Receta compuesta — ${recipe.ingredientes.length} ingredientes, método ${recipe.metodo}`,
+      names: { en: recipe.name_en, es: recipe.name_es },
+      aliases: { es: [...recipe.aliases] },
+      category: recipe.category,
+      per_100g: { ...derivada.per_100g },
+      portion_hints: recipe.portion_hints.map((hint) => ({ ...hint })),
+      default_portion_g: recipe.default_portion_g,
+      provenance: sortKeys(provenance),
+      deprecated: false,
+      caveats: [...recipe.caveats],
+      receta: {
+        metodo: recipe.metodo,
+        ingredientes: recipe.ingredientes.map((i) => ({ ref: i.ref, grams: i.grams })),
+        peso_entrada_g: derivada.peso_entrada_g,
+        aceite_absorbido_g: derivada.aceite_absorbido_g,
+        peso_final_g: derivada.peso_final_g,
+        rendimiento_de: derivada.rendimiento_de,
+      },
+    };
+    foods.push(food);
+    byId.set(food.id, food);
+    stats.recipeFoods += 1;
+  }
+}
+
+/** Sin tildes y en minúsculas: dos formas del mismo nombre no pueden escaparse. */
+function plano(value: string): string {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 }
 
 /** Ordena las claves de un objeto: el provenance no depende del orden de armado. */

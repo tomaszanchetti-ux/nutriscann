@@ -1,7 +1,7 @@
 {
-  "kb_version": "1.0.0+7709c4f1",
+  "kb_version": "2.1.0+9056186e",
   "generated_from": {
-    "selection": "1.1-v2",
+    "selection": "1.1-v2 + 1.6-regional-v1 + 1.6-es-sweep-v1 + 1.7-ingredientes-v1 − dt7-v1",
     "sources": [
       "usda_sr_legacy",
       "usda_foundation",
@@ -988,6 +988,167 @@
       "default_portion_g": 249,
       "provenance": {
         "aliases.es": "curation",
+        "category": "usda_sr_legacy",
+        "default_portion_g": "usda_sr_legacy",
+        "names.en": "usda_sr_legacy",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_sr_legacy",
+        "per_100g.fat_g": "usda_sr_legacy",
+        "per_100g.fiber_g": "usda_sr_legacy",
+        "per_100g.kcal": "usda_sr_legacy",
+        "per_100g.protein_g": "usda_sr_legacy",
+        "per_100g.sat_fat_g": "usda_sr_legacy",
+        "per_100g.sodium_mg": "usda_sr_legacy",
+        "per_100g.sugars_g": "usda_sr_legacy",
+        "portion_hints": "usda_sr_legacy"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-167987",
+      "source": "usda_sr_legacy",
+      "source_ref": "USDA FDC #167987",
+      "names": {
+        "en": "Candies, fudge, chocolate, prepared-from-recipe",
+        "es": "Fudge de chocolate"
+      },
+      "aliases": {
+        "es": [
+          {
+            "alias": "Brigadeiro",
+            "confidence": 0.6
+          }
+        ]
+      },
+      "category": "Sweets",
+      "per_100g": {
+        "kcal": 410,
+        "protein_g": 2.39,
+        "carbs_g": 76.7,
+        "fat_g": 10.41,
+        "fiber_g": 1.7,
+        "sat_fat_g": 6.448,
+        "sugars_g": 73.12,
+        "sodium_mg": 45
+      },
+      "portion_hints": [
+        {
+          "grams": 17,
+          "label_en": "1 piece",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 17,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_sr_legacy",
+        "default_portion_g": "usda_sr_legacy",
+        "names.en": "usda_sr_legacy",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_sr_legacy",
+        "per_100g.fat_g": "usda_sr_legacy",
+        "per_100g.fiber_g": "usda_sr_legacy",
+        "per_100g.kcal": "usda_sr_legacy",
+        "per_100g.protein_g": "usda_sr_legacy",
+        "per_100g.sat_fat_g": "usda_sr_legacy",
+        "per_100g.sodium_mg": "usda_sr_legacy",
+        "per_100g.sugars_g": "usda_sr_legacy",
+        "portion_hints": "usda_sr_legacy"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-168043",
+      "source": "usda_sr_legacy",
+      "source_ref": "USDA FDC #168043",
+      "names": {
+        "en": "Stew, hominy with mutton (Navajo)",
+        "es": "Guiso de maíz pelado con cordero"
+      },
+      "aliases": {
+        "es": [
+          "Guiso de mote con cordero",
+          "Guiso de choclo pelado con cordero",
+          "Guiso de elote pelado con cordero",
+          {
+            "alias": "Locro",
+            "confidence": 0.5
+          }
+        ]
+      },
+      "category": "American Indian/Alaska Native Foods",
+      "per_100g": {
+        "kcal": 83,
+        "protein_g": 6.71,
+        "carbs_g": 9.38,
+        "fat_g": 2.06,
+        "fiber_g": 2,
+        "sat_fat_g": 0.733,
+        "sugars_g": 0.11,
+        "sodium_mg": 45
+      },
+      "portion_hints": [
+        {
+          "grams": 411,
+          "label_en": "1 serving",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 411,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_sr_legacy",
+        "default_portion_g": "usda_sr_legacy",
+        "names.en": "usda_sr_legacy",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_sr_legacy",
+        "per_100g.fat_g": "usda_sr_legacy",
+        "per_100g.fiber_g": "usda_sr_legacy",
+        "per_100g.kcal": "usda_sr_legacy",
+        "per_100g.protein_g": "usda_sr_legacy",
+        "per_100g.sat_fat_g": "usda_sr_legacy",
+        "per_100g.sodium_mg": "usda_sr_legacy",
+        "per_100g.sugars_g": "usda_sr_legacy",
+        "portion_hints": "usda_sr_legacy"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-168063",
+      "source": "usda_sr_legacy",
+      "source_ref": "USDA FDC #168063",
+      "names": {
+        "en": "Restaurant, Latino, arroz con leche (rice pudding)",
+        "es": "Arroz con leche"
+      },
+      "aliases": {
+        "es": []
+      },
+      "category": "Restaurant Foods",
+      "per_100g": {
+        "kcal": 146,
+        "protein_g": 3.2,
+        "carbs_g": 24.92,
+        "fat_g": 3.69,
+        "fiber_g": 0.5,
+        "sat_fat_g": 1.899,
+        "sugars_g": 15.26,
+        "sodium_mg": 106
+      },
+      "portion_hints": [
+        {
+          "grams": 283,
+          "label_en": "1 serving",
+          "label_es": null
+        },
+        {
+          "grams": 253,
+          "label_en": "1 cup",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 283,
+      "provenance": {
         "category": "usda_sr_legacy",
         "default_portion_g": "usda_sr_legacy",
         "names.en": "usda_sr_legacy",
@@ -2509,7 +2670,9 @@
         "es": "Pepinillos en eneldo o kosher"
       },
       "aliases": {
-        "es": []
+        "es": [
+          "Pepinillos"
+        ]
       },
       "category": "Vegetables and Vegetable Products",
       "per_100g": {
@@ -2551,6 +2714,7 @@
       ],
       "default_portion_g": 35,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_sr_legacy",
         "default_portion_g": "usda_sr_legacy",
         "names.en": "usda_sr_legacy",
@@ -3663,7 +3827,9 @@
         "es": "Melón cantalupo crudo"
       },
       "aliases": {
-        "es": []
+        "es": [
+          "Melón cantalupo"
+        ]
       },
       "category": "Fruits and Fruit Juices",
       "per_100g": {
@@ -3735,6 +3901,7 @@
       ],
       "default_portion_g": 177,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_sr_legacy",
         "default_portion_g": "usda_sr_legacy",
         "names.en": "usda_sr_legacy",
@@ -3817,7 +3984,9 @@
         "es": "Naranja cruda"
       },
       "aliases": {
-        "es": []
+        "es": [
+          "Naranja"
+        ]
       },
       "category": "Fruits and Fruit Juices",
       "per_100g": {
@@ -3854,6 +4023,7 @@
       ],
       "default_portion_g": 180,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_sr_legacy",
         "default_portion_g": "usda_sr_legacy",
         "names.en": "usda_sr_legacy",
@@ -4059,7 +4229,9 @@
         "es": "Pera cruda"
       },
       "aliases": {
-        "es": []
+        "es": [
+          "Pera"
+        ]
       },
       "category": "Fruits and Fruit Juices",
       "per_100g": {
@@ -4106,6 +4278,7 @@
       ],
       "default_portion_g": 140,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_sr_legacy",
         "default_portion_g": "usda_sr_legacy",
         "names.en": "usda_sr_legacy",
@@ -5749,6 +5922,123 @@
         }
       ],
       "default_portion_g": 10.3,
+      "provenance": {
+        "category": "usda_sr_legacy",
+        "default_portion_g": "usda_sr_legacy",
+        "names.en": "usda_sr_legacy",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_sr_legacy",
+        "per_100g.fat_g": "usda_sr_legacy",
+        "per_100g.fiber_g": "usda_sr_legacy",
+        "per_100g.kcal": "usda_sr_legacy",
+        "per_100g.protein_g": "usda_sr_legacy",
+        "per_100g.sat_fat_g": "usda_sr_legacy",
+        "per_100g.sodium_mg": "usda_sr_legacy",
+        "per_100g.sugars_g": "usda_sr_legacy",
+        "portion_hints": "usda_sr_legacy"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-169510",
+      "source": "usda_sr_legacy",
+      "source_ref": "USDA FDC #169510",
+      "names": {
+        "en": "Beef, rib, small end (ribs 10-12), separable lean and fat, trimmed to 1/8\" fat, all grades, cooked, broiled",
+        "es": "Costilla de res a la parrilla"
+      },
+      "aliases": {
+        "es": [
+          "Costilla de vaca a la parrilla",
+          "Tira de asado",
+          {
+            "alias": "Asado",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "category": "Beef Products",
+      "per_100g": {
+        "kcal": 291,
+        "protein_g": 25.85,
+        "carbs_g": 0,
+        "fat_g": 20.04,
+        "fiber_g": 0,
+        "sat_fat_g": 7.894,
+        "sugars_g": 0,
+        "sodium_mg": 53
+      },
+      "portion_hints": [
+        {
+          "grams": 85,
+          "label_en": "3 oz",
+          "label_es": null
+        },
+        {
+          "grams": 268,
+          "label_en": "1 piece, cooked, excluding refuse (yield from 1 lb raw meat with refuse)",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 85,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_sr_legacy",
+        "default_portion_g": "usda_sr_legacy",
+        "names.en": "usda_sr_legacy",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_sr_legacy",
+        "per_100g.fat_g": "usda_sr_legacy",
+        "per_100g.fiber_g": "usda_sr_legacy",
+        "per_100g.kcal": "usda_sr_legacy",
+        "per_100g.protein_g": "usda_sr_legacy",
+        "per_100g.sat_fat_g": "usda_sr_legacy",
+        "per_100g.sodium_mg": "usda_sr_legacy",
+        "per_100g.sugars_g": "usda_sr_legacy",
+        "portion_hints": "usda_sr_legacy"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-169640",
+      "source": "usda_sr_legacy",
+      "source_ref": "USDA FDC #169640",
+      "names": {
+        "en": "Honey",
+        "es": "Miel"
+      },
+      "aliases": {
+        "es": []
+      },
+      "category": "Sweets",
+      "per_100g": {
+        "kcal": 304,
+        "protein_g": 0.3,
+        "carbs_g": 82.4,
+        "fat_g": 0,
+        "fiber_g": 0.2,
+        "sat_fat_g": 0,
+        "sugars_g": 82.12,
+        "sodium_mg": 4
+      },
+      "portion_hints": [
+        {
+          "grams": 339,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 21,
+          "label_en": "1 tbsp",
+          "label_es": null
+        },
+        {
+          "grams": 14,
+          "label_en": "1 packet (0.5 oz)",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 339,
       "provenance": {
         "category": "usda_sr_legacy",
         "default_portion_g": "usda_sr_legacy",
@@ -8462,7 +8752,11 @@
         "es": [
           "Castañas de cajú crudas",
           "Marañón crudo",
-          "Nuez de la India cruda"
+          "Nuez de la India cruda",
+          "Anacardos",
+          "Castañas de cajú",
+          "Marañón",
+          "Nuez de la India"
         ]
       },
       "category": "Nut and Seed Products",
@@ -8684,7 +8978,9 @@
       },
       "aliases": {
         "es": [
-          "Pacanas crudas"
+          "Pacanas crudas",
+          "Nueces pecanas",
+          "Pacanas"
         ]
       },
       "category": "Nut and Seed Products",
@@ -9866,7 +10162,9 @@
         "es": "Almendras crudas"
       },
       "aliases": {
-        "es": []
+        "es": [
+          "Almendras"
+        ]
       },
       "category": "Nut and Seed Products",
       "per_100g": {
@@ -9913,6 +10211,7 @@
       ],
       "default_portion_g": 143,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_sr_legacy",
         "default_portion_g": "usda_sr_legacy",
         "names.en": "usda_sr_legacy",
@@ -12767,7 +13066,11 @@
       },
       "aliases": {
         "es": [
-          "Aliño casero de aceite y vinagre"
+          "Aliño casero de aceite y vinagre",
+          {
+            "alias": "Chimichurri",
+            "confidence": 0.6
+          }
         ]
       },
       "category": "Fats and Oils",
@@ -15411,6 +15714,71 @@
       "deprecated": false
     },
     {
+      "id": "fdc-173468",
+      "source": "usda_sr_legacy",
+      "source_ref": "USDA FDC #173468",
+      "names": {
+        "en": "Salt, table",
+        "es": "Sal"
+      },
+      "aliases": {
+        "es": [
+          "Sal de mesa"
+        ]
+      },
+      "category": "Spices and Herbs",
+      "per_100g": {
+        "kcal": 0,
+        "protein_g": 0,
+        "carbs_g": 0,
+        "fat_g": 0,
+        "fiber_g": 0,
+        "sat_fat_g": 0,
+        "sugars_g": 0,
+        "sodium_mg": 38758
+      },
+      "portion_hints": [
+        {
+          "grams": 6,
+          "label_en": "1 tsp",
+          "label_es": null
+        },
+        {
+          "grams": 18,
+          "label_en": "1 tbsp",
+          "label_es": null
+        },
+        {
+          "grams": 292,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 0.4,
+          "label_en": "1 dash",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 6,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_sr_legacy",
+        "default_portion_g": "usda_sr_legacy",
+        "names.en": "usda_sr_legacy",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_sr_legacy",
+        "per_100g.fat_g": "usda_sr_legacy",
+        "per_100g.fiber_g": "usda_sr_legacy",
+        "per_100g.kcal": "usda_sr_legacy",
+        "per_100g.protein_g": "usda_sr_legacy",
+        "per_100g.sat_fat_g": "usda_sr_legacy",
+        "per_100g.sodium_mg": "usda_sr_legacy",
+        "per_100g.sugars_g": "usda_sr_legacy",
+        "portion_hints": "usda_sr_legacy"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-173564",
       "source": "usda_sr_legacy",
       "source_ref": "USDA FDC #173564",
@@ -16097,7 +16465,10 @@
       "aliases": {
         "es": [
           "Plátano crudo",
-          "Guineo crudo"
+          "Guineo crudo",
+          "Banana",
+          "Guineo",
+          "Plátano"
         ]
       },
       "category": "Fruits and Fruit Juices",
@@ -16252,6 +16623,59 @@
         }
       ],
       "default_portion_g": 250,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_sr_legacy",
+        "default_portion_g": "usda_sr_legacy",
+        "names.en": "usda_sr_legacy",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_sr_legacy",
+        "per_100g.fat_g": "usda_sr_legacy",
+        "per_100g.fiber_g": "usda_sr_legacy",
+        "per_100g.kcal": "usda_sr_legacy",
+        "per_100g.protein_g": "usda_sr_legacy",
+        "per_100g.sat_fat_g": "usda_sr_legacy",
+        "per_100g.sodium_mg": "usda_sr_legacy",
+        "per_100g.sugars_g": "usda_sr_legacy",
+        "portion_hints": "usda_sr_legacy"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-174249",
+      "source": "usda_sr_legacy",
+      "source_ref": "USDA FDC #174249",
+      "names": {
+        "en": "Mollusks, octopus, common, cooked, moist heat",
+        "es": "Pulpo cocido"
+      },
+      "aliases": {
+        "es": [
+          {
+            "alias": "Pulpo a la gallega",
+            "confidence": 0.6
+          }
+        ]
+      },
+      "category": "Finfish and Shellfish Products",
+      "per_100g": {
+        "kcal": 164,
+        "protein_g": 29.82,
+        "carbs_g": 4.4,
+        "fat_g": 2.08,
+        "fiber_g": 0,
+        "sat_fat_g": 0.453,
+        "sugars_g": 0,
+        "sodium_mg": 460
+      },
+      "portion_hints": [
+        {
+          "grams": 85,
+          "label_en": "3 oz",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 85,
       "provenance": {
         "aliases.es": "curation",
         "category": "usda_sr_legacy",
@@ -19800,7 +20224,12 @@
         "es": "Flan"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Crema catalana",
+            "confidence": 0.6
+          }
+        ]
       },
       "category": "Pudding",
       "per_100g": {
@@ -19832,6 +20261,7 @@
       ],
       "default_portion_g": 130,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -20287,7 +20717,12 @@
         "es": "Queso parmesano en trozo"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Queso manchego",
+            "confidence": 0.5
+          }
+        ]
       },
       "category": "Cheese",
       "per_100g": {
@@ -20329,6 +20764,80 @@
       ],
       "default_portion_g": 5,
       "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2705733",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2705733",
+      "names": {
+        "en": "Cheese, Provolone",
+        "es": "Queso provolone"
+      },
+      "aliases": {
+        "es": [
+          {
+            "alias": "Provoleta",
+            "confidence": 0.6
+          }
+        ]
+      },
+      "category": "Cheese",
+      "per_100g": {
+        "kcal": 357,
+        "protein_g": 23.45,
+        "carbs_g": 2.45,
+        "fat_g": 28.13,
+        "fiber_g": 0,
+        "sat_fat_g": 16.2,
+        "sugars_g": 0.56,
+        "sodium_mg": 601
+      },
+      "portion_hints": [
+        {
+          "grams": 9,
+          "label_en": "1 cracker-size slice",
+          "label_es": null
+        },
+        {
+          "grams": 21,
+          "label_en": "1 slice",
+          "label_es": null
+        },
+        {
+          "grams": 132,
+          "label_en": "1 cup, diced",
+          "label_es": null
+        },
+        {
+          "grams": 17,
+          "label_en": "1 cubic inch",
+          "label_es": null
+        },
+        {
+          "grams": 21,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 21,
+      "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -21589,6 +22098,97 @@
       "deprecated": false
     },
     {
+      "id": "fdc-2705833",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2705833",
+      "names": {
+        "en": "Beef, steak, sirloin, lean and fat eaten",
+        "es": "Bife de cuadril con grasa"
+      },
+      "aliases": {
+        "es": [
+          "Cuadril con grasa",
+          "Filete de cuadril con grasa",
+          "Bistec de cuadril con grasa",
+          {
+            "alias": "Picanha",
+            "confidence": 0.6
+          }
+        ]
+      },
+      "category": "Beef, excludes ground",
+      "per_100g": {
+        "kcal": 262,
+        "protein_g": 26.23,
+        "carbs_g": 0,
+        "fat_g": 16.65,
+        "fiber_g": 0,
+        "sat_fat_g": 6.556,
+        "sugars_g": 0,
+        "sodium_mg": 361
+      },
+      "portion_hints": [
+        {
+          "grams": 30,
+          "label_en": "1 piece/slice, any size",
+          "label_es": null
+        },
+        {
+          "grams": 120,
+          "label_en": "1 thin",
+          "label_es": null
+        },
+        {
+          "grams": 160,
+          "label_en": "1 regular",
+          "label_es": null
+        },
+        {
+          "grams": 240,
+          "label_en": "1 thick",
+          "label_es": null
+        },
+        {
+          "grams": 20,
+          "label_en": "1 oz yields",
+          "label_es": null
+        },
+        {
+          "grams": 17,
+          "label_en": "1 cubic inch",
+          "label_es": null
+        },
+        {
+          "grams": 135,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 160,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 160,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2705835",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2705835",
@@ -21656,6 +22256,80 @@
         }
       ],
       "default_portion_g": 240,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2705843",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2705843",
+      "names": {
+        "en": "Beef, oxtails",
+        "es": "Rabo de res"
+      },
+      "aliases": {
+        "es": [
+          "Rabo de vaca",
+          {
+            "alias": "Rabo de toro",
+            "confidence": 0.6
+          }
+        ]
+      },
+      "category": "Beef, excludes ground",
+      "per_100g": {
+        "kcal": 257,
+        "protein_g": 25.9,
+        "carbs_g": 0,
+        "fat_g": 16.46,
+        "fiber_g": 0,
+        "sat_fat_g": 6.728,
+        "sugars_g": 0,
+        "sodium_mg": 357
+      },
+      "portion_hints": [
+        {
+          "grams": 240,
+          "label_en": "1 tail",
+          "label_es": null
+        },
+        {
+          "grams": 30,
+          "label_en": "1 tail bone",
+          "label_es": null
+        },
+        {
+          "grams": 16,
+          "label_en": "1 oz yields",
+          "label_es": null
+        },
+        {
+          "grams": 135,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 85,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 85,
       "provenance": {
         "aliases.es": "curation",
         "category": "usda_fndds",
@@ -22048,6 +22722,166 @@
       "deprecated": false
     },
     {
+      "id": "fdc-2705879",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2705879",
+      "names": {
+        "en": "Ham, prosciutto",
+        "es": "Jamón crudo"
+      },
+      "aliases": {
+        "es": [
+          "Jamón curado",
+          "Prosciutto",
+          {
+            "alias": "Jamón serrano",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "category": "Cold cuts and cured meats",
+      "per_100g": {
+        "kcal": 195,
+        "protein_g": 27.8,
+        "carbs_g": 0.3,
+        "fat_g": 8.32,
+        "fiber_g": 0,
+        "sat_fat_g": 2.78,
+        "sugars_g": 0,
+        "sodium_mg": 2695
+      },
+      "portion_hints": [
+        {
+          "grams": 9.2,
+          "label_en": "1 thin slice",
+          "label_es": null
+        },
+        {
+          "grams": 9.2,
+          "label_en": "1 slice, NFS",
+          "label_es": null
+        },
+        {
+          "grams": 56,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 28.35,
+          "label_en": "1 oz, boneless",
+          "label_es": null
+        },
+        {
+          "grams": 0.35,
+          "label_en": "1 surface inch",
+          "label_es": null
+        },
+        {
+          "grams": 57,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 57,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2705882",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2705882",
+      "names": {
+        "en": "Pork, roast",
+        "es": "Cerdo asado"
+      },
+      "aliases": {
+        "es": [
+          "Chancho asado",
+          "Puerco asado",
+          {
+            "alias": "Cochinillo",
+            "confidence": 0.5
+          }
+        ]
+      },
+      "category": "Pork",
+      "per_100g": {
+        "kcal": 181,
+        "protein_g": 26.63,
+        "carbs_g": 0,
+        "fat_g": 7.49,
+        "fiber_g": 0,
+        "sat_fat_g": 2.364,
+        "sugars_g": 0,
+        "sodium_mg": 353
+      },
+      "portion_hints": [
+        {
+          "grams": 60,
+          "label_en": "1 regular/thin slice",
+          "label_es": null
+        },
+        {
+          "grams": 90,
+          "label_en": "1 thick slice",
+          "label_es": null
+        },
+        {
+          "grams": 20,
+          "label_en": "1 oz yields",
+          "label_es": null
+        },
+        {
+          "grams": 17,
+          "label_en": "1 cubic inch",
+          "label_es": null
+        },
+        {
+          "grams": 135,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 60,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 60,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2705885",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2705885",
@@ -22303,7 +23137,12 @@
         "es": "Cordero"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Cordero asado",
+            "confidence": 0.6
+          }
+        ]
       },
       "category": "Lamb, goat, game",
       "per_100g": {
@@ -22345,6 +23184,7 @@
       ],
       "default_portion_g": 60,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -23217,6 +24057,71 @@
       "deprecated": false
     },
     {
+      "id": "fdc-2706089",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2706089",
+      "names": {
+        "en": "Chicken fillet, breaded",
+        "es": "Filete de pollo rebozado"
+      },
+      "aliases": {
+        "es": [
+          "Filete de pollo empanado",
+          "Milanesa de pollo",
+          {
+            "alias": "Milanesa",
+            "confidence": 0.5
+          }
+        ]
+      },
+      "category": "Chicken patties, nuggets and tenders",
+      "per_100g": {
+        "kcal": 240,
+        "protein_g": 14.62,
+        "carbs_g": 14.86,
+        "fat_g": 13.58,
+        "fiber_g": 1.7,
+        "sat_fat_g": 2.437,
+        "sugars_g": 0.57,
+        "sodium_mg": 527
+      },
+      "portion_hints": [
+        {
+          "grams": 120,
+          "label_en": "1 fillet",
+          "label_es": null
+        },
+        {
+          "grams": 17,
+          "label_en": "1 cubic inch",
+          "label_es": null
+        },
+        {
+          "grams": 120,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 120,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2706092",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2706092",
@@ -23279,7 +24184,7 @@
       "source_ref": "USDA FDC #2706098",
       "names": {
         "en": "Chicken tenders or strips, NFS",
-        "es": "Tiras de pollo"
+        "es": "Tiras de pollo rebozadas"
       },
       "aliases": {
         "es": []
@@ -23782,7 +24687,11 @@
       "aliases": {
         "es": [
           "Callos",
-          "Guatitas"
+          "Guatitas",
+          {
+            "alias": "Callos",
+            "confidence": 0.5
+          }
         ]
       },
       "category": "Liver and organ meats",
@@ -23973,6 +24882,181 @@
         }
       ],
       "default_portion_g": 57,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2706173",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2706173",
+      "names": {
+        "en": "Blood sausage",
+        "es": "Morcilla"
+      },
+      "aliases": {
+        "es": [
+          "Moronga",
+          "Rellena"
+        ]
+      },
+      "category": "Sausages",
+      "per_100g": {
+        "kcal": 379,
+        "protein_g": 14.6,
+        "carbs_g": 1.29,
+        "fat_g": 34.5,
+        "fiber_g": 0,
+        "sat_fat_g": 13.4,
+        "sugars_g": 1.29,
+        "sodium_mg": 680
+      },
+      "portion_hints": [
+        {
+          "grams": 8,
+          "label_en": "1 slice, round (2-1/4\" dia x 1/8\" thick)",
+          "label_es": null
+        },
+        {
+          "grams": 25,
+          "label_en": "1 slice, loaf shape (5\" x 4-5/8\" x 1/16\")",
+          "label_es": null
+        },
+        {
+          "grams": 18,
+          "label_en": "1 cubic inch",
+          "label_es": null
+        },
+        {
+          "grams": 138,
+          "label_en": "1 cup, NFS",
+          "label_es": null
+        },
+        {
+          "grams": 25,
+          "label_en": "1 slice, NFS",
+          "label_es": null
+        },
+        {
+          "grams": 60,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 60,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2706179",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2706179",
+      "names": {
+        "en": "Chorizo",
+        "es": "Chorizo fresco"
+      },
+      "aliases": {
+        "es": [
+          "Chorizo parrillero",
+          {
+            "alias": "Chorizo",
+            "confidence": 0.6
+          }
+        ]
+      },
+      "category": "Sausages",
+      "per_100g": {
+        "kcal": 341,
+        "protein_g": 19.3,
+        "carbs_g": 2.63,
+        "fat_g": 28.1,
+        "fiber_g": 0,
+        "sat_fat_g": 9.45,
+        "sugars_g": 0,
+        "sodium_mg": 983
+      },
+      "portion_hints": [
+        {
+          "grams": 35,
+          "label_en": "1 patty",
+          "label_es": null
+        },
+        {
+          "grams": 10,
+          "label_en": "1 cocktail or miniature link",
+          "label_es": null
+        },
+        {
+          "grams": 20,
+          "label_en": "1 breakfast size link",
+          "label_es": null
+        },
+        {
+          "grams": 75,
+          "label_en": "1 bun-size or griller link",
+          "label_es": null
+        },
+        {
+          "grams": 15,
+          "label_en": "1 slice",
+          "label_es": null
+        },
+        {
+          "grams": 75,
+          "label_en": "1 piece",
+          "label_es": null
+        },
+        {
+          "grams": 140,
+          "label_en": "1 cup, NFS",
+          "label_es": null
+        },
+        {
+          "grams": 28.35,
+          "label_en": "1 oz, cooked",
+          "label_es": null
+        },
+        {
+          "grams": 16,
+          "label_en": "1 cubic inch",
+          "label_es": null
+        },
+        {
+          "grams": 60,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 60,
       "provenance": {
         "aliases.es": "curation",
         "category": "usda_fndds",
@@ -24323,7 +25407,11 @@
       },
       "aliases": {
         "es": [
-          "Salame"
+          "Salame",
+          {
+            "alias": "Salchichón",
+            "confidence": 0.8
+          }
         ]
       },
       "category": "Cold cuts and cured meats",
@@ -24945,12 +26033,76 @@
       "deprecated": false
     },
     {
+      "id": "fdc-2706232",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2706232",
+      "names": {
+        "en": "Fish, anchovy",
+        "es": "Anchoas en aceite"
+      },
+      "aliases": {
+        "es": [
+          "Anchoas de lata",
+          {
+            "alias": "Boquerones",
+            "confidence": 0.6
+          }
+        ]
+      },
+      "category": "Fish",
+      "per_100g": {
+        "kcal": 210,
+        "protein_g": 28.89,
+        "carbs_g": 0,
+        "fat_g": 9.71,
+        "fiber_g": 0,
+        "sat_fat_g": 2.203,
+        "sugars_g": 0,
+        "sodium_mg": 3668
+      },
+      "portion_hints": [
+        {
+          "grams": 45,
+          "label_en": "1 can",
+          "label_es": null
+        },
+        {
+          "grams": 4,
+          "label_en": "1 anchovy",
+          "label_es": null
+        },
+        {
+          "grams": 85,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 85,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2706240",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2706240",
       "names": {
         "en": "Fish, cod, NFS",
-        "es": "Bacalao"
+        "es": "Bacalao rebozado"
       },
       "aliases": {
         "es": []
@@ -25027,12 +26179,100 @@
       "deprecated": false
     },
     {
+      "id": "fdc-2706245",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2706245",
+      "names": {
+        "en": "Fish, cod, steamed",
+        "es": "Bacalao al vapor"
+      },
+      "aliases": {
+        "es": [
+          {
+            "alias": "Bacalao",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "category": "Fish",
+      "per_100g": {
+        "kcal": 87,
+        "protein_g": 19.29,
+        "carbs_g": 0,
+        "fat_g": 0.52,
+        "fiber_g": 0,
+        "sat_fat_g": 0.107,
+        "sugars_g": 0,
+        "sodium_mg": 235
+      },
+      "portion_hints": [
+        {
+          "grams": 140,
+          "label_en": "1 small/regular fillet",
+          "label_es": null
+        },
+        {
+          "grams": 210,
+          "label_en": "1 large fillet",
+          "label_es": null
+        },
+        {
+          "grams": 210,
+          "label_en": "1 steak",
+          "label_es": null
+        },
+        {
+          "grams": 420,
+          "label_en": "1 whole fish, any size",
+          "label_es": null
+        },
+        {
+          "grams": 135,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 20,
+          "label_en": "1 oz yields",
+          "label_es": null
+        },
+        {
+          "grams": 17,
+          "label_en": "1 cubic inch",
+          "label_es": null
+        },
+        {
+          "grams": 140,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 140,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2706270",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2706270",
       "names": {
         "en": "Fish, perch, NFS",
-        "es": "Perca"
+        "es": "Perca rebozada"
       },
       "aliases": {
         "es": []
@@ -25087,6 +26327,74 @@
       ],
       "default_portion_g": 90,
       "provenance": {
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2706293",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2706293",
+      "names": {
+        "en": "Fish, sardines, canned",
+        "es": "Sardinas en lata"
+      },
+      "aliases": {
+        "es": [
+          {
+            "alias": "Sardinas",
+            "confidence": 0.6
+          }
+        ]
+      },
+      "category": "Fish",
+      "per_100g": {
+        "kcal": 208,
+        "protein_g": 24.62,
+        "carbs_g": 0,
+        "fat_g": 11.45,
+        "fiber_g": 0,
+        "sat_fat_g": 1.528,
+        "sugars_g": 0,
+        "sodium_mg": 307
+      },
+      "portion_hints": [
+        {
+          "grams": 12,
+          "label_en": "1 sardine",
+          "label_es": null
+        },
+        {
+          "grams": 17,
+          "label_en": "1 cubic inch",
+          "label_es": null
+        },
+        {
+          "grams": 75,
+          "label_en": "1 standard can",
+          "label_es": null
+        },
+        {
+          "grams": 85,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 85,
+      "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -25181,7 +26489,7 @@
       "source_ref": "USDA FDC #2706302",
       "names": {
         "en": "Fish, trout, NFS",
-        "es": "Trucha"
+        "es": "Trucha rebozada"
       },
       "aliases": {
         "es": []
@@ -25330,12 +26638,175 @@
       "deprecated": false
     },
     {
+      "id": "fdc-2706310",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2706310",
+      "names": {
+        "en": "Fish, tuna, cooked",
+        "es": "Atún cocido"
+      },
+      "aliases": {
+        "es": [
+          {
+            "alias": "Atún a la plancha",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "category": "Fish",
+      "per_100g": {
+        "kcal": 176,
+        "protein_g": 30.31,
+        "carbs_g": 0.01,
+        "fat_g": 5.14,
+        "fiber_g": 0,
+        "sat_fat_g": 1.4,
+        "sugars_g": 0.01,
+        "sodium_mg": 271
+      },
+      "portion_hints": [
+        {
+          "grams": 90,
+          "label_en": "1 small/regular fillet",
+          "label_es": null
+        },
+        {
+          "grams": 135,
+          "label_en": "1 large fillet",
+          "label_es": null
+        },
+        {
+          "grams": 135,
+          "label_en": "1 steak",
+          "label_es": null
+        },
+        {
+          "grams": 135,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 20,
+          "label_en": "1 oz yields",
+          "label_es": null
+        },
+        {
+          "grams": 17,
+          "label_en": "1 cubic inch",
+          "label_es": null
+        },
+        {
+          "grams": 90,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 90,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2706313",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2706313",
+      "names": {
+        "en": "Fish, whiting, baked or broiled",
+        "es": "Pescadilla al horno"
+      },
+      "aliases": {
+        "es": [
+          "Merlán al horno"
+        ]
+      },
+      "category": "Fish",
+      "per_100g": {
+        "kcal": 153,
+        "protein_g": 22.75,
+        "carbs_g": 0.01,
+        "fat_g": 6.16,
+        "fiber_g": 0,
+        "sat_fat_g": 1.493,
+        "sugars_g": 0.01,
+        "sodium_mg": 305
+      },
+      "portion_hints": [
+        {
+          "grams": 90,
+          "label_en": "1 small/regular fillet",
+          "label_es": null
+        },
+        {
+          "grams": 135,
+          "label_en": "1 large fillet",
+          "label_es": null
+        },
+        {
+          "grams": 270,
+          "label_en": "1 whole fish, any size",
+          "label_es": null
+        },
+        {
+          "grams": 135,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 20,
+          "label_en": "1 oz yields",
+          "label_es": null
+        },
+        {
+          "grams": 17,
+          "label_en": "1 cubic inch",
+          "label_es": null
+        },
+        {
+          "grams": 90,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 90,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2706331",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2706331",
       "names": {
         "en": "Octopus",
-        "es": "Pulpo"
+        "es": "Pulpo rebozado"
       },
       "aliases": {
         "es": []
@@ -25365,6 +26836,71 @@
       ],
       "default_portion_g": 85,
       "provenance": {
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2706334",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2706334",
+      "names": {
+        "en": "Calamari, fried",
+        "es": "Calamares rebozados"
+      },
+      "aliases": {
+        "es": [
+          "Calamares empanados",
+          "Rabas",
+          {
+            "alias": "Calamares a la romana",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "category": "Shellfish",
+      "per_100g": {
+        "kcal": 234,
+        "protein_g": 13.76,
+        "carbs_g": 14.06,
+        "fat_g": 13.22,
+        "fiber_g": 0.5,
+        "sat_fat_g": 1.935,
+        "sugars_g": 0.2,
+        "sodium_mg": 377
+      },
+      "portion_hints": [
+        {
+          "grams": 15,
+          "label_en": "1 item",
+          "label_es": null
+        },
+        {
+          "grams": 135,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 85,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 85,
+      "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -25671,6 +27207,86 @@
       "deprecated": false
     },
     {
+      "id": "fdc-2706362",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2706362",
+      "names": {
+        "en": "Shrimp, grilled",
+        "es": "Camarones a la plancha"
+      },
+      "aliases": {
+        "es": [
+          "Gambas a la plancha",
+          "Langostinos a la plancha",
+          {
+            "alias": "Gambas al ajillo",
+            "confidence": 0.6
+          }
+        ]
+      },
+      "category": "Shellfish",
+      "per_100g": {
+        "kcal": 110,
+        "protein_g": 17.26,
+        "carbs_g": 1.16,
+        "fat_g": 3.55,
+        "fiber_g": 0,
+        "sat_fat_g": 0.924,
+        "sugars_g": 0,
+        "sodium_mg": 359
+      },
+      "portion_hints": [
+        {
+          "grams": 5,
+          "label_en": "1 tiny shrimp",
+          "label_es": null
+        },
+        {
+          "grams": 10,
+          "label_en": "1 small/medium shrimp",
+          "label_es": null
+        },
+        {
+          "grams": 15,
+          "label_en": "1 large/jumbo shrimp",
+          "label_es": null
+        },
+        {
+          "grams": 20,
+          "label_en": "1 prawn",
+          "label_es": null
+        },
+        {
+          "grams": 135,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 85,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 85,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2706369",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2706369",
@@ -25827,6 +27443,69 @@
         }
       ],
       "default_portion_g": 183,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2706417",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2706417",
+      "names": {
+        "en": "Veal parmigiana",
+        "es": "Ternera a la parmesana"
+      },
+      "aliases": {
+        "es": [
+          {
+            "alias": "Milanesa a la napolitana",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "category": "Meat mixed dishes",
+      "per_100g": {
+        "kcal": 204,
+        "protein_g": 15.33,
+        "carbs_g": 8.33,
+        "fat_g": 11.92,
+        "fiber_g": 0.8,
+        "sat_fat_g": 4.107,
+        "sugars_g": 1.68,
+        "sodium_mg": 436
+      },
+      "portion_hints": [
+        {
+          "grams": 182,
+          "label_en": "1 patty with sauce and cheese",
+          "label_es": null
+        },
+        {
+          "grams": 209,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 157,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 157,
       "provenance": {
         "aliases.es": "curation",
         "category": "usda_fndds",
@@ -26166,6 +27845,64 @@
       "deprecated": false
     },
     {
+      "id": "fdc-2706459",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2706459",
+      "names": {
+        "en": "Fish with tomato-based sauce",
+        "es": "Pescado con salsa de tomate"
+      },
+      "aliases": {
+        "es": [
+          {
+            "alias": "Moqueca",
+            "confidence": 0.6
+          }
+        ]
+      },
+      "category": "Seafood mixed dishes",
+      "per_100g": {
+        "kcal": 80,
+        "protein_g": 16.28,
+        "carbs_g": 1.59,
+        "fat_g": 0.69,
+        "fiber_g": 0.4,
+        "sat_fat_g": 0.129,
+        "sugars_g": 1.06,
+        "sodium_mg": 350
+      },
+      "portion_hints": [
+        {
+          "grams": 222,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 111,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 111,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2706460",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2706460",
@@ -26386,7 +28123,12 @@
         "es": "Albóndigas con salsa"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Albóndigas",
+            "confidence": 0.8
+          }
+        ]
       },
       "category": "Meat mixed dishes",
       "per_100g": {
@@ -26418,6 +28160,7 @@
       ],
       "default_portion_g": 129,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -28647,7 +30390,11 @@
       "aliases": {
         "es": [
           "Bocadillo de jamón en pan blanco",
-          "Emparedado de jamón en pan blanco"
+          "Emparedado de jamón en pan blanco",
+          {
+            "alias": "Bocadillo de jamón",
+            "confidence": 0.8
+          }
         ]
       },
       "category": "Deli and cured meat sandwiches",
@@ -29001,12 +30748,12 @@
       "source_ref": "USDA FDC #2707000",
       "names": {
         "en": "Chicken fillet sandwich, NFS",
-        "es": "Sándwich de filete de pollo"
+        "es": "Sándwich de filete de pollo rebozado"
       },
       "aliases": {
         "es": [
-          "Bocadillo de filete de pollo",
-          "Emparedado de filete de pollo"
+          "Bocadillo de filete de pollo rebozado",
+          "Emparedado de filete de pollo rebozado"
         ]
       },
       "category": "Chicken fillet sandwiches",
@@ -29199,12 +30946,14 @@
       "source_ref": "USDA FDC #2707026",
       "names": {
         "en": "Fish sandwich, NFS",
-        "es": "Sándwich de pescado"
+        "es": "Sándwich de pescado rebozado con queso"
       },
       "aliases": {
         "es": [
-          "Bocadillo de pescado",
-          "Emparedado de pescado"
+          "Bocadillo de pescado rebozado",
+          "Emparedado de pescado rebozado",
+          "Bocadillo de pescado rebozado con queso",
+          "Emparedado de pescado rebozado con queso"
         ]
       },
       "category": "Seafood sandwiches",
@@ -29293,6 +31042,66 @@
         {
           "grams": 67,
           "label_en": "1 miniature/slider",
+          "label_es": null
+        },
+        {
+          "grams": 135,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 135,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2707053",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2707053",
+      "names": {
+        "en": "Italian sausage sandwich on white",
+        "es": "Sándwich de salchicha italiana en pan blanco"
+      },
+      "aliases": {
+        "es": [
+          "Bocadillo de salchicha italiana en pan blanco",
+          "Emparedado de salchicha italiana en pan blanco",
+          {
+            "alias": "Choripán",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "category": "Frankfurter sandwiches",
+      "per_100g": {
+        "kcal": 300,
+        "protein_g": 14.45,
+        "carbs_g": 23.47,
+        "fat_g": 16.29,
+        "fiber_g": 0.8,
+        "sat_fat_g": 5.458,
+        "sugars_g": 4.05,
+        "sodium_mg": 645
+      },
+      "portion_hints": [
+        {
+          "grams": 135,
+          "label_en": "1 sandwich, any size",
           "label_es": null
         },
         {
@@ -29984,6 +31793,63 @@
       "deprecated": false
     },
     {
+      "id": "fdc-2707152",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2707152",
+      "names": {
+        "en": "Egg, whole, raw",
+        "es": "Huevo crudo"
+      },
+      "aliases": {
+        "es": []
+      },
+      "category": "Eggs and omelets",
+      "per_100g": {
+        "kcal": 143,
+        "protein_g": 12.4,
+        "carbs_g": 0.96,
+        "fat_g": 9.96,
+        "fiber_g": 0,
+        "sat_fat_g": 3.2,
+        "sugars_g": 0.2,
+        "sodium_mg": 129
+      },
+      "portion_hints": [
+        {
+          "grams": 50,
+          "label_en": "1 egg",
+          "label_es": null
+        },
+        {
+          "grams": 245,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 50,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 50,
+      "provenance": {
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2707153",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2707153",
@@ -30452,7 +32318,12 @@
         "es": "Huevo revuelto o tortilla"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Tortilla francesa",
+            "confidence": 0.8
+          }
+        ]
       },
       "category": "Eggs and omelets",
       "per_100g": {
@@ -30484,6 +32355,7 @@
       ],
       "default_portion_g": 110,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -30927,14 +32799,14 @@
       "source_ref": "USDA FDC #2707347",
       "names": {
         "en": "Beans, NFS",
-        "es": "Frijoles"
+        "es": "Frijoles cocidos con sal y grasa"
       },
       "aliases": {
         "es": [
-          "Porotos",
-          "Alubias",
-          "Judías",
-          "Caraotas"
+          "Porotos cocidos con sal y grasa",
+          "Alubias cocidas con sal y grasa",
+          "Judías cocidas con sal y grasa",
+          "Caraotas cocidas con sal y grasa"
         ]
       },
       "category": "Beans, peas, legumes",
@@ -31280,6 +33152,68 @@
       "deprecated": false
     },
     {
+      "id": "fdc-2707366",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2707366",
+      "names": {
+        "en": "Black beans with meat",
+        "es": "Frijoles negros con carne"
+      },
+      "aliases": {
+        "es": [
+          "Porotos negros con carne",
+          "Alubias negras con carne",
+          "Judías negras con carne",
+          "Caraotas negras con carne",
+          {
+            "alias": "Feijoada",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "category": "Beans, peas, legumes",
+      "per_100g": {
+        "kcal": 177,
+        "protein_g": 10.61,
+        "carbs_g": 19.06,
+        "fat_g": 6.81,
+        "fiber_g": 7,
+        "sat_fat_g": 1.155,
+        "sugars_g": 0.36,
+        "sodium_mg": 275
+      },
+      "portion_hints": [
+        {
+          "grams": 260,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 130,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 130,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2707368",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2707368",
@@ -31406,7 +33340,11 @@
           "Porotos con carne",
           "Alubias con carne",
           "Judías con carne",
-          "Caraotas con carne"
+          "Caraotas con carne",
+          {
+            "alias": "Fabada",
+            "confidence": 0.6
+          }
         ]
       },
       "category": "Beans, peas, legumes",
@@ -31561,10 +33499,19 @@
       "source_ref": "USDA FDC #2707414",
       "names": {
         "en": "Chickpeas, NFS",
-        "es": "Garbanzos"
+        "es": "Garbanzos cocidos con sal y grasa"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Cocido madrileño",
+            "confidence": 0.5
+          },
+          {
+            "alias": "Garbanzos guisados",
+            "confidence": 1
+          }
+        ]
       },
       "category": "Beans, peas, legumes",
       "per_100g": {
@@ -31596,6 +33543,7 @@
       ],
       "default_portion_g": 92,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -31618,10 +33566,15 @@
       "source_ref": "USDA FDC #2707423",
       "names": {
         "en": "Lentils, NFS",
-        "es": "Lentejas"
+        "es": "Lentejas cocidas con sal y grasa"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Lentejas con chorizo",
+            "confidence": 0.6
+          }
+        ]
       },
       "category": "Beans, peas, legumes",
       "per_100g": {
@@ -31648,6 +33601,7 @@
       ],
       "default_portion_g": 92,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -32300,150 +34254,6 @@
       "deprecated": false
     },
     {
-      "id": "fdc-2707485",
-      "source": "usda_fndds",
-      "source_ref": "USDA FDC #2707485",
-      "names": {
-        "en": "Almonds, NFS",
-        "es": "Almendras"
-      },
-      "aliases": {
-        "es": []
-      },
-      "category": "Nuts and seeds",
-      "per_100g": {
-        "kcal": 598,
-        "protein_g": 20.96,
-        "carbs_g": 21.01,
-        "fat_g": 52.54,
-        "fiber_g": 10.9,
-        "sat_fat_g": 4.092,
-        "sugars_g": 4.86,
-        "sodium_mg": 3
-      },
-      "portion_hints": [
-        {
-          "grams": 1.2,
-          "label_en": "1 nut",
-          "label_es": null
-        },
-        {
-          "grams": 141,
-          "label_en": "1 cup",
-          "label_es": null
-        },
-        {
-          "grams": 50,
-          "label_en": "1 package",
-          "label_es": null
-        },
-        {
-          "grams": 18,
-          "label_en": "1 100 calorie package",
-          "label_es": null
-        },
-        {
-          "grams": 28.35,
-          "label_en": "1 oz",
-          "label_es": null
-        },
-        {
-          "grams": 28,
-          "label_en": "Quantity not specified",
-          "label_es": null
-        }
-      ],
-      "default_portion_g": 28,
-      "provenance": {
-        "category": "usda_fndds",
-        "default_portion_g": "usda_fndds",
-        "names.en": "usda_fndds",
-        "names.es": "curation",
-        "per_100g.carbs_g": "usda_fndds",
-        "per_100g.fat_g": "usda_fndds",
-        "per_100g.fiber_g": "usda_fndds",
-        "per_100g.kcal": "usda_fndds",
-        "per_100g.protein_g": "usda_fndds",
-        "per_100g.sat_fat_g": "usda_fndds",
-        "per_100g.sodium_mg": "usda_fndds",
-        "per_100g.sugars_g": "usda_fndds",
-        "portion_hints": "usda_fndds"
-      },
-      "deprecated": false
-    },
-    {
-      "id": "fdc-2707493",
-      "source": "usda_fndds",
-      "source_ref": "USDA FDC #2707493",
-      "names": {
-        "en": "Cashews, NFS",
-        "es": "Anacardos"
-      },
-      "aliases": {
-        "es": [
-          "Castañas de cajú",
-          "Marañón",
-          "Nuez de la India"
-        ]
-      },
-      "category": "Nuts and seeds",
-      "per_100g": {
-        "kcal": 574,
-        "protein_g": 15.31,
-        "carbs_g": 32.69,
-        "fat_g": 46.35,
-        "fiber_g": 3,
-        "sat_fat_g": 9.157,
-        "sugars_g": 5.01,
-        "sodium_mg": 16
-      },
-      "portion_hints": [
-        {
-          "grams": 1.5,
-          "label_en": "1 nut",
-          "label_es": null
-        },
-        {
-          "grams": 130,
-          "label_en": "1 cup",
-          "label_es": null
-        },
-        {
-          "grams": 50,
-          "label_en": "1 package",
-          "label_es": null
-        },
-        {
-          "grams": 28.35,
-          "label_en": "1 oz",
-          "label_es": null
-        },
-        {
-          "grams": 28,
-          "label_en": "Quantity not specified",
-          "label_es": null
-        }
-      ],
-      "default_portion_g": 28,
-      "provenance": {
-        "aliases.es": "curation",
-        "category": "usda_fndds",
-        "default_portion_g": "usda_fndds",
-        "names.en": "usda_fndds",
-        "names.es": "curation",
-        "per_100g.carbs_g": "usda_fndds",
-        "per_100g.fat_g": "usda_fndds",
-        "per_100g.fiber_g": "usda_fndds",
-        "per_100g.kcal": "usda_fndds",
-        "per_100g.protein_g": "usda_fndds",
-        "per_100g.sat_fat_g": "usda_fndds",
-        "per_100g.sodium_mg": "usda_fndds",
-        "per_100g.sugars_g": "usda_fndds",
-        "portion_hints": "usda_fndds"
-      },
-      "deprecated": false
-    },
-    {
       "id": "fdc-2707504",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2707504",
@@ -32506,12 +34316,12 @@
       "source_ref": "USDA FDC #2707512",
       "names": {
         "en": "Peanuts, NFS",
-        "es": "Maní"
+        "es": "Maní tostado con sal"
       },
       "aliases": {
         "es": [
-          "Cacahuete",
-          "Cacahuate"
+          "Cacahuete tostado con sal",
+          "Cacahuate tostado con sal"
         ]
       },
       "category": "Nuts and seeds",
@@ -32574,76 +34384,6 @@
         {
           "grams": 50,
           "label_en": "1 package",
-          "label_es": null
-        },
-        {
-          "grams": 28,
-          "label_en": "Quantity not specified",
-          "label_es": null
-        }
-      ],
-      "default_portion_g": 28,
-      "provenance": {
-        "aliases.es": "curation",
-        "category": "usda_fndds",
-        "default_portion_g": "usda_fndds",
-        "names.en": "usda_fndds",
-        "names.es": "curation",
-        "per_100g.carbs_g": "usda_fndds",
-        "per_100g.fat_g": "usda_fndds",
-        "per_100g.fiber_g": "usda_fndds",
-        "per_100g.kcal": "usda_fndds",
-        "per_100g.protein_g": "usda_fndds",
-        "per_100g.sat_fat_g": "usda_fndds",
-        "per_100g.sodium_mg": "usda_fndds",
-        "per_100g.sugars_g": "usda_fndds",
-        "portion_hints": "usda_fndds"
-      },
-      "deprecated": false
-    },
-    {
-      "id": "fdc-2707521",
-      "source": "usda_fndds",
-      "source_ref": "USDA FDC #2707521",
-      "names": {
-        "en": "Pecans, NFS",
-        "es": "Nueces pecanas"
-      },
-      "aliases": {
-        "es": [
-          "Pacanas"
-        ]
-      },
-      "category": "Nuts and seeds",
-      "per_100g": {
-        "kcal": 750,
-        "protein_g": 9.96,
-        "carbs_g": 12.7,
-        "fat_g": 73.28,
-        "fiber_g": 5.8,
-        "sat_fat_g": 6.46,
-        "sugars_g": 3.97,
-        "sodium_mg": 0
-      },
-      "portion_hints": [
-        {
-          "grams": 1.5,
-          "label_en": "1 nut",
-          "label_es": null
-        },
-        {
-          "grams": 100,
-          "label_en": "1 cup",
-          "label_es": null
-        },
-        {
-          "grams": 50,
-          "label_en": "1 package",
-          "label_es": null
-        },
-        {
-          "grams": 28.35,
-          "label_en": "1 oz",
           "label_es": null
         },
         {
@@ -33812,6 +35552,81 @@
       "deprecated": false
     },
     {
+      "id": "fdc-2707612",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2707612",
+      "names": {
+        "en": "Focaccia, Italian, plain",
+        "es": "Focaccia"
+      },
+      "aliases": {
+        "es": [
+          "Hogaza italiana"
+        ]
+      },
+      "category": "Yeast breads",
+      "per_100g": {
+        "kcal": 249,
+        "protein_g": 8.77,
+        "carbs_g": 35.82,
+        "fat_g": 7.89,
+        "fiber_g": 1.8,
+        "sat_fat_g": 0.877,
+        "sugars_g": 1.75,
+        "sodium_mg": 561
+      },
+      "portion_hints": [
+        {
+          "grams": 57,
+          "label_en": "1 slice",
+          "label_es": null
+        },
+        {
+          "grams": 114,
+          "label_en": "1 whole (6\" dia)",
+          "label_es": null
+        },
+        {
+          "grams": 285,
+          "label_en": "1 whole (12\" dia)",
+          "label_es": null
+        },
+        {
+          "grams": 456,
+          "label_en": "1 whole (16\" dia)",
+          "label_es": null
+        },
+        {
+          "grams": 4,
+          "label_en": "1 surface inch",
+          "label_es": null
+        },
+        {
+          "grams": 57,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 57,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2707626",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2707626",
@@ -34103,7 +35918,12 @@
         "es": "Bruschetta"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Pan con tomate",
+            "confidence": 0.8
+          }
+        ]
       },
       "category": "Vegetable sandwiches/burgers",
       "per_100g": {
@@ -34150,6 +35970,7 @@
       ],
       "default_portion_g": 43,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -34217,6 +36038,82 @@
       ],
       "default_portion_g": 93,
       "provenance": {
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2707678",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2707678",
+      "names": {
+        "en": "Croissant",
+        "es": "Croissant"
+      },
+      "aliases": {
+        "es": [
+          "Cuernito",
+          "Medialuna"
+        ]
+      },
+      "category": "Doughnuts, sweet rolls, pastries",
+      "per_100g": {
+        "kcal": 406,
+        "protein_g": 8.2,
+        "carbs_g": 45.8,
+        "fat_g": 21,
+        "fiber_g": 2.6,
+        "sat_fat_g": 11.659,
+        "sugars_g": 11.26,
+        "sodium_mg": 300
+      },
+      "portion_hints": [
+        {
+          "grams": 28,
+          "label_en": "1 mini croissant",
+          "label_es": null
+        },
+        {
+          "grams": 70,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        },
+        {
+          "grams": 42,
+          "label_en": "1 small croissant",
+          "label_es": null
+        },
+        {
+          "grams": 57,
+          "label_en": "1 medium croissant",
+          "label_es": null
+        },
+        {
+          "grams": 73,
+          "label_en": "1 large croissant",
+          "label_es": null
+        },
+        {
+          "grams": 28,
+          "label_en": "1 crescent roll",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 70,
+      "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -35537,6 +37434,68 @@
       "deprecated": false
     },
     {
+      "id": "fdc-2707861",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2707861",
+      "names": {
+        "en": "Cheesecake, plain",
+        "es": "Tarta de queso"
+      },
+      "aliases": {
+        "es": [
+          "Cheesecake",
+          "Pay de queso",
+          "Pastel de queso"
+        ]
+      },
+      "category": "Cakes and pies",
+      "per_100g": {
+        "kcal": 399,
+        "protein_g": 5.29,
+        "carbs_g": 34.82,
+        "fat_g": 26.52,
+        "fiber_g": 0.5,
+        "sat_fat_g": 14.371,
+        "sugars_g": 26.64,
+        "sodium_mg": 277
+      },
+      "portion_hints": [
+        {
+          "grams": 175,
+          "label_en": "1 piece/slice, any size",
+          "label_es": null
+        },
+        {
+          "grams": 180,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 175,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 175,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2707898",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2707898",
@@ -36078,6 +38037,80 @@
         }
       ],
       "default_portion_g": 60,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2707963",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2707963",
+      "names": {
+        "en": "Cookie, sandwich-type, not chocolate or vanilla",
+        "es": "Galleta rellena, otros sabores"
+      },
+      "aliases": {
+        "es": [
+          "Galletita rellena, otros sabores",
+          {
+            "alias": "Alfajor",
+            "confidence": 0.5
+          }
+        ]
+      },
+      "category": "Cookies and brownies",
+      "per_100g": {
+        "kcal": 483,
+        "protein_g": 4.5,
+        "carbs_g": 72.1,
+        "fat_g": 20,
+        "fiber_g": 1.5,
+        "sat_fat_g": 2.979,
+        "sugars_g": 39.3,
+        "sodium_mg": 388
+      },
+      "portion_hints": [
+        {
+          "grams": 3,
+          "label_en": "1 miniature/bite size",
+          "label_es": null
+        },
+        {
+          "grams": 14,
+          "label_en": "1 sandwich",
+          "label_es": null
+        },
+        {
+          "grams": 36,
+          "label_en": "1 large sandwich",
+          "label_es": null
+        },
+        {
+          "grams": 13,
+          "label_en": "1 Girl Scout Lemon Chalet Creme",
+          "label_es": null
+        },
+        {
+          "grams": 42,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 42,
       "provenance": {
         "aliases.es": "curation",
         "category": "usda_fndds",
@@ -36692,7 +38725,12 @@
         "es": "Buñuelo"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Croqueta",
+            "confidence": 0.6
+          }
+        ]
       },
       "category": "Doughnuts, sweet rolls, pastries",
       "per_100g": {
@@ -36719,6 +38757,7 @@
       ],
       "default_portion_g": 100,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -39703,7 +41742,12 @@
         "es": "Tostada francesa"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Torrijas",
+            "confidence": 0.6
+          }
+        ]
       },
       "category": "Pancakes, waffles, French toast",
       "per_100g": {
@@ -39730,6 +41774,7 @@
       ],
       "default_portion_g": 60,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -39933,7 +41978,7 @@
       "source_ref": "USDA FDC #2708361",
       "names": {
         "en": "Barley",
-        "es": "Cebada"
+        "es": "Cebada cocida con sal y grasa"
       },
       "aliases": {
         "es": []
@@ -40390,11 +42435,11 @@
       "source_ref": "USDA FDC #2708399",
       "names": {
         "en": "Quinoa, NS as to fat",
-        "es": "Quinoa"
+        "es": "Quinoa cocida con sal y grasa"
       },
       "aliases": {
         "es": [
-          "Quinua"
+          "Quinua cocida con sal y grasa"
         ]
       },
       "category": "Pasta, noodles, cooked grains",
@@ -40475,6 +42520,65 @@
       ],
       "default_portion_g": 122,
       "provenance": {
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2708405",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2708405",
+      "names": {
+        "en": "Rice, white, cooked, made with butter",
+        "es": "Arroz blanco cocido con mantequilla"
+      },
+      "aliases": {
+        "es": [
+          "Arroz blanco cocido con manteca",
+          {
+            "alias": "Risotto",
+            "confidence": 0.5
+          }
+        ]
+      },
+      "category": "Rice",
+      "per_100g": {
+        "kcal": 147,
+        "protein_g": 2.62,
+        "carbs_g": 27.2,
+        "fat_g": 2.61,
+        "fiber_g": 0.4,
+        "sat_fat_g": 1.375,
+        "sugars_g": 0.06,
+        "sodium_mg": 253
+      },
+      "portion_hints": [
+        {
+          "grams": 163,
+          "label_en": "1 cup, cooked",
+          "label_es": null
+        },
+        {
+          "grams": 122,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 122,
+      "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -40601,7 +42705,7 @@
       "source_ref": "USDA FDC #2708423",
       "names": {
         "en": "Rice, wild, 100%, cooked, NS as to fat",
-        "es": "Arroz salvaje cocido"
+        "es": "Arroz salvaje cocido con sal y grasa"
       },
       "aliases": {
         "es": []
@@ -40715,7 +42819,7 @@
       "source_ref": "USDA FDC #2708440",
       "names": {
         "en": "Bulgur, NS as to fat",
-        "es": "Bulgur"
+        "es": "Bulgur cocido con sal"
       },
       "aliases": {
         "es": []
@@ -42329,7 +44433,12 @@
         "es": "Pizza de queso"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Pizza margarita",
+            "confidence": 0.8
+          }
+        ]
       },
       "category": "Pizza",
       "per_100g": {
@@ -42406,6 +44515,7 @@
       ],
       "default_portion_g": 238,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -42968,7 +45078,12 @@
         "es": "Empanada"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Pastel brasileño",
+            "confidence": 0.6
+          }
+        ]
       },
       "category": "Turnovers and other grain-based items",
       "per_100g": {
@@ -43000,6 +45115,7 @@
       ],
       "default_portion_g": 105,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -43078,7 +45194,11 @@
       },
       "aliases": {
         "es": [
-          "Ñoquis de patata"
+          "Ñoquis de patata",
+          {
+            "alias": "Ñoquis",
+            "confidence": 1
+          }
         ]
       },
       "category": "Pasta mixed dishes, excludes macaroni and cheese",
@@ -43473,7 +45593,12 @@
         "es": "Lasaña con carne y espinaca"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Lasaña",
+            "confidence": 0.8
+          }
+        ]
       },
       "category": "Pasta mixed dishes, excludes macaroni and cheese",
       "per_100g": {
@@ -43525,6 +45650,7 @@
       ],
       "default_portion_g": 250,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -43716,6 +45842,70 @@
       "deprecated": false
     },
     {
+      "id": "fdc-2708795",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2708795",
+      "names": {
+        "en": "Cannelloni, cheese- and spinach-filled, no sauce",
+        "es": "Canelones de queso y espinaca"
+      },
+      "aliases": {
+        "es": [
+          "Canelones de ricota y espinaca",
+          {
+            "alias": "Canelones",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "category": "Pasta mixed dishes, excludes macaroni and cheese",
+      "per_100g": {
+        "kcal": 157,
+        "protein_g": 6.31,
+        "carbs_g": 18.36,
+        "fat_g": 6.51,
+        "fiber_g": 1.1,
+        "sat_fat_g": 2.622,
+        "sugars_g": 0.75,
+        "sodium_mg": 618
+      },
+      "portion_hints": [
+        {
+          "grams": 74,
+          "label_en": "1 cannelloni",
+          "label_es": null
+        },
+        {
+          "grams": 208,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 208,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 208,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2708811",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2708811",
@@ -43828,7 +46018,12 @@
         "es": "Pasta con salsa"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Espaguetis a la boloñesa",
+            "confidence": 0.8
+          }
+        ]
       },
       "category": "Pasta mixed dishes, excludes macaroni and cheese",
       "per_100g": {
@@ -43855,6 +46050,66 @@
       ],
       "default_portion_g": 250,
       "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2708862",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2708862",
+      "names": {
+        "en": "Pasta with cream sauce and meat, home recipe",
+        "es": "Pasta con salsa de crema y carne casera"
+      },
+      "aliases": {
+        "es": [
+          "Pasta con salsa de nata y carne casera",
+          {
+            "alias": "Carbonara",
+            "confidence": 0.5
+          }
+        ]
+      },
+      "category": "Pasta mixed dishes, excludes macaroni and cheese",
+      "per_100g": {
+        "kcal": 164,
+        "protein_g": 6.14,
+        "carbs_g": 16.69,
+        "fat_g": 7.87,
+        "fiber_g": 0.9,
+        "sat_fat_g": 4.008,
+        "sugars_g": 0.64,
+        "sodium_mg": 251
+      },
+      "portion_hints": [
+        {
+          "grams": 250,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 250,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 250,
+      "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -44209,6 +46464,126 @@
       "deprecated": false
     },
     {
+      "id": "fdc-2708977",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2708977",
+      "names": {
+        "en": "Rice with squid, Puerto Rican style",
+        "es": "Arroz con calamares"
+      },
+      "aliases": {
+        "es": [
+          {
+            "alias": "Arroz negro",
+            "confidence": 0.6
+          }
+        ]
+      },
+      "category": "Rice mixed dishes",
+      "per_100g": {
+        "kcal": 264,
+        "protein_g": 8.87,
+        "carbs_g": 29.31,
+        "fat_g": 11.8,
+        "fiber_g": 0.8,
+        "sat_fat_g": 1.897,
+        "sugars_g": 1.1,
+        "sodium_mg": 559
+      },
+      "portion_hints": [
+        {
+          "grams": 160,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 120,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 120,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2708994",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2708994",
+      "names": {
+        "en": "Black beans and white rice",
+        "es": "Frijoles negros con arroz blanco"
+      },
+      "aliases": {
+        "es": [
+          "Porotos negros con arroz blanco",
+          "Alubias negras con arroz blanco",
+          "Judías negras con arroz blanco",
+          "Caraotas negras con arroz blanco",
+          {
+            "alias": "Arroz con frijoles",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "category": "Bean, pea, legume dishes",
+      "per_100g": {
+        "kcal": 160,
+        "protein_g": 6.01,
+        "carbs_g": 24.42,
+        "fat_g": 4.32,
+        "fiber_g": 5,
+        "sat_fat_g": 0.63,
+        "sugars_g": 0.2,
+        "sodium_mg": 228
+      },
+      "portion_hints": [
+        {
+          "grams": 170,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 170,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 170,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2708996",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2708996",
@@ -44518,6 +46893,71 @@
         }
       ],
       "default_portion_g": 142,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2709073",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2709073",
+      "names": {
+        "en": "Stuffed pepper, with rice and meat",
+        "es": "Pimiento relleno de arroz y carne"
+      },
+      "aliases": {
+        "es": [
+          "Morrón relleno de arroz y carne",
+          "Ají relleno de arroz y carne",
+          {
+            "alias": "Pimientos rellenos",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "category": "Vegetable dishes",
+      "per_100g": {
+        "kcal": 178,
+        "protein_g": 7.83,
+        "carbs_g": 9.93,
+        "fat_g": 11.66,
+        "fiber_g": 0.7,
+        "sat_fat_g": 3.493,
+        "sugars_g": 2.22,
+        "sodium_mg": 320
+      },
+      "portion_hints": [
+        {
+          "grams": 149,
+          "label_en": "1/2 pepper with filling",
+          "label_es": null
+        },
+        {
+          "grams": 198,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 99,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 99,
       "provenance": {
         "aliases.es": "curation",
         "category": "usda_fndds",
@@ -45330,68 +47770,6 @@
       "deprecated": false
     },
     {
-      "id": "fdc-2709171",
-      "source": "usda_fndds",
-      "source_ref": "USDA FDC #2709171",
-      "names": {
-        "en": "Orange, raw",
-        "es": "Naranja"
-      },
-      "aliases": {
-        "es": []
-      },
-      "category": "Citrus fruits",
-      "per_100g": {
-        "kcal": 50,
-        "protein_g": 0.92,
-        "carbs_g": 11.78,
-        "fat_g": 0.14,
-        "fiber_g": 2.2,
-        "sat_fat_g": 0.015,
-        "sugars_g": 8.96,
-        "sodium_mg": 4
-      },
-      "portion_hints": [
-        {
-          "grams": 154,
-          "label_en": "1 fruit",
-          "label_es": null
-        },
-        {
-          "grams": 15,
-          "label_en": "1 section/slice",
-          "label_es": null
-        },
-        {
-          "grams": 180,
-          "label_en": "1 cup",
-          "label_es": null
-        },
-        {
-          "grams": 154,
-          "label_en": "Quantity not specified",
-          "label_es": null
-        }
-      ],
-      "default_portion_g": 154,
-      "provenance": {
-        "category": "usda_fndds",
-        "default_portion_g": "usda_fndds",
-        "names.en": "usda_fndds",
-        "names.es": "curation",
-        "per_100g.carbs_g": "usda_fndds",
-        "per_100g.fat_g": "usda_fndds",
-        "per_100g.fiber_g": "usda_fndds",
-        "per_100g.kcal": "usda_fndds",
-        "per_100g.protein_g": "usda_fndds",
-        "per_100g.sat_fat_g": "usda_fndds",
-        "per_100g.sodium_mg": "usda_fndds",
-        "per_100g.sugars_g": "usda_fndds",
-        "portion_hints": "usda_fndds"
-      },
-      "deprecated": false
-    },
-    {
       "id": "fdc-2709172",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2709172",
@@ -46076,82 +48454,6 @@
       "deprecated": false
     },
     {
-      "id": "fdc-2709224",
-      "source": "usda_fndds",
-      "source_ref": "USDA FDC #2709224",
-      "names": {
-        "en": "Banana, raw",
-        "es": "Banana"
-      },
-      "aliases": {
-        "es": [
-          "Plátano",
-          "Guineo"
-        ]
-      },
-      "category": "Bananas",
-      "per_100g": {
-        "kcal": 97,
-        "protein_g": 0.74,
-        "carbs_g": 22.71,
-        "fat_g": 0.28,
-        "fiber_g": 1.7,
-        "sat_fat_g": 0.112,
-        "sugars_g": 15.8,
-        "sodium_mg": 0
-      },
-      "portion_hints": [
-        {
-          "grams": 126,
-          "label_en": "1 banana",
-          "label_es": null
-        },
-        {
-          "grams": 6,
-          "label_en": "1 slice",
-          "label_es": null
-        },
-        {
-          "grams": 150,
-          "label_en": "1 cup",
-          "label_es": null
-        },
-        {
-          "grams": 225,
-          "label_en": "1 cup, mashed",
-          "label_es": null
-        },
-        {
-          "grams": 15,
-          "label_en": "1 linear inch",
-          "label_es": null
-        },
-        {
-          "grams": 126,
-          "label_en": "Quantity not specified",
-          "label_es": null
-        }
-      ],
-      "default_portion_g": 126,
-      "provenance": {
-        "aliases.es": "curation",
-        "category": "usda_fndds",
-        "default_portion_g": "usda_fndds",
-        "names.en": "usda_fndds",
-        "names.es": "curation",
-        "per_100g.carbs_g": "usda_fndds",
-        "per_100g.fat_g": "usda_fndds",
-        "per_100g.fiber_g": "usda_fndds",
-        "per_100g.kcal": "usda_fndds",
-        "per_100g.protein_g": "usda_fndds",
-        "per_100g.sat_fat_g": "usda_fndds",
-        "per_100g.sodium_mg": "usda_fndds",
-        "per_100g.sugars_g": "usda_fndds",
-        "portion_hints": "usda_fndds"
-      },
-      "deprecated": false
-    },
-    {
       "id": "fdc-2709225",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2709225",
@@ -46196,98 +48498,6 @@
       "default_portion_g": 140,
       "provenance": {
         "aliases.es": "curation",
-        "category": "usda_fndds",
-        "default_portion_g": "usda_fndds",
-        "names.en": "usda_fndds",
-        "names.es": "curation",
-        "per_100g.carbs_g": "usda_fndds",
-        "per_100g.fat_g": "usda_fndds",
-        "per_100g.fiber_g": "usda_fndds",
-        "per_100g.kcal": "usda_fndds",
-        "per_100g.protein_g": "usda_fndds",
-        "per_100g.sat_fat_g": "usda_fndds",
-        "per_100g.sodium_mg": "usda_fndds",
-        "per_100g.sugars_g": "usda_fndds",
-        "portion_hints": "usda_fndds"
-      },
-      "deprecated": false
-    },
-    {
-      "id": "fdc-2709226",
-      "source": "usda_fndds",
-      "source_ref": "USDA FDC #2709226",
-      "names": {
-        "en": "Cantaloupe, raw",
-        "es": "Melón cantalupo"
-      },
-      "aliases": {
-        "es": []
-      },
-      "category": "Melons",
-      "per_100g": {
-        "kcal": 38,
-        "protein_g": 0.82,
-        "carbs_g": 8.16,
-        "fat_g": 0.18,
-        "fiber_g": 0.8,
-        "sat_fat_g": 0.051,
-        "sugars_g": 7.88,
-        "sodium_mg": 30
-      },
-      "portion_hints": [
-        {
-          "grams": 15,
-          "label_en": "1 cube",
-          "label_es": null
-        },
-        {
-          "grams": 15,
-          "label_en": "1 ball",
-          "label_es": null
-        },
-        {
-          "grams": 155,
-          "label_en": "1 cup",
-          "label_es": null
-        },
-        {
-          "grams": 35,
-          "label_en": "1 small wedge/slice",
-          "label_es": null
-        },
-        {
-          "grams": 70,
-          "label_en": "1 medium wedge/slice",
-          "label_es": null
-        },
-        {
-          "grams": 105,
-          "label_en": "1 large wedge/slice",
-          "label_es": null
-        },
-        {
-          "grams": 440,
-          "label_en": "1 small melon",
-          "label_es": null
-        },
-        {
-          "grams": 550,
-          "label_en": "1 medium melon",
-          "label_es": null
-        },
-        {
-          "grams": 815,
-          "label_en": "1 large melon",
-          "label_es": null
-        },
-        {
-          "grams": 78,
-          "label_en": "Quantity not specified",
-          "label_es": null
-        }
-      ],
-      "default_portion_g": 78,
-      "provenance": {
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -46734,68 +48944,6 @@
       "deprecated": false
     },
     {
-      "id": "fdc-2709254",
-      "source": "usda_fndds",
-      "source_ref": "USDA FDC #2709254",
-      "names": {
-        "en": "Pear, raw",
-        "es": "Pera"
-      },
-      "aliases": {
-        "es": []
-      },
-      "category": "Pears",
-      "per_100g": {
-        "kcal": 59,
-        "protein_g": 0.37,
-        "carbs_g": 15.18,
-        "fat_g": 0.15,
-        "fiber_g": 3.1,
-        "sat_fat_g": 0.022,
-        "sugars_g": 9.73,
-        "sodium_mg": 3
-      },
-      "portion_hints": [
-        {
-          "grams": 180,
-          "label_en": "1 fruit",
-          "label_es": null
-        },
-        {
-          "grams": 25,
-          "label_en": "1 slice/chunk",
-          "label_es": null
-        },
-        {
-          "grams": 125,
-          "label_en": "1 cup",
-          "label_es": null
-        },
-        {
-          "grams": 180,
-          "label_en": "Quantity not specified",
-          "label_es": null
-        }
-      ],
-      "default_portion_g": 180,
-      "provenance": {
-        "category": "usda_fndds",
-        "default_portion_g": "usda_fndds",
-        "names.en": "usda_fndds",
-        "names.es": "curation",
-        "per_100g.carbs_g": "usda_fndds",
-        "per_100g.fat_g": "usda_fndds",
-        "per_100g.fiber_g": "usda_fndds",
-        "per_100g.kcal": "usda_fndds",
-        "per_100g.protein_g": "usda_fndds",
-        "per_100g.sat_fat_g": "usda_fndds",
-        "per_100g.sodium_mg": "usda_fndds",
-        "per_100g.sugars_g": "usda_fndds",
-        "portion_hints": "usda_fndds"
-      },
-      "deprecated": false
-    },
-    {
       "id": "fdc-2709256",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2709256",
@@ -47065,7 +49213,7 @@
       "source_ref": "USDA FDC #2709268",
       "names": {
         "en": "Rhubarb",
-        "es": "Ruibarbo"
+        "es": "Ruibarbo cocido con azúcar"
       },
       "aliases": {
         "es": []
@@ -47751,7 +49899,7 @@
       "source_ref": "USDA FDC #2709319",
       "names": {
         "en": "Apple cider",
-        "es": "Sidra de manzana"
+        "es": "Sidra de manzana sin alcohol"
       },
       "aliases": {
         "es": []
@@ -48210,6 +50358,63 @@
         }
       ],
       "default_portion_g": 248,
+      "provenance": {
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2709351",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2709351",
+      "names": {
+        "en": "Vinegar",
+        "es": "Vinagre"
+      },
+      "aliases": {
+        "es": []
+      },
+      "category": "Mustard and other condiments",
+      "per_100g": {
+        "kcal": 21,
+        "protein_g": 0,
+        "carbs_g": 0.93,
+        "fat_g": 0,
+        "fiber_g": 0,
+        "sat_fat_g": 0,
+        "sugars_g": 0.4,
+        "sodium_mg": 5
+      },
+      "portion_hints": [
+        {
+          "grams": 15,
+          "label_en": "1 tablespoon",
+          "label_es": null
+        },
+        {
+          "grams": 9,
+          "label_en": "1 packet",
+          "label_es": null
+        },
+        {
+          "grams": 30,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 30,
       "provenance": {
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
@@ -49209,7 +51414,11 @@
       },
       "aliases": {
         "es": [
-          "Patatas fritas"
+          "Patatas fritas",
+          {
+            "alias": "Patatas bravas",
+            "confidence": 0.5
+          }
         ]
       },
       "category": "French fries and other fried white potatoes",
@@ -49825,6 +52034,65 @@
       "deprecated": false
     },
     {
+      "id": "fdc-2709532",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2709532",
+      "names": {
+        "en": "Potato salad with egg, made with mayonnaise",
+        "es": "Ensalada de papa con huevo y mayonesa"
+      },
+      "aliases": {
+        "es": [
+          "Ensalada de patata con huevo y mayonesa",
+          {
+            "alias": "Ensaladilla rusa",
+            "confidence": 0.6
+          }
+        ]
+      },
+      "category": "Mashed potatoes and white potato mixtures",
+      "per_100g": {
+        "kcal": 157,
+        "protein_g": 1.96,
+        "carbs_g": 16.18,
+        "fat_g": 9.4,
+        "fiber_g": 1.3,
+        "sat_fat_g": 1.437,
+        "sugars_g": 4.95,
+        "sodium_mg": 329
+      },
+      "portion_hints": [
+        {
+          "grams": 275,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 138,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 138,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2709552",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2709552",
@@ -50148,7 +52416,7 @@
       "source_ref": "USDA FDC #2709579",
       "names": {
         "en": "Collards, NS as to form, cooked",
-        "es": "Berza cocida"
+        "es": "Berza cocida con sal y grasa"
       },
       "aliases": {
         "es": []
@@ -50304,7 +52572,7 @@
       "source_ref": "USDA FDC #2709595",
       "names": {
         "en": "Greens, NS as to form, cooked",
-        "es": "Verduras de hoja cocidas"
+        "es": "Verduras de hoja cocidas con sal y grasa"
       },
       "aliases": {
         "es": []
@@ -50356,7 +52624,7 @@
       "source_ref": "USDA FDC #2709602",
       "names": {
         "en": "Kale, NS as to form, cooked",
-        "es": "Col rizada cocida"
+        "es": "Col rizada cocida con sal y grasa"
       },
       "aliases": {
         "es": []
@@ -50408,7 +52676,7 @@
       "source_ref": "USDA FDC #2709609",
       "names": {
         "en": "Mustard greens, NS as to form, cooked",
-        "es": "Hojas de mostaza cocidas"
+        "es": "Hojas de mostaza cocidas con sal y grasa"
       },
       "aliases": {
         "es": []
@@ -50720,7 +52988,7 @@
       "source_ref": "USDA FDC #2709636",
       "names": {
         "en": "Turrnip greens, NS as to form, cooked",
-        "es": "Hojas de nabo cocidas"
+        "es": "Hojas de nabo cocidas con sal y grasa"
       },
       "aliases": {
         "es": []
@@ -52011,6 +54279,83 @@
       "deprecated": false
     },
     {
+      "id": "fdc-2709801",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2709801",
+      "names": {
+        "en": "Peppers, sweet, red, raw",
+        "es": "Pimiento rojo crudo"
+      },
+      "aliases": {
+        "es": [
+          "Pimentón rojo crudo",
+          "Morrón rojo crudo",
+          "Ají rojo crudo"
+        ]
+      },
+      "category": "Other red and orange vegetables",
+      "per_100g": {
+        "kcal": 31,
+        "protein_g": 0.9,
+        "carbs_g": 6.65,
+        "fat_g": 0.13,
+        "fiber_g": 1.2,
+        "sat_fat_g": 0.059,
+        "sugars_g": 4.2,
+        "sodium_mg": 0
+      },
+      "portion_hints": [
+        {
+          "grams": 10,
+          "label_en": "1 piece",
+          "label_es": null
+        },
+        {
+          "grams": 10,
+          "label_en": "1 ring",
+          "label_es": null
+        },
+        {
+          "grams": 30,
+          "label_en": "1 miniature",
+          "label_es": null
+        },
+        {
+          "grams": 120,
+          "label_en": "1 regular",
+          "label_es": null
+        },
+        {
+          "grams": 150,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 20,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 20,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2709810",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2709810",
@@ -52377,14 +54722,14 @@
       "source_ref": "USDA FDC #2709855",
       "names": {
         "en": "Green beans, NS as to form, cooked",
-        "es": "Judías verdes cocidas"
+        "es": "Judías verdes cocidas con sal y grasa"
       },
       "aliases": {
         "es": [
-          "Chauchas cocidas",
-          "Ejotes cocidos",
-          "Porotos verdes cocidos",
-          "Vainitas cocidas"
+          "Chauchas cocidas con sal y grasa",
+          "Ejotes cocidos con sal y grasa",
+          "Porotos verdes cocidos con sal y grasa",
+          "Vainitas cocidas con sal y grasa"
         ]
       },
       "category": "String beans",
@@ -52636,11 +54981,11 @@
       "source_ref": "USDA FDC #2709893",
       "names": {
         "en": "Cabbage, red, cooked",
-        "es": "Repollo rojo cocido"
+        "es": "Repollo rojo cocido con sal y grasa"
       },
       "aliases": {
         "es": [
-          "Col roja cocida"
+          "Col roja cocida con sal y grasa"
         ]
       },
       "category": "Cabbage",
@@ -53008,11 +55353,11 @@
       "source_ref": "USDA FDC #2709935",
       "names": {
         "en": "Leeks",
-        "es": "Puerro"
+        "es": "Puerro cocido con sal y grasa"
       },
       "aliases": {
         "es": [
-          "Ajo porro"
+          "Ajo porro cocido con sal y grasa"
         ]
       },
       "category": "Onions",
@@ -53191,12 +55536,12 @@
       "source_ref": "USDA FDC #2709962",
       "names": {
         "en": "Green peas, NS as to form, cooked",
-        "es": "Arvejas cocidas"
+        "es": "Arvejas cocidas con sal y grasa"
       },
       "aliases": {
         "es": [
-          "Guisantes cocidos",
-          "Chícharos cocidos"
+          "Guisantes cocidos con sal y grasa",
+          "Chícharos cocidos con sal y grasa"
         ]
       },
       "category": "Other starchy vegetables",
@@ -53471,11 +55816,11 @@
       "source_ref": "USDA FDC #2709982",
       "names": {
         "en": "Sauerkraut",
-        "es": "Chucrut"
+        "es": "Chucrut con grasa"
       },
       "aliases": {
         "es": [
-          "Col fermentada"
+          "Col fermentada con grasa"
         ]
       },
       "category": "Olives, pickles, pickled vegetables",
@@ -53633,7 +55978,12 @@
         "es": "Ratatouille"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Pisto",
+            "confidence": 0.8
+          }
+        ]
       },
       "category": "Vegetable dishes",
       "per_100g": {
@@ -53660,6 +56010,7 @@
       ],
       "default_portion_g": 108,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -53898,71 +56249,115 @@
       "deprecated": false
     },
     {
-      "id": "fdc-2710097",
+      "id": "fdc-2710106",
       "source": "usda_fndds",
-      "source_ref": "USDA FDC #2710097",
+      "source_ref": "USDA FDC #2710106",
       "names": {
-        "en": "Pickles, NFS",
-        "es": "Pepinillos"
+        "en": "Soup, gazpacho",
+        "es": "Gazpacho"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Gazpacho",
+            "confidence": 0.8
+          }
+        ]
       },
-      "category": "Olives, pickles, pickled vegetables",
+      "category": "Soups, broth-based",
       "per_100g": {
-        "kcal": 14,
-        "protein_g": 0.48,
-        "carbs_g": 1.99,
-        "fat_g": 0.43,
+        "kcal": 26,
+        "protein_g": 0.81,
+        "carbs_g": 4.49,
+        "fat_g": 0.63,
         "fiber_g": 1,
-        "sat_fat_g": 0.079,
-        "sugars_g": 1.28,
-        "sodium_mg": 808
+        "sat_fat_g": 0.08,
+        "sugars_g": 2.81,
+        "sodium_mg": 208
       },
       "portion_hints": [
         {
-          "grams": 80,
-          "label_en": "1 regular",
-          "label_es": null
-        },
-        {
-          "grams": 30,
-          "label_en": "1 miniature",
-          "label_es": null
-        },
-        {
-          "grams": 40,
-          "label_en": "1 half",
-          "label_es": null
-        },
-        {
-          "grams": 7,
-          "label_en": "1 slice",
-          "label_es": null
-        },
-        {
-          "grams": 40,
-          "label_en": "1 spear",
-          "label_es": null
-        },
-        {
-          "grams": 21,
-          "label_en": "1 stacker",
-          "label_es": null
-        },
-        {
-          "grams": 155,
+          "grams": 245,
           "label_en": "1 cup",
           "label_es": null
         },
         {
-          "grams": 30,
+          "grams": 245,
           "label_en": "Quantity not specified",
           "label_es": null
         }
       ],
-      "default_portion_g": 30,
+      "default_portion_g": 245,
       "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2710114",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2710114",
+      "names": {
+        "en": "Soup, minestrone",
+        "es": "Sopa minestrone"
+      },
+      "aliases": {
+        "es": [
+          {
+            "alias": "Minestrone",
+            "confidence": 1
+          }
+        ]
+      },
+      "category": "Soups, broth-based",
+      "per_100g": {
+        "kcal": 40,
+        "protein_g": 1.71,
+        "carbs_g": 7.3,
+        "fat_g": 0.5,
+        "fiber_g": 1.5,
+        "sat_fat_g": 0.072,
+        "sugars_g": 1.04,
+        "sodium_mg": 241
+      },
+      "portion_hints": [
+        {
+          "grams": 245,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 525,
+          "label_en": "1 can",
+          "label_es": null
+        },
+        {
+          "grams": 440,
+          "label_en": "1 individual container",
+          "label_es": null
+        },
+        {
+          "grams": 245,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 245,
+      "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -54403,7 +56798,12 @@
         "es": "Salsa pesto"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Pesto",
+            "confidence": 1
+          }
+        ]
       },
       "category": "Dips, gravies, other sauces",
       "per_100g": {
@@ -54430,6 +56830,7 @@
       ],
       "default_portion_g": 32,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -59530,6 +61931,88 @@
       "deprecated": false
     },
     {
+      "id": "fdc-2710707",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2710707",
+      "names": {
+        "en": "Water, tap",
+        "es": "Agua"
+      },
+      "aliases": {
+        "es": []
+      },
+      "category": "Tap water",
+      "per_100g": {
+        "kcal": 0,
+        "protein_g": 0,
+        "carbs_g": 0,
+        "fat_g": 0,
+        "fiber_g": 0,
+        "sat_fat_g": 0,
+        "sugars_g": 0,
+        "sodium_mg": 4
+      },
+      "portion_hints": [
+        {
+          "grams": 240,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 30,
+          "label_en": "1 fl oz",
+          "label_es": null
+        },
+        {
+          "grams": 20,
+          "label_en": "1 ice cube",
+          "label_es": null
+        },
+        {
+          "grams": 110,
+          "label_en": "1 cup ice",
+          "label_es": null
+        },
+        {
+          "grams": 507,
+          "label_en": "1 bottle (16.9 fl oz) filled with tap water",
+          "label_es": null
+        },
+        {
+          "grams": 720,
+          "label_en": "1 bottle (24 fl oz) filled with tap water",
+          "label_es": null
+        },
+        {
+          "grams": 60,
+          "label_en": "Guideline amount if from a water fountain",
+          "label_es": null
+        },
+        {
+          "grams": 360,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 360,
+      "provenance": {
+        "category": "usda_fndds",
+        "default_portion_g": "usda_fndds",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2710711",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2710711",
@@ -60352,6 +62835,1113 @@
         "portion_hints": "usda_fndds"
       },
       "deprecated": false
+    },
+    {
+      "id": "manual-acai-en-polvo",
+      "source": "manual",
+      "source_ref": "Agregadores nutricionales (FatSecret, Fitia y similares), recogidos el 30/08/2026 — pulpa de açaí liofilizada",
+      "names": {
+        "en": "Acai powder, freeze-dried pulp",
+        "es": "Açaí en polvo liofilizado"
+      },
+      "aliases": {
+        "es": [
+          "Açaí liofilizado",
+          "Açaí deshidratado"
+        ]
+      },
+      "category": "Dried fruits",
+      "per_100g": {
+        "kcal": 247,
+        "protein_g": 10,
+        "carbs_g": 36,
+        "fat_g": 4.7,
+        "fiber_g": null,
+        "sat_fat_g": null,
+        "sugars_g": null,
+        "sodium_mg": null
+      },
+      "portion_hints": [
+        {
+          "grams": 10,
+          "label_en": "1 tablespoon",
+          "label_es": "1 cucharada"
+        }
+      ],
+      "default_portion_g": 10,
+      "provenance": {
+        "aliases.es": "manual/referencia-web",
+        "category": "manual/referencia-web",
+        "default_portion_g": "manual/referencia-web",
+        "names.en": "manual/referencia-web",
+        "names.es": "manual/referencia-web",
+        "per_100g.carbs_g": "manual/referencia-web",
+        "per_100g.fat_g": "manual/referencia-web",
+        "per_100g.kcal": "manual/referencia-web",
+        "per_100g.protein_g": "manual/referencia-web",
+        "portion_hints": "manual/referencia-web"
+      },
+      "deprecated": false,
+      "caveats": [
+        "ESTA FICHA NO ES EL AÇAÍ DEL BOWL. Los valores son de pulpa DESHIDRATADA / liofilizada. Un bowl de açaí se hace con pulpa CONGELADA, que ronda las 58–80 kcal por 100 g: cuantificar la foto de un bowl con estos 247 kcal la sobreestimaría unas tres veces. Por eso el nombre dice `en polvo liofilizado` y la ficha NO lleva el alias `Açaí`.",
+        "La pulpa de açaí congelada sigue AUSENTE del catálogo, pendiente de una etiqueta real.",
+        "Rangos publicados, no una medición: 247 kcal · hidratos ~36 g · proteínas ~10 g · grasas ~4,7 g.",
+        "La fibra que publican las fuentes va de 10 a 35 g según el producto: un rango de 3,5× no es un dato, así que el campo queda en null.",
+        "Atwater cierra al 8,4 % (226,3 kcal predichas contra 247 declaradas). Es el más flojo del catálogo manual y pasa raspando el 10 % — consistente con que la fibra, que no está declarada, es parte de esos hidratos."
+      ]
+    },
+    {
+      "id": "manual-coxinha",
+      "source": "manual",
+      "source_ref": "Agregadores nutricionales (FatSecret, Fitia y similares), recogidos el 30/08/2026 — normalizado a 100 g desde la unidad estándar",
+      "names": {
+        "en": "Coxinha, Brazilian chicken croquette",
+        "es": "Coxinha"
+      },
+      "aliases": {
+        "es": [
+          "Croqueta brasileña de pollo"
+        ]
+      },
+      "category": "Chicken patties, nuggets and tenders",
+      "per_100g": {
+        "kcal": 316,
+        "protein_g": 13.2,
+        "carbs_g": 31,
+        "fat_g": 15.2,
+        "fiber_g": null,
+        "sat_fat_g": null,
+        "sugars_g": null,
+        "sodium_mg": null
+      },
+      "portion_hints": [
+        {
+          "grams": 78,
+          "label_en": "1 standard piece",
+          "label_es": "1 unidad"
+        },
+        {
+          "grams": 30,
+          "label_en": "1 mini piece",
+          "label_es": "1 unidad mini"
+        }
+      ],
+      "default_portion_g": 78,
+      "provenance": {
+        "aliases.es": "manual/referencia-web",
+        "category": "manual/referencia-web",
+        "default_portion_g": "manual/referencia-web",
+        "names.en": "manual/referencia-web",
+        "names.es": "manual/referencia-web",
+        "per_100g.carbs_g": "manual/referencia-web",
+        "per_100g.fat_g": "manual/referencia-web",
+        "per_100g.kcal": "manual/referencia-web",
+        "per_100g.protein_g": "manual/referencia-web",
+        "portion_hints": "manual/referencia-web"
+      },
+      "deprecated": false,
+      "caveats": [
+        "CRITERIO DE NORMALIZACIÓN declarado: las fuentes publican tres tamaños y no cierran entre sí. Se usó la unidad ESTÁNDAR (65–90 g, punto medio 77,5 g; 210–280 kcal, punto medio 245) porque es la única banda que trae los cuatro macros. 245 kcal / 77,5 g × 100 = 316 kcal por 100 g.",
+        "La normalización se verificó contra un dato INDEPENDIENTE de las mismas fuentes: la distribución calórica publicada es grasas ~43 % · hidratos ~40 % · proteínas ~16 %, y la ficha da 43,6 % · 39,5 % · 16,8 %. Los tres coinciden.",
+        "Las otras dos bandas quedan fuera y se declaran: la de 100 g (350–430 kcal) está un 11–36 % por encima, y la mini de 30 g (50–130 kcal) equivale a 167–433 kcal por 100 g, un rango demasiado ancho para cuantificar nada.",
+        "Sin dato de fibra, saturadas, azúcares ni sodio: quedan en null, que no es cero.",
+        "Atwater cierra al 0,8 % (313,6 kcal predichas contra 316 declaradas)."
+      ]
+    },
+    {
+      "id": "manual-farofa",
+      "source": "manual",
+      "source_ref": "Agregadores nutricionales (FatSecret, Fitia y similares), recogidos el 30/08/2026 — punto medio del rango publicado",
+      "names": {
+        "en": "Farofa, toasted cassava flour",
+        "es": "Farofa"
+      },
+      "aliases": {
+        "es": [
+          "Harina de mandioca tostada"
+        ]
+      },
+      "category": "Other starchy vegetables",
+      "per_100g": {
+        "kcal": 393,
+        "protein_g": 1.5,
+        "carbs_g": 79,
+        "fat_g": 10,
+        "fiber_g": null,
+        "sat_fat_g": null,
+        "sugars_g": null,
+        "sodium_mg": null
+      },
+      "portion_hints": [
+        {
+          "grams": 35,
+          "label_en": "1 tablespoon",
+          "label_es": "1 cucharada sopera"
+        }
+      ],
+      "default_portion_g": 35,
+      "provenance": {
+        "aliases.es": "manual/referencia-web",
+        "category": "manual/referencia-web",
+        "default_portion_g": "manual/referencia-web",
+        "names.en": "manual/referencia-web",
+        "names.es": "manual/referencia-web",
+        "per_100g.carbs_g": "manual/referencia-web",
+        "per_100g.fat_g": "manual/referencia-web",
+        "per_100g.kcal": "manual/referencia-web",
+        "per_100g.protein_g": "manual/referencia-web",
+        "portion_hints": "manual/referencia-web"
+      },
+      "deprecated": false,
+      "caveats": [
+        "Rangos publicados, no una medición: 377–410 kcal · hidratos 78–80 g · grasas ~10 g · proteínas ~1,5 g. El valor es el punto medio.",
+        "La farofa varía mucho según con qué se tuesta la harina: mantequilla, aceite o tocino. Esta ficha es la tradicional.",
+        "Sin dato de fibra, saturadas, azúcares ni sodio: quedan en null, que no es cero.",
+        "Atwater cierra al 4,8 % (412 kcal predichas contra 393 declaradas): es el más flojo de las fichas manuales, dentro del 10 % que exige el candado.",
+        "Se fichó a mano porque USDA solo mide la mandioca cruda y hervida: su `Cassava, cooked` da 191 kcal por 100 g, la mitad, porque conserva toda el agua que la farofa perdió al tostarse."
+      ]
+    },
+    {
+      "id": "manual-pan-de-queso",
+      "source": "manual",
+      "source_ref": "Agregadores nutricionales (FatSecret, Fitia y similares), recogidos el 30/08/2026 — punto medio del rango publicado",
+      "names": {
+        "en": "Brazilian cheese bread (pão de queijo)",
+        "es": "Pan de queso"
+      },
+      "aliases": {
+        "es": [
+          "Pão de queijo",
+          "Chipá"
+        ]
+      },
+      "category": "Biscuits, muffins, quick breads",
+      "per_100g": {
+        "kcal": 350,
+        "protein_g": 8.15,
+        "carbs_g": 44.5,
+        "fat_g": 16.5,
+        "fiber_g": null,
+        "sat_fat_g": null,
+        "sugars_g": null,
+        "sodium_mg": null
+      },
+      "portion_hints": [
+        {
+          "grams": 50,
+          "label_en": "1 medium piece",
+          "label_es": "1 unidad mediana"
+        },
+        {
+          "grams": 25,
+          "label_en": "1 small piece",
+          "label_es": "1 unidad pequeña"
+        }
+      ],
+      "default_portion_g": 50,
+      "provenance": {
+        "aliases.es": "manual/referencia-web",
+        "category": "manual/referencia-web",
+        "default_portion_g": "manual/referencia-web",
+        "names.en": "manual/referencia-web",
+        "names.es": "manual/referencia-web",
+        "per_100g.carbs_g": "manual/referencia-web",
+        "per_100g.fat_g": "manual/referencia-web",
+        "per_100g.kcal": "manual/referencia-web",
+        "per_100g.protein_g": "manual/referencia-web",
+        "portion_hints": "manual/referencia-web"
+      },
+      "deprecated": false,
+      "caveats": [
+        "Rangos publicados, no una medición: 300–400 kcal · grasas 12–21 g · hidratos 41–48 g · proteínas 5,9–10,4 g. El valor es el punto medio, y el rango de calorías es ancho (±14 %).",
+        "Las porciones que publican las fuentes no cierran con el punto medio: 25 g ≈ 78 kcal da 312 kcal/100 g y 50 g ≈ 216–245 kcal da 432–490. Se conservan los gramos de las porciones y se cuantifica con el punto medio, que es el consenso del rango completo.",
+        "Sin dato de fibra, saturadas, azúcares ni sodio: quedan en null, que no es cero.",
+        "Atwater cierra al 2,6 % (359 kcal predichas contra 350 declaradas)."
+      ]
+    },
+    {
+      "id": "manual-salmorejo",
+      "source": "manual",
+      "source_ref": "Etiqueta comercial de salmorejo (producto industrial con AOVE), foto del 30/08/2026",
+      "names": {
+        "en": "Salmorejo, Spanish chilled tomato and bread soup",
+        "es": "Salmorejo"
+      },
+      "aliases": {
+        "es": [
+          "Salmorejo cordobés"
+        ]
+      },
+      "category": "Soups, broth-based",
+      "per_100g": {
+        "kcal": 83,
+        "protein_g": 0.8,
+        "carbs_g": 5.6,
+        "fat_g": 6.1,
+        "fiber_g": null,
+        "sat_fat_g": 0.9,
+        "sugars_g": 2.5,
+        "sodium_mg": 320
+      },
+      "portion_hints": [
+        {
+          "grams": 250,
+          "label_en": "1 bowl",
+          "label_es": "1 plato hondo"
+        },
+        {
+          "grams": 150,
+          "label_en": "1 small glass",
+          "label_es": "1 vaso pequeño"
+        }
+      ],
+      "default_portion_g": 250,
+      "provenance": {
+        "aliases.es": "manual/etiqueta-comercial",
+        "category": "manual/etiqueta-comercial",
+        "default_portion_g": "manual/etiqueta-comercial",
+        "names.en": "manual/etiqueta-comercial",
+        "names.es": "manual/etiqueta-comercial",
+        "per_100g.carbs_g": "manual/etiqueta-comercial",
+        "per_100g.fat_g": "manual/etiqueta-comercial",
+        "per_100g.kcal": "manual/etiqueta-comercial",
+        "per_100g.protein_g": "manual/etiqueta-comercial",
+        "per_100g.sat_fat_g": "manual/etiqueta-comercial",
+        "per_100g.sodium_mg": "manual/etiqueta-comercial",
+        "per_100g.sugars_g": "manual/etiqueta-comercial",
+        "portion_hints": "manual/etiqueta-comercial"
+      },
+      "deprecated": false,
+      "caveats": [
+        "Los valores vienen por 100 ml, no por 100 g: se usan tal cual porque la densidad del salmorejo es ≈ 1 g/ml, pero no es una medición en gramos.",
+        "La etiqueta no declara fibra: el campo queda en null, que no es lo mismo que cero.",
+        "El sodio (320 mg) está calculado desde la sal declarada (0,80 g), no medido.",
+        "La fuente es una etiqueta comercial, no USDA: es un producto industrial con aceite de oliva virgen extra, no una receta casera.",
+        "Las porciones son criterio de curación, no de la etiqueta: 250 g es un plato y 150 g un vaso.",
+        "Atwater cierra al 3,0 % (80,5 kcal predichas contra 83 declaradas)."
+      ]
+    },
+    {
+      "id": "manual-tortilla-de-patatas",
+      "source": "manual",
+      "source_ref": "Agregadores nutricionales (FatSecret, Fitia y similares), recogidos el 30/08/2026 — punto medio del rango publicado",
+      "names": {
+        "en": "Spanish potato omelette (tortilla de patatas)",
+        "es": "Tortilla de patatas"
+      },
+      "aliases": {
+        "es": [
+          "Tortilla española",
+          "Tortilla de papas"
+        ]
+      },
+      "category": "Eggs and omelets",
+      "per_100g": {
+        "kcal": 136,
+        "protein_g": 6,
+        "carbs_g": 10.5,
+        "fat_g": 8,
+        "fiber_g": 1.2,
+        "sat_fat_g": null,
+        "sugars_g": null,
+        "sodium_mg": null
+      },
+      "portion_hints": [
+        {
+          "grams": 150,
+          "label_en": "1 wedge",
+          "label_es": "1 porción"
+        },
+        {
+          "grams": 100,
+          "label_en": "1 tapa portion",
+          "label_es": "1 pincho"
+        }
+      ],
+      "default_portion_g": 150,
+      "provenance": {
+        "aliases.es": "manual/referencia-web",
+        "category": "manual/referencia-web",
+        "default_portion_g": "manual/referencia-web",
+        "names.en": "manual/referencia-web",
+        "names.es": "manual/referencia-web",
+        "per_100g.carbs_g": "manual/referencia-web",
+        "per_100g.fat_g": "manual/referencia-web",
+        "per_100g.fiber_g": "manual/referencia-web",
+        "per_100g.kcal": "manual/referencia-web",
+        "per_100g.protein_g": "manual/referencia-web",
+        "portion_hints": "manual/referencia-web"
+      },
+      "deprecated": false,
+      "caveats": [
+        "Rangos publicados, no una medición: 126–147 kcal · proteínas 5–7 g · hidratos 9–12 g · grasas 7–9 g · fibra 0,8–1,6 g. El valor es el punto medio.",
+        "El número depende mucho de la receta: cuánto aceite absorbe la patata y si lleva cebolla.",
+        "Sin dato de grasas saturadas, azúcares ni sodio: quedan en null, que no es cero.",
+        "Atwater cierra al 1,5 % (138 kcal predichas contra 136 declaradas).",
+        "Se fichó a mano porque USDA no la tiene: su `Egg omelet with potatoes` es 81,8 % huevo y 8,2 % papa, y da 2,97 g de hidratos contra los ~10 de una tortilla."
+      ]
+    },
+    {
+      "id": "receta-ajoblanco",
+      "source": "receta",
+      "source_ref": "Receta compuesta — 7 ingredientes, método mezclado",
+      "names": {
+        "en": "Ajoblanco, Andalusian chilled almond and garlic soup",
+        "es": "Ajoblanco"
+      },
+      "aliases": {
+        "es": [
+          "Ajo blanco malagueño"
+        ]
+      },
+      "category": "Soups, broth-based",
+      "per_100g": {
+        "kcal": 127.059,
+        "protein_g": 2.87,
+        "carbs_g": 5.214,
+        "fat_g": 10.991,
+        "fiber_g": 1.458,
+        "sat_fat_g": 1.313,
+        "sugars_g": 0.65,
+        "sodium_mg": 243.459
+      },
+      "portion_hints": [
+        {
+          "grams": 250,
+          "label_en": "1 bowl",
+          "label_es": "1 plato hondo"
+        },
+        {
+          "grams": 150,
+          "label_en": "1 small glass",
+          "label_es": "1 vaso pequeño"
+        }
+      ],
+      "default_portion_g": 250,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "curation",
+        "default_portion_g": "curation",
+        "names.en": "curation",
+        "names.es": "curation",
+        "per_100g.carbs_g": "receta",
+        "per_100g.fat_g": "receta",
+        "per_100g.fiber_g": "receta",
+        "per_100g.kcal": "receta",
+        "per_100g.protein_g": "receta",
+        "per_100g.sat_fat_g": "receta",
+        "per_100g.sodium_mg": "receta",
+        "per_100g.sugars_g": "receta",
+        "portion_hints": "curation"
+      },
+      "deprecated": false,
+      "caveats": [
+        "Receta estándar declarada, no medición de laboratorio: 100 g de almendra cruda, 50 g de miga de pan, 5 g de ajo, 50 g de aceite de oliva, 15 g de vinagre, 700 g de agua y 5 g de sal.",
+        "El agua entra como ingrediente porque se queda en el plato: es una sopa fría, y el agua diluye aunque no aporte nada.",
+        "Se sirve con uvas o melón, que no entran en la ficha."
+      ],
+      "receta": {
+        "metodo": "mezclado",
+        "ingredientes": [
+          {
+            "ref": "fdc-170567",
+            "grams": 100
+          },
+          {
+            "ref": "fdc-2707593",
+            "grams": 50
+          },
+          {
+            "ref": "fdc-169230",
+            "grams": 5
+          },
+          {
+            "ref": "fdc-2710186",
+            "grams": 50
+          },
+          {
+            "ref": "fdc-2709351",
+            "grams": 15
+          },
+          {
+            "ref": "fdc-2710707",
+            "grams": 700
+          },
+          {
+            "ref": "fdc-173468",
+            "grams": 5
+          }
+        ],
+        "peso_entrada_g": 925,
+        "aceite_absorbido_g": 0,
+        "peso_final_g": 925,
+        "rendimiento_de": "transformacion"
+      }
+    },
+    {
+      "id": "receta-bocadillo-de-calamares",
+      "source": "receta",
+      "source_ref": "Receta compuesta — 2 ingredientes, método mezclado",
+      "names": {
+        "en": "Fried calamari sandwich (bocadillo de calamares)",
+        "es": "Bocadillo de calamares"
+      },
+      "aliases": {
+        "es": [
+          "Bocata de calamares"
+        ]
+      },
+      "category": "Seafood mixed dishes",
+      "per_100g": {
+        "kcal": 251.273,
+        "protein_g": 12.11,
+        "carbs_g": 30.515,
+        "fat_g": 8.775,
+        "fiber_g": 1.045,
+        "sat_fat_g": 1.582,
+        "sugars_g": 1.523,
+        "sodium_mg": 462.455
+      },
+      "portion_hints": [
+        {
+          "grams": 220,
+          "label_en": "1 sandwich",
+          "label_es": "1 bocadillo"
+        }
+      ],
+      "default_portion_g": 220,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "curation",
+        "default_portion_g": "curation",
+        "names.en": "curation",
+        "names.es": "curation",
+        "per_100g.carbs_g": "receta",
+        "per_100g.fat_g": "receta",
+        "per_100g.fiber_g": "receta",
+        "per_100g.kcal": "receta",
+        "per_100g.protein_g": "receta",
+        "per_100g.sat_fat_g": "receta",
+        "per_100g.sodium_mg": "receta",
+        "per_100g.sugars_g": "receta",
+        "portion_hints": "curation"
+      },
+      "deprecated": false,
+      "caveats": [
+        "Receta estándar declarada, no medición de laboratorio: 100 g de pan y 120 g de calamares rebozados.",
+        "Las dos piezas ya estaban en el catálogo por separado; lo que aporta la ficha es la proporción del bocadillo de Madrid, para no tener que sumarlas a mano.",
+        "Sin alioli ni limón, que es como se sirve en la mayoría de las barras."
+      ],
+      "receta": {
+        "metodo": "mezclado",
+        "ingredientes": [
+          {
+            "ref": "fdc-2707593",
+            "grams": 100
+          },
+          {
+            "ref": "fdc-2706334",
+            "grams": 120
+          }
+        ],
+        "peso_entrada_g": 220,
+        "aceite_absorbido_g": 0,
+        "peso_final_g": 220,
+        "rendimiento_de": "transformacion"
+      }
+    },
+    {
+      "id": "receta-escalivada",
+      "source": "receta",
+      "source_ref": "Receta compuesta — 4 ingredientes, método mezclado",
+      "names": {
+        "en": "Escalivada, Catalan roasted eggplant and pepper",
+        "es": "Escalivada"
+      },
+      "aliases": {
+        "es": [
+          "Verduras asadas catalanas"
+        ]
+      },
+      "category": "Vegetable dishes",
+      "per_100g": {
+        "kcal": 63.757,
+        "protein_g": 0.833,
+        "carbs_g": 5.668,
+        "fat_g": 4.211,
+        "fiber_g": 1.827,
+        "sat_fat_g": 0.678,
+        "sugars_g": 3.004,
+        "sodium_mg": 158.951
+      },
+      "portion_hints": [
+        {
+          "grams": 150,
+          "label_en": "1 serving",
+          "label_es": "1 ración"
+        },
+        {
+          "grams": 80,
+          "label_en": "1 tapa portion",
+          "label_es": "1 tapa"
+        }
+      ],
+      "default_portion_g": 150,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "curation",
+        "default_portion_g": "curation",
+        "names.en": "curation",
+        "names.es": "curation",
+        "per_100g.carbs_g": "receta",
+        "per_100g.fat_g": "receta",
+        "per_100g.fiber_g": "receta",
+        "per_100g.kcal": "receta",
+        "per_100g.protein_g": "receta",
+        "per_100g.sat_fat_g": "receta",
+        "per_100g.sodium_mg": "receta",
+        "per_100g.sugars_g": "receta",
+        "portion_hints": "curation"
+      },
+      "deprecated": false,
+      "caveats": [
+        "Receta estándar declarada, no medición de laboratorio: 400 g de berenjena, 300 g de pimiento rojo, 30 g de aceite de oliva y 3 g de sal.",
+        "LÍMITE CONOCIDO: la escalivada se ASA y pierde bastante agua, pero el método aplicado es `mezclado` (factor 1,000). El motivo está medido: SR Legacy solo trae tres pares crudo/asado de verdura (rendimientos 0,71 · 1,07 · 1,11), y una muestra de tres que se contradice no sostiene ningún número. Antes que inventar un factor, la ficha usa la convención de FNDDS y avisa que por eso SUBESTIMA la densidad calórica del plato real.",
+        "Cuando haya una fuente de rendimiento para verdura asada, esta ficha se recalcula sin tocar un solo gramo de la receta."
+      ],
+      "receta": {
+        "metodo": "mezclado",
+        "ingredientes": [
+          {
+            "ref": "fdc-169228",
+            "grams": 400
+          },
+          {
+            "ref": "fdc-2709801",
+            "grams": 300
+          },
+          {
+            "ref": "fdc-2710186",
+            "grams": 30
+          },
+          {
+            "ref": "fdc-173468",
+            "grams": 3
+          }
+        ],
+        "peso_entrada_g": 733,
+        "aceite_absorbido_g": 0,
+        "peso_final_g": 733,
+        "rendimiento_de": "transformacion"
+      }
+    },
+    {
+      "id": "receta-gazpachuelo",
+      "source": "receta",
+      "source_ref": "Receta compuesta — 5 ingredientes, método mezclado",
+      "names": {
+        "en": "Gazpachuelo, Malaga fish soup with mayonnaise",
+        "es": "Gazpachuelo"
+      },
+      "aliases": {
+        "es": [
+          "Gazpachuelo malagueño"
+        ]
+      },
+      "category": "Soups, broth-based",
+      "per_100g": {
+        "kcal": 78.374,
+        "protein_g": 1.652,
+        "carbs_g": 5.021,
+        "fat_g": 5.8,
+        "fiber_g": 0.327,
+        "sat_fat_g": 1.106,
+        "sugars_g": 0.567,
+        "sodium_mg": 323.832
+      },
+      "portion_hints": [
+        {
+          "grams": 300,
+          "label_en": "1 bowl",
+          "label_es": "1 plato hondo"
+        }
+      ],
+      "default_portion_g": 300,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "curation",
+        "default_portion_g": "curation",
+        "names.en": "curation",
+        "names.es": "curation",
+        "per_100g.carbs_g": "receta",
+        "per_100g.fat_g": "receta",
+        "per_100g.fiber_g": "receta",
+        "per_100g.kcal": "receta",
+        "per_100g.protein_g": "receta",
+        "per_100g.sat_fat_g": "receta",
+        "per_100g.sodium_mg": "receta",
+        "per_100g.sugars_g": "receta",
+        "portion_hints": "curation"
+      },
+      "deprecated": false,
+      "caveats": [
+        "Receta estándar declarada, no medición de laboratorio: 700 g de caldo, 250 g de papa hervida, 60 g de mayonesa, 50 g de huevo y 10 g de vinagre.",
+        "El caldo del catálogo (fdc-2707132) es de carne o ave, no de pescado: USDA no tiene fumet. Aporta 6 kcal por 100 g, así que el efecto sobre la energía es despreciable, pero el sodio del gazpachuelo real depende del fumet y puede diferir.",
+        "El caldo entra como ingrediente porque es la mayor parte del plato."
+      ],
+      "receta": {
+        "metodo": "mezclado",
+        "ingredientes": [
+          {
+            "ref": "fdc-2707132",
+            "grams": 700
+          },
+          {
+            "ref": "fdc-2709387",
+            "grams": 250
+          },
+          {
+            "ref": "fdc-171009",
+            "grams": 60
+          },
+          {
+            "ref": "fdc-2707152",
+            "grams": 50
+          },
+          {
+            "ref": "fdc-2709351",
+            "grams": 10
+          }
+        ],
+        "peso_entrada_g": 1070,
+        "aceite_absorbido_g": 0,
+        "peso_final_g": 1070,
+        "rendimiento_de": "transformacion"
+      }
+    },
+    {
+      "id": "receta-huevos-rotos",
+      "source": "receta",
+      "source_ref": "Receta compuesta — 2 ingredientes, método mezclado",
+      "names": {
+        "en": "Broken eggs over fried potatoes (huevos rotos)",
+        "es": "Huevos rotos"
+      },
+      "aliases": {
+        "es": [
+          "Huevos estrellados"
+        ]
+      },
+      "category": "Eggs and omelets",
+      "per_100g": {
+        "kcal": 212.778,
+        "protein_g": 5.274,
+        "carbs_g": 16.41,
+        "fat_g": 14.354,
+        "fiber_g": 1.25,
+        "sat_fat_g": 2.748,
+        "sugars_g": 0.297,
+        "sodium_mg": 280.639
+      },
+      "portion_hints": [
+        {
+          "grams": 360,
+          "label_en": "1 plate to share",
+          "label_es": "1 plato para compartir"
+        },
+        {
+          "grams": 180,
+          "label_en": "1 individual serving",
+          "label_es": "1 ración individual"
+        }
+      ],
+      "default_portion_g": 360,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "curation",
+        "default_portion_g": "curation",
+        "names.en": "curation",
+        "names.es": "curation",
+        "per_100g.carbs_g": "receta",
+        "per_100g.fat_g": "receta",
+        "per_100g.fiber_g": "receta",
+        "per_100g.kcal": "receta",
+        "per_100g.protein_g": "receta",
+        "per_100g.sat_fat_g": "receta",
+        "per_100g.sodium_mg": "receta",
+        "per_100g.sugars_g": "receta",
+        "portion_hints": "curation"
+      },
+      "deprecated": false,
+      "caveats": [
+        "Receta estándar declarada, no medición de laboratorio: 250 g de patatas fritas y 110 g de huevo frito (dos huevos).",
+        "Las dos piezas ya estaban en el catálogo por separado; lo que aporta la ficha es la proporción del plato.",
+        "Sin jamón ni chorizo, que son las versiones más habituales fuera de la básica."
+      ],
+      "receta": {
+        "metodo": "mezclado",
+        "ingredientes": [
+          {
+            "ref": "fdc-2709456",
+            "grams": 250
+          },
+          {
+            "ref": "fdc-2707155",
+            "grams": 110
+          }
+        ],
+        "peso_entrada_g": 360,
+        "aceite_absorbido_g": 0,
+        "peso_final_g": 360,
+        "rendimiento_de": "transformacion"
+      }
+    },
+    {
+      "id": "receta-merluza-en-salsa-verde",
+      "source": "receta",
+      "source_ref": "Receta compuesta — 5 ingredientes, método mezclado",
+      "names": {
+        "en": "Hake in green sauce (merluza en salsa verde)",
+        "es": "Merluza en salsa verde"
+      },
+      "aliases": {
+        "es": [
+          "Pescadilla en salsa verde"
+        ]
+      },
+      "category": "Seafood mixed dishes",
+      "per_100g": {
+        "kcal": 151.902,
+        "protein_g": 15.271,
+        "carbs_g": 0.705,
+        "fat_g": 9.33,
+        "fiber_g": 0.096,
+        "sat_fat_g": 1.807,
+        "sugars_g": 0.095,
+        "sodium_mg": 297.771
+      },
+      "portion_hints": [
+        {
+          "grams": 250,
+          "label_en": "1 serving",
+          "label_es": "1 ración"
+        },
+        {
+          "grams": 180,
+          "label_en": "1 small serving",
+          "label_es": "1 ración pequeña"
+        }
+      ],
+      "default_portion_g": 250,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "curation",
+        "default_portion_g": "curation",
+        "names.en": "curation",
+        "names.es": "curation",
+        "per_100g.carbs_g": "receta",
+        "per_100g.fat_g": "receta",
+        "per_100g.fiber_g": "receta",
+        "per_100g.kcal": "receta",
+        "per_100g.protein_g": "receta",
+        "per_100g.sat_fat_g": "receta",
+        "per_100g.sodium_mg": "receta",
+        "per_100g.sugars_g": "receta",
+        "portion_hints": "curation"
+      },
+      "deprecated": false,
+      "caveats": [
+        "Receta estándar declarada, no medición de laboratorio: 500 g de pescado, 40 g de aceite de oliva, 15 g de ajo, 10 g de perejil y 200 g de caldo.",
+        "RESERVA DE ESPECIE: USDA no mide merluza en ninguno de los tres datasets. Se usa `Fish, whiting` (pescadilla), que es el pariente más cercano — mismo orden, carne blanca magra — y que en España es literalmente la merluza pequeña. No es la misma especie.",
+        "La harina que liga la salsa no tiene ficha en el catálogo y no entra: la ficha subestima los hidratos en torno a 1 g por 100 g.",
+        "El caldo entra como ingrediente porque se queda en el plato como salsa."
+      ],
+      "receta": {
+        "metodo": "mezclado",
+        "ingredientes": [
+          {
+            "ref": "fdc-2706313",
+            "grams": 500
+          },
+          {
+            "ref": "fdc-2710186",
+            "grams": 40
+          },
+          {
+            "ref": "fdc-169230",
+            "grams": 15
+          },
+          {
+            "ref": "fdc-170416",
+            "grams": 10
+          },
+          {
+            "ref": "fdc-2707132",
+            "grams": 200
+          }
+        ],
+        "peso_entrada_g": 765,
+        "aceite_absorbido_g": 0,
+        "peso_final_g": 765,
+        "rendimiento_de": "transformacion"
+      }
+    },
+    {
+      "id": "receta-migas",
+      "source": "receta",
+      "source_ref": "Receta compuesta — 4 ingredientes, método mezclado",
+      "names": {
+        "en": "Migas, Spanish fried breadcrumbs with garlic and pork belly",
+        "es": "Migas"
+      },
+      "aliases": {
+        "es": [
+          "Migas extremeñas",
+          "Migas de pastor"
+        ]
+      },
+      "category": "Yeast breads",
+      "per_100g": {
+        "kcal": 391.884,
+        "protein_g": 14.483,
+        "carbs_g": 33.034,
+        "fat_g": 22.353,
+        "fiber_g": 1.159,
+        "sat_fat_g": 5.281,
+        "sugars_g": 2.326,
+        "sodium_mg": 727.526
+      },
+      "portion_hints": [
+        {
+          "grams": 200,
+          "label_en": "1 plate",
+          "label_es": "1 plato"
+        },
+        {
+          "grams": 100,
+          "label_en": "1 tapa portion",
+          "label_es": "1 tapa"
+        }
+      ],
+      "default_portion_g": 200,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "curation",
+        "default_portion_g": "curation",
+        "names.en": "curation",
+        "names.es": "curation",
+        "per_100g.carbs_g": "receta",
+        "per_100g.fat_g": "receta",
+        "per_100g.fiber_g": "receta",
+        "per_100g.kcal": "receta",
+        "per_100g.protein_g": "receta",
+        "per_100g.sat_fat_g": "receta",
+        "per_100g.sodium_mg": "receta",
+        "per_100g.sugars_g": "receta",
+        "portion_hints": "curation"
+      },
+      "deprecated": false,
+      "caveats": [
+        "Receta estándar declarada, no medición de laboratorio: 300 g de pan del día anterior, 60 g de aceite de oliva, 15 g de ajo y 100 g de torreznos.",
+        "El aceite va declarado como ingrediente, así que el método es `mezclado` y NO se le suma la absorción de `frito`: contarla dos veces duplicaría la grasa.",
+        "El agua con la que se humedece el pan no entra: se evapora en la sartén.",
+        "Las migas admiten uvas, chorizo o pimentón según la comarca; esta es la versión de pan, ajo y torreznos."
+      ],
+      "receta": {
+        "metodo": "mezclado",
+        "ingredientes": [
+          {
+            "ref": "fdc-2707593",
+            "grams": 300
+          },
+          {
+            "ref": "fdc-2710186",
+            "grams": 60
+          },
+          {
+            "ref": "fdc-169230",
+            "grams": 15
+          },
+          {
+            "ref": "fdc-2705887",
+            "grams": 100
+          }
+        ],
+        "peso_entrada_g": 475,
+        "aceite_absorbido_g": 0,
+        "peso_final_g": 475,
+        "rendimiento_de": "transformacion"
+      }
+    },
+    {
+      "id": "receta-tarta-de-santiago",
+      "source": "receta",
+      "source_ref": "Receta compuesta — 3 ingredientes, método horneado_masa",
+      "names": {
+        "en": "Tarta de Santiago, Galician almond cake",
+        "es": "Tarta de Santiago"
+      },
+      "aliases": {
+        "es": [
+          "Torta de almendra gallega"
+        ]
+      },
+      "category": "Cakes and pies",
+      "per_100g": {
+        "kcal": 438.672,
+        "protein_g": 12.454,
+        "carbs_g": 48.869,
+        "fat_g": 23.336,
+        "fiber_g": 5.01,
+        "sat_fat_g": 2.55,
+        "sugars_g": 41.811,
+        "sodium_mg": 42.168
+      },
+      "portion_hints": [
+        {
+          "grams": 90,
+          "label_en": "1 slice",
+          "label_es": "1 porción"
+        },
+        {
+          "grams": 700,
+          "label_en": "1 whole cake",
+          "label_es": "1 tarta entera"
+        }
+      ],
+      "default_portion_g": 90,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "curation",
+        "default_portion_g": "curation",
+        "names.en": "curation",
+        "names.es": "curation",
+        "per_100g.carbs_g": "receta",
+        "per_100g.fat_g": "receta",
+        "per_100g.fiber_g": "receta",
+        "per_100g.kcal": "receta",
+        "per_100g.protein_g": "receta",
+        "per_100g.sat_fat_g": "receta",
+        "per_100g.sodium_mg": "receta",
+        "per_100g.sugars_g": "receta",
+        "portion_hints": "curation"
+      },
+      "deprecated": false,
+      "caveats": [
+        "Receta estándar declarada, no medición de laboratorio: partes iguales de almendra molida y azúcar (250 g cada una) y cuatro huevos (200 g). Sin harina, que es lo que define a la tarta de Santiago.",
+        "RESERVA DEL RENDIMIENTO: se aplica `horneado_masa` (0,891), medido sobre tres masas de tarta de SR Legacy — 0,871 · 0,891 · 0,905, pares idénticos salvo por el token `unbaked`/`baked`. Las tres son masa QUEBRADA DE HARINA DE TRIGO y esta tarta es un bizcocho de almendra SIN harina, que retiene el agua de otra manera: el factor es el más cercano que hay medido, no el propio.",
+        "La ronda anterior usaba `mezclado` (1,000) y declaraba que subestimaba, sobre la afirmación falsa de que no había ningún par de masa en los datasets. Los había: se buscó con los sufijos de la carne (`cooked, baked`) y las masas usan `unbaked`/`baked`. Con el factor correcto la ficha pasa de 391 a 439 kcal por 100 g.",
+        "El azúcar glas de encima no entra en la ficha."
+      ],
+      "receta": {
+        "metodo": "horneado_masa",
+        "ingredientes": [
+          {
+            "ref": "fdc-170567",
+            "grams": 250
+          },
+          {
+            "ref": "fdc-2710257",
+            "grams": 250
+          },
+          {
+            "ref": "fdc-2707152",
+            "grams": 200
+          }
+        ],
+        "peso_entrada_g": 700,
+        "aceite_absorbido_g": 0,
+        "peso_final_g": 623.7,
+        "rendimiento_de": "transformacion"
+      }
+    },
+    {
+      "id": "receta-turron",
+      "source": "receta",
+      "source_ref": "Receta compuesta — 4 ingredientes, método mezclado",
+      "names": {
+        "en": "Turron de Alicante, Spanish hard almond nougat",
+        "es": "Turrón"
+      },
+      "aliases": {
+        "es": [
+          "Turrón de Alicante",
+          "Turrón duro"
+        ]
+      },
+      "category": "Candy not containing chocolate",
+      "per_100g": {
+        "kcal": 480.35,
+        "protein_g": 13.355,
+        "carbs_g": 45.258,
+        "fat_g": 30.52,
+        "fiber_g": 7.53,
+        "sat_fat_g": 2.441,
+        "sugars_g": 34.898,
+        "sodium_mg": 7.85
+      },
+      "portion_hints": [
+        {
+          "grams": 30,
+          "label_en": "1 bar portion",
+          "label_es": "1 porción"
+        },
+        {
+          "grams": 15,
+          "label_en": "1 thin slice",
+          "label_es": "1 lonja fina"
+        }
+      ],
+      "default_portion_g": 30,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "curation",
+        "default_portion_g": "curation",
+        "names.en": "curation",
+        "names.es": "curation",
+        "per_100g.carbs_g": "receta",
+        "per_100g.fat_g": "receta",
+        "per_100g.fiber_g": "receta",
+        "per_100g.kcal": "receta",
+        "per_100g.protein_g": "receta",
+        "per_100g.sat_fat_g": "receta",
+        "per_100g.sodium_mg": "receta",
+        "per_100g.sugars_g": "receta",
+        "portion_hints": "curation"
+      },
+      "deprecated": false,
+      "caveats": [
+        "Receta estándar declarada, no medición de laboratorio: 300 g de almendra, 75 g de miel, 100 g de azúcar y 25 g de huevo — las proporciones del turrón de Alicante (60 % almendra).",
+        "RESERVA DE INGREDIENTE: la receta lleva solo CLARA de huevo y la ficha usa huevo entero (fdc-2707152), porque el catálogo no tiene clara cruda — la única clara que hay está cocida con grasa. Sobre 25 g de 500, el efecto es de décimas.",
+        "RESERVA DEL RENDIMIENTO: el turrón se cuece —el almíbar de miel y azúcar pierde agua— y se aplica `mezclado` (1,000), que no modela esa pérdida. La ficha SUBESTIMA la densidad real. No hay ningún par crudo/cocido de confitería en los tres datasets con el que medir el factor.",
+        "La almendra de la ficha es cruda y la del turrón va tostada; tostar concentra un poco.",
+        "Estuvo BLOQUEADA una ronda por falta de una ficha de miel. El bloqueo era autoinfligido: `Honey` (fdc-169640) estaba en SR Legacy y no se había buscado."
+      ],
+      "receta": {
+        "metodo": "mezclado",
+        "ingredientes": [
+          {
+            "ref": "fdc-170567",
+            "grams": 300
+          },
+          {
+            "ref": "fdc-169640",
+            "grams": 75
+          },
+          {
+            "ref": "fdc-2710257",
+            "grams": 100
+          },
+          {
+            "ref": "fdc-2707152",
+            "grams": 25
+          }
+        ],
+        "peso_entrada_g": 500,
+        "aceite_absorbido_g": 0,
+        "peso_final_g": 500,
+        "rendimiento_de": "transformacion"
+      }
     }
   ]
 }

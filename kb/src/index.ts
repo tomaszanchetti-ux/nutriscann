@@ -39,6 +39,8 @@ function report(outcome: BuildOutcome): void {
   line("alimentos", stats.foods);
   line("  de FNDDS", stats.bySource.usda_fndds);
   line("  de SR Legacy", stats.bySource.usda_sr_legacy);
+  line("  de curación manual", stats.manualFoods);
+  line("  de receta compuesta", stats.recipeFoods);
 
   console.log("\n== Cobertura de campos extendidos ==");
   for (const [field, count] of Object.entries(stats.coverage)) {
@@ -67,6 +69,18 @@ function report(outcome: BuildOutcome): void {
   line("archivos leídos", result.curation.filesFound.join(", ") || "(ninguno todavía)");
   line("nombres en español aplicados", stats.curatedNames);
   line("aliases aplicados", stats.curatedAliases);
+  line("aliases regionales con confianza", stats.regionalAliases);
+  line("alimentos manuales nuevos", stats.manualFoods);
+  line("métodos de cocción declarados", result.curation.transforms.size);
+  line("recetas compuestas derivadas", stats.recipeFoods);
+  if (stats.recipeFailures.length > 0) {
+    console.log("  ✗ recetas que no se pudieron derivar:");
+    for (const fallo of stats.recipeFailures) console.log(`    - ${fallo.id}: ${fallo.motivo}`);
+  }
+  line("alimentos pisados por curación manual", stats.manualOverrideFoods);
+  for (const [field, count] of Object.entries(stats.manualOverridesByField).sort()) {
+    line(`  ${field}`, count);
+  }
   line("porciones sobrescritas", stats.curatedPortions);
   line("etiquetas de porción en español", stats.curatedPortionLabels);
   line("PENDIENTES (names.es = null)", stats.pendingCuration.length);

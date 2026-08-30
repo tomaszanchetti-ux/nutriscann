@@ -19,9 +19,9 @@ import {
   lockSchema,
   type LockResult,
 } from "./locks";
-import { loadSelection, toSourceId } from "./selection";
+import { inheritedAliases, loadDt7OldNames, loadExclusions, loadSelection, toSourceId } from "./selection";
 import { BUILD_DIR, checkSources, loadSources, type SourceCheck } from "./sources";
-import type { Catalog, FoodSource, PortionHint, SourceId } from "./types";
+import type { Catalog, PortionHint, SourceId, UsdaFoodSource } from "./types";
 import { readDescriptions, readNutrients, readPortions } from "./usda";
 import type { NutrientBundle } from "./nutrients";
 
@@ -64,17 +64,17 @@ export async function runPipeline(): Promise<PipelineResult> {
   };
 
   const selection = loadSelection();
-  const idsBySource: Record<FoodSource, Set<number>> = {
+  const idsBySource: Record<UsdaFoodSource, Set<number>> = {
     usda_fndds: new Set(),
     usda_sr_legacy: new Set(),
   };
   for (const entry of selection.entries) idsBySource[toSourceId(entry.source)].add(entry.fdc_id);
   const foundationIds = new Set(selection.foundation_overrides.map((o) => o.fdc_id_foundation));
 
-  const descriptions = {} as Record<FoodSource, Map<number, string>>;
-  const nutrients = {} as Record<FoodSource, Map<number, NutrientBundle>>;
-  const portions = {} as Record<FoodSource, Map<number, PortionHint[]>>;
-  for (const source of ["usda_fndds", "usda_sr_legacy"] as FoodSource[]) {
+  const descriptions = {} as Record<UsdaFoodSource, Map<number, string>>;
+  const nutrients = {} as Record<UsdaFoodSource, Map<number, NutrientBundle>>;
+  const portions = {} as Record<UsdaFoodSource, Map<number, PortionHint[]>>;
+  for (const source of ["usda_fndds", "usda_sr_legacy"] as UsdaFoodSource[]) {
     const dir = dirOf(source);
     const ids = idsBySource[source];
     descriptions[source] = await readDescriptions(dir, ids);
@@ -96,6 +96,8 @@ export async function runPipeline(): Promise<PipelineResult> {
     portions,
     foundationNutrients,
     curation,
+    inheritedAliases: inheritedAliases(loadExclusions()),
+    dt7OldNames: loadDt7OldNames(),
   });
 
   return {

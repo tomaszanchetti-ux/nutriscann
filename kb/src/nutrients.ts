@@ -25,6 +25,11 @@ export type NutrientKey =
   /** No entra al catálogo: solo alimenta el predictor de Atwater (7 kcal/g). */
   | "alcohol_g";
 
+/** Los cuatro que alimentan campos obligatorios de `per_100g`. */
+export type RequiredNutrientKey = "kcal" | "protein_g" | "carbs_g" | "fat_g";
+/** Los cuatro opcionales de `per_100g`. */
+export type OptionalNutrientKey = "fiber_g" | "sat_fat_g" | "sugars_g" | "sodium_mg";
+
 export type NutrientBundle = Partial<Record<NutrientKey, number>>;
 
 export const NUTRIENT_CODES: Record<SourceId, Record<NutrientKey, number[]>> = {
@@ -68,10 +73,10 @@ export const NUTRIENT_CODES: Record<SourceId, Record<NutrientKey, number[]>> = {
 };
 
 /** Los cuatro que no pueden faltar: sin ellos no se puede cuantificar nada. */
-export const REQUIRED_KEYS: NutrientKey[] = ["kcal", "protein_g", "carbs_g", "fat_g"];
+export const REQUIRED_KEYS: RequiredNutrientKey[] = ["kcal", "protein_g", "carbs_g", "fat_g"];
 
 /** Los cuatro opcionales, ahí para las reglas de la OPS y para la v2. */
-export const OPTIONAL_KEYS: NutrientKey[] = ["fiber_g", "sat_fat_g", "sugars_g", "sodium_mg"];
+export const OPTIONAL_KEYS: OptionalNutrientKey[] = ["fiber_g", "sat_fat_g", "sugars_g", "sodium_mg"];
 
 /**
  * Invierte el mapeo: código de nutriente -> qué campo alimenta y con qué

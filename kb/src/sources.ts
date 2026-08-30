@@ -19,6 +19,21 @@ export const KB_DIR = join(REPO_ROOT, "kb");
 export const BUILD_DIR = join(KB_DIR, "build");
 export const CURATION_DIR = join(KB_DIR, "curation");
 export const SELECTION_FILE = join(KB_DIR, "selection", "selection.v1.json");
+export const SELECTION_DIR = join(KB_DIR, "selection");
+/**
+ * Bloques que SUMAN alimentos a la selección base, en orden de aplicación.
+ * Cada uno trae su propio criterio y su justificación; ninguno reescribe
+ * `selection.v1.json`, que sigue siendo el entregable de la card 1.1.
+ */
+export const SELECTION_BLOCK_FILES = [
+  join(SELECTION_DIR, "regional.v1.json"),
+  join(SELECTION_DIR, "es.sweep.v1.json"),
+  join(SELECTION_DIR, "ingredientes.v1.json"),
+];
+/** Exclusiones de la DT-7: fichas duplicadas que salen de la selección. */
+export const EXCLUSIONS_FILE = join(SELECTION_DIR, "exclusions.dt7.json");
+/** El artefacto de la DT-7: trae los nombres ANTERIORES de lo que se renombró. */
+export const DT7_PAIRS_FILE = join(SELECTION_DIR, "dt7.pairs.json");
 export const SOURCES_FILE = join(KB_DIR, "sources.json");
 
 export interface DeclaredSource {

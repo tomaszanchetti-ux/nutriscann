@@ -90,7 +90,7 @@
   "aliases": []
  },
  "2706240": {
-  "name": "Bacalao",
+  "name": "Bacalao rebozado",
   "aliases": []
  },
  "2706294": {
@@ -102,11 +102,11 @@
   "aliases": []
  },
  "2706270": {
-  "name": "Perca",
+  "name": "Perca rebozada",
   "aliases": []
  },
  "2706302": {
-  "name": "Trucha",
+  "name": "Trucha rebozada",
   "aliases": []
  },
  "2706721": {
@@ -233,7 +233,7 @@
   "aliases": []
  },
  "2706331": {
-  "name": "Pulpo",
+  "name": "Pulpo rebozado",
   "aliases": []
  },
  "2706337": {
@@ -241,12 +241,12 @@
   "aliases": []
  },
  "2707347": {
-  "name": "Frijoles",
+  "name": "Frijoles cocidos con sal y grasa",
   "aliases": [
-   "Porotos",
-   "Alubias",
-   "Judías",
-   "Caraotas"
+   "Porotos cocidos con sal y grasa",
+   "Alubias cocidas con sal y grasa",
+   "Judías cocidas con sal y grasa",
+   "Caraotas cocidas con sal y grasa"
   ]
  },
  "2707407": {
@@ -304,11 +304,11 @@
   ]
  },
  "2707423": {
-  "name": "Lentejas",
+  "name": "Lentejas cocidas con sal y grasa",
   "aliases": []
  },
  "2707414": {
-  "name": "Garbanzos",
+  "name": "Garbanzos cocidos con sal y grasa",
   "aliases": []
  },
  "2707368": {
@@ -366,7 +366,7 @@
   "aliases": []
  },
  "2709268": {
-  "name": "Ruibarbo",
+  "name": "Ruibarbo cocido con azúcar",
   "aliases": []
  },
  "2709286": {
@@ -917,10 +917,6 @@
   "name": "Pera en lata",
   "aliases": []
  },
- "2709254": {
-  "name": "Pera",
-  "aliases": []
- },
  "2709799": {
   "name": "Pimientos crudos",
   "aliases": [
@@ -1143,10 +1139,6 @@
   "name": "Naranja en lata",
   "aliases": []
  },
- "2709171": {
-  "name": "Naranja",
-  "aliases": []
- },
  "2705495": {
   "name": "Leche de fresa",
   "aliases": [
@@ -1236,17 +1228,17 @@
   ]
  },
  "2708399": {
-  "name": "Quinoa",
+  "name": "Quinoa cocida con sal y grasa",
   "aliases": [
-   "Quinua"
+   "Quinua cocida con sal y grasa"
   ]
  },
  "2708440": {
-  "name": "Bulgur",
+  "name": "Bulgur cocido con sal",
   "aliases": []
  },
  "2708361": {
-  "name": "Cebada",
+  "name": "Cebada cocida con sal y grasa",
   "aliases": []
  },
  "2706882": {
@@ -1397,7 +1389,7 @@
   "aliases": []
  },
  "2708423": {
-  "name": "Arroz salvaje cocido",
+  "name": "Arroz salvaje cocido con sal y grasa",
   "aliases": []
  },
  "2709503": {
@@ -1468,12 +1460,12 @@
   ]
  },
  "2709855": {
-  "name": "Judías verdes cocidas",
+  "name": "Judías verdes cocidas con sal y grasa",
   "aliases": [
-   "Chauchas cocidas",
-   "Ejotes cocidos",
-   "Porotos verdes cocidos",
-   "Vainitas cocidas"
+   "Chauchas cocidas con sal y grasa",
+   "Ejotes cocidos con sal y grasa",
+   "Porotos verdes cocidos con sal y grasa",
+   "Vainitas cocidas con sal y grasa"
   ]
  },
  "2709856": {
@@ -1689,10 +1681,10 @@
   ]
  },
  "2709962": {
-  "name": "Arvejas cocidas",
+  "name": "Arvejas cocidas con sal y grasa",
   "aliases": [
-   "Guisantes cocidos",
-   "Chícharos cocidos"
+   "Guisantes cocidos con sal y grasa",
+   "Chícharos cocidos con sal y grasa"
   ]
  },
  "2709098": {
@@ -1767,9 +1759,9 @@
   ]
  },
  "2709893": {
-  "name": "Repollo rojo cocido",
+  "name": "Repollo rojo cocido con sal y grasa",
   "aliases": [
-   "Col roja cocida"
+   "Col roja cocida con sal y grasa"
   ]
  },
  "2709580": {
@@ -1781,23 +1773,23 @@
   "aliases": []
  },
  "2709602": {
-  "name": "Col rizada cocida",
+  "name": "Col rizada cocida con sal y grasa",
   "aliases": []
  },
  "2709595": {
-  "name": "Verduras de hoja cocidas",
+  "name": "Verduras de hoja cocidas con sal y grasa",
   "aliases": []
  },
  "2709579": {
-  "name": "Berza cocida",
+  "name": "Berza cocida con sal y grasa",
   "aliases": []
  },
  "2709609": {
-  "name": "Hojas de mostaza cocidas",
+  "name": "Hojas de mostaza cocidas con sal y grasa",
   "aliases": []
  },
  "2709636": {
-  "name": "Hojas de nabo cocidas",
+  "name": "Hojas de nabo cocidas con sal y grasa",
   "aliases": []
  },
  "2709648": {
@@ -1816,10 +1808,10 @@
   ]
  },
  "2707000": {
-  "name": "Sándwich de filete de pollo",
+  "name": "Sándwich de filete de pollo rebozado",
   "aliases": [
-   "Bocadillo de filete de pollo",
-   "Emparedado de filete de pollo"
+   "Bocadillo de filete de pollo rebozado",
+   "Emparedado de filete de pollo rebozado"
   ]
  },
  "2706992": {
@@ -1830,29 +1822,11 @@
   "name": "Frutos secos",
   "aliases": []
  },
- "2707521": {
-  "name": "Nueces pecanas",
-  "aliases": [
-   "Pacanas"
-  ]
- },
- "2707485": {
-  "name": "Almendras",
-  "aliases": []
- },
- "2707493": {
-  "name": "Anacardos",
-  "aliases": [
-   "Castañas de cajú",
-   "Marañón",
-   "Nuez de la India"
-  ]
- },
  "2707512": {
-  "name": "Maní",
+  "name": "Maní tostado con sal",
   "aliases": [
-   "Cacahuete",
-   "Cacahuate"
+   "Cacahuete tostado con sal",
+   "Cacahuate tostado con sal"
   ]
  },
  "2707574": {
@@ -2051,14 +2025,10 @@
   "name": "Aceitunas",
   "aliases": []
  },
- "2710097": {
-  "name": "Pepinillos",
-  "aliases": []
- },
  "2709982": {
-  "name": "Chucrut",
+  "name": "Chucrut con grasa",
   "aliases": [
-   "Col fermentada"
+   "Col fermentada con grasa"
   ]
  },
  "2710073": {
@@ -2545,10 +2515,12 @@
   "aliases": []
  },
  "2707026": {
-  "name": "Sándwich de pescado",
+  "name": "Sándwich de pescado rebozado con queso",
   "aliases": [
-   "Bocadillo de pescado",
-   "Emparedado de pescado"
+   "Bocadillo de pescado rebozado",
+   "Emparedado de pescado rebozado",
+   "Bocadillo de pescado rebozado con queso",
+   "Emparedado de pescado rebozado con queso"
   ]
  },
  "2707033": {
@@ -2618,7 +2590,7 @@
   "aliases": []
  },
  "2706098": {
-  "name": "Tiras de pollo",
+  "name": "Tiras de pollo rebozadas",
   "aliases": []
  },
  "2710373": {
@@ -2901,9 +2873,9 @@
   ]
  },
  "2709935": {
-  "name": "Puerro",
+  "name": "Puerro cocido con sal y grasa",
   "aliases": [
-   "Ajo porro"
+   "Ajo porro cocido con sal y grasa"
   ]
  },
  "2709795": {
@@ -3111,13 +3083,6 @@
    "Yoghurt de almendras"
   ]
  },
- "2709224": {
-  "name": "Banana",
-  "aliases": [
-   "Plátano",
-   "Guineo"
-  ]
- },
  "2709225": {
   "name": "Banana al horno",
   "aliases": [
@@ -3211,10 +3176,6 @@
   "name": "Melón congelado",
   "aliases": []
  },
- "2709226": {
-  "name": "Melón cantalupo",
-  "aliases": []
- },
  "2709243": {
   "name": "Mango en lata",
   "aliases": []
@@ -3243,7 +3204,7 @@
   ]
  },
  "2709319": {
-  "name": "Sidra de manzana",
+  "name": "Sidra de manzana sin alcohol",
   "aliases": []
  },
  "2707685": {
@@ -4880,5 +4841,255 @@
   "aliases": [
    "Aliño césar"
   ]
+ },
+ "2705733": {
+  "name": "Queso provolone",
+  "aliases": []
+ },
+ "2705833": {
+  "name": "Bife de cuadril con grasa",
+  "aliases": [
+   "Cuadril con grasa",
+   "Filete de cuadril con grasa",
+   "Bistec de cuadril con grasa"
+  ]
+ },
+ "2705879": {
+  "name": "Jamón crudo",
+  "aliases": [
+   "Jamón curado",
+   "Prosciutto"
+  ]
+ },
+ "2706089": {
+  "name": "Filete de pollo rebozado",
+  "aliases": [
+   "Filete de pollo empanado",
+   "Milanesa de pollo"
+  ]
+ },
+ "2706179": {
+  "name": "Chorizo fresco",
+  "aliases": [
+   "Chorizo parrillero"
+  ]
+ },
+ "2706334": {
+  "name": "Calamares rebozados",
+  "aliases": [
+   "Calamares empanados",
+   "Rabas"
+  ]
+ },
+ "2706417": {
+  "name": "Ternera a la parmesana",
+  "aliases": []
+ },
+ "2706459": {
+  "name": "Pescado con salsa de tomate",
+  "aliases": []
+ },
+ "2707053": {
+  "name": "Sándwich de salchicha italiana en pan blanco",
+  "aliases": [
+   "Bocadillo de salchicha italiana en pan blanco",
+   "Emparedado de salchicha italiana en pan blanco"
+  ]
+ },
+ "2707366": {
+  "name": "Frijoles negros con carne",
+  "aliases": [
+   "Porotos negros con carne",
+   "Alubias negras con carne",
+   "Judías negras con carne",
+   "Caraotas negras con carne"
+  ]
+ },
+ "2707612": {
+  "name": "Focaccia",
+  "aliases": [
+   "Hogaza italiana"
+  ]
+ },
+ "2707963": {
+  "name": "Galleta rellena, otros sabores",
+  "aliases": [
+   "Galletita rellena, otros sabores"
+  ]
+ },
+ "2708405": {
+  "name": "Arroz blanco cocido con mantequilla",
+  "aliases": [
+   "Arroz blanco cocido con manteca"
+  ]
+ },
+ "2708795": {
+  "name": "Canelones de queso y espinaca",
+  "aliases": [
+   "Canelones de ricota y espinaca"
+  ]
+ },
+ "2708862": {
+  "name": "Pasta con salsa de crema y carne casera",
+  "aliases": [
+   "Pasta con salsa de nata y carne casera"
+  ]
+ },
+ "2708994": {
+  "name": "Frijoles negros con arroz blanco",
+  "aliases": [
+   "Porotos negros con arroz blanco",
+   "Alubias negras con arroz blanco",
+   "Judías negras con arroz blanco",
+   "Caraotas negras con arroz blanco"
+  ]
+ },
+ "2710106": {
+  "name": "Gazpacho",
+  "aliases": []
+ },
+ "2710114": {
+  "name": "Sopa minestrone",
+  "aliases": []
+ },
+ "167987": {
+  "name": "Fudge de chocolate",
+  "aliases": []
+ },
+ "168043": {
+  "name": "Guiso de maíz pelado con cordero",
+  "aliases": [
+   "Guiso de mote con cordero",
+   "Guiso de choclo pelado con cordero",
+   "Guiso de elote pelado con cordero"
+  ]
+ },
+ "169510": {
+  "name": "Costilla de res a la parrilla",
+  "aliases": [
+   "Costilla de vaca a la parrilla",
+   "Tira de asado"
+  ]
+ },
+ "174249": {
+  "name": "Pulpo cocido",
+  "aliases": []
+ },
+ "2706232": {
+  "name": "Anchoas en aceite",
+  "aliases": [
+   "Anchoas de lata"
+  ]
+ },
+ "2706245": {
+  "name": "Bacalao al vapor",
+  "aliases": []
+ },
+ "2706293": {
+  "name": "Sardinas en lata",
+  "aliases": []
+ },
+ "2706310": {
+  "name": "Atún cocido",
+  "aliases": []
+ },
+ "2706362": {
+  "name": "Camarones a la plancha",
+  "aliases": [
+   "Gambas a la plancha",
+   "Langostinos a la plancha"
+  ]
+ },
+ "2705843": {
+  "name": "Rabo de res",
+  "aliases": [
+   "Rabo de vaca"
+  ]
+ },
+ "2705882": {
+  "name": "Cerdo asado",
+  "aliases": [
+   "Chancho asado",
+   "Puerco asado"
+  ]
+ },
+ "2706173": {
+  "name": "Morcilla",
+  "aliases": [
+   "Moronga",
+   "Rellena"
+  ]
+ },
+ "2707678": {
+  "name": "Croissant",
+  "aliases": [
+   "Cuernito",
+   "Medialuna"
+  ]
+ },
+ "2708977": {
+  "name": "Arroz con calamares",
+  "aliases": []
+ },
+ "2709073": {
+  "name": "Pimiento relleno de arroz y carne",
+  "aliases": [
+   "Morrón relleno de arroz y carne",
+   "Ají relleno de arroz y carne"
+  ]
+ },
+ "2709532": {
+  "name": "Ensalada de papa con huevo y mayonesa",
+  "aliases": [
+   "Ensalada de patata con huevo y mayonesa"
+  ]
+ },
+ "168063": {
+  "name": "Arroz con leche",
+  "aliases": []
+ },
+ "2710707": {
+  "name": "Agua",
+  "aliases": []
+ },
+ "2707152": {
+  "name": "Huevo crudo",
+  "aliases": []
+ },
+ "2709801": {
+  "name": "Pimiento rojo crudo",
+  "aliases": [
+   "Pimentón rojo crudo",
+   "Morrón rojo crudo",
+   "Ají rojo crudo"
+  ]
+ },
+ "2709351": {
+  "name": "Vinagre",
+  "aliases": []
+ },
+ "2706313": {
+  "name": "Pescadilla al horno",
+  "aliases": [
+   "Merlán al horno"
+  ]
+ },
+ "173468": {
+  "name": "Sal",
+  "aliases": [
+   "Sal de mesa"
+  ]
+ },
+ "2707861": {
+  "name": "Tarta de queso",
+  "aliases": [
+   "Cheesecake",
+   "Pay de queso",
+   "Pastel de queso"
+  ]
+ },
+ "169640": {
+  "name": "Miel",
+  "aliases": []
  }
 }

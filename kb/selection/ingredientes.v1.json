@@ -1,0 +1,93 @@
+{
+ "$comment": [
+  "Ingredientes sueltos (card 1.7). No son platos: son las piezas con las que el catálogo",
+  "compone recetas — y con las que la Fase 2 va a componer platos que nadie anticipó.",
+  "Cada uno entra porque una receta declarada lo necesita, y el candado de recetas lo",
+  "demuestra: sin ellos el build no compila (probado — la primera corrida falló nombrando",
+  "exactamente estos cinco).",
+  "`Agua` (fdc-2710707) es la pieza que hace explícito el modelo: el agua que SE QUEDA en",
+  "el plato pesa y diluye, así que entra como ingrediente en vez de esconderse dentro de un",
+  "factor de rendimiento. No aporta energía ni macros, pero NO es un cero: la ficha de USDA",
+  "declara 4 mg de sodio por 100 g, y el build usa ese valor como el de cualquier otra.",
+  "`Sal` (fdc-173468) existe para que el sodio de una receta no salga sistemáticamente bajo.",
+  "`Pescadilla al horno` (fdc-2706313) entra por la merluza: USDA no mide merluza en ninguno",
+  "de los tres datasets y la pescadilla es su pariente más cercano.",
+  "`Miel` (fdc-169640) entra por el turrón, que estaba bloqueado por su ausencia. El bloqueo",
+  "era autoinfligido: la ficha existía en SR Legacy y no se había buscado."
+ ],
+ "criteria_version": "1.7-ingredientes-v1",
+ "generated": "2026-08-30",
+ "justificacion": "Card 1.7 — la receta compuesta es el mecanismo por defecto para cubrir un hueco del catálogo, y una receta solo puede apuntar a fichas que existan. Estos seis son los ingredientes que faltaban para derivar las seis primeras recetas españolas.",
+ "entries": [
+  {
+   "fdc_id": 2706313,
+   "source": "fndds",
+   "description": "Fish, whiting, baked or broiled",
+   "category": "Fish",
+   "n_ingredients": 3,
+   "n_portions": 7,
+   "default_portion_g": 90,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2707152,
+   "source": "fndds",
+   "description": "Egg, whole, raw",
+   "category": "Eggs and omelets",
+   "n_ingredients": 1,
+   "n_portions": 3,
+   "default_portion_g": 50,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2709351,
+   "source": "fndds",
+   "description": "Vinegar",
+   "category": "Mustard and other condiments",
+   "n_ingredients": 1,
+   "n_portions": 3,
+   "default_portion_g": 30,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2709801,
+   "source": "fndds",
+   "description": "Peppers, sweet, red, raw",
+   "category": "Other red and orange vegetables",
+   "n_ingredients": 1,
+   "n_portions": 6,
+   "default_portion_g": 20,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2710707,
+   "source": "fndds",
+   "description": "Water, tap",
+   "category": "Tap water",
+   "n_ingredients": 1,
+   "n_portions": 8,
+   "default_portion_g": 360,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 169640,
+   "source": "sr_legacy",
+   "description": "Honey",
+   "category": "Sweets",
+   "n_ingredients": null,
+   "n_portions": 3,
+   "default_portion_g": 339,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 173468,
+   "source": "sr_legacy",
+   "description": "Salt, table",
+   "category": "Spices and Herbs",
+   "n_ingredients": null,
+   "n_portions": 4,
+   "default_portion_g": 6,
+   "portion_needs_review": false
+  }
+ ]
+}

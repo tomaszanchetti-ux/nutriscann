@@ -67,6 +67,15 @@ function emptyStats(): BuildStats {
     pendingCuration: [],
     curatedNames: 0,
     curatedAliases: 0,
+    regionalAliases: 0,
+    inheritedAliases: 0,
+    staleAliases: [],
+    orphanRegionalAliases: [],
+    manualFoods: 0,
+    recipeFoods: 0,
+    recipeFailures: [],
+    manualOverridesByField: {},
+    manualOverrideFoods: 0,
     curatedPortions: 0,
     curatedPortionLabels: 0,
     portionNeedsReview: [],
@@ -76,9 +85,15 @@ function emptyStats(): BuildStats {
 }
 
 function manyFoods(source: FoodSource, count: number): CanonicalFood[] {
-  return Array.from({ length: count }, (_, i) =>
-    food({ id: `fdc-${source === "usda_fndds" ? 2_000_000 + i : 100_000 + i}`, source }),
-  );
+  return Array.from({ length: count }, (_, i) => {
+    if (source === "manual") {
+      return food({ id: `manual-x${i}`, source, source_ref: "Etiqueta comercial de prueba" });
+    }
+    if (source === "receta") {
+      return food({ id: `receta-x${i}`, source, source_ref: "Receta compuesta de prueba" });
+    }
+    return food({ id: `fdc-${source === "usda_fndds" ? 2_000_000 + i : 100_000 + i}`, source });
+  });
 }
 
 // --- Candado 1 --------------------------------------------------------------
@@ -141,9 +156,40 @@ test("candado 2: el catálogo completo pasa el piso por fuente", () => {
     catalog([
       ...manyFoods("usda_fndds", MINIMUM_BY_SOURCE.usda_fndds),
       ...manyFoods("usda_sr_legacy", MINIMUM_BY_SOURCE.usda_sr_legacy),
+      ...manyFoods("manual", MINIMUM_BY_SOURCE.manual),
+      ...manyFoods("receta", MINIMUM_BY_SOURCE.receta),
     ]),
   );
   assert.equal(result.passed, true);
+});
+
+test("candado 2: si las recetas desaparecen, el build explota", () => {
+  // Mismo motivo que el piso de la curación manual: `recipes.foods.json` se lee
+  // de forma tolerante, así que vaciarlo no lanza nada y el catálogo saldría sin
+  // ninguna ficha derivada, con los cinco candados en verde.
+  const result = lockPerSource(
+    catalog([
+      ...manyFoods("usda_fndds", MINIMUM_BY_SOURCE.usda_fndds),
+      ...manyFoods("usda_sr_legacy", MINIMUM_BY_SOURCE.usda_sr_legacy),
+      ...manyFoods("manual", MINIMUM_BY_SOURCE.manual),
+    ]),
+  );
+  assert.equal(result.passed, false);
+  assert.match(result.failures.join(" "), /receta: 0 alimentos resueltos/);
+});
+
+test("candado 2: si la curación manual desaparece, el build explota", () => {
+  // El escenario: alguien renombra o vacía `manual.foods.json`. El build lo lee
+  // de forma TOLERANTE, así que no salta ninguna excepción y el catálogo saldría
+  // sin el salmorejo y sin ninguna otra entrada manual, con todo en verde.
+  const result = lockPerSource(
+    catalog([
+      ...manyFoods("usda_fndds", MINIMUM_BY_SOURCE.usda_fndds),
+      ...manyFoods("usda_sr_legacy", MINIMUM_BY_SOURCE.usda_sr_legacy),
+    ]),
+  );
+  assert.equal(result.passed, false);
+  assert.match(result.failures.join(" "), /manual: 0 alimentos resueltos/);
 });
 
 test("candado 2: si el mapeo de FNDDS devuelve vacío, el build explota", () => {
