@@ -36,6 +36,17 @@ jobs:
       - name: Chequeo de tipos
         run: npm run lint
 
+      # Candados del catálogo que corren sin los datasets (1,1 GB, fuera de git).
+      # El único test excluido es pipeline.test.js, que recorre los CSVs de USDA
+      # y solo puede correr en una máquina con ../datasets/ presente.
+      - name: Candados del catálogo
+        run: |
+          npm --prefix kb run compile
+          node --test $(ls kb/dist/*.test.js | grep -v pipeline.test.js)
+          npm --prefix kb/seed test
+          python3 kb/curation/tools/verify_curation.py
+          python3 kb/curation/tools/build_aliases.py --check
+
       - name: Compilar
         run: npm run build
 

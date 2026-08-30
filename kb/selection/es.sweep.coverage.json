@@ -1,0 +1,1423 @@
+{
+ "$comment": [
+  "Barrido español ampliado — directiva de producto: España es el mercado principal, así que",
+  "el grueso de los platos con ficha segura tiene que ser español.",
+  "Archivo HERMANO de regional.coverage.json: mismo formato, misma regla de composición, misma",
+  "escala de confianza. Va aparte porque responde a otra directiva y su diff se revisa solo.",
+  "Los 11 platos españoles de la primera medición NO se repiten acá: viven en",
+  "regional.coverage.json. Las tres filas `verificado` son los que se volvieron a mirar."
+ ],
+ "criteria_version": "1.6-es-sweep-v1",
+ "generated": "2026-08-30",
+ "regla_de_aceptacion": {
+  "binaria": "Acepta cuando los ingredientes dominantes del candidato son de la misma familia que los del plato y ningún ingrediente AJENO al plato pasa del 15 % del peso. No cuentan como ajenos el agua, el aceite de fritura ni la sal.",
+  "graduada": "La escala de confianza mide cuánto se parece el que entró; la binaria, si entra."
+ },
+ "escala_de_confianza": {
+  "1": "el alimento ES el plato (USDA lo nombra y la composición lo confirma)",
+  "0.8": "gemelo fuerte: mismos ingredientes dominantes, sin ingredientes ajenos",
+  "0.6": "gemelo con reserva: falta un ingrediente que mueve un macro, o cambia el corte",
+  "0.5": "gemelo pobre: sirve como estimación, no como número"
+ },
+ "$limite_de_la_evidencia_en_sr_legacy": "SR Legacy no publica input_food.csv. El único gemelo español apoyado en SR es el arroz con leche (fdc-168063), validado por su descripción —que lo nombra literalmente— y por su perfil de macros, no por composición declarada. Su campo `ingredientes` va vacío a propósito.",
+ "resumen": {
+  "platos_nuevos_medidos": 42,
+  "verificaciones_de_la_ronda_anterior": 3,
+  "alimentos_distintos": 38,
+  "directos": 8,
+  "gemelos": 24,
+  "ausentes": 1,
+  "resueltos_por_receta_compuesta": 9,
+  "ya_en_seleccion": 18,
+  "promovidos": 14,
+  "candidatos_rechazados": 6,
+  "$nota_ausentes": "El único que queda `ausente` es el lomo embuchado, y no por falta de dato sino por el CORTE: el rendimiento de curado que se puede medir es el de un jamón, no el de un lomo. Trae sus dos candidatos rechazados con números. El turrón, que la ronda anterior daba por bloqueado, se desbloqueó con la ficha de miel que faltaba.",
+  "$nota_contabilidad": "fdc-2707414 cubre `Garbanzos` (directo) y `Cocido madrileño` (gemelo); fdc-2709456 cubre `Patatas fritas` y `Patatas bravas`; fdc-2705683 cubre `Flan` y `Crema catalana`. Por eso hay menos alimentos distintos que platos."
+ },
+ "cobertura": [
+  {
+   "plato": "Cocido madrileño",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2707414",
+   "fdc_id": 2707414,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": "Cocido madrileño",
+   "confianza": 0.5,
+   "evidencia_composicion": {
+    "descripcion_usda": "Chickpeas, NFS",
+    "ingredientes": [
+     "100.0 % Chickpeas, from dried, fat added"
+    ],
+    "per_100g_medido": {
+     "kcal": 211,
+     "protein_g": 8.23,
+     "carbs_g": 25.48,
+     "fat_g": 8.91,
+     "fiber_g": 7.1,
+     "sat_fat_g": 1.12,
+     "sugars_g": 4.46,
+     "sodium_mg": 222
+    },
+    "lectura": "Garbanzos guisados con su grasa, 100 % del peso. El garbanzo es la base del cocido, pero al gemelo le faltan la carne, el tocino y el chorizo del puchero: sirve para estimar el plato de garbanzos, no el cocido entero."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Garbanzos guisados",
+   "region": "ES",
+   "veredicto": "directo",
+   "alimento": "fdc-2707414",
+   "fdc_id": 2707414,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": "Garbanzos guisados",
+   "confianza": 1,
+   "evidencia_composicion": {
+    "descripcion_usda": "Chickpeas, NFS",
+    "ingredientes": [
+     "100.0 % Chickpeas, from dried, fat added"
+    ],
+    "per_100g_medido": {
+     "kcal": 211,
+     "protein_g": 8.23,
+     "carbs_g": 25.48,
+     "fat_g": 8.91,
+     "fiber_g": 7.1,
+     "sat_fat_g": 1.12,
+     "sugars_g": 4.46,
+     "sodium_mg": 222
+    },
+    "lectura": "USDA los nombra chickpeas y su input_food es 100 % `Chickpeas, from dried, fat added`: el plato de garbanzos guisados, con su grasa y su sal. El alias dice `guisados` y no `Garbanzos` a secas por la misma razón por la que la ficha se renombró: el garbanzo pelado son 164 kcal y 7 mg de sodio, y este son 211 y 222. Dejar el nombre viejo de alias habría devuelto por la ventana exactamente lo que el renombre sacó por la puerta."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Lentejas con chorizo",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2707423",
+   "fdc_id": 2707423,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": "Lentejas con chorizo",
+   "confianza": 0.6,
+   "evidencia_composicion": {
+    "descripcion_usda": "Lentils, NFS",
+    "ingredientes": [
+     "100.0 % Lentils, from dried, fat added"
+    ],
+    "per_100g_medido": {
+     "kcal": 166,
+     "protein_g": 8.38,
+     "carbs_g": 18.71,
+     "fat_g": 6.86,
+     "fiber_g": 7.3,
+     "sat_fat_g": 0.919,
+     "sugars_g": 1.67,
+     "sodium_mg": 218
+    },
+    "lectura": "input_food: `Lentils, from dried, fat added`. La lenteja guisada con grasa está; el chorizo no, y es lo que más sube la grasa y el sodio del plato."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Pisto",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2710028",
+   "fdc_id": 2710028,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": "Pisto",
+   "confianza": 0.8,
+   "evidencia_composicion": {
+    "descripcion_usda": "Ratatouille",
+    "ingredientes": [
+     "24.3 % Eggplant, cooked, as ingredient",
+     "24.3 % Summer squash, cooked, as ingredient",
+     "21.2 % Tomatoes, red, ripe, canned, packed in tomato juice",
+     "16.9 % Onions, cooked, boiled, drained, without salt",
+     "7.8 % Red pepper, cooked, as ingredient",
+     "4.5 % Olive oil"
+    ],
+    "per_100g_medido": {
+     "kcal": 67,
+     "protein_g": 1.09,
+     "carbs_g": 5.77,
+     "fat_g": 4.73,
+     "fiber_g": 1.9,
+     "sat_fat_g": 0.752,
+     "sugars_g": 3.39,
+     "sodium_mg": 151
+    },
+    "lectura": "Berenjena 24,3 % + calabacín 24,3 % + tomate 21,2 % + cebolla 16,9 % + pimiento rojo 7,8 % + aceite de oliva 4,5 %: es el pisto manchego ingrediente por ingrediente. USDA lo llama ratatouille."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Gambas al ajillo",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2706362",
+   "fdc_id": 2706362,
+   "fuente": "fndds",
+   "en_seleccion_previa": false,
+   "promovido": true,
+   "alias": "Gambas al ajillo",
+   "confianza": 0.6,
+   "evidencia_composicion": {
+    "descripcion_usda": "Shrimp, grilled",
+    "ingredientes": [
+     "97.6 % Crustaceans, shrimp, mixed species, raw (may contain additives to retain moisture)",
+     "2.0 % Oil or table fat, NFS"
+    ],
+    "per_100g_medido": {
+     "kcal": 110,
+     "protein_g": 17.26,
+     "carbs_g": 1.16,
+     "fat_g": 3.55,
+     "fiber_g": 0,
+     "sat_fat_g": 0.924,
+     "sugars_g": 0,
+     "sodium_mg": 359
+    },
+    "lectura": "Camarón crudo 97,6 % + aceite 2,0 % + sal 0,4 %. La gamba está y la cocción también; faltan el ajo, la guindilla y sobre todo el aceite en el que se sirve el plato (una cazuela lleva mucho más que un 2 %)."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Boquerones",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2706232",
+   "fdc_id": 2706232,
+   "fuente": "fndds",
+   "en_seleccion_previa": false,
+   "promovido": true,
+   "alias": "Boquerones",
+   "confianza": 0.6,
+   "evidencia_composicion": {
+    "descripcion_usda": "Fish, anchovy",
+    "ingredientes": [
+     "100.0 % Fish, anchovy, european, canned in oil, drained solids"
+    ],
+    "per_100g_medido": {
+     "kcal": 210,
+     "protein_g": 28.89,
+     "carbs_g": 0,
+     "fat_g": 9.71,
+     "fiber_g": 0,
+     "sat_fat_g": 2.203,
+     "sugars_g": 0,
+     "sodium_mg": 3668
+    },
+    "lectura": "100 % anchoa europea en aceite, escurrida. Es el mismo pez, pero con 3.668 mg de sodio por 100 g: eso es una salazón. El boquerón en vinagre o frito tiene una fracción de esa sal."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Sardinas",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2706293",
+   "fdc_id": 2706293,
+   "fuente": "fndds",
+   "en_seleccion_previa": false,
+   "promovido": true,
+   "alias": "Sardinas",
+   "confianza": 0.6,
+   "evidencia_composicion": {
+    "descripcion_usda": "Fish, sardines, canned",
+    "ingredientes": [
+     "100.0 % Fish, sardine, Atlantic, canned in oil, drained solids with bone"
+    ],
+    "per_100g_medido": {
+     "kcal": 208,
+     "protein_g": 24.62,
+     "carbs_g": 0,
+     "fat_g": 11.45,
+     "fiber_g": 0,
+     "sat_fat_g": 1.528,
+     "sugars_g": 0,
+     "sodium_mg": 307
+    },
+    "lectura": "100 % sardina atlántica en lata, escurrida, con espina. La sardina asada del espeto no lleva el aceite de la lata ni su sodio (307 mg)."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Bacalao",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2706245",
+   "fdc_id": 2706245,
+   "fuente": "fndds",
+   "en_seleccion_previa": false,
+   "promovido": true,
+   "alias": "Bacalao",
+   "confianza": 0.8,
+   "evidencia_composicion": {
+    "descripcion_usda": "Fish, cod, steamed",
+    "ingredientes": [
+     "99.8 % Fish, cod, Pacific, raw (may have been previously frozen)"
+    ],
+    "per_100g_medido": {
+     "kcal": 87,
+     "protein_g": 19.29,
+     "carbs_g": 0,
+     "fat_g": 0.52,
+     "fiber_g": 0,
+     "sat_fat_g": 0.107,
+     "sugars_g": 0,
+     "sodium_mg": 235
+    },
+    "lectura": "input_food: bacalao del Pacífico crudo 99,8 % + sal 0,2 %, cocido al vapor. Es bacalao y nada más. El bacalao español suele ir desalado y con aceite, que el gemelo no trae."
+   },
+   "rechazados": [
+    {
+     "fdc_id": 2706240,
+     "fuente": "fndds",
+     "descripcion_usda": "Fish, cod, NFS",
+     "ingredientes": [
+      "100.0 % Fish, cod, fried"
+     ],
+     "per_100g_medido": {
+      "kcal": 217,
+      "protein_g": 13.52,
+      "carbs_g": 11.72,
+      "fat_g": 12.48,
+      "fiber_g": 0.5,
+      "sat_fat_g": 1.727,
+      "sugars_g": 0.2,
+      "sodium_mg": 426
+     },
+     "motivo": "El `Fish, cod, NFS` que YA estaba en el catálogo como `Bacalao` es 100 % `Fish, cod, fried` — bacalao REBOZADO: 217 kcal y 11,72 g de hidratos por 100 g, cuando un bacalao al vapor tiene 0 g. Mismo patrón exacto que el `Octopus`. Renombrado a `Bacalao rebozado` (ver dt7.pairs.json)."
+    }
+   ]
+  },
+  {
+   "plato": "Callos",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2706162",
+   "fdc_id": 2706162,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": "Callos",
+   "confianza": 0.5,
+   "evidencia_composicion": {
+    "descripcion_usda": "Tripe",
+    "ingredientes": [
+     "99.2 % Beef, variety meats and by-products, tripe, raw"
+    ],
+    "per_100g_medido": {
+     "kcal": 89,
+     "protein_g": 12.6,
+     "carbs_g": 0,
+     "fat_g": 3.85,
+     "fiber_g": 0,
+     "sat_fat_g": 1.348,
+     "sugars_g": 0,
+     "sodium_mg": 425
+    },
+    "lectura": "Callo de res crudo 99,2 % + sal. El callo está; los callos a la madrileña llevan además chorizo, morcilla y una salsa de pimentón que duplican la grasa. Sirve como estimación."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Albóndigas",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2706467",
+   "fdc_id": 2706467,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": "Albóndigas",
+   "confianza": 0.8,
+   "evidencia_composicion": {
+    "descripcion_usda": "Meatballs, NS as to type of meat, with sauce",
+    "ingredientes": [
+     "65.7 % Beef, ground",
+     "23.5 % Soup, beef broth or bouillon, powder, prepared with water",
+     "9.6 % Eggs, Grade A, Large, egg whole",
+     "1.2 % Salt, table"
+    ],
+    "per_100g_medido": {
+     "kcal": 186,
+     "protein_g": 18.02,
+     "carbs_g": 0.15,
+     "fat_g": 12.02,
+     "fiber_g": 0,
+     "sat_fat_g": 4.556,
+     "sugars_g": 0.07,
+     "sodium_mg": 801
+    },
+    "lectura": "Carne picada 65,7 % + huevo 9,6 % + caldo 23,5 % + sal: la albóndiga con su salsa, ingrediente por ingrediente."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Pimientos rellenos",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2709073",
+   "fdc_id": 2709073,
+   "fuente": "fndds",
+   "en_seleccion_previa": false,
+   "promovido": true,
+   "alias": "Pimientos rellenos",
+   "confianza": 0.8,
+   "evidencia_composicion": {
+    "descripcion_usda": "Stuffed pepper, with rice and meat",
+    "ingredientes": [
+     "36.5 % Peppers, bell, green, raw",
+     "19.5 % Rice, white, long-grain, regular, enriched, cooked",
+     "15.2 % Beef, ground",
+     "8.4 % Sauce, tomato chili sauce, bottled, with salt",
+     "7.0 % Cheese, cheddar",
+     "6.2 % Eggs, Grade A, Large, egg whole",
+     "5.2 % Vegetable oil, NFS",
+     "1.9 % Celery, raw"
+    ],
+    "per_100g_medido": {
+     "kcal": 178,
+     "protein_g": 7.83,
+     "carbs_g": 9.93,
+     "fat_g": 11.66,
+     "fiber_g": 0.7,
+     "sat_fat_g": 3.493,
+     "sugars_g": 2.22,
+     "sodium_mg": 320
+    },
+    "lectura": "Pimiento 36,5 % + carne picada 15,2 % + arroz 19,5 % + huevo + queso + aceite: el pimiento relleno. El de USDA lleva salsa de chile en vez de tomate."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Ensaladilla rusa",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2709532",
+   "fdc_id": 2709532,
+   "fuente": "fndds",
+   "en_seleccion_previa": false,
+   "promovido": true,
+   "alias": "Ensaladilla rusa",
+   "confianza": 0.6,
+   "evidencia_composicion": {
+    "descripcion_usda": "Potato salad with egg, made with mayonnaise",
+    "ingredientes": [
+     "100.0 % Potato salad with egg"
+    ],
+    "per_100g_medido": {
+     "kcal": 157,
+     "protein_g": 1.96,
+     "carbs_g": 16.18,
+     "fat_g": 9.4,
+     "fiber_g": 1.3,
+     "sat_fat_g": 1.437,
+     "sugars_g": 4.95,
+     "sodium_mg": 329
+    },
+    "lectura": "Ensalada de papa con huevo y mayonesa. La base es la misma; a la ensaladilla le faltan el atún, la zanahoria y los guisantes, que bajan las calorías por 100 g y suben la proteína."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Torrijas",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2708331",
+   "fdc_id": 2708331,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": "Torrijas",
+   "confianza": 0.6,
+   "evidencia_composicion": {
+    "descripcion_usda": "French toast, NFS",
+    "ingredientes": [
+     "100.0 % French toast, plain"
+    ],
+    "per_100g_medido": {
+     "kcal": 273,
+     "protein_g": 10.36,
+     "carbs_g": 32.34,
+     "fat_g": 11.38,
+     "fiber_g": 1.2,
+     "sat_fat_g": 3.252,
+     "sugars_g": 10.08,
+     "sodium_mg": 302
+    },
+    "lectura": "Pan empapado en huevo y leche y pasado por la sartén: la misma técnica. La torrija se fríe en aceite abundante y se baña en almíbar o miel, así que el gemelo (273 kcal) queda por debajo."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Morcilla",
+   "region": "ES",
+   "veredicto": "directo",
+   "alimento": "fdc-2706173",
+   "fdc_id": 2706173,
+   "fuente": "fndds",
+   "en_seleccion_previa": false,
+   "promovido": true,
+   "alias": "Morcilla",
+   "confianza": 1,
+   "evidencia_composicion": {
+    "descripcion_usda": "Blood sausage",
+    "ingredientes": [
+     "100.0 % Blood sausage"
+    ],
+    "per_100g_medido": {
+     "kcal": 379,
+     "protein_g": 14.6,
+     "carbs_g": 1.29,
+     "fat_g": 34.5,
+     "fiber_g": 0,
+     "sat_fat_g": 13.4,
+     "sugars_g": 1.29,
+     "sodium_mg": 680
+    },
+    "lectura": "USDA la nombra `Blood sausage` y la mide entera: 379 kcal con 34,5 g de grasa. Es la morcilla."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Salchichón",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2706195",
+   "fdc_id": 2706195,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": "Salchichón",
+   "confianza": 0.8,
+   "evidencia_composicion": {
+    "descripcion_usda": "Salami, NFS",
+    "ingredientes": [
+     "100.0 % Salami, dry or hard, pork, beef"
+    ],
+    "per_100g_medido": {
+     "kcal": 378,
+     "protein_g": 21.07,
+     "carbs_g": 0.72,
+     "fat_g": 31.65,
+     "fiber_g": 0,
+     "sat_fat_g": 11.418,
+     "sugars_g": 0.26,
+     "sodium_mg": 1756
+    },
+    "lectura": "Embutido curado de cerdo y vaca: la misma familia que el salchichón y el fuet. 378 kcal y 1.756 mg de sodio, propios de un curado."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Queso manchego",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2705730",
+   "fdc_id": 2705730,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": "Queso manchego",
+   "confianza": 0.5,
+   "evidencia_composicion": {
+    "descripcion_usda": "Cheese, Parmesan, hard",
+    "ingredientes": [
+     "50.0 % Cheese, parmesan, grated",
+     "50.0 % Cheese, parmesan, grated, refrigerated"
+    ],
+    "per_100g_medido": {
+     "kcal": 412,
+     "protein_g": 29.87,
+     "carbs_g": 8.36,
+     "fat_g": 28.75,
+     "fiber_g": 0,
+     "sat_fat_g": 16.35,
+     "sugars_g": 0.36,
+     "sodium_mg": 1398
+    },
+    "lectura": "Queso duro curado, 412 kcal. Es la familia correcta (pasta dura, larga curación) pero es de vaca y el manchego es de oveja: la grasa y la sal del manchego son mayores. Sirve como estimación."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Pan con tomate",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2707652",
+   "fdc_id": 2707652,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": "Pan con tomate",
+   "confianza": 0.8,
+   "evidencia_composicion": {
+    "descripcion_usda": "Bruschetta",
+    "ingredientes": [
+     "56.4 % Tomatoes, red, ripe, raw, year round average",
+     "35.8 % Bread, Italian, Grecian, Armenian, toasted",
+     "6.4 % Olive oil"
+    ],
+    "per_100g_medido": {
+     "kcal": 171,
+     "protein_g": 4.29,
+     "carbs_g": 21.32,
+     "fat_g": 7.61,
+     "fiber_g": 1.5,
+     "sat_fat_g": 1.227,
+     "sugars_g": 3.34,
+     "sodium_mg": 264
+    },
+    "lectura": "La bruschetta de USDA es pan tostado con tomate, ajo y aceite de oliva: el pa amb tomàquet con otro nombre."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Patatas fritas",
+   "region": "ES",
+   "veredicto": "directo",
+   "alimento": "fdc-2709456",
+   "fdc_id": 2709456,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": "Patatas fritas",
+   "confianza": 1,
+   "evidencia_composicion": {
+    "descripcion_usda": "Potato, french fries, NFS",
+    "ingredientes": [
+     "100.0 % Potato, french fries, from frozen, fried"
+    ],
+    "per_100g_medido": {
+     "kcal": 225,
+     "protein_g": 2.5,
+     "carbs_g": 23.23,
+     "fat_g": 14.07,
+     "fiber_g": 1.8,
+     "sat_fat_g": 1.986,
+     "sugars_g": 0.34,
+     "sodium_mg": 295
+    },
+    "lectura": "USDA las nombra french fries y las mide fritas: 225 kcal con 14,07 g de grasa."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Patatas bravas",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2709456",
+   "fdc_id": 2709456,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": "Patatas bravas",
+   "confianza": 0.5,
+   "evidencia_composicion": {
+    "descripcion_usda": "Potato, french fries, NFS",
+    "ingredientes": [
+     "100.0 % Potato, french fries, from frozen, fried"
+    ],
+    "per_100g_medido": {
+     "kcal": 225,
+     "protein_g": 2.5,
+     "carbs_g": 23.23,
+     "fat_g": 14.07,
+     "fiber_g": 1.8,
+     "sat_fat_g": 1.986,
+     "sugars_g": 0.34,
+     "sodium_mg": 295
+    },
+    "lectura": "La patata frita está, la salsa brava no. La brava lleva además aceite y pimentón por encima y se corta en dados (más superficie, más aceite absorbido): el gemelo queda corto."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Tortilla francesa",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2707198",
+   "fdc_id": 2707198,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": "Tortilla francesa",
+   "confianza": 0.8,
+   "evidencia_composicion": {
+    "descripcion_usda": "Egg omelet or scrambled egg, NS as to fat",
+    "ingredientes": [
+     "93.2 % Eggs, Grade A, Large, egg whole",
+     "6.5 % Oil or table fat, NFS"
+    ],
+    "per_100g_medido": {
+     "kcal": 185,
+     "protein_g": 11.58,
+     "carbs_g": 0.91,
+     "fat_g": 15,
+     "fiber_g": 0,
+     "sat_fat_g": 4.479,
+     "sugars_g": 0.2,
+     "sodium_mg": 248
+    },
+    "lectura": "Huevo 93,2 % + grasa 6,5 % + sal: la tortilla francesa es exactamente eso. USDA la mete en la misma ficha que el huevo revuelto."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Croissant",
+   "region": "ES",
+   "veredicto": "directo",
+   "alimento": "fdc-2707678",
+   "fdc_id": 2707678,
+   "fuente": "fndds",
+   "en_seleccion_previa": false,
+   "promovido": true,
+   "alias": "Croissant",
+   "confianza": 1,
+   "evidencia_composicion": {
+    "descripcion_usda": "Croissant",
+    "ingredientes": [
+     "100.0 % Croissants, butter"
+    ],
+    "per_100g_medido": {
+     "kcal": 406,
+     "protein_g": 8.2,
+     "carbs_g": 45.8,
+     "fat_g": 21,
+     "fiber_g": 2.6,
+     "sat_fat_g": 11.659,
+     "sugars_g": 11.26,
+     "sodium_mg": 300
+    },
+    "lectura": "100 % croissant de mantequilla. USDA lo nombra y lo mide entero."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Arroz con leche",
+   "region": "ES",
+   "veredicto": "directo",
+   "alimento": "fdc-168063",
+   "fdc_id": 168063,
+   "fuente": "sr_legacy",
+   "en_seleccion_previa": false,
+   "promovido": true,
+   "alias": "Arroz con leche",
+   "confianza": 1,
+   "evidencia_composicion": {
+    "descripcion_usda": "Restaurant, Latino, arroz con leche (rice pudding)",
+    "ingredientes": [],
+    "per_100g_medido": {
+     "kcal": 146,
+     "protein_g": 3.2,
+     "carbs_g": 24.92,
+     "fat_g": 3.69,
+     "fiber_g": 0.5,
+     "sat_fat_g": 1.899,
+     "sugars_g": 15.26,
+     "sodium_mg": 106
+    },
+    "lectura": "SR Legacy lo nombra literalmente `arroz con leche (rice pudding)`. Sin input_food —SR no lo publica— pero el nombre y el perfil (146 kcal, 15,26 g de azúcares) son los del postre."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Flan",
+   "region": "ES",
+   "veredicto": "directo",
+   "alimento": "fdc-2705683",
+   "fdc_id": 2705683,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": "Flan",
+   "confianza": 1,
+   "evidencia_composicion": {
+    "descripcion_usda": "Flan",
+    "ingredientes": [
+     "28.3 % Milk, canned, evaporated, with added vitamin D and without added vitamin A",
+     "26.6 % Beverages, water, tap, drinking",
+     "22.4 % Eggs, Grade A, Large, egg whole",
+     "22.4 % Sugars, granulated"
+    ],
+    "per_100g_medido": {
+     "kcal": 178,
+     "protein_g": 5.23,
+     "carbs_g": 28.24,
+     "fat_g": 4.94,
+     "fiber_g": 0,
+     "sat_fat_g": 2.241,
+     "sugars_g": 28.1,
+     "sodium_mg": 163
+    },
+    "lectura": "Huevo 22,4 % + azúcar 22,4 % + leche evaporada 28,3 % + agua: el flan, ingrediente por ingrediente. USDA lo nombra flan."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Crema catalana",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2705683",
+   "fdc_id": 2705683,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": "Crema catalana",
+   "confianza": 0.6,
+   "evidencia_composicion": {
+    "descripcion_usda": "Flan",
+    "ingredientes": [
+     "28.3 % Milk, canned, evaporated, with added vitamin D and without added vitamin A",
+     "26.6 % Beverages, water, tap, drinking",
+     "22.4 % Eggs, Grade A, Large, egg whole",
+     "22.4 % Sugars, granulated"
+    ],
+    "per_100g_medido": {
+     "kcal": 178,
+     "protein_g": 5.23,
+     "carbs_g": 28.24,
+     "fat_g": 4.94,
+     "fiber_g": 0,
+     "sat_fat_g": 2.241,
+     "sugars_g": 28.1,
+     "sodium_mg": 163
+    },
+    "lectura": "Misma familia que el flan (natilla de huevo, leche y azúcar). La crema catalana se espesa con almidón y lleva costra de azúcar quemado: más hidratos, menos huevo."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Cordero asado",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2705905",
+   "fdc_id": 2705905,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": "Cordero asado",
+   "confianza": 0.6,
+   "evidencia_composicion": {
+    "descripcion_usda": "Lamb, NS as to cut",
+    "ingredientes": [
+     "99.2 % Lamb, composite of trimmed retail cuts, separable lean and fat, trimmed to 1/4\" fat, choice, cooked"
+    ],
+    "per_100g_medido": {
+     "kcal": 292,
+     "protein_g": 24.32,
+     "carbs_g": 0,
+     "fat_g": 20.77,
+     "fiber_g": 0,
+     "sat_fat_g": 8.76,
+     "sugars_g": 0,
+     "sodium_mg": 379
+    },
+    "lectura": "Cordero cocido, compuesto de cortes al detalle con su grasa, 99,2 % + sal. La carne y la cocción están; el asado castellano se hace con lechazo (más tierno y más graso) y con su propio jugo."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Cochinillo",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2705882",
+   "fdc_id": 2705882,
+   "fuente": "fndds",
+   "en_seleccion_previa": false,
+   "promovido": true,
+   "alias": "Cochinillo",
+   "confianza": 0.5,
+   "evidencia_composicion": {
+    "descripcion_usda": "Pork, roast",
+    "ingredientes": [
+     "49.6 % Pork, fresh, loin, top loin (roasts), boneless, separable lean only, cooked, roasted",
+     "49.6 % Pork, fresh, loin, top loin (roasts), boneless, separable lean and fat, cooked, roasted"
+    ],
+    "per_100g_medido": {
+     "kcal": 181,
+     "protein_g": 26.63,
+     "carbs_g": 0,
+     "fat_g": 7.49,
+     "fiber_g": 0,
+     "sat_fat_g": 2.364,
+     "sugars_g": 0,
+     "sodium_mg": 353
+    },
+    "lectura": "Lomo de cerdo asado, mitad magro y mitad con grasa. Es cerdo asado, pero el cochinillo es un animal de tres semanas asado con su piel: mucha más grasa y colágeno. Sirve como estimación."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Rabo de toro",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2705843",
+   "fdc_id": 2705843,
+   "fuente": "fndds",
+   "en_seleccion_previa": false,
+   "promovido": true,
+   "alias": "Rabo de toro",
+   "confianza": 0.6,
+   "evidencia_composicion": {
+    "descripcion_usda": "Beef, oxtails",
+    "ingredientes": [
+     "99.2 % Beef, composite of trimmed retail cuts, separable lean and fat, trimmed to 1/8\" fat, all grades, cooked"
+    ],
+    "per_100g_medido": {
+     "kcal": 257,
+     "protein_g": 25.9,
+     "carbs_g": 0,
+     "fat_g": 16.46,
+     "fiber_g": 0,
+     "sat_fat_g": 6.728,
+     "sugars_g": 0,
+     "sodium_mg": 357
+    },
+    "lectura": "Rabo de res cocido, 99,2 % + sal: 257 kcal con 16,46 g de grasa. Falta el guiso — vino, verduras y una reducción larga — que es la mitad del plato."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Atún a la plancha",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2706310",
+   "fdc_id": 2706310,
+   "fuente": "fndds",
+   "en_seleccion_previa": false,
+   "promovido": true,
+   "alias": "Atún a la plancha",
+   "confianza": 0.8,
+   "evidencia_composicion": {
+    "descripcion_usda": "Fish, tuna, cooked",
+    "ingredientes": [
+     "95.6 % Fish, tuna, fresh, yellowfin, raw",
+     "4.0 % Oil or table fat, NFS"
+    ],
+    "per_100g_medido": {
+     "kcal": 176,
+     "protein_g": 30.31,
+     "carbs_g": 0.01,
+     "fat_g": 5.14,
+     "fiber_g": 0,
+     "sat_fat_g": 1.4,
+     "sugars_g": 0.01,
+     "sodium_mg": 271
+    },
+    "lectura": "Atún rabil crudo 95,6 % + aceite 4,0 % + sal: atún fresco pasado por la plancha. No es el atún de lata en aceite."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Bocadillo de jamón",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2706964",
+   "fdc_id": 2706964,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": "Bocadillo de jamón",
+   "confianza": 0.8,
+   "evidencia_composicion": {
+    "descripcion_usda": "Ham sandwich on white",
+    "ingredientes": [
+     "51.7 % Bread, white, commercially prepared",
+     "48.3 % Ham, sliced, pre-packaged, deli meat (96%fat free, water added)"
+    ],
+    "per_100g_medido": {
+     "kcal": 187,
+     "protein_g": 12.94,
+     "carbs_g": 25.58,
+     "fat_g": 3.66,
+     "fiber_g": 1.2,
+     "sat_fat_g": 0.965,
+     "sugars_g": 2.76,
+     "sodium_mg": 662
+    },
+    "lectura": "Pan blanco 51,7 % + jamón cocido en fetas 48,3 %. La estructura es la del bocadillo; el jamón de USDA es cocido y magro, no serrano."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Arroz negro",
+   "region": "ES",
+   "veredicto": "gemelo",
+   "alimento": "fdc-2708977",
+   "fdc_id": 2708977,
+   "fuente": "fndds",
+   "en_seleccion_previa": false,
+   "promovido": true,
+   "alias": "Arroz negro",
+   "confianza": 0.6,
+   "evidencia_composicion": {
+    "descripcion_usda": "Rice with squid, Puerto Rican style",
+    "ingredientes": [
+     "27.6 % Mollusks, squid, mixed species, raw",
+     "22.5 % Rice, white, long-grain, regular, raw, enriched",
+     "21.6 % Beverages, water, tap, drinking",
+     "9.0 % Peppers, bell, red, raw",
+     "7.3 % Puerto Rican seasoning without ham and tomato sauce",
+     "6.8 % Olive oil",
+     "3.9 % Tomato products, canned, sauce"
+    ],
+    "per_100g_medido": {
+     "kcal": 264,
+     "protein_g": 8.87,
+     "carbs_g": 29.31,
+     "fat_g": 11.8,
+     "fiber_g": 0.8,
+     "sat_fat_g": 1.897,
+     "sugars_g": 1.1,
+     "sodium_mg": 559
+    },
+    "lectura": "Calamar 27,6 % + arroz 22,5 % + agua 21,6 % + aceite de oliva 6,8 % + pimiento 9,0 % + tomate 3,9 % + ajo: es un arroz de calamar. Le falta la tinta, que aporta poco a los macros pero define el plato, y lleva sazón puertorriqueña en vez de sofrito."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Tarta de queso",
+   "region": "ES",
+   "veredicto": "directo",
+   "alimento": "fdc-2707861",
+   "fdc_id": 2707861,
+   "fuente": "fndds",
+   "en_seleccion_previa": false,
+   "promovido": true,
+   "alias": "Tarta de queso",
+   "confianza": 1,
+   "evidencia_composicion": {
+    "descripcion_usda": "Cheesecake, plain",
+    "ingredientes": [
+     "48.0 % Cream cheese, full fat, block",
+     "20.0 % Sugars, granulated",
+     "14.0 % Cookies, graham crackers, plain or honey (includes cinnamon)",
+     "10.0 % Eggs, Grade A, Large, egg whole",
+     "8.0 % Butter, stick, unsalted"
+    ],
+    "per_100g_medido": {
+     "kcal": 399,
+     "protein_g": 5.29,
+     "carbs_g": 34.82,
+     "fat_g": 26.52,
+     "fiber_g": 0.5,
+     "sat_fat_g": 14.371,
+     "sugars_g": 26.64,
+     "sodium_mg": 277
+    },
+    "lectura": "Galleta 14 % + mantequilla 8 % + queso crema 48 % + azúcar 20 % + huevo 10 %: la tarta de queso horneada, ingrediente por ingrediente. USDA la nombra cheesecake y el catálogo no tenía ninguna."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Sangría",
+   "region": "ES",
+   "veredicto": "directo",
+   "alimento": "fdc-2710695",
+   "fdc_id": 2710695,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": null,
+   "confianza": 1,
+   "evidencia_composicion": {
+    "descripcion_usda": "Sangria, red",
+    "ingredientes": [
+     "51.2 % Alcoholic beverage, wine, table, red",
+     "32.7 % Beverages, carbonated, club soda",
+     "12.3 % Liqueur",
+     "2.1 % Lemon juice from concentrate, canned or bottled",
+     "1.7 % Sugars, granulated"
+    ],
+    "per_100g_medido": {
+     "kcal": 85,
+     "protein_g": 0.04,
+     "carbs_g": 7.23,
+     "fat_g": 0.02,
+     "fiber_g": 0,
+     "sat_fat_g": 0.001,
+     "sugars_g": 6.14,
+     "sodium_mg": 10
+    },
+    "lectura": "Vino tinto 51,2 % + licor 12,3 % + soda 32,7 % + azúcar 1,7 % + zumo de limón 2,1 %: es sangría. Ya estaba en el catálogo desde la card 1.1 y nadie la había medido contra un plato español."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Merluza en salsa verde",
+   "region": "ES",
+   "veredicto": "receta",
+   "alimento": "receta-merluza-en-salsa-verde",
+   "fdc_id": null,
+   "fuente": "receta",
+   "en_seleccion_previa": false,
+   "promovido": false,
+   "alias": "Merluza en salsa verde",
+   "confianza": null,
+   "evidencia_composicion": {
+    "descripcion_usda": null,
+    "ingredientes": [],
+    "per_100g_medido": null,
+    "lectura": "RESUELTO POR RECETA COMPUESTA (card 1.7): 500 g de pescadilla al horno + 40 g de aceite de oliva + 15 g de ajo + 10 g de perejil + 200 g de caldo. La reserva de especie —USDA no mide merluza en ninguno de los tres datasets— va declarada en los caveats de la ficha."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Gazpachuelo",
+   "region": "ES",
+   "veredicto": "receta",
+   "alimento": "receta-gazpachuelo",
+   "fdc_id": null,
+   "fuente": "receta",
+   "en_seleccion_previa": false,
+   "promovido": false,
+   "alias": "Gazpachuelo",
+   "confianza": null,
+   "evidencia_composicion": {
+    "descripcion_usda": null,
+    "ingredientes": [],
+    "per_100g_medido": null,
+    "lectura": "RESUELTO POR RECETA COMPUESTA: 700 g de caldo + 250 g de papa hervida + 60 g de mayonesa + 50 g de huevo + 10 g de vinagre."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Ajoblanco",
+   "region": "ES",
+   "veredicto": "receta",
+   "alimento": "receta-ajoblanco",
+   "fdc_id": null,
+   "fuente": "receta",
+   "en_seleccion_previa": false,
+   "promovido": false,
+   "alias": "Ajoblanco",
+   "confianza": null,
+   "evidencia_composicion": {
+    "descripcion_usda": null,
+    "ingredientes": [],
+    "per_100g_medido": null,
+    "lectura": "RESUELTO POR RECETA COMPUESTA: 100 g de almendra cruda + 50 g de miga de pan + 5 g de ajo + 50 g de aceite de oliva + 15 g de vinagre + 700 g de agua + 5 g de sal. El agua entra como ingrediente porque se queda en el plato."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Migas",
+   "region": "ES",
+   "veredicto": "receta",
+   "alimento": "receta-migas",
+   "fdc_id": null,
+   "fuente": "receta",
+   "en_seleccion_previa": false,
+   "promovido": false,
+   "alias": "Migas",
+   "confianza": null,
+   "evidencia_composicion": {
+    "descripcion_usda": null,
+    "ingredientes": [],
+    "per_100g_medido": null,
+    "lectura": "RESUELTO POR RECETA COMPUESTA: 300 g de pan del día anterior + 60 g de aceite de oliva + 15 g de ajo + 100 g de torreznos."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Escalivada",
+   "region": "ES",
+   "veredicto": "receta",
+   "alimento": "receta-escalivada",
+   "fdc_id": null,
+   "fuente": "receta",
+   "en_seleccion_previa": false,
+   "promovido": false,
+   "alias": "Escalivada",
+   "confianza": null,
+   "evidencia_composicion": {
+    "descripcion_usda": null,
+    "ingredientes": [],
+    "per_100g_medido": null,
+    "lectura": "RESUELTO POR RECETA COMPUESTA: 400 g de berenjena + 300 g de pimiento rojo + 30 g de aceite de oliva + 3 g de sal. La ficha declara que subestima, porque no hay fuente para el rendimiento de una verdura asada."
+   },
+   "rechazados": [
+    {
+     "fdc_id": 2710028,
+     "fuente": "fndds",
+     "descripcion_usda": "Ratatouille",
+     "ingredientes": [
+      "24.3 % Eggplant, cooked, as ingredient",
+      "24.3 % Summer squash, cooked, as ingredient",
+      "21.2 % Tomatoes, red, ripe, canned, packed in tomato juice",
+      "16.9 % Onions, cooked, boiled, drained, without salt",
+      "7.8 % Red pepper, cooked, as ingredient",
+      "4.5 % Olive oil"
+     ],
+     "per_100g_medido": {
+      "kcal": 67,
+      "protein_g": 1.09,
+      "carbs_g": 5.77,
+      "fat_g": 4.73,
+      "fiber_g": 1.9,
+      "sat_fat_g": 0.752,
+      "sugars_g": 3.39,
+      "sodium_mg": 151
+     },
+     "motivo": "El `Ratatouille` que resuelve el pisto NO sirve para la escalivada: lleva tomate 21,2 % y calabacín 24,3 %, los dos ajenos al plato y los dos por encima del 15 %, y le falta el pimiento rojo asado que es la mitad de una escalivada. Además es un sofrito (67 kcal), no una verdura a la brasa."
+    }
+   ]
+  },
+  {
+   "plato": "Lomo embuchado",
+   "region": "ES",
+   "veredicto": "ausente",
+   "alimento": null,
+   "fdc_id": null,
+   "fuente": null,
+   "en_seleccion_previa": false,
+   "promovido": false,
+   "alias": "Lomo embuchado",
+   "confianza": null,
+   "evidencia_composicion": {
+    "descripcion_usda": null,
+    "ingredientes": [],
+    "per_100g_medido": null,
+    "lectura": "USDA no tiene ningún lomo curado en seco. La receta queda BLOQUEADA POR EL CORTE, y no por falta de dato: el motivo publicado en la ronda anterior era falso (comparaba cocido contra cocido con un jamón de salmuera). El par correcto existe y es crudo contra crudo — `Pork, cured, ham, center slice, country-style, lean only, raw` (fdc-168282, 27,80 g de proteína) contra los 13 lomos frescos crudos lean-only de SR Legacy (20,95-22,81 g) — y da rendimientos de 0,747 a 0,854, mediana 0,784, en la dirección correcta. Aun así no se ficha: 0,784 describe el secado de un jamón de tipo campo y un embuchado se seca bastante más, así que la ficha saldría con la proteína del jamón y no la del embuchado. No hay ningún lomo curado en los tres datasets con el que acotar esa diferencia."
+   },
+   "rechazados": [
+    {
+     "fdc_id": 2705879,
+     "fuente": "fndds",
+     "descripcion_usda": "Ham, prosciutto",
+     "ingredientes": [
+      "100.0 % Pork, cured, ham, center slice, country-style, separable lean only, raw"
+     ],
+     "per_100g_medido": {
+      "kcal": 195,
+      "protein_g": 27.8,
+      "carbs_g": 0.3,
+      "fat_g": 8.32,
+      "fiber_g": 0,
+      "sat_fat_g": 2.78,
+      "sugars_g": 0,
+      "sodium_mg": 2695
+     },
+     "motivo": "`Ham, prosciutto` (Jamón crudo) es el curado más cercano, pero es otro corte: 195 kcal con 8,32 g de grasa y 2.695 mg de sodio. El lomo embuchado es magro (~4-6 g de grasa) y sale de la cinta de lomo, no de la pata. Aceptarlo sobreestimaría la grasa un 40 %."
+    },
+    {
+     "fdc_id": 2705882,
+     "fuente": "fndds",
+     "descripcion_usda": "Pork, roast",
+     "ingredientes": [
+      "49.6 % Pork, fresh, loin, top loin (roasts), boneless, separable lean only, cooked, roasted",
+      "49.6 % Pork, fresh, loin, top loin (roasts), boneless, separable lean and fat, cooked, roasted"
+     ],
+     "per_100g_medido": {
+      "kcal": 181,
+      "protein_g": 26.63,
+      "carbs_g": 0,
+      "fat_g": 7.49,
+      "fiber_g": 0,
+      "sat_fat_g": 2.364,
+      "sugars_g": 0,
+      "sodium_mg": 353
+     },
+     "motivo": "`Pork, roast` (Cerdo asado) tiene el corte correcto —lomo— pero está FRESCO y asado: 181 kcal, 353 mg de sodio. Un embuchado curado ronda los 250 kcal y los 1.500-2.500 mg de sodio. La diferencia es exactamente la merma del curado y la sal, que es lo que no se puede derivar."
+    }
+   ]
+  },
+  {
+   "plato": "Turrón",
+   "region": "ES",
+   "veredicto": "receta",
+   "alimento": "receta-turron",
+   "fdc_id": null,
+   "fuente": "receta",
+   "en_seleccion_previa": false,
+   "promovido": false,
+   "alias": "Turrón",
+   "confianza": null,
+   "evidencia_composicion": {
+    "descripcion_usda": null,
+    "ingredientes": [],
+    "per_100g_medido": null,
+    "lectura": "Los dos candidatos de USDA se midieron y se rechazaron; RESUELTO POR RECETA COMPUESTA: 300 g de almendra + 75 g de miel + 100 g de azúcar + 25 g de huevo, las proporciones del turrón de Alicante. Estuvo bloqueado una ronda por falta de una ficha de miel y el bloqueo era autoinfligido: `Honey` (fdc-169640) estaba en SR Legacy y no se había buscado."
+   },
+   "rechazados": [
+    {
+     "fdc_id": 2710355,
+     "fuente": "fndds",
+     "descripcion_usda": "Candy, nougat with nuts",
+     "ingredientes": [
+      "50.0 % Candies, HERSHEYS, PAYDAY Bar",
+      "50.0 % Candies, nougat, with almonds"
+     ],
+     "per_100g_medido": {
+      "kcal": 444,
+      "protein_g": 8.38,
+      "carbs_g": 72.64,
+      "fat_g": 13.34,
+      "fiber_g": 3.6,
+      "sat_fat_g": 3.236,
+      "sugars_g": 42.64,
+      "sodium_mg": 132
+     },
+     "motivo": "`Candy, nougat with nuts` es 50 % `HERSHEYS PAYDAY Bar` —una barra de cacahuete y caramelo— y 50 % turrón de almendra. Un ingrediente ajeno al plato que pesa el 50 % está muy por encima del 15 % que admite la regla. Se ve en el perfil: 444 kcal con 13,34 g de grasa y 42,64 g de azúcares."
+    },
+    {
+     "fdc_id": 169060,
+     "fuente": "sr_legacy",
+     "descripcion_usda": "Candies, nougat, with almonds",
+     "ingredientes": [],
+     "per_100g_medido": {
+      "kcal": 398,
+      "protein_g": 3.33,
+      "carbs_g": 92.39,
+      "fat_g": 1.67,
+      "fiber_g": 3.3,
+      "sat_fat_g": 1.667,
+      "sugars_g": 44.97,
+      "sodium_mg": 33
+     },
+     "motivo": "`Candies, nougat, with almonds` es turrón por el nombre, pero declara 1,67 g de grasa por 100 g. Un turrón de Alicante es ~60 % almendra y ronda los 30 g de grasa: el candidato tiene la vigésima parte. Es un nougat blando con almendra de adorno, no un turrón."
+    }
+   ]
+  },
+  {
+   "plato": "Tarta de Santiago",
+   "region": "ES",
+   "veredicto": "receta",
+   "alimento": "receta-tarta-de-santiago",
+   "fdc_id": null,
+   "fuente": "receta",
+   "en_seleccion_previa": false,
+   "promovido": false,
+   "alias": "Tarta de Santiago",
+   "confianza": null,
+   "evidencia_composicion": {
+    "descripcion_usda": null,
+    "ingredientes": [],
+    "per_100g_medido": null,
+    "lectura": "RESUELTO POR RECETA COMPUESTA: 250 g de almendra molida + 250 g de azúcar + 200 g de huevo, sin harina. La ficha declara que subestima, porque no hay fuente para el rendimiento de una masa horneada."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Bocadillo de calamares",
+   "region": "ES",
+   "veredicto": "receta",
+   "alimento": "receta-bocadillo-de-calamares",
+   "fdc_id": null,
+   "fuente": "receta",
+   "en_seleccion_previa": false,
+   "promovido": false,
+   "alias": "Bocadillo de calamares",
+   "confianza": null,
+   "evidencia_composicion": {
+    "descripcion_usda": null,
+    "ingredientes": [],
+    "per_100g_medido": null,
+    "lectura": "RESUELTO POR RECETA COMPUESTA: 100 g de pan + 120 g de calamares rebozados. Era un plato compuesto cuyas dos piezas ya estaban en el catálogo; con la card 1.7 deja de necesitar que alguien las sume a mano."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Huevos rotos",
+   "region": "ES",
+   "veredicto": "receta",
+   "alimento": "receta-huevos-rotos",
+   "fdc_id": null,
+   "fuente": "receta",
+   "en_seleccion_previa": false,
+   "promovido": false,
+   "alias": "Huevos rotos",
+   "confianza": null,
+   "evidencia_composicion": {
+    "descripcion_usda": null,
+    "ingredientes": [],
+    "per_100g_medido": null,
+    "lectura": "RESUELTO POR RECETA COMPUESTA: 250 g de papas fritas + 110 g de huevo frito. Mismo caso que el bocadillo de calamares."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Fabada",
+   "region": "ES",
+   "veredicto": "verificado",
+   "alimento": "fdc-2707407",
+   "fdc_id": 2707407,
+   "fuente": "fndds",
+   "en_seleccion_previa": true,
+   "promovido": false,
+   "alias": null,
+   "confianza": 0.6,
+   "evidencia_composicion": {
+    "descripcion_usda": "Beans with meat, NS as to type",
+    "ingredientes": [
+     "86.0 % Beans, from dried, NS as to type, fat added",
+     "7.0 % Ham, for use with vegetables",
+     "7.0 % Beef, for use with vegetables"
+    ],
+    "per_100g_medido": {
+     "kcal": 184,
+     "protein_g": 10.7,
+     "carbs_g": 20.56,
+     "fat_g": 6.88,
+     "fiber_g": 7.1,
+     "sat_fat_g": 1.153,
+     "sugars_g": 0.38,
+     "sodium_mg": 275
+    },
+    "lectura": "VERIFICADO en esta ronda: sigue siendo alubias de seco 86 % + jamón 7 % + carne 7 %, gemelo a 0,6. Sin cambios."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Salmorejo",
+   "region": "ES",
+   "veredicto": "verificado",
+   "alimento": "manual-salmorejo",
+   "fdc_id": null,
+   "fuente": "manual",
+   "en_seleccion_previa": false,
+   "promovido": false,
+   "alias": null,
+   "confianza": null,
+   "evidencia_composicion": {
+    "descripcion_usda": null,
+    "ingredientes": [],
+    "per_100g_medido": null,
+    "lectura": "VERIFICADO: sigue sin equivalente en USDA; lo cubre la ficha manual desde etiqueta comercial."
+   },
+   "rechazados": []
+  },
+  {
+   "plato": "Tortilla de patatas",
+   "region": "ES",
+   "veredicto": "verificado",
+   "alimento": "manual-tortilla-de-patatas",
+   "fdc_id": null,
+   "fuente": "manual",
+   "en_seleccion_previa": false,
+   "promovido": false,
+   "alias": null,
+   "confianza": null,
+   "evidencia_composicion": {
+    "descripcion_usda": null,
+    "ingredientes": [],
+    "per_100g_medido": null,
+    "lectura": "VERIFICADO: el `Egg omelet with potatoes` sigue siendo 81,8 % huevo y 8,2 % papa. Ahora lo cubre la ficha manual."
+   },
+   "rechazados": []
+  }
+ ]
+}

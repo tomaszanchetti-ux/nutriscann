@@ -1,0 +1,248 @@
+{
+  "$schema_version": 1,
+  "updated_at": "2026-08-30",
+  "source": {
+    "doc": "OPS 2016",
+    "title": "Modelo de perfil de nutrientes de la Organización Panamericana de la Salud",
+    "publisher": "Organización Panamericana de la Salud (OPS/PAHO)",
+    "place": "Washington, DC",
+    "year": 2016,
+    "isbn": "978-92-75-31873-7",
+    "file": "datasets/9789275318737_spa.pdf",
+    "language": "es",
+    "pages_total_pdf": 38,
+    "criteria_section": "IV. Criterios usados en el modelo de perfil de nutrientes de la OPS (los cinco criterios están en las páginas impresas 18 y 19)",
+    "scope_section": "III. Principios y justificación del modelo de perfil de nutrientes de la OPS (páginas impresas 13 a 18; ahí están los principios 5, 7 y 8 que fijan el alcance)",
+    "page_numbering": "El campo citation.page es el número de página IMPRESO en el documento. citation.page_pdf es el número de página del archivo PDF (el impreso + 1)."
+  },
+
+  "tags": [
+    "entrenamiento",
+    "recuperacion",
+    "liviana",
+    "alta_en_sodio",
+    "alta_en_azucar",
+    "alta_en_grasa_saturada",
+    "balanceada"
+  ],
+  "tags_note": "Lista CERRADA de tags válidos. El tag de toda regla y el fallback_tag tienen que pertenecer a esta lista, y el seed debe rechazar el documento si alguno no pertenece. La interfaz elige el ícono y el color de la card a partir del tag: un tag mal escrito no rompe nada visible, se degrada en silencio, y por eso tiene que ser detectable antes de publicar. Agregar un tag nuevo es un cambio de producto (hay que darle ícono y texto), no un ajuste de umbral.",
+
+  "fields": {
+    "kcal": { "type": "number", "nullable": false, "desc": "Energía total del plato en kilocalorías." },
+    "protein_g": { "type": "number", "nullable": false, "desc": "Proteína total en gramos." },
+    "carbs_g": { "type": "number", "nullable": false, "desc": "Carbohidratos totales en gramos." },
+    "fat_g": { "type": "number", "nullable": false, "desc": "Grasas totales en gramos." },
+    "fiber_g": { "type": "number", "nullable": true, "desc": "Fibra en gramos. Puede faltar. Ninguna regla v1 la usa." },
+    "sat_fat_g": { "type": "number", "nullable": true, "desc": "Grasas saturadas en gramos. Puede faltar." },
+    "sugars_g": { "type": "number", "nullable": true, "desc": "Azúcares TOTALES en gramos (lo que publica USDA). Puede faltar. Ojo: la OPS define su umbral sobre azúcares LIBRES, ver notes.adaptaciones.azucares." },
+    "sodium_mg": { "type": "number", "nullable": true, "desc": "Sodio en miligramos. Puede faltar." }
+  },
+  "fields_note": "Acá viven solo los valores MEDIDOS que llegan del paso [2]. Todo lo que se calcula a partir de ellos tiene su fórmula escrita en derived_fields, sin excepción: si un número tiene fórmula, la fórmula está en este archivo.",
+
+  "derived_fields": {
+    "protein_pct": {
+      "formula": "protein_g * 4 / kcal * 100",
+      "desc": "Porcentaje de la energía total que aporta la proteína.",
+      "null_if": "kcal <= 0"
+    },
+    "carbs_pct": {
+      "formula": "carbs_g * 4 / kcal * 100",
+      "desc": "Porcentaje de la energía total que aportan los carbohidratos.",
+      "null_if": "kcal <= 0"
+    },
+    "fat_pct": {
+      "formula": "fat_g * 9 / kcal * 100",
+      "desc": "Porcentaje de la energía total que aportan las grasas totales. Con esta fórmula escrita, la afirmación 'fat_pct equivale exactamente a la medida de grasas totales del modelo OPS' se puede verificar contra la cita sin salir de este archivo: la OPS mide gramos de grasas totales x 9 kcal sobre el total de energía, que es literalmente esto.",
+      "null_if": "kcal <= 0"
+    },
+    "sat_fat_pct": {
+      "formula": "sat_fat_g * 9 / kcal * 100",
+      "desc": "Porcentaje de la energía total que aportan las grasas saturadas. El factor 9 kcal/g lo fija la propia OPS en el criterio citado.",
+      "null_if": "sat_fat_g es null o kcal <= 0"
+    },
+    "sugars_pct": {
+      "formula": "sugars_g * 4 / kcal * 100",
+      "desc": "Porcentaje de la energía total que aportan los azúcares. El factor 4 kcal/g lo fija la propia OPS en el criterio citado.",
+      "null_if": "sugars_g es null o kcal <= 0"
+    },
+    "sodium_mg_per_kcal": {
+      "formula": "sodium_mg / kcal",
+      "desc": "Miligramos de sodio por cada kilocaloría del plato. Es la razón sodio:energía del criterio OPS.",
+      "null_if": "sodium_mg es null o kcal <= 0"
+    }
+  },
+  "derived_fields_note": "Los factores 4 kcal/g y 9 kcal/g son los de Atwater y son los mismos que usa la OPS en el texto de sus criterios. Los porcentajes se calculan cada uno contra kcal y NO se normalizan para que sumen 100: si la suma da 97 o 104, esa diferencia es información real (redondeo de la base USDA, fibra, alcohol) y taparla sería inventar. El paso [2] del motor puede venir con protein_pct, carbs_pct y fat_pct ya calculados en totals; si así fuera, tienen que salir de estas fórmulas exactas. La fórmula de referencia es la de este archivo.",
+
+  "evaluation": {
+    "expression_grammar": "expr := or ; or := and ('||' and)* ; and := cmp ('&&' cmp)* ; cmp := sum (('>'|'<'|'>='|'<=') sum)? ; sum := term (('+'|'-') term)* ; term := factor (('*'|'/') factor)* ; factor := NUMBER | IDENT | '(' expr ')'",
+    "operators": [">", "<", ">=", "<=", "&&", "||", "+", "-", "*", "/", "()"],
+    "not_supported": ["==", "!=", "!", "funciones", "cadenas de texto", "acceso a campos anidados"],
+    "identifiers_allowed": ["kcal", "protein_g", "carbs_g", "fat_g", "fiber_g", "sat_fat_g", "sugars_g", "sodium_mg", "protein_pct", "carbs_pct", "fat_pct", "sat_fat_pct", "sugars_pct", "sodium_mg_per_kcal"],
+    "order": "priority_desc_then_array_order",
+    "select": "first_match",
+    "null_semantics": "Toda comparación con al menos un operando null da FALSO. Es decir: si falta el dato, la regla NO dispara (nunca alerta a ciegas). Los conectores && y || operan sobre el booleano ya resuelto.",
+    "division_by_zero": "Ninguna división de derived_fields se evalúa cuando el divisor es 0. El único divisor que existe en v1 es kcal, y todo campo derivado declara null_if con kcal <= 0: si el plato no tiene energía cuantificada, los seis derivados valen null y ninguna regla que dependa de ellos dispara. El motor NUNCA debe producir Infinity ni NaN; si una fórmula futura pudiera dividir por cero sin un null_if que lo cubra, el resultado es null, no un número.",
+    "on_no_match": "Se usa fallback_tag con fallback_templates. Ojo: es 'ninguna regla disparó', no 'plato aprobado'. Ver fallback_note.",
+    "engine_contract": "Las FÓRMULAS (derived_fields) y los UMBRALES (rules[].if) viven en este documento y se cambian sin desplegar. La SEMÁNTICA de evaluación —el manejo de null, la división por cero, el orden por priority, el corte en la primera coincidencia y el fallback— la implementa el motor una sola vez, en código, siguiendo este contrato: es maquinaria, no configuración, y no debería cambiar cuando se ajusta un umbral. El motor calcula primero derived_fields, después ordena las reglas por priority descendente y devuelve la PRIMERA que evalúa verdadero. El texto se le pasa al paso [3] como plantilla a redactar; el tag va tal cual al reporte y tiene que pertenecer a la lista cerrada tags."
+  },
+
+  "rules": [
+    {
+      "id": "exceso-sodio-ops",
+      "if": "sodium_mg_per_kcal >= 1",
+      "tag": "alta_en_sodio",
+      "priority": 100,
+      "citation": {
+        "doc": "OPS 2016",
+        "page": 18,
+        "page_pdf": 19,
+        "quote": "Con una cantidad excesiva de sodio, si la razón entre la cantidad de sodio (mg) en cualquier cantidad dada del producto y la energía (kcal) es igual o mayor a 1:1.",
+        "footnote": "Esta razón deriva de una ingesta diaria máxima recomendada de 2.000 mg de sodio, el límite máximo de la OMS para los adultos, y una ingesta calórica diaria de 2.000 kcal en total. (OPS 2016, p. 18, nota 14)"
+      },
+      "templates": {
+        "es": "Este plato es alto en sodio: acompáñalo con agua y baja la sal en la próxima comida del día.",
+        "en": "This plate is high in sodium — have some water with it and go easy on the salt at your next meal."
+      }
+    },
+    {
+      "id": "exceso-grasas-saturadas-ops",
+      "if": "sat_fat_pct >= 10",
+      "tag": "alta_en_grasa_saturada",
+      "priority": 90,
+      "citation": {
+        "doc": "OPS 2016",
+        "page": 19,
+        "page_pdf": 20,
+        "quote": "Con una cantidad excesiva de grasas saturadas, si en cualquier cantidad dada del producto la cantidad de energía (kcal) proveniente de grasas saturadas (gramos de grasas saturadas x 9 kcal) es igual o mayor a 10% del total de energía (kcal)."
+      },
+      "templates": {
+        "es": "Buena parte de la energía de este plato viene de grasas saturadas: la próxima vez prueba con aceite de oliva, pescado o frutos secos.",
+        "en": "A good share of this plate's energy comes from saturated fat — next time try olive oil, fish or nuts."
+      }
+    },
+    {
+      "id": "exceso-azucares-ops",
+      "if": "sugars_pct >= 10",
+      "tag": "alta_en_azucar",
+      "priority": 80,
+      "citation": {
+        "doc": "OPS 2016",
+        "page": 18,
+        "page_pdf": 19,
+        "quote": "Con una cantidad excesiva de azúcares libres, si en cualquier cantidad dada del producto la cantidad de energía (kcal) proveniente de los azúcares libres (gramos de azúcares libres x 4 kcal) es igual o mayor a 10% del total de energía (kcal).",
+        "adaptation_flag": "Aplicamos el umbral sobre azúcares TOTALES, no libres. Ver notes.adaptaciones.azucares."
+      },
+      "templates": {
+        "es": "El azúcar aporta buena parte de la energía de este plato: si viene de fruta entera, perfecto; si viene de postre o bebida, que sea de vez en cuando.",
+        "en": "Sugar carries a good share of this plate's energy — great if it's whole fruit, better kept occasional if it's dessert or a drink."
+      }
+    },
+    {
+      "id": "perfil-recuperacion",
+      "if": "protein_pct >= 30",
+      "tag": "recuperacion",
+      "priority": 60,
+      "citation": null,
+      "own_criterion": "Criterio propio v1 de NutriScann, NO de la OPS. 30% de la energía en proteína queda en el borde alto del rango habitual de reparto de macronutrientes, así que marca un plato claramente proteico.",
+      "templates": {
+        "es": "Buena carga de proteína: justo lo que va bien para recuperar después de entrenar.",
+        "en": "A solid protein load — just what works for recovering after a workout."
+      }
+    },
+    {
+      "id": "perfil-liviana",
+      "if": "kcal > 0 && kcal <= 400",
+      "tag": "liviana",
+      "priority": 55,
+      "citation": null,
+      "own_criterion": "Criterio propio v1 de NutriScann, NO de la OPS. 400 kcal es nuestra línea para 'comida liviana' en un plato principal; es un valor de arranque, pensado para ajustarse con datos reales de uso. La guarda kcal > 0 está para que un plato que no se pudo cuantificar (0 kcal) no se lea como comida liviana: sin energía medida no hay nada liviano, hay un plato sin datos.",
+      "templates": {
+        "es": "Comida liviana: si el día viene largo, suma después una fruta o un puñado de frutos secos.",
+        "en": "A light meal — if the day ahead is long, add a piece of fruit or a handful of nuts later on."
+      }
+    },
+    {
+      "id": "perfil-entrenamiento",
+      "if": "carbs_pct >= 55",
+      "tag": "entrenamiento",
+      "priority": 50,
+      "citation": null,
+      "own_criterion": "Criterio propio v1 de NutriScann, NO de la OPS. Usamos 55% y no el 50% que aparece como ejemplo en docs/PLAN.md: a 50% el plato todavía está dentro del reparto normal de macronutrientes y la etiqueta perdería sentido por dispararse casi siempre.",
+      "templates": {
+        "es": "Plato cargado de carbohidratos: ideal antes de un día de entrenamiento o de mucho movimiento.",
+        "en": "A carb-loaded plate — ideal before a training day or one with plenty of movement."
+      }
+    }
+  ],
+
+  "fallback_tag": "balanceada",
+  "fallback_templates": {
+    "es": "Sin alertas en este plato: ninguna de nuestras reglas se activó con estos números. Que lo disfrutes.",
+    "en": "No alerts on this plate — none of our rules triggered with these numbers. Enjoy it."
+  },
+  "fallback_note": "IMPORTANTE. 'balanceada' significa exactamente una cosa: NINGUNA REGLA DISPARÓ. No significa que el plato esté certificado como bueno, ni que sus macronutrientes estén en buena proporción, porque eso nadie lo midió. Se llega acá por dos caminos que se ven iguales desde afuera: (a) el plato tiene todos los datos y no cruza ningún umbral, o (b) faltan datos —sin sat_fat_g, sin sugars_g o sin sodium_mg las reglas de exceso dan falso por null— y el plato entra al fallback sin haber sido evaluado de verdad. Un plato de 900 kcal con 62% de la energía en grasa y sin dato de saturadas cae acá. Por eso la plantilla dice 'sin alertas' y no afirma ninguna proporción: es la misma regla que aplicamos en null_semantics, un plato sin sodium_mg no es bajo en sodio, y por simetría un plato sin alertas no es un plato equilibrado. El día que el reporte muestre qué datos faltaron, este texto puede volverse más específico; hasta entonces no afirma lo que no sabe.",
+
+  "ops_thresholds_reference": [
+    {
+      "nutrient": "sodio",
+      "threshold": "≥ 1 mg de sodio por 1 kcal",
+      "page": 18,
+      "page_pdf": 19,
+      "used_by_rule": "exceso-sodio-ops"
+    },
+    {
+      "nutrient": "azucares_libres",
+      "threshold": "≥ 10% de la energía total proveniente de azúcares libres (g × 4 kcal)",
+      "page": 18,
+      "page_pdf": 19,
+      "used_by_rule": "exceso-azucares-ops"
+    },
+    {
+      "nutrient": "grasas_saturadas",
+      "threshold": "≥ 10% de la energía total proveniente de grasas saturadas (g × 9 kcal)",
+      "page": 19,
+      "page_pdf": 20,
+      "used_by_rule": "exceso-grasas-saturadas-ops"
+    },
+    {
+      "nutrient": "grasas_totales",
+      "threshold": "≥ 30% de la energía total proveniente del total de grasas (g × 9 kcal)",
+      "page": 19,
+      "page_pdf": 20,
+      "used_by_rule": null,
+      "why_not": "Decisión deliberada, no olvido. El dato existe (fat_pct, con su fórmula en derived_fields) y el umbral está transcrito acá para que quede trazable, pero NO lo convertimos en alerta: en un plato casero de verdad, superar el 30% de la energía en grasa es lo normal y muchas veces lo bueno (aceite de oliva, pescado azul, aguacate, frutos secos). Avisar ahí sería desinformar. Coherente con esto, la lista cerrada tags no tiene ninguna etiqueta de grasa total: la señal que sí importa la da grasa saturada."
+    },
+    {
+      "nutrient": "grasas_trans",
+      "threshold": "≥ 1% de la energía total proveniente de grasas trans (g × 9 kcal)",
+      "page": 19,
+      "page_pdf": 20,
+      "used_by_rule": null,
+      "why_not": "No hay dato: los totales del plato no traen trans_fat_g, y USDA tampoco lo publica de forma pareja para los alimentos del catálogo. Queda transcrito para poder activarlo el día que exista el campo, sin volver al PDF."
+    },
+    {
+      "nutrient": "otros_edulcorantes",
+      "threshold": "Cualquier cantidad de edulcorantes no calóricos o polialcoholes",
+      "page": 18,
+      "page_pdf": 19,
+      "used_by_rule": null,
+      "why_not": "Se resuelve leyendo la lista de ingredientes de un envase. Una foto de un plato no tiene lista de ingredientes: el criterio es inaplicable acá, no está pendiente."
+    }
+  ],
+
+  "notes": {
+    "que_es_esto": "El set de reglas v1 con el que el paso [3] del motor elige QUÉ recomendación redactar. Se edita en el repo y se publica con el seed a config/app en Firestore. Sin deploy.",
+    "alcance_del_producto": "Informativo y de fitness. Ninguna plantilla diagnostica, prescribe ni menciona enfermedades. El tono es cálido y accionable, nunca sermón.",
+    "adaptaciones": {
+      "encuadre_general": "El modelo de la OPS fue hecho para clasificar PRODUCTOS procesados y ultraprocesados a partir de su etiqueta, y el propio documento deja fuera de su alcance los alimentos sin procesar, los ingredientes culinarios y los platos recién preparados (sección III, principio 5 en la p. 14 y principios 7 y 8 en la p. 17). Un plato fotografiado es exactamente lo que la OPS excluye. Por eso NO decimos que NutriScann aplica el modelo OPS ni que clasifica platos según la OPS. Lo que tomamos son sus UMBRALES NUMÉRICOS como puntos de referencia citables. El puente que lo hace honesto lo escribe la propia OPS en el principio 3 de la p. 14, y conviene leerlo entero porque tiene dos mitades: primero reconoce el límite —'Se ha razonado que las metas de ingesta de nutrientes de la población tienen como finalidad guiar la ingesta alimentaria diaria global, en vez del consumo de determinados alimentos'— y enseguida lo salva con un 'Sin embargo', argumentando que como el consumo de productos con cantidades excesivas de nutrientes críticos aumenta la probabilidad de que la alimentación entera exceda las metas, el consumidor igual debe conocer esas recomendaciones. O sea: la OPS sabe que está bajando un número pensado para la dieta completa hasta un producto individual, lo dice, y explica por qué le parece legítimo. Nosotros hacemos el mismo movimiento un paso más corto: lo bajamos hasta un plato, que está a mitad de camino entre la dieta y el producto. Nuestro traslado se apoya en el argumento de la OPS y además recorre menos distancia que el de ella.",
+      "sodio": "El traslado más limpio de los tres. La razón 1 mg de sodio por 1 kcal sale de dividir el techo diario de sodio (2.000 mg) por la ingesta diaria de referencia (2.000 kcal): es una proporción, no una cantidad absoluta, así que se puede leer sobre cualquier porción de la dieta. Un plato que está en 1:1 mantiene ese ritmo todo el día si el resto se le parece. LÍMITE CONOCIDO v1: en platos de muy pocas calorías la razón se vuelve nerviosa (un caldo de 90 kcal con 120 mg de sodio ya la supera). No le pusimos un piso mínimo de miligramos porque sería un número inventado y la regla dejaría de ser citable; el límite queda escrito y registrado como deuda (DT-6) para calibrarlo con datos de uso reales.",
+      "azucares": "Adaptación con una costura visible. La OPS mide azúcares LIBRES (los añadidos más los de miel, jarabes y jugos de fruta) y nosotros solo tenemos azúcares TOTALES, que es lo que publica USDA. Los totales incluyen además la fructosa de la fruta entera y la lactosa de la leche, así que nuestro sugars_pct es siempre mayor o igual al de la OPS: la regla dispara de más, nunca de menos. Decisiones tomadas: (1) mantenemos el 10% de la OPS en vez de inventar un umbral más alto, porque un número inventado no se puede citar; (2) la plantilla está escrita para ser verdadera en los dos casos, distingue fruta entera de postre y no acusa; (3) la regla queda con la prioridad más baja de las tres de exceso, así un plato que además es salado o graso muestra primero esa señal. Registrado como deuda (DT-6) para recalibrar con datos de uso reales.",
+      "grasas_saturadas": "El umbral se aplica tal cual (10% de la energía) porque la medida es proporcional y el factor 9 kcal/g lo fija la propia OPS. Se apoya en un campo que puede venir vacío: si sat_fat_g falta, la regla no dispara y el plato cae al fallback (ver fallback_note: eso NO es un aprobado).",
+      "grasas_totales_y_trans": "No se convierten en reglas. El motivo, en ops_thresholds_reference."
+    },
+    "criterios_propios_v1": "Las tres reglas de perfil (recuperacion, liviana, entrenamiento) NO salen de la OPS y por eso tienen citation null. Son convenciones de fitness nuestras, de arranque, elegidas para que las etiquetas signifiquen algo y no se disparen todo el tiempo. Nunca hay que citar a la OPS para respaldarlas.",
+    "prioridades": "Dos criterios, en este orden. PRIMERO, la salud le gana al perfil: las tres reglas de exceso (100, 90, 80) van por encima de las tres de perfil (60, 55, 50), así un plato de pasta que además es muy salado muestra lo del sodio, que es lo que importa decir. SEGUNDO, entre las de perfil manda la señal más específica. recuperacion (60) va arriba de liviana (55) porque las calorías son un dato grueso y el reparto de macronutrientes es un dato fino: una ensalada de pollo de 350 kcal con 46% de la energía en proteína es un plato de recuperación que además pesa poco, y leerlo como 'comida liviana' tiraba a la basura lo único distintivo que tenía. liviana (55) queda como la lectura por defecto de los platos chicos que no dicen nada más, y sigue ganando donde tiene que ganar: un bol de fruta de 250 kcal tiene la proteína por el piso, así que recuperacion no dispara y el bol se lee liviana, no entrenamiento. entrenamiento (50) va último porque un porcentaje alto de carbohidratos es lo más fácil de alcanzar de los tres.",
+    "campos_sin_regla": "fiber_g está disponible y ninguna regla v1 lo usa: no hay tag de fibra en la lista cerrada tags. Queda dicho para que se note que es una decisión y no un descuido.",
+    "transcripcion": "Las citas se transcribieron del PDF y se les unieron las palabras que el texto original corta con guión de fin de renglón. No se cambió ninguna palabra ni ningún número."
+  }
+}

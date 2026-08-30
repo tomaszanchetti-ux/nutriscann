@@ -1,0 +1,206 @@
+{
+ "$comment": [
+  "Curación manual: alimentos que USDA no tiene y que se declaran enteros acá.",
+  "Es la precedencia MÁS ALTA del pipeline (SR < Foundation < FNDDS < curación manual):",
+  "si el id coincide con un alimento del catálogo, sus valores lo pisan campo a campo;",
+  "si no coincide con nadie, entra como un alimento nuevo con su propio id.",
+  "Los candados se aplican igual que a cualquier alimento de USDA, y el de Atwater aprieta",
+  "MÁS: para los manuales rige solo el brazo del 10 % relativo, sin el margen de ±20 kcal.",
+  "El 'origen' viaja al provenance como 'manual/<origen>', para que un número nunca se",
+  "confunda con uno de laboratorio. Hay dos orígenes en uso, y no valen lo mismo:",
+  "  · etiqueta-comercial — leído de la etiqueta de un producto concreto. Es un dato de",
+  "    ESE producto: preciso para él, no necesariamente representativo del plato casero.",
+  "  · referencia-web — punto medio de los rangos que publican agregadores nutricionales",
+  "    (FatSecret, Fitia y similares), recogidos con resúmenes de IA. NO es una medición:",
+  "    es un consenso de terceros. El rango completo queda escrito en los caveats para que",
+  "    quien lea el número vea también su ancho.",
+  "La 'category' usa el vocabulario grueso de USDA a propósito: la coherencia del catálogo",
+  "vale más que la precisión de una etiqueta que USDA no tiene."
+ ],
+ "foods": [
+  {
+   "id": "manual-salmorejo",
+   "origen": "etiqueta-comercial",
+   "source_ref": "Etiqueta comercial de salmorejo (producto industrial con AOVE), foto del 30/08/2026",
+   "name_en": "Salmorejo, Spanish chilled tomato and bread soup",
+   "name_es": "Salmorejo",
+   "aliases": ["Salmorejo cordobés"],
+   "category": "Soups, broth-based",
+   "per_100g": {
+    "kcal": 83,
+    "protein_g": 0.8,
+    "carbs_g": 5.6,
+    "fat_g": 6.1,
+    "fiber_g": null,
+    "sat_fat_g": 0.9,
+    "sugars_g": 2.5,
+    "sodium_mg": 320
+   },
+   "portion_hints": [
+    {"grams": 250, "label_en": "1 bowl", "label_es": "1 plato hondo"},
+    {"grams": 150, "label_en": "1 small glass", "label_es": "1 vaso pequeño"}
+   ],
+   "default_portion_g": 250,
+   "caveats": [
+    "Los valores vienen por 100 ml, no por 100 g: se usan tal cual porque la densidad del salmorejo es ≈ 1 g/ml, pero no es una medición en gramos.",
+    "La etiqueta no declara fibra: el campo queda en null, que no es lo mismo que cero.",
+    "El sodio (320 mg) está calculado desde la sal declarada (0,80 g), no medido.",
+    "La fuente es una etiqueta comercial, no USDA: es un producto industrial con aceite de oliva virgen extra, no una receta casera.",
+    "Las porciones son criterio de curación, no de la etiqueta: 250 g es un plato y 150 g un vaso.",
+    "Atwater cierra al 3,0 % (80,5 kcal predichas contra 83 declaradas)."
+   ]
+  },
+  {
+   "id": "manual-tortilla-de-patatas",
+   "origen": "referencia-web",
+   "source_ref": "Agregadores nutricionales (FatSecret, Fitia y similares), recogidos el 30/08/2026 — punto medio del rango publicado",
+   "name_en": "Spanish potato omelette (tortilla de patatas)",
+   "name_es": "Tortilla de patatas",
+   "aliases": ["Tortilla española", "Tortilla de papas"],
+   "category": "Eggs and omelets",
+   "per_100g": {
+    "kcal": 136,
+    "protein_g": 6,
+    "carbs_g": 10.5,
+    "fat_g": 8,
+    "fiber_g": 1.2,
+    "sat_fat_g": null,
+    "sugars_g": null,
+    "sodium_mg": null
+   },
+   "portion_hints": [
+    {"grams": 150, "label_en": "1 wedge", "label_es": "1 porción"},
+    {"grams": 100, "label_en": "1 tapa portion", "label_es": "1 pincho"}
+   ],
+   "default_portion_g": 150,
+   "caveats": [
+    "Rangos publicados, no una medición: 126–147 kcal · proteínas 5–7 g · hidratos 9–12 g · grasas 7–9 g · fibra 0,8–1,6 g. El valor es el punto medio.",
+    "El número depende mucho de la receta: cuánto aceite absorbe la patata y si lleva cebolla.",
+    "Sin dato de grasas saturadas, azúcares ni sodio: quedan en null, que no es cero.",
+    "Atwater cierra al 1,5 % (138 kcal predichas contra 136 declaradas).",
+    "Se fichó a mano porque USDA no la tiene: su `Egg omelet with potatoes` es 81,8 % huevo y 8,2 % papa, y da 2,97 g de hidratos contra los ~10 de una tortilla."
+   ]
+  },
+  {
+   "id": "manual-pan-de-queso",
+   "origen": "referencia-web",
+   "source_ref": "Agregadores nutricionales (FatSecret, Fitia y similares), recogidos el 30/08/2026 — punto medio del rango publicado",
+   "name_en": "Brazilian cheese bread (pão de queijo)",
+   "name_es": "Pan de queso",
+   "aliases": ["Pão de queijo", "Chipá"],
+   "category": "Biscuits, muffins, quick breads",
+   "per_100g": {
+    "kcal": 350,
+    "protein_g": 8.15,
+    "carbs_g": 44.5,
+    "fat_g": 16.5,
+    "fiber_g": null,
+    "sat_fat_g": null,
+    "sugars_g": null,
+    "sodium_mg": null
+   },
+   "portion_hints": [
+    {"grams": 50, "label_en": "1 medium piece", "label_es": "1 unidad mediana"},
+    {"grams": 25, "label_en": "1 small piece", "label_es": "1 unidad pequeña"}
+   ],
+   "default_portion_g": 50,
+   "caveats": [
+    "Rangos publicados, no una medición: 300–400 kcal · grasas 12–21 g · hidratos 41–48 g · proteínas 5,9–10,4 g. El valor es el punto medio, y el rango de calorías es ancho (±14 %).",
+    "Las porciones que publican las fuentes no cierran con el punto medio: 25 g ≈ 78 kcal da 312 kcal/100 g y 50 g ≈ 216–245 kcal da 432–490. Se conservan los gramos de las porciones y se cuantifica con el punto medio, que es el consenso del rango completo.",
+    "Sin dato de fibra, saturadas, azúcares ni sodio: quedan en null, que no es cero.",
+    "Atwater cierra al 2,6 % (359 kcal predichas contra 350 declaradas)."
+   ]
+  },
+  {
+   "id": "manual-coxinha",
+   "origen": "referencia-web",
+   "source_ref": "Agregadores nutricionales (FatSecret, Fitia y similares), recogidos el 30/08/2026 — normalizado a 100 g desde la unidad estándar",
+   "name_en": "Coxinha, Brazilian chicken croquette",
+   "name_es": "Coxinha",
+   "aliases": ["Croqueta brasileña de pollo"],
+   "category": "Chicken patties, nuggets and tenders",
+   "per_100g": {
+    "kcal": 316,
+    "protein_g": 13.2,
+    "carbs_g": 31,
+    "fat_g": 15.2,
+    "fiber_g": null,
+    "sat_fat_g": null,
+    "sugars_g": null,
+    "sodium_mg": null
+   },
+   "portion_hints": [
+    {"grams": 78, "label_en": "1 standard piece", "label_es": "1 unidad"},
+    {"grams": 30, "label_en": "1 mini piece", "label_es": "1 unidad mini"}
+   ],
+   "default_portion_g": 78,
+   "caveats": [
+    "CRITERIO DE NORMALIZACIÓN declarado: las fuentes publican tres tamaños y no cierran entre sí. Se usó la unidad ESTÁNDAR (65–90 g, punto medio 77,5 g; 210–280 kcal, punto medio 245) porque es la única banda que trae los cuatro macros. 245 kcal / 77,5 g × 100 = 316 kcal por 100 g.",
+    "La normalización se verificó contra un dato INDEPENDIENTE de las mismas fuentes: la distribución calórica publicada es grasas ~43 % · hidratos ~40 % · proteínas ~16 %, y la ficha da 43,6 % · 39,5 % · 16,8 %. Los tres coinciden.",
+    "Las otras dos bandas quedan fuera y se declaran: la de 100 g (350–430 kcal) está un 11–36 % por encima, y la mini de 30 g (50–130 kcal) equivale a 167–433 kcal por 100 g, un rango demasiado ancho para cuantificar nada.",
+    "Sin dato de fibra, saturadas, azúcares ni sodio: quedan en null, que no es cero.",
+    "Atwater cierra al 0,8 % (313,6 kcal predichas contra 316 declaradas)."
+   ]
+  },
+  {
+   "id": "manual-farofa",
+   "origen": "referencia-web",
+   "source_ref": "Agregadores nutricionales (FatSecret, Fitia y similares), recogidos el 30/08/2026 — punto medio del rango publicado",
+   "name_en": "Farofa, toasted cassava flour",
+   "name_es": "Farofa",
+   "aliases": ["Harina de mandioca tostada"],
+   "category": "Other starchy vegetables",
+   "per_100g": {
+    "kcal": 393,
+    "protein_g": 1.5,
+    "carbs_g": 79,
+    "fat_g": 10,
+    "fiber_g": null,
+    "sat_fat_g": null,
+    "sugars_g": null,
+    "sodium_mg": null
+   },
+   "portion_hints": [
+    {"grams": 35, "label_en": "1 tablespoon", "label_es": "1 cucharada sopera"}
+   ],
+   "default_portion_g": 35,
+   "caveats": [
+    "Rangos publicados, no una medición: 377–410 kcal · hidratos 78–80 g · grasas ~10 g · proteínas ~1,5 g. El valor es el punto medio.",
+    "La farofa varía mucho según con qué se tuesta la harina: mantequilla, aceite o tocino. Esta ficha es la tradicional.",
+    "Sin dato de fibra, saturadas, azúcares ni sodio: quedan en null, que no es cero.",
+    "Atwater cierra al 4,8 % (412 kcal predichas contra 393 declaradas): es el más flojo de las fichas manuales, dentro del 10 % que exige el candado.",
+    "Se fichó a mano porque USDA solo mide la mandioca cruda y hervida: su `Cassava, cooked` da 191 kcal por 100 g, la mitad, porque conserva toda el agua que la farofa perdió al tostarse."
+   ]
+  },
+  {
+   "id": "manual-acai-en-polvo",
+   "origen": "referencia-web",
+   "source_ref": "Agregadores nutricionales (FatSecret, Fitia y similares), recogidos el 30/08/2026 — pulpa de açaí liofilizada",
+   "name_en": "Acai powder, freeze-dried pulp",
+   "name_es": "Açaí en polvo liofilizado",
+   "aliases": ["Açaí liofilizado", "Açaí deshidratado"],
+   "category": "Dried fruits",
+   "per_100g": {
+    "kcal": 247,
+    "protein_g": 10,
+    "carbs_g": 36,
+    "fat_g": 4.7,
+    "fiber_g": null,
+    "sat_fat_g": null,
+    "sugars_g": null,
+    "sodium_mg": null
+   },
+   "portion_hints": [
+    {"grams": 10, "label_en": "1 tablespoon", "label_es": "1 cucharada"}
+   ],
+   "default_portion_g": 10,
+   "caveats": [
+    "ESTA FICHA NO ES EL AÇAÍ DEL BOWL. Los valores son de pulpa DESHIDRATADA / liofilizada. Un bowl de açaí se hace con pulpa CONGELADA, que ronda las 58–80 kcal por 100 g: cuantificar la foto de un bowl con estos 247 kcal la sobreestimaría unas tres veces. Por eso el nombre dice `en polvo liofilizado` y la ficha NO lleva el alias `Açaí`.",
+    "La pulpa de açaí congelada sigue AUSENTE del catálogo, pendiente de una etiqueta real.",
+    "Rangos publicados, no una medición: 247 kcal · hidratos ~36 g · proteínas ~10 g · grasas ~4,7 g.",
+    "La fibra que publican las fuentes va de 10 a 35 g según el producto: un rango de 3,5× no es un dato, así que el campo queda en null.",
+    "Atwater cierra al 8,4 % (226,3 kcal predichas contra 247 declaradas). Es el más flojo del catálogo manual y pasa raspando el 10 % — consistente con que la fibra, que no está declarada, es parte de esos hidratos."
+   ]
+  }
+ ]
+}

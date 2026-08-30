@@ -1,0 +1,21 @@
+{
+ "169387": {"default_portion_g": 20, "label_es": "1 puñado"},
+ "169994": {"default_portion_g": 5, "label_es": "1 cucharada picada"},
+ "169997": {"default_portion_g": 8, "label_es": "1 puñado"},
+ "169231": {"default_portion_g": 5, "label_es": "1 cucharada rallada"},
+ "171014": {"default_portion_g": 14, "label_es": "1 cucharada"},
+ "172345": {"default_portion_g": 13, "label_es": "1 cucharada"},
+ "171430": {"default_portion_g": 2, "label_es": "Para engrasar la sartén"},
+ "2710267": {"default_portion_g": 1, "label_es": "1 sobre"},
+ "2710268": {"default_portion_g": 1, "label_es": "Unas gotas"},
+
+ "173944": {"default_portion_g": 118, "label_es": "1 unidad mediana"},
+ "2709215": {"default_portion_g": 182, "label_es": "1 unidad mediana"},
+ "2709220": {"default_portion_g": 182, "label_es": "1 unidad mediana"},
+ "169083": {"default_portion_g": 100, "label_es": "1 porción"},
+ "169985": {"default_portion_g": 150, "label_es": "1 porción"},
+ "168485": {"default_portion_g": 150, "label_es": "1 porción"},
+ "169207": {"default_portion_g": 120, "label_es": "1 porción"},
+ "170054": {"default_portion_g": 125, "label_es": "1/2 taza"},
+ "170172": {"default_portion_g": 100, "label_es": "1/2 taza"}
+}

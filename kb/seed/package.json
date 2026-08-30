@@ -1,0 +1,23 @@
+{
+  "name": "@nutriscann/kb-seed",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Publicación idempotente del catálogo canónico a Firestore (card 1.5)",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=22"
+  },
+  "$comment": "Paquete propio y no parte de kb/ por dos razones: (1) su tsc escribe en kb/seed/dist y no compite con kb/dist, que otro agente recompila en paralelo; (2) el seed habla con la red y el build de kb no, así que sus tests tienen requisitos distintos. Cero dependencias de runtime, como kb: Firestore se usa por su API REST con el fetch nativo de Node 22.",
+  "scripts": {
+    "compile": "tsc",
+    "lint": "tsc --noEmit",
+    "$comment_test": "El circuito contra el emulador se corre aparte a propósito: 'test' tiene que poder correr sin nada levantado (CI), y 'test:emulator' exige el emulador y falla fuerte si no está.",
+    "test": "npm run compile && node --test dist/valores.test.js dist/comparacion.test.js dist/firestore.test.js dist/seed.test.js",
+    "test:emulator": "npm run compile && node --test dist/emulador.test.js",
+    "seed": "npm run compile && node dist/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "typescript": "^5.9.3"
+  }
+}

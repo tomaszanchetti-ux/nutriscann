@@ -9,10 +9,14 @@
   },
   "$comment": "Sin workspaces de npm a propósito: cada paquete instala lo suyo. Cloud Functions se despliega con su propio node_modules y el hoisting de workspaces rompe ese empaquetado.",
   "scripts": {
-    "install:all": "npm --prefix apps/web install && npm --prefix functions install",
+    "install:all": "npm --prefix apps/web install && npm --prefix functions install && npm --prefix kb install && npm --prefix kb/seed install",
     "dev": "npm --prefix apps/web run dev",
     "build": "npm --prefix apps/web run build && npm --prefix functions run build",
-    "lint": "npm --prefix apps/web run lint && npm --prefix functions run lint",
+    "lint": "npm --prefix apps/web run lint && npm --prefix functions run lint && npm --prefix kb run lint && npm --prefix kb/seed run lint",
+    "kb:build": "npm --prefix kb run build",
+    "kb:test": "npm --prefix kb run test",
+    "kb:seed": "npm --prefix kb/seed run seed --",
+    "kb:seed:test": "npm --prefix kb/seed run test:emulator",
     "emulators": "firebase emulators:start",
     "deploy": "firebase deploy"
   }

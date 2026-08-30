@@ -1,0 +1,228 @@
+{
+ "$comment": "Card 1.6 — promoción regional. Alimentos que YA estaban en el universo USDA y que suben a la selección porque son el gemelo nutricional de un plato típico de España, Argentina, Italia o Brasil. La evidencia de cada uno está en regional.coverage.json. Las columnas siguen exactamente las reglas de la card 1.1 (porción por defecto: 'Quantity not specified' en FNDDS, la primera por seq_num en SR Legacy; categoría: WWEIA en FNDDS, food_category en SR).",
+ "criteria_version": "1.6-regional-v1",
+ "generated": "2026-08-30",
+ "justificacion": "Medido sobre 42 platos típicos (ES/AR/IT/PT-BR): el catálogo v1 los cubría solo en parte porque la selección de la card 1.1 se armó por uso real en recetas de USDA, que es una dieta estadounidense. Estos alimentos ya existían y no entraban por falta de un criterio regional; el criterio es este bloque.",
+ "entries": [
+  {
+   "fdc_id": 2705733,
+   "source": "fndds",
+   "description": "Cheese, Provolone",
+   "category": "Cheese",
+   "n_ingredients": 1,
+   "n_portions": 5,
+   "default_portion_g": 21,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2705833,
+   "source": "fndds",
+   "description": "Beef, steak, sirloin, lean and fat eaten",
+   "category": "Beef, excludes ground",
+   "n_ingredients": 2,
+   "n_portions": 8,
+   "default_portion_g": 160,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2705879,
+   "source": "fndds",
+   "description": "Ham, prosciutto",
+   "category": "Cold cuts and cured meats",
+   "n_ingredients": 1,
+   "n_portions": 6,
+   "default_portion_g": 57,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706089,
+   "source": "fndds",
+   "description": "Chicken fillet, breaded",
+   "category": "Chicken patties, nuggets and tenders",
+   "n_ingredients": 1,
+   "n_portions": 3,
+   "default_portion_g": 120,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706179,
+   "source": "fndds",
+   "description": "Chorizo",
+   "category": "Sausages",
+   "n_ingredients": 1,
+   "n_portions": 10,
+   "default_portion_g": 60,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706334,
+   "source": "fndds",
+   "description": "Calamari, fried",
+   "category": "Shellfish",
+   "n_ingredients": 4,
+   "n_portions": 3,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706417,
+   "source": "fndds",
+   "description": "Veal parmigiana",
+   "category": "Meat mixed dishes",
+   "n_ingredients": 9,
+   "n_portions": 3,
+   "default_portion_g": 157,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706459,
+   "source": "fndds",
+   "description": "Fish with tomato-based sauce",
+   "category": "Seafood mixed dishes",
+   "n_ingredients": 3,
+   "n_portions": 2,
+   "default_portion_g": 111,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2707053,
+   "source": "fndds",
+   "description": "Italian sausage sandwich on white",
+   "category": "Frankfurter sandwiches",
+   "n_ingredients": 2,
+   "n_portions": 2,
+   "default_portion_g": 135,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2707366,
+   "source": "fndds",
+   "description": "Black beans with meat",
+   "category": "Beans, peas, legumes",
+   "n_ingredients": 3,
+   "n_portions": 2,
+   "default_portion_g": 130,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2707612,
+   "source": "fndds",
+   "description": "Focaccia, Italian, plain",
+   "category": "Yeast breads",
+   "n_ingredients": 1,
+   "n_portions": 6,
+   "default_portion_g": 57,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2707963,
+   "source": "fndds",
+   "description": "Cookie, sandwich-type, not chocolate or vanilla",
+   "category": "Cookies and brownies",
+   "n_ingredients": 1,
+   "n_portions": 5,
+   "default_portion_g": 42,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2708405,
+   "source": "fndds",
+   "description": "Rice, white, cooked, made with butter",
+   "category": "Rice",
+   "n_ingredients": 3,
+   "n_portions": 2,
+   "default_portion_g": 122,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2708795,
+   "source": "fndds",
+   "description": "Cannelloni, cheese- and spinach-filled, no sauce",
+   "category": "Pasta mixed dishes, excludes macaroni and cheese",
+   "n_ingredients": 10,
+   "n_portions": 3,
+   "default_portion_g": 208,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2708862,
+   "source": "fndds",
+   "description": "Pasta with cream sauce and meat, home recipe",
+   "category": "Pasta mixed dishes, excludes macaroni and cheese",
+   "n_ingredients": 2,
+   "n_portions": 2,
+   "default_portion_g": 250,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2708994,
+   "source": "fndds",
+   "description": "Black beans and white rice",
+   "category": "Bean, pea, legume dishes",
+   "n_ingredients": 2,
+   "n_portions": 2,
+   "default_portion_g": 170,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2710106,
+   "source": "fndds",
+   "description": "Soup, gazpacho",
+   "category": "Soups, broth-based",
+   "n_ingredients": 7,
+   "n_portions": 2,
+   "default_portion_g": 245,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2710114,
+   "source": "fndds",
+   "description": "Soup, minestrone",
+   "category": "Soups, broth-based",
+   "n_ingredients": 7,
+   "n_portions": 4,
+   "default_portion_g": 245,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 167987,
+   "source": "sr_legacy",
+   "description": "Candies, fudge, chocolate, prepared-from-recipe",
+   "category": "Sweets",
+   "n_ingredients": null,
+   "n_portions": 1,
+   "default_portion_g": 17,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 168043,
+   "source": "sr_legacy",
+   "description": "Stew, hominy with mutton (Navajo)",
+   "category": "American Indian/Alaska Native Foods",
+   "n_ingredients": null,
+   "n_portions": 1,
+   "default_portion_g": 411,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 169510,
+   "source": "sr_legacy",
+   "description": "Beef, rib, small end (ribs 10-12), separable lean and fat, trimmed to 1/8\" fat, all grades, cooked, broiled",
+   "category": "Beef Products",
+   "n_ingredients": null,
+   "n_portions": 2,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 174249,
+   "source": "sr_legacy",
+   "description": "Mollusks, octopus, common, cooked, moist heat",
+   "category": "Finfish and Shellfish Products",
+   "n_ingredients": null,
+   "n_portions": 1,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  }
+ ]
+}

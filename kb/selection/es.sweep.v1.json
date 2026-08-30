@@ -1,0 +1,152 @@
+{
+ "$comment": [
+  "Barrido español ampliado — promoción. Alimentos del universo USDA que suben a la selección",
+  "porque son el gemelo nutricional de un plato típico español. La evidencia de cada uno está",
+  "en kb/selection/es.sweep.coverage.json. Columnas con las mismas reglas de la card 1.1."
+ ],
+ "criteria_version": "1.6-es-sweep-v1",
+ "generated": "2026-08-30",
+ "justificacion": "Directiva de producto (Tomás, 30/08): España es el mercado principal de la v1, y la primera medición regional solo cubría 11 platos españoles sobre 42. Este bloque mide 39 platos españoles más y promueve los alimentos que hacían falta para cubrirlos.",
+ "entries": [
+  {
+   "fdc_id": 2705843,
+   "source": "fndds",
+   "description": "Beef, oxtails",
+   "category": "Beef, excludes ground",
+   "n_ingredients": 2,
+   "n_portions": 5,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2705882,
+   "source": "fndds",
+   "description": "Pork, roast",
+   "category": "Pork",
+   "n_ingredients": 3,
+   "n_portions": 6,
+   "default_portion_g": 60,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706173,
+   "source": "fndds",
+   "description": "Blood sausage",
+   "category": "Sausages",
+   "n_ingredients": 1,
+   "n_portions": 6,
+   "default_portion_g": 60,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706232,
+   "source": "fndds",
+   "description": "Fish, anchovy",
+   "category": "Fish",
+   "n_ingredients": 1,
+   "n_portions": 3,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706245,
+   "source": "fndds",
+   "description": "Fish, cod, steamed",
+   "category": "Fish",
+   "n_ingredients": 2,
+   "n_portions": 8,
+   "default_portion_g": 140,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706293,
+   "source": "fndds",
+   "description": "Fish, sardines, canned",
+   "category": "Fish",
+   "n_ingredients": 1,
+   "n_portions": 4,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706310,
+   "source": "fndds",
+   "description": "Fish, tuna, cooked",
+   "category": "Fish",
+   "n_ingredients": 3,
+   "n_portions": 7,
+   "default_portion_g": 90,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706362,
+   "source": "fndds",
+   "description": "Shrimp, grilled",
+   "category": "Shellfish",
+   "n_ingredients": 3,
+   "n_portions": 6,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2707678,
+   "source": "fndds",
+   "description": "Croissant",
+   "category": "Doughnuts, sweet rolls, pastries",
+   "n_ingredients": 1,
+   "n_portions": 6,
+   "default_portion_g": 70,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2707861,
+   "source": "fndds",
+   "description": "Cheesecake, plain",
+   "category": "Cakes and pies",
+   "n_ingredients": 5,
+   "n_portions": 3,
+   "default_portion_g": 175,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2708977,
+   "source": "fndds",
+   "description": "Rice with squid, Puerto Rican style",
+   "category": "Rice mixed dishes",
+   "n_ingredients": 9,
+   "n_portions": 2,
+   "default_portion_g": 120,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2709073,
+   "source": "fndds",
+   "description": "Stuffed pepper, with rice and meat",
+   "category": "Vegetable dishes",
+   "n_ingredients": 10,
+   "n_portions": 3,
+   "default_portion_g": 99,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2709532,
+   "source": "fndds",
+   "description": "Potato salad with egg, made with mayonnaise",
+   "category": "Mashed potatoes and white potato mixtures",
+   "n_ingredients": 1,
+   "n_portions": 2,
+   "default_portion_g": 138,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 168063,
+   "source": "sr_legacy",
+   "description": "Restaurant, Latino, arroz con leche (rice pudding)",
+   "category": "Restaurant Foods",
+   "n_ingredients": null,
+   "n_portions": 2,
+   "default_portion_g": 283,
+   "portion_needs_review": false
+  }
+ ]
+}

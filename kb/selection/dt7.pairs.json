@@ -1,0 +1,828 @@
+{
+ "$comment": [
+  "DT-7 — fichas de FNDDS y SR Legacy que nombran el mismo alimento. Aprobada por Tomás.",
+  "Principio rector: EL NOMBRE NUNCA MIENTE.",
+  "Censo: todo par cruzado FNDDS/SR del catálogo donde el nombre en español de una es",
+  "prefijo del de la otra, o donde las dos coinciden palabra por palabra salvo por",
+  "marcadores de estado (crudo/cocido/seco/en lata/con sal/con grasa…). 136 pares.",
+  "Este archivo es el ÚNICO lugar donde se autoriza cambiar una ficha preexistente:",
+  "lo que no está acá, no se tocó."
+ ],
+ "criteria_version": "dt7-v1",
+ "generated": "2026-08-30",
+ "censo": {
+  "$definicion": "Todo par cruzado FNDDS/SR del catálogo (997 alimentos de USDA: los 975 de la card 1.1 más los 22 de la promoción regional) donde el nombre en español de uno es PREFIJO del del otro, o donde los dos coinciden palabra por palabra después de sacar los marcadores de estado (crudo · cocido · seco · en lata · con sal · con grasa · sin piel · refritos · listo para comer · hervido · frito · natural · perlada · con azúcar · escurrido). Los números de abajo se reproducen corriendo ese criterio sobre names.es.json y foods.canonical.json.",
+  "pares_cruzados_examinados": 137,
+  "con_sufijo_solo_de_estado": 40,
+  "de_esos_40": {
+   "resueltos": 22,
+   "pendientes_de_decision": 4,
+   "descartados_a_mano": 14,
+   "$nota_descartados_a_mano": "Los dos nombres YA declaran su estado y difieren de verdad: `Pera en lata` contra `Pera cruda`, `Yuca frita` contra `Yuca cruda`, `Papaya seca` contra `Papaya cruda`, `Manzana cruda` contra `Manzana cruda sin piel`, las cuatro variantes de `Frijoles en lata / secos cocidos` contra `Frijoles refritos de lata`… El clasificador automático los marca como candidatos porque el sufijo es un marcador de estado; la revisión a mano los descarta porque el nombre no miente."
+  },
+  "descartados_automaticamente": 97,
+  "duplicados_intra_fuente_hallados_de_paso": 3
+ },
+ "politica": {
+  "A": "Duplicado real (mismo alimento, mismo estado): queda UNA ficha, la de SR Legacy, que es medición de laboratorio. La de FNDDS sale de la selección por kb/selection/exclusions.dt7.json y le hereda su vocabulario entero — nombre y aliases — a la que queda.",
+  "B": "Mismo alimento en distinto estado: se quedan las dos y el nombre del cocido de FNDDS hace visible la sal y la grasa que USDA le agregó.",
+  "C": "El nombre escondía otra receta: se renombra diciendo la verdad.",
+  "ambiguo": "Se lista con su evidencia y va a decisión de producto. Esta card no lo resuelve."
+ },
+ "pares": [
+  {
+   "grupo": "A",
+   "resolucion": "Duplicado real — queda la ficha de SR Legacy, sale la de FNDDS",
+   "fndds": {
+    "fdc_id": 2707485,
+    "descripcion_usda": "Almonds, NFS",
+    "ingredientes": [
+     "100.0 % Nuts, almonds, dry roasted, without salt added"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 170567,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Nuts, almonds",
+    "ingredientes": []
+   },
+   "motivo": "Mismo alimento en el mismo estado: 3 % de diferencia en calorías y las mismas grasas. Dos fichas para una almendra cruda.",
+   "accion": "excluir de la selección",
+   "aliases_heredados": [
+    "Almendras"
+   ]
+  },
+  {
+   "grupo": "A",
+   "resolucion": "Duplicado real — queda la ficha de SR Legacy, sale la de FNDDS",
+   "fndds": {
+    "fdc_id": 2707493,
+    "descripcion_usda": "Cashews, NFS",
+    "ingredientes": [
+     "100.0 % Nuts, cashew nuts, dry roasted, without salt added"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 170162,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Nuts, cashew nuts, raw",
+    "ingredientes": []
+   },
+   "motivo": "Mismo anacardo crudo: 2 % en calorías. La grasa difiere un 16 %, pero es la dispersión propia de un fruto seco entre dos campañas de muestreo, no dos alimentos.",
+   "accion": "excluir de la selección",
+   "aliases_heredados": [
+    "Anacardos",
+    "Castañas de cajú",
+    "Marañón",
+    "Nuez de la India"
+   ]
+  },
+  {
+   "grupo": "A",
+   "resolucion": "Duplicado real — queda la ficha de SR Legacy, sale la de FNDDS",
+   "fndds": {
+    "fdc_id": 2709224,
+    "descripcion_usda": "Banana, raw",
+    "ingredientes": [
+     "90.0 % Bananas, ripe and slightly ripe, raw",
+     "10.0 % Bananas, overripe, raw"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 173944,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Bananas, raw",
+    "ingredientes": []
+   },
+   "motivo": "La misma banana cruda medida dos veces: 8 % en calorías. La de SR Legacy es además uno de los cinco casos dorados del build.",
+   "accion": "excluir de la selección",
+   "aliases_heredados": [
+    "Banana",
+    "Plátano",
+    "Guineo"
+   ]
+  },
+  {
+   "grupo": "A",
+   "resolucion": "Duplicado real — queda la ficha de SR Legacy, sale la de FNDDS",
+   "fndds": {
+    "fdc_id": 2709226,
+    "descripcion_usda": "Cantaloupe, raw",
+    "ingredientes": [
+     "100.0 % Melons, cantaloupe, raw"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 169092,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Melons, cantaloupe, raw",
+    "ingredientes": []
+   },
+   "motivo": "Mismo melón crudo: sodio y azúcares IDÉNTICOS (30 mg y 7,88 g), solo 4 kcal de diferencia.",
+   "accion": "excluir de la selección",
+   "aliases_heredados": [
+    "Melón cantalupo"
+   ]
+  },
+  {
+   "grupo": "A",
+   "resolucion": "Duplicado real — queda la ficha de SR Legacy, sale la de FNDDS",
+   "fndds": {
+    "fdc_id": 2709171,
+    "descripcion_usda": "Orange, raw",
+    "ingredientes": [
+     "50.0 % Oranges, raw, all commercial varieties",
+     "50.0 % Oranges, raw, navels"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 169097,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Oranges, raw, all commercial varieties",
+    "ingredientes": []
+   },
+   "motivo": "Misma naranja cruda: 6 % en calorías, mismos azúcares.",
+   "accion": "excluir de la selección",
+   "aliases_heredados": [
+    "Naranja"
+   ]
+  },
+  {
+   "grupo": "A",
+   "resolucion": "Duplicado real — queda la ficha de SR Legacy, sale la de FNDDS",
+   "fndds": {
+    "fdc_id": 2707521,
+    "descripcion_usda": "Pecans, NFS",
+    "ingredientes": [
+     "100.0 % Nuts, pecans, halves, raw"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 170182,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Nuts, pecans",
+    "ingredientes": []
+   },
+   "motivo": "Misma pecana cruda: 8 % en calorías, azúcares idénticos (3,97 g).",
+   "accion": "excluir de la selección",
+   "aliases_heredados": [
+    "Nueces pecanas",
+    "Pacanas"
+   ]
+  },
+  {
+   "grupo": "A",
+   "resolucion": "Duplicado real — queda la ficha de SR Legacy, sale la de FNDDS",
+   "fndds": {
+    "fdc_id": 2709254,
+    "descripcion_usda": "Pear, raw",
+    "ingredientes": [
+     "60.0 % Pears, raw",
+     "40.0 % Pears, raw, bartlett"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 169118,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Pears, raw",
+    "ingredientes": []
+   },
+   "motivo": "Misma pera cruda: 3 % en calorías, azúcares prácticamente iguales (9,73 vs 9,75 g).",
+   "accion": "excluir de la selección",
+   "aliases_heredados": [
+    "Pera"
+   ]
+  },
+  {
+   "grupo": "A",
+   "resolucion": "Duplicado real — queda la ficha de SR Legacy, sale la de FNDDS",
+   "fndds": {
+    "fdc_id": 2710097,
+    "descripcion_usda": "Pickles, NFS",
+    "ingredientes": [
+     "100.0 % Pickles, dill"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 168558,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Pickles, cucumber, dill or kosher dill",
+    "ingredientes": []
+   },
+   "motivo": "El `Pickles, NFS` de FNDDS es 100 % `Pickles, dill` — el mismo pepinillo en eneldo de SR Legacy. Sodio, azúcares y grasa IDÉNTICOS (808 mg · 1,28 g · 0,43 g); solo 2 kcal de diferencia.",
+   "accion": "excluir de la selección",
+   "aliases_heredados": [
+    "Pepinillos"
+   ]
+  },
+  {
+   "grupo": "C",
+   "resolucion": "El nombre escondía otra receta — se renombra diciendo la verdad",
+   "fndds": {
+    "fdc_id": 2707512,
+    "descripcion_usda": "Peanuts, NFS",
+    "ingredientes": [
+     "100.0 % Peanuts, all types, dry-roasted, with salt"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 172430,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Peanuts, all types, raw",
+    "ingredientes": []
+   },
+   "motivo": "EXCEPCIÓN del grupo A. Parecía duplicado (3 % en calorías) pero el sodio es 410 vs 18 mg y su input_food lo dice literal: `Peanuts, all types, dry-roasted, with salt`. No es el mismo alimento: es maní tostado y salado. Se queda, con el nombre que lo dice.",
+   "accion": "renombrar",
+   "nombre_anterior": "Maní",
+   "nombre_nuevo": "Maní tostado con sal"
+  },
+  {
+   "grupo": "C",
+   "resolucion": "El nombre escondía otra receta — se renombra diciendo la verdad",
+   "fndds": {
+    "fdc_id": 2708440,
+    "descripcion_usda": "Bulgur, NS as to fat",
+    "ingredientes": [
+     "99.4 % Bulgur, cooked"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 170287,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Bulgur, cooked",
+    "ingredientes": []
+   },
+   "motivo": "SEGUNDA EXCEPCIÓN, medida en esta ronda con el mismo criterio que el maní. Calorías y macros IDÉNTICOS (83 kcal), pero sodio 219 vs 5 mg, y su input_food es `Bulgur, cooked` 99,4 % + `Salt, table` 0,6 %. No es duplicado: es el mismo bulgur con sal.",
+   "accion": "renombrar",
+   "nombre_anterior": "Bulgur",
+   "nombre_nuevo": "Bulgur cocido con sal"
+  },
+  {
+   "grupo": "B",
+   "resolucion": "Mismo alimento en distinto estado — se quedan las dos, el nombre del cocido dice lo que trae",
+   "fndds": {
+    "fdc_id": 2708423,
+    "descripcion_usda": "Rice, wild, 100%, cooked, NS as to fat",
+    "ingredientes": [
+     "96.7 % Wild rice, cooked",
+     "2.8 % Vegetable oil, NFS"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 169726,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Wild rice, raw",
+    "ingredientes": []
+   },
+   "motivo": "input_food: arroz salvaje cocido 96,7 % + aceite 2,8 % + sal 0,6 %. Sodio 231 vs 7 mg contra el crudo, y 231 vs 3 contra el `Arroz salvaje hervido` de SR.",
+   "accion": "renombrar",
+   "nombre_anterior": "Arroz salvaje cocido",
+   "nombre_nuevo": "Arroz salvaje cocido con sal y grasa"
+  },
+  {
+   "grupo": "B",
+   "resolucion": "Mismo alimento en distinto estado — se quedan las dos, el nombre del cocido dice lo que trae",
+   "fndds": {
+    "fdc_id": 2709962,
+    "descripcion_usda": "Green peas, NS as to form, cooked",
+    "ingredientes": [
+     "100.0 % Green peas, frozen, cooked, fat added, NS as to fat type"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 170419,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Peas, green, raw",
+    "ingredientes": []
+   },
+   "motivo": "input_food: `Green peas, frozen, cooked, fat added`. Sodio 191 vs 5 mg y grasa 2,81 vs 0,40 g contra la cruda.",
+   "accion": "renombrar",
+   "nombre_anterior": "Arvejas cocidas",
+   "nombre_nuevo": "Arvejas cocidas con sal y grasa"
+  },
+  {
+   "grupo": "B",
+   "resolucion": "Mismo alimento en distinto estado — se quedan las dos, el nombre del cocido dice lo que trae",
+   "fndds": {
+    "fdc_id": 2709579,
+    "descripcion_usda": "Collards, NS as to form, cooked",
+    "ingredientes": [
+     "100.0 % Collards, fresh, cooked, fat added, NS as to fat type"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 170406,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Collards, raw",
+    "ingredientes": []
+   },
+   "motivo": "input_food: `Collards, fresh, cooked, fat added`. Sodio 148 vs 18 mg y grasa 3,37 vs 0,77 g.",
+   "accion": "renombrar",
+   "nombre_anterior": "Berza cocida",
+   "nombre_nuevo": "Berza cocida con sal y grasa"
+  },
+  {
+   "grupo": "B",
+   "resolucion": "Mismo alimento en distinto estado — se quedan las dos, el nombre del cocido dice lo que trae",
+   "fndds": {
+    "fdc_id": 2709602,
+    "descripcion_usda": "Kale, NS as to form, cooked",
+    "ingredientes": [
+     "100.0 % Kale, fresh, cooked, fat added"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 168421,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Kale, raw",
+    "ingredientes": []
+   },
+   "motivo": "input_food: `Kale, fresh, cooked, fat added`. Sodio 185 vs 53 mg y grasa 4,29 vs 1,49 g.",
+   "accion": "renombrar",
+   "nombre_anterior": "Col rizada cocida",
+   "nombre_nuevo": "Col rizada cocida con sal y grasa"
+  },
+  {
+   "grupo": "B",
+   "resolucion": "Mismo alimento en distinto estado — se quedan las dos, el nombre del cocido dice lo que trae",
+   "fndds": {
+    "fdc_id": 2709609,
+    "descripcion_usda": "Mustard greens, NS as to form, cooked",
+    "ingredientes": [
+     "100.0 % Mustard greens, fresh, cooked, fat added"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 169256,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Mustard greens, raw",
+    "ingredientes": []
+   },
+   "motivo": "input_food: `Mustard greens, fresh, cooked, fat added`. Sodio 151 vs 20 mg y grasa 3,18 vs 0,42 g.",
+   "accion": "renombrar",
+   "nombre_anterior": "Hojas de mostaza cocidas",
+   "nombre_nuevo": "Hojas de mostaza cocidas con sal y grasa"
+  },
+  {
+   "grupo": "B",
+   "resolucion": "Mismo alimento en distinto estado — se quedan las dos, el nombre del cocido dice lo que trae",
+   "fndds": {
+    "fdc_id": 2709893,
+    "descripcion_usda": "Cabbage, red, cooked",
+    "ingredientes": [
+     "96.8 % Cabbage, red, raw",
+     "2.9 % Oil or table fat, NFS"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 169977,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Cabbage, red, raw",
+    "ingredientes": []
+   },
+   "motivo": "input_food: repollo crudo 96,8 % + aceite 2,9 % + sal 0,3 %. Sodio 138 vs 12 mg y grasa 2,86 vs 0,21 g.",
+   "accion": "renombrar",
+   "nombre_anterior": "Repollo rojo cocido",
+   "nombre_nuevo": "Repollo rojo cocido con sal y grasa"
+  },
+  {
+   "grupo": "B",
+   "resolucion": "Mismo alimento en distinto estado — se quedan las dos, el nombre del cocido dice lo que trae",
+   "fndds": {
+    "fdc_id": 2709935,
+    "descripcion_usda": "Leeks",
+    "ingredientes": [
+     "96.8 % Leeks, (bulb and lower leaf-portion), raw",
+     "2.9 % Oil or table fat, NFS"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 169246,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Leeks, (bulb and lower leaf-portion), raw",
+    "ingredientes": []
+   },
+   "motivo": "El `Leeks` de FNDDS no dice que está cocido: su input_food es puerro crudo 96,8 % + aceite 2,9 % + sal 0,3 %. Sodio 151 vs 20 mg y grasa 3,05 vs 0,30 g.",
+   "accion": "renombrar",
+   "nombre_anterior": "Puerro",
+   "nombre_nuevo": "Puerro cocido con sal y grasa"
+  },
+  {
+   "grupo": "B",
+   "resolucion": "Mismo alimento en distinto estado — se quedan las dos, el nombre del cocido dice lo que trae",
+   "fndds": {
+    "fdc_id": 2707423,
+    "descripcion_usda": "Lentils, NFS",
+    "ingredientes": [
+     "100.0 % Lentils, from dried, fat added"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 172420,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Lentils, raw",
+    "ingredientes": []
+   },
+   "motivo": "El `Lentils, NFS` de FNDDS no dice ni que está cocido ni que lleva grasa: su input_food es `Lentils, from dried, fat added`. Sodio 218 vs 6 mg y grasa 6,86 vs 1,06 g contra la lenteja cruda.",
+   "accion": "renombrar",
+   "nombre_anterior": "Lentejas",
+   "nombre_nuevo": "Lentejas cocidas con sal y grasa"
+  },
+  {
+   "grupo": "B",
+   "resolucion": "Mismo alimento en distinto estado — se quedan las dos, el nombre del cocido dice lo que trae",
+   "fndds": {
+    "fdc_id": 2708361,
+    "descripcion_usda": "Barley",
+    "ingredientes": [
+     "96.5 % Barley, pearled, cooked",
+     "3.1 % Table fat, NFS"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 170285,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Barley, pearled, cooked",
+    "ingredientes": []
+   },
+   "motivo": "El `Barley` de FNDDS es cebada perlada cocida 96,5 % + grasa de mesa 3,1 % + sal 0,5 %. Sodio 199 vs 3 mg y grasa 2,74 vs 0,44 g.",
+   "accion": "renombrar",
+   "nombre_anterior": "Cebada",
+   "nombre_nuevo": "Cebada cocida con sal y grasa"
+  },
+  {
+   "grupo": "C",
+   "resolucion": "El nombre escondía otra receta — se renombra diciendo la verdad",
+   "fndds": {
+    "fdc_id": 2708399,
+    "descripcion_usda": "Quinoa, NS as to fat",
+    "ingredientes": [
+     "94.8 % Quinoa, cooked",
+     "4.8 % Table fat, NFS"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 168917,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Quinoa, cooked",
+    "ingredientes": []
+   },
+   "motivo": "input_food: quinoa cocida 94,8 % + grasa de mesa 4,8 % + sal 0,4 %. Sodio 184 vs 7 mg y grasa 5,42 vs 1,92 g.",
+   "accion": "renombrar",
+   "nombre_anterior": "Quinoa",
+   "nombre_nuevo": "Quinoa cocida con sal y grasa"
+  },
+  {
+   "grupo": "C",
+   "resolucion": "El nombre escondía otra receta — se renombra diciendo la verdad",
+   "fndds": {
+    "fdc_id": 2709268,
+    "descripcion_usda": "Rhubarb",
+    "ingredientes": [
+     "83.3 % Rhubarb, raw",
+     "12.5 % Sugars, granulated",
+     "4.2 % Beverages, water, tap, drinking"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 167758,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Rhubarb, raw",
+    "ingredientes": []
+   },
+   "motivo": "input_food: ruibarbo crudo 83,3 % + AZÚCAR 12,5 % + agua. Los azúcares son 14,4 vs 1,1 g y las calorías 73 vs 21: el nombre `Ruibarbo` escondía un compotado.",
+   "accion": "renombrar",
+   "nombre_anterior": "Ruibarbo",
+   "nombre_nuevo": "Ruibarbo cocido con azúcar"
+  },
+  {
+   "grupo": "C",
+   "resolucion": "El nombre escondía otra receta — se renombra diciendo la verdad",
+   "fndds": {
+    "fdc_id": 2709982,
+    "descripcion_usda": "Sauerkraut",
+    "ingredientes": [
+     "96.8 % Sauerkraut, canned, solids and liquids",
+     "3.2 % Table fat, NFS"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 169279,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Sauerkraut, canned, solids and liquids",
+    "ingredientes": []
+   },
+   "motivo": "input_food: chucrut de lata 96,8 % + grasa de mesa 3,2 %. El sodio es el mismo (659 vs 661 mg) y las calorías se duplican (40 vs 19) solo por la grasa añadida.",
+   "accion": "renombrar",
+   "nombre_anterior": "Chucrut",
+   "nombre_nuevo": "Chucrut con grasa"
+  },
+  {
+   "grupo": "ambiguo",
+   "resolucion": "Pendiente de decisión de producto",
+   "fndds": {
+    "fdc_id": 2705728,
+    "descripcion_usda": "Cheese, Parmesan, dry grated",
+    "ingredientes": [
+     "50.0 % Cheese, parmesan, grated",
+     "50.0 % Cheese, parmesan, grated, refrigerated"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 171247,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Cheese, parmesan, grated",
+    "ingredientes": []
+   },
+   "motivo": "Los dos son parmesano rallado: 2 % en calorías. Pero el sodio es 1398 vs 1750 mg (25 %) y la distinción `dry grated` / `grated` es de la propia USDA. Fusionar borra una diferencia real de sodio; no fusionar deja dos parmesanos rallados.",
+   "accion": "ninguna — decisión de Tomás"
+  },
+  {
+   "grupo": "ambiguo",
+   "resolucion": "Pendiente de decisión de producto",
+   "fndds": {
+    "fdc_id": 2709492,
+    "descripcion_usda": "Potato, mashed, NFS",
+    "ingredientes": [
+     "100.0 % Potato, mashed, from fresh, made with milk"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 169768,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Potatoes, mashed, ready-to-eat",
+    "ingredientes": []
+   },
+   "motivo": "Los dos son puré de papa: 7 % en calorías. `listo para comer` es una distinción real (producto industrial) y a la vez invisible en una foto.",
+   "accion": "ninguna — decisión de Tomás"
+  },
+  {
+   "grupo": "ambiguo",
+   "resolucion": "Pendiente de decisión de producto",
+   "fndds": {
+    "fdc_id": 2710097,
+    "descripcion_usda": "Pickles, NFS",
+    "ingredientes": [
+     "100.0 % Pickles, dill"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 169378,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Pickles, cucumber, sweet (includes bread and butter pickles)",
+    "ingredientes": []
+   },
+   "motivo": "`Pepinillos` (encurtido en salmuera) contra `Pepinillos dulces` (18,27 g de azúcares): el nombre YA los distingue, pero un usuario que escriba `pepinillos` sin más puede querer cualquiera de los dos. Es un problema de matching, no de catálogo.",
+   "accion": "ninguna — decisión de Tomás"
+  },
+  {
+   "grupo": "ambiguo",
+   "resolucion": "Pendiente de decisión de producto",
+   "fndds": {
+    "fdc_id": 2710154,
+    "descripcion_usda": "Butter, NFS",
+    "ingredientes": [
+     "100.0 % Butter, stick"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 173410,
+    "fuente": "sr_legacy",
+    "descripcion_usda": "Butter, salted",
+    "ingredientes": []
+   },
+   "motivo": "El `Butter, NFS` de FNDDS trae 524 mg de sodio, entre la mantequilla con sal (643) y la sin sal (11) de SR Legacy. El genérico es legítimo para una foto, pero su sodio no es el de ninguna de las dos.",
+   "accion": "ninguna — decisión de Tomás"
+  },
+  {
+   "grupo": "ambiguo",
+   "resolucion": "Pendiente de decisión de producto",
+   "fndds": {
+    "fdc_id": 2707347,
+    "descripcion_usda": "Beans, NFS",
+    "ingredientes": [
+     "75.0 % Pinto beans, from dried, fat added",
+     "25.0 % Black beans, from dried, fat added"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 2707348,
+    "fuente": "fndds",
+    "descripcion_usda": "Beans, from dried, NS as to type, fat added",
+    "ingredientes": [
+     "75.0 % Pinto beans, from dried, fat added",
+     "25.0 % Black beans, from dried, fat added"
+    ]
+   },
+   "motivo": "`Frijoles` (Beans, NFS) y `Frijoles secos cocidos con grasa` tienen los OCHO valores idénticos. Es un duplicado INTRA-FNDDS, fuera del censo cruzado de la DT-7: la pregunta —¿se queda el genérico o el específico?— es la misma que resolvió la DT-7 para los pares cruzados, y merece la misma decisión explícita.",
+   "accion": "ninguna — decisión de Tomás"
+  },
+  {
+   "grupo": "ambiguo",
+   "resolucion": "Pendiente de decisión de producto",
+   "fndds": {
+    "fdc_id": 2705728,
+    "descripcion_usda": "Cheese, Parmesan, dry grated",
+    "ingredientes": [
+     "50.0 % Cheese, parmesan, grated",
+     "50.0 % Cheese, parmesan, grated, refrigerated"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 2705730,
+    "fuente": "fndds",
+    "descripcion_usda": "Cheese, Parmesan, hard",
+    "ingredientes": [
+     "50.0 % Cheese, parmesan, grated",
+     "50.0 % Cheese, parmesan, grated, refrigerated"
+    ]
+   },
+   "motivo": "`Queso parmesano rallado seco` y `Queso parmesano en trozo` también tienen los ocho valores idénticos: otro duplicado intra-FNDDS. Rallar no cambia la composición, pero la porción por defecto sí (6,2 g contra 5 g).",
+   "accion": "ninguna — decisión de Tomás"
+  },
+  {
+   "grupo": "ambiguo",
+   "resolucion": "Pendiente de decisión de producto",
+   "fndds": {
+    "fdc_id": 2709511,
+    "descripcion_usda": "Potato tots, NFS",
+    "ingredientes": [
+     "100.0 % Potato tots, frozen, fried"
+    ]
+   },
+   "contraparte": {
+    "fdc_id": 2709517,
+    "fuente": "fndds",
+    "descripcion_usda": "Potato tots, frozen, NS as to fried or baked",
+    "ingredientes": [
+     "100.0 % Potato tots, frozen, fried"
+    ]
+   },
+   "motivo": "`Croquetas de papa` y `Croquetas de papa congeladas` tienen los ocho valores idénticos: tercer duplicado intra-FNDDS.",
+   "accion": "ninguna — decisión de Tomás"
+  }
+ ],
+ "descartados_por_familia": [
+  {
+   "motivo": "Los dos nombres YA dicen el estado y difieren",
+   "pares": 28,
+   "ejemplos": "Pera en lata / Pera cruda · Durazno en lata / Durazno crudo · Piña en lata / Piña cruda · Plátano macho cocido con grasa / crudo · Zanahorias de lata cocidas con grasa / crudas · Espárragos de lata cocidos con grasa / crudos"
+  },
+  {
+   "motivo": "El sufijo nombra una VARIEDAD o un producto distinto",
+   "pares": 25,
+   "ejemplos": "Queso / Queso gouda · Queso brie · Queso feta · Ricota / Ricota de leche entera · Crema / Crema agria · Hamburguesa / Hamburguesa vegetal cruda · Salchicha / Salchicha vegetariana"
+  },
+  {
+   "motivo": "El sufijo nombra OTRO alimento (un sustantivo cabeza nuevo)",
+   "pares": 24,
+   "ejemplos": "Almendras / Aceite de almendras · Leche / Dulce de leche · Pavo / Grasa de pavo · Mantequilla / Mantequilla de maní · Pollo con piel / Grasa de pollo · Tocino cocido / Grasa de tocino"
+  },
+  {
+   "motivo": "El sufijo nombra una MARCA comercial",
+   "pares": 20,
+   "ejemplos": "Yogur / Yogur de soja SILK de frambuesa · Crema para café SILK original"
+  }
+ ],
+ "vocabulario_de_los_renombrados": {
+  "$comment": "Renombrar una ficha obliga a mover sus aliases: si `Maní` pasa a `Maní tostado con sal`, dejarle el alias `Cacahuete` a secas haría que el nombre mienta por la puerta de al lado. Los siete alimentos renombrados cuyos aliases se ajustaron son fdc-2707347, fdc-2707512, fdc-2708399, fdc-2709855, fdc-2709893, fdc-2709935, fdc-2709962, fdc-2709982, fdc-2707000 y fdc-2707026 (los dos primeros del segundo barrido, el de `fat added`). El de la quinoa (fdc-2708399) se había OMITIDO en la ronda anterior y era el más peligroso de todos: la ficha ya se llamaba `Quinoa cocida con sal y grasa` pero conservaba el alias pelado `Quinua`, así que quien buscara por la variante regional caía igual en las 146 kcal y los 184 mg de sodio de la versión con grasa, contra los 120 kcal y 7 mg de la `Quinua cocida` de SR Legacy: 26 veces el sodio. El alias pasó a `Quinua cocida con sal y grasa`. Ninguna variante regional se perdió del catálogo: la contraparte de SR Legacy ya las llevaba calificadas (`Cacahuete crudo`, `Ajo porro crudo`, `Col roja cruda`, `Guisantes crudos`, `Chícharos crudos`, `Col fermentada de lata`), así que cada palabra sigue apareciendo en el catálogo, ahora sin ambigüedad entre las dos fichas.",
+  "fichas": [
+   2707000,
+   2707026,
+   2707347,
+   2707512,
+   2708399,
+   2709855,
+   2709893,
+   2709935,
+   2709962,
+   2709982
+  ]
+ },
+ "renombrados_fuera_del_censo_cruzado": {
+  "$comment": "Misma regla —el nombre nunca miente— aplicada a fichas cuyo nombre esconde su composición, halladas barriendo el catálogo entero por input_food. No son pares DT-7, pero cambian una ficha preexistente y por eso viven acá. El barrido se corrió DOS VECES con dos patrones distintos: primero `rebozado/frito` (8 fichas) y después `fat added` como ingrediente estructural (5 más). El segundo faltaba y lo encontró el Q/A por el garbanzo. Criterio del segundo barrido: el input_food declara literalmente `fat added` —una elección que USDA modela aparte, porque publica la versión `no added fat`— y el nombre en español no la menciona. El barrido devolvió 8 fichas con ese patrón; 3 quedaron fuera (`Frijoles negros con carne`, `Frijoles con carne` y `Frijoles negros con arroz blanco`) porque su nombre YA declara un plato compuesto y no un ingrediente pelado: ahí la grasa viene con el guiso y el nombre no engaña a nadie.",
+  "fichas": [
+   {
+    "fdc_id": 2706331,
+    "nombre_anterior": "Pulpo",
+    "nombre_nuevo": "Pulpo rebozado",
+    "ingredientes": [
+     "64.6 % Mollusks, octopus, common, raw",
+     "24.9 % Breading or batter as ingredient in food",
+     "9.9 % Vegetable oil, NFS"
+    ],
+    "motivo": "input_food: pulpo crudo 64,6 % + REBOZADO 24,9 % + aceite 9,9 %. Sus 13,39 g de hidratos por 100 g no son de un pulpo (4,4 g). Renombrado en la ronda anterior de esta misma card."
+   },
+   {
+    "fdc_id": 2706240,
+    "nombre_anterior": "Bacalao",
+    "nombre_nuevo": "Bacalao rebozado",
+    "ingredientes": [
+     "100.0 % Fish, cod, fried"
+    ],
+    "motivo": "input_food: 100 % `Fish, cod, fried`, que a su vez es bacalao 64,6 % + rebozado 24,9 % + aceite 9,9 %. 217 kcal y 11,72 g de hidratos: un bacalao al vapor tiene 0 g."
+   },
+   {
+    "fdc_id": 2706270,
+    "nombre_anterior": "Perca",
+    "nombre_nuevo": "Perca rebozada",
+    "ingredientes": [
+     "100.0 % Fish, perch, fried"
+    ],
+    "motivo": "input_food: 100 % `Fish, perch, fried`. 224 kcal, mismo patrón que el bacalao."
+   },
+   {
+    "fdc_id": 2706302,
+    "nombre_anterior": "Trucha",
+    "nombre_nuevo": "Trucha rebozada",
+    "ingredientes": [
+     "100.0 % Fish, trout, fried"
+    ],
+    "motivo": "input_food: 100 % `Fish, trout, fried`. 271 kcal."
+   },
+   {
+    "fdc_id": 2706098,
+    "nombre_anterior": "Tiras de pollo",
+    "nombre_nuevo": "Tiras de pollo rebozadas",
+    "ingredientes": [
+     "100.0 % Chicken tenders or strips, breaded, from fast food"
+    ],
+    "motivo": "input_food: 100 % `Chicken tenders or strips, breaded, from fast food`."
+   },
+   {
+    "fdc_id": 2707000,
+    "nombre_anterior": "Sándwich de filete de pollo",
+    "nombre_nuevo": "Sándwich de filete de pollo rebozado",
+    "ingredientes": [
+     "100.0 % Chicken fillet sandwich, fried, from fast food"
+    ],
+    "motivo": "input_food: 100 % `Chicken fillet sandwich, fried, from fast food`."
+   },
+   {
+    "fdc_id": 2707026,
+    "nombre_anterior": "Sándwich de pescado",
+    "nombre_nuevo": "Sándwich de pescado rebozado con queso",
+    "ingredientes": [
+     "100.0 % Fish sandwich, fried, from fast food, with cheese"
+    ],
+    "motivo": "input_food: 100 % `Fish sandwich, fried, from fast food, WITH CHEESE`: el queso tampoco estaba en el nombre."
+   },
+   {
+    "fdc_id": 2707414,
+    "nombre_anterior": "Garbanzos",
+    "nombre_nuevo": "Garbanzos cocidos con sal y grasa",
+    "ingredientes": [
+     "100.0 % Chickpeas, from dried, fat added"
+    ],
+    "motivo": "PATRÓN `fat added`: input_food 100 % `Chickpeas, from dried, fat added`. 211 kcal, 8,91 g de grasa y 222 mg de sodio, contra los 164 kcal y 7 mg del garbanzo hervido sin sal de SR Legacy. Estructura IDÉNTICA a la de las lentejas que la DT-7 ya había renombrado; se escapó del censo cruzado porque el garbanzo no tiene contraparte SR con nombre prefijo."
+   },
+   {
+    "fdc_id": 2707347,
+    "nombre_anterior": "Frijoles",
+    "nombre_nuevo": "Frijoles cocidos con sal y grasa",
+    "ingredientes": [
+     "75.0 % Pinto beans, from dried, fat added",
+     "25.0 % Black beans, from dried, fat added"
+    ],
+    "motivo": "PATRÓN `fat added`: input_food 75 % `Pinto beans, from dried, fat added` + 25 % `Black beans, from dried, fat added`. 189 kcal y 7,08 g de grasa. Es además el que hacía leer al revés la comparación con `Frijoles refritos de lata` (90 kcal), que parecía más magro."
+   },
+   {
+    "fdc_id": 2709595,
+    "nombre_anterior": "Verduras de hoja cocidas",
+    "nombre_nuevo": "Verduras de hoja cocidas con sal y grasa",
+    "ingredientes": [
+     "100.0 % Greens, fresh, cooked, fat added"
+    ],
+    "motivo": "PATRÓN `fat added`: input_food 100 % `Greens, fresh, cooked, fat added`. 58 kcal con 3,4 g de grasa y 163 mg de sodio."
+   },
+   {
+    "fdc_id": 2709636,
+    "nombre_anterior": "Hojas de nabo cocidas",
+    "nombre_nuevo": "Hojas de nabo cocidas con sal y grasa",
+    "ingredientes": [
+     "100.0 % Turnip greens, fresh, cooked, fat added"
+    ],
+    "motivo": "PATRÓN `fat added`: input_food 100 % `Turnip greens, fresh, cooked, fat added`. 42 kcal con 2,77 g de grasa y 149 mg de sodio."
+   },
+   {
+    "fdc_id": 2709855,
+    "nombre_anterior": "Judías verdes cocidas",
+    "nombre_nuevo": "Judías verdes cocidas con sal y grasa",
+    "ingredientes": [
+     "50.0 % Green beans, fresh, cooked, fat added, NS as to fat type",
+     "50.0 % Green beans, canned, cooked, fat added, NS as to fat type"
+    ],
+    "motivo": "PATRÓN `fat added`: input_food `Green beans, fresh/canned, cooked, fat added`. 55 kcal con 2,93 g de grasa y 204 mg de sodio."
+   },
+   {
+    "fdc_id": 2709319,
+    "nombre_anterior": "Sidra de manzana",
+    "nombre_nuevo": "Sidra de manzana sin alcohol",
+    "ingredientes": [
+     "100.0 % Apple juice, canned or bottled, unsweetened, without added ascorbic acid"
+    ],
+    "motivo": "Falso amigo medido: `Apple cider` en USDA es jugo de manzana turbio SIN fermentar (input_food: 100 % `Apple juice, canned or bottled, unsweetened`). En España `sidra` es una bebida alcohólica."
+   }
+  ]
+ }
+}
