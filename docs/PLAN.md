@@ -198,6 +198,13 @@ Foto → [1] Sonnet 5 (visión): "¿QUÉ hay en el plato y CUÁNTO?"
 Las cards 1.2, 1.3 y 1.4 tocan carpetas disjuntas (`kb/src`, `kb/curation`, `config`) y
 corren en paralelo con agentes distintos (mecánica multiagente WS02+, estrenada 30/08).
 
+**Insumo para la 1.6 — salmorejo (etiqueta comercial, foto de Tomás 30/08/2026):** por
+100 ml — 83 kcal · grasas 6,1 g (saturadas 0,9) · hidratos 5,6 g (azúcares 2,5) ·
+proteínas 0,8 g · sal 0,80 g (→ sodio ≈ 320 mg). Producto industrial con AOVE. Atwater
+cierra al 3 % (80,5 vs 83). Caveats a declarar en la entrada: valores por 100 **ml**
+(densidad ≈ 1, aceptable), sin dato de fibra, y provenance "etiqueta comercial", no USDA.
+Entra como la primera entrada de **curación manual** (precedencia máxima del pipeline).
+
 #### El pipeline
 
 **Principio rector (aprendizaje Arc One): la tabla de Firestore se DERIVA — correcta por construcción, no por disciplina.** La fuente de verdad (SSOT) es el catálogo canónico versionado en git; Firestore es solo la copia de servicio. Nadie edita Firestore a mano, jamás.
