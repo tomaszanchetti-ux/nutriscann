@@ -193,6 +193,7 @@ Foto → [1] Sonnet 5 (visión): "¿QUÉ hay en el plato y CUÁNTO?"
 | **1.3 — Curación en español** | Glosario ~650 términos + composición + aliases + portion_hints (`kb/curation/*.json`) | ⚪ (‖ con 1.2) |
 | **1.4 — Reglas de recomendación** | Umbrales citables del PDF OPS 2016 → `config/` | ⚪ (‖ con 1.2) |
 | **1.5 — Seed a Firestore** | Publicación idempotente con `kb_version` (Firestore anda en Spark: DT-1 no bloquea) | ⚪ (tras 1.2) |
+| **1.6 — Cobertura regional ES/AR/IT/PT-BR** | Medido 30/08 sobre 42 platos típicos: 19 match directo + 22 gemelo nutricional + 1 ausente (salmorejo). Promover ~24 `fdc_id` del universo a la selección + aliases regionales **validados por composición, no por nombre** (gotchas medidos: `Octopus` es pulpo rebozado, `Ribs, NFS` es 85% cerdo, `Ham croquette` no tiene bechamel) + campo de confianza por alias | ⚪ (tras 1.2+1.3) |
 
 Las cards 1.2, 1.3 y 1.4 tocan carpetas disjuntas (`kb/src`, `kb/curation`, `config`) y
 corren en paralelo con agentes distintos (mecánica multiagente WS02+, estrenada 30/08).
