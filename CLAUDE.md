@@ -64,7 +64,7 @@ de la implementación.
   El hoisting de workspaces rompe el empaquetado de Cloud Functions.
 - **Cloud Functions y Secret Manager requieren plan Blaze.** Hosting y Firestore
   funcionan en Spark.
-- Los .zip de USDA (1,1 GB) viven en la carpeta padre del repo, fuera de git.
+- Los .zip de USDA (1,1 GB) viven en `../datasets/` (junto al repo, fuera de git).
   `kb/sources.json` los declara con su sha256.
 
 ## Comandos

@@ -6,9 +6,9 @@
 >
 > **Mecánica:** toda fase arranca midiendo (Bloque 0) y recién después define sus cards. Ver `CLAUDE.md`.
 >
-> **Repo:** `github.com/tomaszanchetti-ux/nutriscann` · clon local en `~/Documents/NewCo - Proyectos/NutriScann/nutriscann`.
+> **Repo:** `github.com/tomaszanchetti-ux/nutriscann` · clon local en `~/Documents/Proyectos Claudio/NutriScann/nutriscann`.
 > **Proyecto Firebase:** `nutriscann-f809e` · app viva en https://nutriscann-f809e.web.app
-> **Materiales fuente:** `~/Documents/NewCo - Proyectos/NutriScann/` — datasets USDA + PDFs OPS/OMS.
+> **Materiales fuente:** `~/Documents/Proyectos Claudio/NutriScann/datasets/` — datasets USDA + PDFs OPS/OMS.
 > Para la Fase 1 se usan: **SR Legacy CSV** (base principal, ~7.800 alimentos + porciones), **Foundation Foods CSV 2026** (valores analíticos más nuevos, pisan a SR Legacy donde existan) y **Survey/FNDDS CSV 2024** (platos compuestos "como se comen" + pesos de porción → la joya para fotos de platos). Se descartan: Branded (productos envasados con código de barras, no aplica a foto de plato) y el CSV completo (redundante). El PDF **"Modelo de perfil de nutrientes" (OPS 2016)** alimenta las `recommendation_rules` de `config/` con umbrales citables; el manual OMS 1975 queda como referencia histórica (para targets v2 usamos fórmulas actuales).
 
 ---
