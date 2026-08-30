@@ -14,7 +14,15 @@ registro también sirve para ver qué se destrabó y cuándo.
 | DT-4 | 🟡 diferida | Presupuesto de GCP con alertas de gasto | Tomás (junto con DT-1) |
 | DT-5 | 🟡 diferida | Íconos de la PWA (el manifiesto los declara vacíos) | Claude (Fase 3) |
 | DT-6 | 🟡 diferida | Recalibrar la regla de azúcares (totales vs libres) y el sodio con datos reales de uso; resolver en la UI el caso "el tag acusa y el texto absuelve" | Claude (Fases 2-3) |
-| DT-7 | 🟡 diferida | Desambiguar los pares FNDDS/SR de nombre casi igual ("Banana" / "Banana cruda"): la diferencia visible no es la real (ambas crudas; difiere la fuente). Decidir un desambiguador con significado antes de que lo vea un usuario | Tomás + Claude (WS03) |
+| DT-7 | ✅ cerrada 30/08 (WS03) | Desambiguar los pares FNDDS/SR de nombre casi igual: **ejecutada** — censo de 137 pares (`kb/selection/dt7.pairs.json`), 8 fusiones, 27 renames bajo "el nombre nunca miente", con candado de regresión. Lo que quedó ambiguo pasó a DT-8 | Tomás + Claude |
+| DT-8 | 🔴 abierta | **7 pares ambiguos de la DT-7** esperan decisión de producto: 4 cruzados (parmesano rallado, puré de papa, pepinillos dulces, mantequilla NFS) + 3 duplicados intra-FNDDS con valores idénticos. Evidencia en `dt7.pairs.json` | Tomás (WS04) |
+| DT-9 | 🟡 diferida | Censo de duplicados **intra-fuente**: 36 grupos con `per_100g` idéntico dentro del mismo dataset. La DT-7 solo cubrió los cruzados | Claude (WS04+) |
+| DT-10 | 🟡 diferida | Rendimientos de cocción sin fuente suficiente: curado de **lomo** (el par medido es de jamón, 0,784), verdura asada (5 pares en 2 familias que se contradicen) y `hervido` (publicado 1,113 con dispersión 0,71–1,47; ninguna receta lo usa — la que lo necesite declara el suyo). Cada uno desbloquea fichas concretas | Claude |
+| DT-11 | 🟡 diferida | **Pulpa de açaí congelada** y **lomo embuchado**: sin derivación defendible (derivar la pulpa del polvo sería elegir la dilución que dé el número esperado). Se resuelven con la cola de curación y uso real | Claude (runtime) |
+| DT-12 | 🟡 diferida | El CI corre los candados en frío pero **no** el circuito del emulador del seed (necesita el emulador de Firestore + Java en el runner) | Claude |
+| DT-13 | 🔴 abierta | **Naming de los genéricos NFS** (`Frijoles`, `Mantequilla`, `Queso`, `Salchicha`): traen sal/grasa que el nombre no declara, pero son los que debe matchear una foto genérica. Política de producto, no de curación | Tomás (Fase 2) |
+| DT-14 | 🟡 diferida | Los **9 gemelos de confianza 0,5** (milanesa, cocido madrileño, callos, patatas bravas…) son candidatos naturales a ficha por **receta compuesta** (mecanismo 1.7): pasar de aproximación con reserva a receta real | Claude (WS04+) |
+| DT-15 | 🟡 diferida | El matching de la Fase 2 debe resolver las colisiones de vocabulario declaradas (p. ej. "Pastel" a secas es alias de Tarta; el pastel brasileño vive en "Pastel brasileño" a 0,6) | Claude (Fase 2) |
 
 ---
 

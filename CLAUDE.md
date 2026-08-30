@@ -64,6 +64,9 @@ de la implementación.
   El hoisting de workspaces rompe el empaquetado de Cloud Functions.
 - **Cloud Functions y Secret Manager requieren plan Blaze.** Hosting y Firestore
   funcionan en Spark.
+- **El emulador de Firestore necesita Java.** Hay un OpenJDK keg-only de brew:
+  exportar `PATH="/opt/homebrew/opt/openjdk/bin:$PATH"` antes de
+  `npm run emulators`, o el emulador no arranca.
 - Los .zip de USDA (1,1 GB) viven en `../datasets/` (junto al repo, fuera de git).
   `kb/sources.json` los declara con su sha256.
 
