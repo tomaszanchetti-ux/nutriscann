@@ -2,7 +2,7 @@
 
 > **Norte:** una app donde el usuario saca UNA foto de su plato y recibe un reporte nutricional visual (calorías, macros en pie chart, recomendación de una línea). UX de 2 interacciones. Arquitectura seria desde el día 1: nada hardcodeado, todo DB + APIs + endpoints.
 >
-> **Estado:** Fase 0 cerrada (salvo el plan Blaze, DT-1). **Fase 1 COMPLETA (WS03, 30/08/2026): cards 1.1–1.7 con Q/A adversarial** — catálogo canónico 2.1.0 con 1.025 alimentos (703 FNDDS + 307 SR + 6 manuales + 9 recetas compuestas), seed idempotente construido y probado contra el emulador. España es el grupo regional más grande (50 platos medidos). Resta: seed real a Firestore + merge a `main` con OK de Tomás. Última actualización: 30/08/2026.
+> **Estado:** Fase 0 cerrada. Fase 1 COMPLETA y mergeada (WS03, 30/08/2026). **Fase 2 EN CURSO (WS04, 31/08/2026)**: Blaze activado y verificado (DT-1 ✅) + presupuesto €10/mes con alertas (DT-4 ✅) · DT-8 y DT-13 ejecutadas por decisión de Tomás → **catálogo canónico 3.0.0 con 1.022 alimentos (701 FNDDS + 306 SR + 6 manuales + 9 recetas)**, 339 fichas marcadas `generic`, 101 caveats de sodio generados por regla, guarda de vocabulario "chorizo" · cimientos listos (seeder de `config/`, circuito local front→emulador, SDK actualizado). **Decisión de producto 31/08: la v1 NO muestra recomendaciones** — solo calorías, gráfico y composición; el esquema de recomendación pasa a la v2 (§6). Pendiente de la fase: motor `analyze` (cards 2.1–2.4). Última actualización: 31/08/2026.
 >
 > **Mecánica:** toda fase arranca midiendo (Bloque 0) y recién después define sus cards. Ver `CLAUDE.md`.
 >
@@ -64,6 +64,8 @@ config/app                          ← NADA HARDCODEADO: reglas de negocio en D
   thresholds, copy de la UI, límites de rate (scans/día por dispositivo)
 ```
 
+**⚠️ Nota (31/08/2026):** el esquema de `foods/` de arriba es el boceto original; **el contrato real y vigente es `kb/src/types.ts` (`CanonicalFood`)** — `names.{en,es}` en vez de `name`/`name_en`, aliases con confianza (string u objeto), `portion_hints` como array con etiquetas bilingües, provenance por campo, `generic`, `caveats`, `receta`. Ante cualquier diferencia, gana `types.ts`.
+
 **Regla de oro:** cambiar una recomendación, un umbral o un texto = editar un documento en Firestore. Cero deploys.
 
 ---
@@ -85,8 +87,11 @@ Foto → [1] Sonnet 5 (visión): "¿QUÉ hay en el plato y CUÁNTO?"
            explícitamente etiquetado como estimación, y el alimento entra a una cola de
            curación para sumarlo a foods/ (el catálogo crece con el uso real).
 
-     → [3] Sonnet 5 (texto, barato): "Con ESTOS números [los de la DB], escribí UNA
-         recomendación según ESTAS reglas [las de config/]" → una frase, cálida y accionable.
+     → [3 — SOLO v2, decisión 31/08/2026] Sonnet 5 (texto, barato): "Con ESTOS números
+         [los de la DB], escribí UNA recomendación según ESTAS reglas [las de config/]".
+         En la v1 este paso NO existe: el reporte muestra solo lo medido (calorías,
+         macros, composición). El set de reglas v1 queda construido, publicado en
+         config/ y dormido hasta la v2 (§6) — nada se tira.
 
      → Respuesta completa al cliente + persistencia del scan.
 ```
@@ -117,10 +122,12 @@ Foto → [1] Sonnet 5 (visión): "¿QUÉ hay en el plato y CUÁNTO?"
 
 **Pantalla 2 — El reporte.** Orden visual estricto:
 1. **Calorías totales** — número gigante animado (count-up), con un anillo de progreso.
-2. **Donut chart de macros** — proteína / carbohidratos / grasas, con % y gramos. Paleta fija y semántica: proteína = coral, carbos = ámbar, grasas = violeta (los mismos colores SIEMPRE, en el chart, en las cards y en la recomendación).
-3. **La recomendación** — una card destacada con icono según el tag: 🏋️ "Alta en carbohidratos: ideal para un día de entrenamiento o desgaste físico."
-4. Lista colapsada de ingredientes detectados (con gramos y confianza) — para el que quiere el detalle, invisible para el que no.
-5. Un solo CTA: "Escanear otro plato".
+2. **Donut chart de macros** — proteína / carbohidratos / grasas, con % y gramos. Paleta fija y semántica: proteína = coral, carbos = ámbar, grasas = violeta (los mismos colores SIEMPRE, en el chart y en las cards).
+3. Lista colapsada de ingredientes detectados (con gramos, confianza y la letra chica de las fichas — los caveats) — para el que quiere el detalle, invisible para el que no.
+4. Un solo CTA: "Escanear otro plato".
+
+*(La card de recomendación que estaba acá pasó a la v2 — decisión 31/08/2026: la v1
+muestra solo lo medido, sin consejos. Ver §6.)*
 
 **Sistema visual:** dark-mode-first (la comida fotografiada resalta sobre fondo oscuro), tipografía grande, esquinas redondeadas, glassmorphism sutil en las cards. Todo el copy sale de `config/` (editable sin deploy). Charts custom en SVG/Framer Motion — sin librería pesada de charting para un solo donut.
 
@@ -241,9 +248,28 @@ Pipeline en `kb/` (cuatro capas):
 
 **Sale cuando:** `foods.canonical.json` commiteado con provenance por campo, candados pasando, `foods/` poblada con `kb_version`, y el seed re-ejecutado dos veces da el mismo resultado (prueba de idempotencia).
 
-### Fase 2 — Motor de análisis (1-2 sesiones)
-Cloud Function `analyze`: recepción de imagen → paso 1 (Sonnet 5 visión, schema estricto) → paso 2 (lookup + matching + aritmética) → paso 3 (recomendación desde reglas de `config/`) → persistencia del scan. Tests del matching y de la aritmética (puros, sin LLM — la decisión separada de la lectura, como en Arc One). Golden set: 10 fotos de platos conocidos con resultados esperados, para medir precisión antes de tocar UX.
-**Sale cuando:** `curl` con una foto devuelve el JSON completo con números trazables a `foods/`.
+### Fase 2 — Motor de análisis ← **EN CURSO (WS04, 31/08/2026)**
+
+Cloud Function `analyze` en DOS pasos (el paso 3 de recomendación pasó a la v2, decisión 31/08): recepción de imagen (base64 en el POST — Storage llega con DT-3) → paso 1 (Sonnet 5 visión, schema estricto sin campos de nutrientes) → paso 2 (lookup + matching + aritmética + composición on-demand vía `transforms.ts`) → persistencia del scan. Tests del matching y de la aritmética (puros, sin LLM — la decisión separada de la lectura, como en Arc One). Desarrollo 100 % local contra emuladores; deploy real al cierre (Blaze ya activo).
+
+#### Bloque 0 — medido el 31/08/2026 ✅ (verificación en vivo de repo, catálogo, Firestore y facturación)
+
+Hallazgos que redefinieron las cards: `config/app` en Firestore estaba vacío de reglas y sin versión (no existía seeder de config) · el `.gitignore` no cubría los archivos de la key · el front no podía apuntar al emulador · SDK de Anthropic 51 minors atrás · la estructura real del catálogo difiere del §2 de este plan (**el contrato verdadero es `kb/src/types.ts`**: `names.{en,es}`, aliases heterogéneos con confianza, `portion_hints[]`) · `names.en` 100 % único (clave primaria limpia del matching) · 0 colisiones exactas de alias — el riesgo del matching es difuso (familia "Pastel", "Catsup" EN↔ES, "chorizo"/"Bife de chorizo").
+
+#### Las cards de la Fase 2 (definidas sobre lo medido)
+
+| Card | Qué entrega | Estado |
+|---|---|---|
+| **2.0 — Cimientos** | `.gitignore` cubre los archivos de secretos · seeder de `config/` (valida antes de publicar, máscara de 4 campos, idempotente) · circuito local front→emulador (`VITE_FUNCTIONS_EMULATOR`) · `kb:seed:local` · SDK `@anthropic-ai/sdk` ^0.122.0 | ✅ 31/08, Q/A adversarial aplicado |
+| **2.DT — Decisiones DT-8/DT-13** | Catálogo **3.0.0+b2b227e1, 1.022 alimentos**: 3 fusiones con herencia de vocabulario (0 términos perdidos, medido) · porción del parmesano SR corregida (100→5 g) · política de genéricos: `generic: true` (339) + caveat de sodio por regla declarativa (101) con candado bidireccional · guarda de vocabulario "chorizo" (rompe el build) | ✅ 31/08, Q/A adversarial aplicado |
+| **2.1 — El corazón determinístico** | `functions/src/engine/`: matching (exacto por `names.en` → alias con confianza → difuso con orden por especificidad; guardas pepinillos/chorizo/Pastel; `generic` baja confianza) + aritmética + composición on-demand (reutiliza `transforms.ts` por copia derivada con candado de CI) — todo puro, testeable sin LLM ni DB | ⬜ |
+| **2.2 — La llamada al modelo** | Paso 1 (visión, `output_config.format`, schema sin campos de nutrientes, `is_food`) + endpoint `analyze` + persistencia del scan. Sin paso de redacción (v1 sin recomendaciones) | ⬜ |
+| **2.3 — Front mínimo para Q/A visual** | Foto/upload → `analyze` → reporte: calorías, macros, composición con confianza y caveats. La UX pulida queda en la Fase 3 | ⬜ |
+| **2.4 — Golden set + Q/A E2E** | 10 fotos de platos conocidos con resultados esperados; el circuito local entero medido | ⬜ |
+
+**Decisiones de producto de la WS04:** v1 sin recomendaciones (solo lo medido) · límite de uso: **3 escaneos/día** en v1 (valor en `config/app`, editable sin deploy; baja a 1/día cuando exista premium — el mecanismo de conteo por usuario llega en la Fase 4 con el login) · la imagen viaja como base64 (Storage con DT-3).
+
+**Sale cuando:** `curl` con una foto devuelve el JSON completo con números trazables a `foods/`, y el circuito local entero (front + emulador) permite el Q/A visual de Tomás.
 
 ### Fase 3 — Frontend (2 sesiones)
 Sesión A: captura + compresión de imagen + animación de escaneo. Sesión B: pantalla de reporte (count-up, donut SVG, card de recomendación, lista colapsable) + PWA (manifest, instalable) + estados de error amables ("No pude reconocer el plato, ¿probás con más luz?").
@@ -262,9 +288,9 @@ Firebase **App Check** (solo tu app puede llamar al endpoint) + **login real des
 La v1 deja los cimientos exactos para esto; nada de lo anterior se tira:
 
 1. ~~Auth real~~ **Ya existe desde v1** (decisión 30/08): el login Google/email llega en v1 y el `ownerId` es el uid real desde el primer scan — no hay migración de scans anónimos.
-2. **Perfil** en `owners/{uid}/profile`: peso, altura, edad, sexo, deportes, frecuencia, objetivo (bajar/mantener/rendir). → TDEE y targets diarios de macros calculados por fórmula (Mifflin-St Jeor — determinística, no LLM).
+2. **Perfil** en `owners/{uid}/profile` (lista definida por Tomás, 31/08/2026): sexo · edad **en rangos** (la fórmula usa el punto medio) · altura · peso · **actividad deportiva desglosada** (veces por día × días por semana × deportes elegidos de una lista cerrada — el tipo cambia el consejo: fuerza pide proteína, resistencia pide carbohidratos) · objetivo (bajar de peso / subir músculo / tonificar / …) · **comidas del día** (desayuno / almuerzo / merienda / cena, sí o no — el plan reparte solo entre las comidas que el usuario realmente hace) · **elección alimentaria** (vegano, vegetariano…) e **intolerancias** (lactosa, gluten…). Las intolerancias filtran con cuidado declarado: la app es informativa, no médica — las alergias severas quedan explícitamente fuera del alcance (un error ahí no es una mala sugerencia). → TDEE y targets diarios de macros calculados por fórmula (Mifflin-St Jeor — determinística, no LLM). Las marcas por ficha que el filtro necesita (origen animal, lácteo, gluten) se derivan por regla declarativa en la curación — misma maquinaria que los genéricos de la DT-13.
 3. **Aislamiento real por workspace:** ya existe estructuralmente (subcolecciones por owner desde v1); en v2 se endurece con security rules por uid + el contexto del perfil viaja SOLO en la llamada de ese usuario. Sin contaminación cruzada por construcción.
-4. **Recomendación contextual:** el paso 3 del motor recibe además el perfil + el historial del día → "Vas 40g de proteína abajo de tu target; esta cena alta en proteína te viene perfecta."
+4. **El esquema de recomendación (movido acá desde la v1, decisión 31/08/2026):** la v1 muestra solo lo medido; toda recomendación llega en v2 y **se deriva siempre de los nutrientes y calorías del plato** (principio de Tomás: todo se basa en eso). La base ya está construida y dormida: las 6 reglas v1 con umbrales OPS citados (`config/recommendation_rules.json`, publicadas por el seeder, DT-6 pendiente de calibrar). En v2 se enriquece con fuentes declaradas y citables, mismas reglas de honestidad que la OPS: **(a)** OMS — "Alimentación sana" (https://www.who.int/es/news-room/fact-sheets/detail/healthy-diet) · **(b)** Academia Española de Nutrición y Dietética — dieta del deportista (https://www.academianutricionydietetica.org/nutricion-deportiva/dieta-deportista/) · **(c)** Ministerio de Sanidad de España — pesos de raciones por grupo y frecuencias recomendadas, SENC 2004 (`datasets/alimentacionSaludable-ministerio-sanidad.pdf`) — la pieza clave para armar planes con raciones concretas. La recomendación contextual completa: perfil + historial del día → "Vas 40 g de proteína abajo de tu target; esta cena te viene perfecta", y **planes por perfil** repartidos entre las comidas declaradas, con platos del propio catálogo (el LLM compone, la DB cuantifica — como siempre).
 5. **"Qué me conviene comer hoy":** endpoint `suggest` — perfil + calendario de entrenamiento + lo ya comido → sugerencia de dieta del día con platos y cantidades, grounded en `foods/` (el mismo patrón: el LLM compone, la DB cuantifica).
 6. **Paywall:** Stripe + claim `premium` en el token de Firebase Auth; los endpoints v2 lo verifican server-side.
 

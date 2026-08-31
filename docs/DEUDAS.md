@@ -8,25 +8,31 @@ registro también sirve para ver qué se destrabó y cuándo.
 
 | id | estado | título | dueño |
 |---|---|---|---|
-| DT-1 | 🔴 abierta | Activar el plan Blaze del proyecto | Tomás |
-| DT-2 | 🔴 abierta | Cargar la API key de Anthropic en Secret Manager | Claude (tras DT-1) |
-| DT-3 | 🔴 abierta | Inicializar Cloud Storage y desplegar sus reglas | Claude (tras DT-1) |
-| DT-4 | 🟡 diferida | Presupuesto de GCP con alertas de gasto | Tomás (junto con DT-1) |
+| DT-1 | ✅ cerrada 31/08 (WS04) | Activar el plan Blaze del proyecto: **activado por Tomás** y verificado (`billingEnabled: true`, cuenta `0151E4-2765DB-FC9340`) | Tomás |
+| DT-2 | 🔴 abierta (destrabada por DT-1) | Cargar la API key de Anthropic en Secret Manager | Claude + Tomás (la key la carga Tomás) |
+| DT-3 | 🔴 abierta (destrabada por DT-1) | Inicializar Cloud Storage y desplegar sus reglas | Claude |
+| DT-4 | ✅ cerrada 31/08 (WS04) | Presupuesto de GCP: **creado** — "NutriScann — presupuesto mensual", €10/mes, alertas al 50 % y 90 %, acotado al proyecto | Tomás + Claude |
 | DT-5 | 🟡 diferida | Íconos de la PWA (el manifiesto los declara vacíos) | Claude (Fase 3) |
-| DT-6 | 🟡 diferida | Recalibrar la regla de azúcares (totales vs libres) y el sodio con datos reales de uso; resolver en la UI el caso "el tag acusa y el texto absuelve" | Claude (Fases 2-3) |
+| DT-6 | 🟡 diferida → **v2** | Recalibrar la regla de azúcares (totales vs libres) y el sodio con datos reales de uso; resolver en la UI el caso "el tag acusa y el texto absuelve". *Reencuadrada 31/08: la v1 no muestra recomendaciones (decisión Tomás), así que esta calibración pertenece al esquema de recomendación de la v2* | Claude (v2) |
 | DT-7 | ✅ cerrada 30/08 (WS03) | Desambiguar los pares FNDDS/SR de nombre casi igual: **ejecutada** — censo de 137 pares (`kb/selection/dt7.pairs.json`), 8 fusiones, 27 renames bajo "el nombre nunca miente", con candado de regresión. Lo que quedó ambiguo pasó a DT-8 | Tomás + Claude |
-| DT-8 | 🔴 abierta | **7 pares ambiguos de la DT-7** esperan decisión de producto: 4 cruzados (parmesano rallado, puré de papa, pepinillos dulces, mantequilla NFS) + 3 duplicados intra-FNDDS con valores idénticos. Evidencia en `dt7.pairs.json` | Tomás (WS04) |
-| DT-9 | 🟡 diferida | Censo de duplicados **intra-fuente**: 36 grupos con `per_100g` idéntico dentro del mismo dataset. La DT-7 solo cubrió los cruzados | Claude (WS04+) |
+| DT-8 | ✅ cerrada 31/08 (WS04) | **7 pares resueltos por decisión de Tomás** (registro completo en `dt7.pairs.json`): los 2 parmesanos se conservan (diferencia real de sodio; de paso se corrigió la porción errónea de 100 g de fdc-171247 → 5 g) · puré de papa fusionado al casero · pepinillos sin cambio (asunto del matcher, Fase 2) · mantequilla NFS conservada bajo la política DT-13 · frijoles y croquetas duplicados idénticos fusionados con herencia de vocabulario | Tomás + Claude |
+| DT-9 | 🟡 diferida | Censo de duplicados **intra-fuente**: eran 36 grupos con `per_100g` idéntico dentro del mismo dataset; **la DT-8 ya fusionó 2 de ellos** (frijoles, croquetas) — quedan ~34. La DT-7 solo cubrió los cruzados | Claude (WS05+) |
 | DT-10 | 🟡 diferida | Rendimientos de cocción sin fuente suficiente: curado de **lomo** (el par medido es de jamón, 0,784), verdura asada (5 pares en 2 familias que se contradicen) y `hervido` (publicado 1,113 con dispersión 0,71–1,47; ninguna receta lo usa — la que lo necesite declara el suyo). Cada uno desbloquea fichas concretas | Claude |
 | DT-11 | 🟡 diferida | **Pulpa de açaí congelada** y **lomo embuchado**: sin derivación defendible (derivar la pulpa del polvo sería elegir la dilución que dé el número esperado). Se resuelven con la cola de curación y uso real | Claude (runtime) |
 | DT-12 | 🟡 diferida | El CI corre los candados en frío pero **no** el circuito del emulador del seed (necesita el emulador de Firestore + Java en el runner) | Claude |
-| DT-13 | 🔴 abierta | **Naming de los genéricos NFS** (`Frijoles`, `Mantequilla`, `Queso`, `Salchicha`): traen sal/grasa que el nombre no declara, pero son los que debe matchear una foto genérica. Política de producto, no de curación | Tomás (Fase 2) |
+| DT-13 | ✅ cerrada 31/08 (WS04) | **Política de genéricos decidida por Tomás y ejecutada**: los nombres quedan matcheables; toda ficha genérica (marcadores NFS / "NS as to" de USDA) lleva `generic: true` (339 fichas — el matcher de la Fase 2 les baja la confianza) y las de sodio ≥ 400 mg/100 g un caveat generado por regla declarativa con su valor real (101 fichas). Regla en `kb/curation/genericos.dt13.json`, candado bidireccional en el build. El censo real resultó mayor que el enunciado original (101 caveats, no 4 casos) | Tomás + Claude |
 | DT-14 | 🟡 diferida | Los **9 gemelos de confianza 0,5** (milanesa, cocido madrileño, callos, patatas bravas…) son candidatos naturales a ficha por **receta compuesta** (mecanismo 1.7): pasar de aproximación con reserva a receta real | Claude (WS04+) |
-| DT-15 | 🟡 diferida | El matching de la Fase 2 debe resolver las colisiones de vocabulario declaradas (p. ej. "Pastel" a secas es alias de Tarta; el pastel brasileño vive en "Pastel brasileño" a 0,6) | Claude (Fase 2) |
+| DT-15 | 🟡 diferida | El matching de la Fase 2 debe resolver las colisiones de vocabulario declaradas: colisiones exactas hay **0** (medido en el Bloque 0), el riesgo es **difuso** — familia "Pastel" (5 candidatos plausibles), el cruce EN↔ES "Catsup", "pepinillos" dulces vs en vinagre, y "chorizo"/"Bife de chorizo" (el catálogo ya quedó blindado con guarda; el matcher necesita la suya) | Claude (Fase 2, card 2.1) |
+| DT-16 | 🟡 diferida | Alias "Callos" duplicado en `fdc-2706162` (aparece a confianza 1,0 y 0,5 en la misma ficha). Preexistente en `main` desde la Fase 1, detectado por el Q/A de la WS04 | Claude (WS05+) |
 
 ---
 
-## DT-1 · Activar el plan Blaze del proyecto 🔴
+## DT-1 · Activar el plan Blaze del proyecto ✅ (31/08/2026)
+
+**Cerrada.** Tomás activó Blaze el 31/08/2026; verificado con `gcloud billing projects
+describe` (`billingEnabled: true`). El orden de destrabe previsto se cumplió: DT-4
+(presupuesto) se creó el mismo día. Quedan DT-2 y DT-3, y ampliar el objetivo del
+pipeline de deploy. Lo que sigue es el registro original de la deuda.
 
 **Qué falta.** El proyecto `nutriscann-f809e` está en plan Spark (`billingEnabled: false`).
 Cloud Functions, Secret Manager y Cloud Storage requieren **Blaze** (pago por uso).
@@ -68,11 +74,14 @@ Hasta entonces, el pipeline no incluye `storage` entre sus objetivos.
 
 ---
 
-## DT-4 · Presupuesto de GCP con alertas 🟡
+## DT-4 · Presupuesto de GCP con alertas ✅ (31/08/2026)
 
-Antes de que exista tráfico real conviene un presupuesto con alerta por correo. Está
-previsto en la Fase 4, pero **el momento correcto para crearlo es junto con DT-1**:
-un proyecto que puede facturar sin techo declarado es un riesgo evitable.
+**Cerrada el mismo día que DT-1, como estaba previsto** ("un proyecto que puede
+facturar sin techo declarado es un riesgo evitable"). Creado vía `gcloud billing
+budgets create`: **"NutriScann — presupuesto mensual", €10/mes, alertas al 50 % y
+al 90 %**, filtrado solo al proyecto `nutriscann-f809e` (los otros presupuestos de
+la cuenta quedaron intactos). Las alertas llegan por correo a los administradores
+de la cuenta de facturación.
 
 ---
 
