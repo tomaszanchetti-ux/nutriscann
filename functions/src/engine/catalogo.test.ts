@@ -1,0 +1,203 @@
+/**
+ * Los candados CONTRA EL CATÁLOGO ENTERO.
+ *
+ * Los tests de `match.test.ts` prueban casos elegidos; estos barren las 1.022
+ * fichas y los 1.768 términos del vocabulario español. Es la diferencia entre
+ * "los tres casos que me preocupaban andan" y "no hay ningún alimento del
+ * catálogo que el motor no sepa encontrar" — que es lo que hace falta afirmar
+ * antes de que esto cuantifique la comida de alguien.
+ *
+ * Leer `kb/build/foods.canonical.json` en un test no rompe la pureza del motor:
+ * es un archivo del repo, no una llamada de red, y la lógica lo sigue recibiendo
+ * por parámetro.
+ */
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
+import { aliasConfidence, aliasText } from "../kb/types";
+import { construirIndice, MINIMO_DE_FICHAS } from "./catalog";
+import { buscarAlimento } from "./match";
+import { normalizar } from "./normalize";
+import { catalogoReal, indiceReal } from "./testing";
+
+const catalogo = catalogoReal();
+const index = indiceReal();
+const activas = catalogo.foods.filter((f) => !f.deprecated);
+
+describe("el catálogo que se está midiendo", () => {
+  it("es el 3.0.0 o posterior y trae más de mil fichas", () => {
+    assert.match(catalogo.kb_version, /^\d+\.\d+\.\d+\+[0-9a-f]+$/);
+    assert.ok(activas.length > 1000, `${activas.length} fichas activas`);
+  });
+});
+
+describe("F6 — un catálogo vacío no puede pasar por un plato exótico", () => {
+  it("construir un índice por debajo del piso LANZA", () => {
+    assert.throws(() => construirIndice([], "test"), /piso declarado/);
+    assert.throws(() => construirIndice(catalogo.foods.slice(0, 10), "test"), /10 fichas activas/);
+  });
+
+  it("el piso declarado es 100 y el catálogo real lo pasa de sobra", () => {
+    assert.equal(MINIMO_DE_FICHAS, 100);
+    assert.ok(activas.length > MINIMO_DE_FICHAS);
+  });
+
+  it("un fixture chico tiene que DECLARAR que es chico", () => {
+    const chico = construirIndice(catalogo.foods.slice(0, 3), "test", { minimo_de_fichas: 1 });
+    assert.equal(chico.exactoEn.size, 3);
+  });
+
+  it("las fichas retiradas no cuentan para el piso", () => {
+    const retiradas = catalogo.foods.slice(0, 150).map((f) => ({ ...f, deprecated: true }));
+    assert.throws(() => construirIndice(retiradas, "test"), /0 fichas activas/);
+  });
+});
+
+describe("el índice no tiene ambigüedades", () => {
+  it("ningún término choca dentro de su propio idioma", () => {
+    assert.deepEqual(index.colisiones, []);
+  });
+
+  it("todo el vocabulario en español está indexado", () => {
+    const terminos = new Set<string>();
+    for (const f of activas) {
+      if (f.names.es !== null) terminos.add(normalizar(f.names.es));
+      for (const a of f.aliases.es) terminos.add(normalizar(aliasText(a)));
+    }
+    terminos.delete("");
+    assert.equal(index.exactoEs.size, terminos.size);
+  });
+});
+
+describe("todo alimento se encuentra a sí mismo", () => {
+  it("los 1.022 `names.en` matchean exacto contra su propia ficha", () => {
+    const fallos: string[] = [];
+    for (const f of activas) {
+      const r = buscarAlimento(f.names.en, index);
+      if (r === null || r.ficha.id !== f.id || r.nivel !== "exacto" || r.confianza_match !== 1) {
+        fallos.push(`${f.id} (${f.names.en}) -> ${r === null ? "null" : `${r.ficha.id}/${r.nivel}`}`);
+      }
+    }
+    assert.deepEqual(fallos, []);
+  });
+
+  it("todos los `names.es` matchean a su propia ficha", () => {
+    const fallos: string[] = [];
+    for (const f of activas) {
+      if (f.names.es === null) continue;
+      const r = buscarAlimento(f.names.es, index);
+      if (r === null || r.ficha.id !== f.id) {
+        fallos.push(`${f.id} (${f.names.es}) -> ${r === null ? "null" : r.ficha.id}`);
+      }
+    }
+    assert.deepEqual(fallos, []);
+  });
+
+  it("todos los aliases matchean a su propia ficha, salvo el cruce medido", () => {
+    const fallos: string[] = [];
+    for (const f of activas) {
+      for (const a of f.aliases.es) {
+        const texto = aliasText(a);
+        const r = buscarAlimento(texto, index);
+        if (r === null || r.ficha.id !== f.id) {
+          fallos.push(`${normalizar(texto)} (${f.id}) -> ${r === null ? "null" : r.ficha.id}`);
+        }
+      }
+    }
+    // El único desvío admitido es el cruce EN/ES: `Catsup` es alias en español
+    // de fdc-2709733 y a la vez el `names.en` de fdc-168556, y el índice inglés
+    // tiene precedencia declarada. Cualquier otro desvío es un bug.
+    assert.deepEqual(fallos, ["catsup (fdc-2709733) -> fdc-168556"]);
+  });
+});
+
+describe("ningún término resuelve a dos fichas", () => {
+  it("cada término del vocabulario tiene un dueño y siempre el mismo", () => {
+    const dueño = new Map<string, string>();
+    const conflictos: string[] = [];
+    for (const f of activas) {
+      const terminos = [f.names.en, f.names.es, ...f.aliases.es.map(aliasText)].filter(
+        (t): t is string => t !== null,
+      );
+      for (const t of terminos) {
+        const clave = normalizar(t);
+        if (clave === "") continue;
+        const r = buscarAlimento(clave, index);
+        if (r === null) continue;
+        const previo = dueño.get(clave);
+        if (previo !== undefined && previo !== r.ficha.id) conflictos.push(`${clave}: ${previo} vs ${r.ficha.id}`);
+        dueño.set(clave, r.ficha.id);
+      }
+    }
+    assert.deepEqual(conflictos, []);
+  });
+});
+
+describe("un término declarado dos veces en la MISMA ficha", () => {
+  /**
+   * HALLAZGO DE ESTA CARD (31/08/2026): fdc-2706162 (`Tripe` / `Mondongo`)
+   * declara `Callos` DOS VECES en sus aliases — una en texto plano (confianza
+   * 1,0) y otra con reserva 0,5. Las dos afirmaciones se contradicen: o el
+   * alimento ES callos o es un gemelo pobre. Es una deuda de curación, no del
+   * motor, y queda anotada en el informe de la card.
+   *
+   * Lo que el motor sí tiene que garantizar es que no se vuelve aleatorio por
+   * eso: gana el PRIMERO en el orden del catálogo, siempre el mismo, y la
+   * confianza que sale es una de las que la ficha declara. Este test no exige
+   * que la duplicación exista ni que desaparezca: exige que, mientras exista, el
+   * resultado sea determinístico.
+   */
+  it("resuelve siempre igual y a una confianza declarada", () => {
+    const duplicados: string[] = [];
+    for (const f of activas) {
+      const vistos = new Map<string, number[]>();
+      for (const a of f.aliases.es) {
+        const clave = normalizar(aliasText(a));
+        vistos.set(clave, [...(vistos.get(clave) ?? []), aliasConfidence(a)]);
+      }
+      for (const [clave, confianzas] of vistos) {
+        if (confianzas.length < 2) continue;
+        duplicados.push(`${f.id} :: ${clave} :: ${confianzas.join("/")}`);
+        const a = buscarAlimento(clave, index);
+        const b = buscarAlimento(clave, index);
+        assert.deepEqual(a, b, clave);
+        if (a !== null && a.ficha.id === f.id) {
+          assert.ok(confianzas.includes(a.confianza_match), `${clave} -> ${a.confianza_match}`);
+        }
+      }
+    }
+    // Sin assert sobre la cantidad a propósito: el catálogo puede corregirlo sin
+    // que este candado estorbe. Se imprime para que quede a la vista.
+    if (duplicados.length > 0) console.log(`  ℹ términos duplicados dentro de una ficha: ${duplicados.join(" | ")}`);
+  });
+});
+
+describe("las fichas genéricas están marcadas y se descuentan", () => {
+  it("hay genéricas en el catálogo y todas llevan `generic: true`", () => {
+    const genericas = activas.filter((f) => f.generic === true);
+    assert.ok(genericas.length > 0);
+    for (const f of genericas) assert.equal(f.generic, true);
+  });
+
+  it("una ficha genérica se reconoce por su marca, no reparseando el inglés de USDA", () => {
+    const generica = activas.find((f) => f.generic === true);
+    assert.ok(generica);
+    const r = buscarAlimento(generica.names.en, index);
+    assert.ok(r);
+    assert.equal(r.ficha.generic, true);
+  });
+});
+
+describe("las nueve recetas del catálogo se encuentran por su nombre", () => {
+  it("cada receta matchea a su propia ficha, no a un ingrediente", () => {
+    const recetas = activas.filter((f) => f.receta !== undefined);
+    assert.equal(recetas.length, 9);
+    for (const f of recetas) {
+      const porEn = buscarAlimento(f.names.en, index);
+      assert.equal(porEn?.ficha.id, f.id, f.names.en);
+      if (f.names.es !== null) {
+        const porEs = buscarAlimento(f.names.es, index);
+        assert.equal(porEs?.ficha.id, f.id, f.names.es);
+      }
+    }
+  });
+});

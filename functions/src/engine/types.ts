@@ -1,0 +1,211 @@
+/**
+ * El contrato del motor de análisis: qué entra y qué sale.
+ *
+ * ESTE ARCHIVO ES LA FRONTERA. A la izquierda queda el paso 1 (la visión, que
+ * llega en la card 2.2) y a la derecha el reporte que ve el usuario. En el medio
+ * no hay ni una llamada de red: el motor recibe una `VisionResult` y un catálogo
+ * YA CARGADO, y devuelve una `EngineResult`. Por eso se puede testear entero sin
+ * modelo, sin Firestore y sin emulador — la decisión separada de la lectura.
+ *
+ * REGLA DURA 2 DEL PROYECTO, escrita en el tipo: `VisionItem` NO TIENE campos de
+ * calorías ni de macros. No es que el motor los ignore: es que el esquema de
+ * salida del modelo no se los permite emitir. Cada número del reporte sale de
+ * `per_100g` de una ficha del catálogo, con su `source_ref` de USDA al lado.
+ */
+import type { Per100g } from "../kb/types";
+
+// ---------------------------------------------------------------------------
+// Entrada: lo que produce el paso 1 (visión)
+// ---------------------------------------------------------------------------
+
+/**
+ * Los métodos de cocción que la visión puede declarar.
+ *
+ * Es un subconjunto de `kb/curation/cooking.transforms.json`: son los que se
+ * pueden VER en una foto. `crudo` y `hervido` no están porque en una imagen no
+ * se distinguen de forma confiable (y `hervido` es, además, el factor menos
+ * confiable de la tabla).
+ */
+export type Preparacion = "frito" | "horneado" | "horneado_masa" | "plancha" | "mezclado";
+
+/** Un ingrediente visible de un plato que la visión no supo nombrar entero. */
+export interface VisionComponent {
+  food_en: string;
+  grams: number;
+}
+
+/**
+ * Un alimento identificado en la foto.
+ *
+ * `confidence` es la confianza de la VISIÓN en haber identificado bien: no dice
+ * nada sobre si el catálogo tiene ese alimento. Las dos confianzas se componen
+ * multiplicándose (ver `EngineItem.confidence`).
+ */
+export interface VisionItem {
+  /** El nombre en inglés, en el mismo registro que los `names.en` del catálogo. */
+  food_en: string;
+  grams: number;
+  /** 0..1 — cuánto confía la visión en la IDENTIFICACIÓN, no en el número. */
+  confidence: number;
+  preparation?: Preparacion | null;
+  /** Ingredientes visibles, cuando el plato entero no tiene un nombre obvio. */
+  components?: VisionComponent[];
+}
+
+export interface VisionResult {
+  is_food: boolean;
+  items: VisionItem[];
+}
+
+// ---------------------------------------------------------------------------
+// Salida: lo que el motor entrega
+// ---------------------------------------------------------------------------
+
+/**
+ * Los ocho valores del alimento YA ESCALADOS a los gramos del plato.
+ *
+ * Comparte forma exacta con `Per100g` a propósito —son los mismos ocho campos y
+ * las mismas unidades— pero el significado es otro: acá `kcal` son las calorías
+ * de ESTA porción, no las de 100 g. El alias existe para que el nombre del tipo
+ * lo diga en el lugar donde se lee.
+ */
+export type Per100gEscalado = Per100g;
+
+/** Cómo se llegó a la ficha (o a la falta de ficha). */
+export type TipoDeMatch = "exacto" | "alias" | "difuso" | "compuesto" | "no_catalogado";
+
+/** Un ingrediente resuelto dentro de un plato compuesto en runtime. */
+export interface ComponenteDelPlato {
+  termino_en: string;
+  grams: number;
+  food_id: string;
+  name_es: string | null;
+  source_ref: string;
+  match: TipoDeMatch;
+  confidence_match: number;
+  generic: boolean;
+}
+
+/**
+ * La cuenta de una composición, entera y a la vista.
+ *
+ * Viaja al resultado por la misma razón por la que `receta` viaja al catálogo:
+ * es la única forma de que quien lea un número pueda rehacerlo. Un plato
+ * compuesto en runtime no tiene `source_ref` de USDA propio — su trazabilidad
+ * ES esta estructura.
+ */
+export interface Composicion {
+  metodo: string;
+  componentes: ComponenteDelPlato[];
+  peso_entrada_g: number;
+  aceite_absorbido_g: number;
+  aceite_ref: string | null;
+  peso_final_g: number;
+  rendimiento_de: "transformacion" | "receta";
+}
+
+export interface EngineItem {
+  /** El texto que la visión emitió. Se guarda siempre, matchee o no. */
+  termino_en: string;
+  food_id: string | null;
+  name_es: string | null;
+  name_en: string | null;
+  /** La trazabilidad a USDA. `null` en un compuesto: ahí traza `composicion`. */
+  source_ref: string | null;
+  grams: number;
+  /** vision × matching × factores. Es la que se le muestra al usuario. */
+  confidence: number;
+  /** Las dos mitades, por separado, para poder auditar de dónde salió la de arriba. */
+  confidence_vision: number;
+  confidence_match: number;
+  match: TipoDeMatch;
+  /** Solo cuando vale `true`, igual que en el catálogo. */
+  generic?: true;
+  /**
+   * La visión no dio una masa usable (0, negativa, `NaN`, `Infinity`). El item
+   * conserva la ficha —se sabe QUÉ es— pero sale con `nutrients: null`: no se
+   * cuantifica con un cero inventado. Baja `completo` en los totales.
+   */
+  grams_no_estimados?: true;
+  caveats?: string[];
+  /** Los valores por 100 g de la ficha usada. `null` si no hay ficha. */
+  per_100g: Per100g | null;
+  /** Los valores YA escalados a `grams`. `null` si no hay ficha. */
+  nutrients: Per100gEscalado | null;
+  /** En una línea, por qué este item terminó como terminó. */
+  motivo: string;
+  composicion?: Composicion;
+}
+
+/** Los ocho valores sumados de todo el plato. */
+export interface TotalesNutrientes {
+  kcal: number;
+  protein_g: number;
+  carbs_g: number;
+  fat_g: number;
+  fiber_g: number | null;
+  sat_fat_g: number | null;
+  sugars_g: number | null;
+  sodium_mg: number | null;
+}
+
+/** El reparto de calorías por macro, en porcentaje del total. */
+export interface PorcentajesDeMacros {
+  protein: number;
+  carbs: number;
+  fat: number;
+  /**
+   * Cuánto falta (o sobra) para 100. NO se normaliza a propósito: la diferencia
+   * es información —alcohol, fibra, redondeos de USDA— y taparla sería inventar
+   * un cuadre que los datos no tienen.
+   */
+  sin_explicar: number;
+}
+
+export interface EngineTotals {
+  nutrients: TotalesNutrientes;
+  /** Por qué un opcional salió `null`. Solo aparecen los que salieron `null`. */
+  opcionales_ausentes: Partial<Record<"fiber_g" | "sat_fat_g" | "sugars_g" | "sodium_mg", string>>;
+  macro_pct: PorcentajesDeMacros | null;
+  /** Por qué no hay porcentajes, cuando no los hay. */
+  macro_pct_motivo: string | null;
+  grams_total: number;
+  /** Gramos que SÍ entraron a la suma (los de los items con ficha). */
+  grams_cuantificados: number;
+  items_incluidos: number;
+  items_sin_datos: number;
+  /** `true` solo si todos los items del escaneo aportaron números. */
+  completo: boolean;
+}
+
+/** Por qué un término entra a la cola de curación. */
+export type MotivoDeCuracion = "sin_match" | "compuesto_en_runtime" | "componente_sin_match";
+
+/**
+ * Un candidato a ficha nueva del catálogo.
+ *
+ * El catálogo aprende del uso real: lo que la gente fotografía y el catálogo no
+ * sabe nombrar es exactamente la lista de lo que hay que curar después. Un plato
+ * compuesto en runtime también entra —salió bien, pero merece su propia ficha
+ * medida— y por eso el motivo no es un booleano.
+ */
+export interface CurationCandidate {
+  termino_en: string;
+  motivo: MotivoDeCuracion;
+  grams: number | null;
+  preparation: string | null;
+  /** Los ingredientes que la visión vio, con lo que se resolvió de cada uno. */
+  componentes?: { termino_en: string; grams: number; food_id: string | null }[];
+  detalle: string;
+}
+
+export interface EngineResult {
+  /** `false` cuando la visión dijo que la foto no es comida. */
+  es_comida: boolean;
+  items: EngineItem[];
+  /** `null` si NINGÚN item pudo cuantificarse. */
+  totals: EngineTotals | null;
+  curation_candidates: CurationCandidate[];
+  /** La versión del catálogo con la que se calculó. Trazabilidad del scan. */
+  kb_version: string;
+}
