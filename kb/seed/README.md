@@ -1,8 +1,19 @@
-# `kb/seed` — publicación del catálogo a Firestore
+# `kb/seed` — publicación del catálogo y la configuración a Firestore
 
 La capa [4] del pipeline de la base de conocimiento (ver `docs/PLAN.md`): agarra
 `kb/build/foods.canonical.json` y lo publica en la colección `foods/` de
 Firestore.
+
+Son **dos comandos hermanos**, con el mismo cliente REST y la misma idea de
+idempotencia:
+
+| Comando | Qué publica | De dónde sale |
+|---|---|---|
+| `seed` | La colección `foods/` + `config/kb_meta` | `kb/build/foods.canonical.json` |
+| `seed:config` | El documento `config/app` | `config/recommendation_rules.json` + la `kb_version` del catálogo |
+
+El primero ocupa casi todo este README; el segundo tiene su sección propia,
+**[El seed de configuración](#el-seed-de-configuración-configapp)**.
 
 **La fuente de verdad es el repo, no Firestore.** Firestore es una copia de
 servicio: lo que está publicado tiene que ser exactamente lo que dice el
@@ -172,11 +183,111 @@ local está `--emulator`, que no manda ningún token real.
 --help
 ```
 
+## El seed de configuración (`config/app`)
+
+Lo mismo que hace `seed` con el catálogo, hace `seed:config` con la
+configuración de negocio: **la fuente de verdad es el repo** (`config/`, ver
+`config/README.md`) y Firestore es la copia. Es lo que hace cumplir la regla
+dura n.º 1 —*nada hardcodeado*—: los umbrales y las plantillas se editan en un
+PR y se publican sin desplegar.
+
+```bash
+# contra el emulador
+node kb/seed/dist/seed-config.js --project nutriscann-f809e --emulator
+
+# contra el proyecto real: primero el simulacro, siempre
+SEED_TOKEN="$(gcloud auth print-access-token --account=tomaszanchetti@gmail.com)" \
+  node kb/seed/dist/seed-config.js --project nutriscann-f809e --dry-run
+```
+
+### Qué escribe, y sobre todo qué NO
+
+`config/app` es un documento **compartido**: además de las reglas tiene los
+textos de la interfaz (`copy`) y el tope de análisis por día
+(`max_scans_per_day`), que son de otra mano. Por eso la escritura es un
+**merge con máscara de cuatro campos**:
+
+| Campo | Qué es |
+|---|---|
+| `recommendation_rules` | El documento de `config/recommendation_rules.json` **entero**, tal cual |
+| `kb_version` | La versión del catálogo canónico — el mismo archivo que publica `foods/`, para que las dos no puedan divergir |
+| `updated_by` | `"seed-config"` |
+| `updated_at` | Cuándo cambió por última vez lo publicado |
+
+Todo lo demás queda intacto, y eso no es una promesa del código: es lo único
+que la máscara permite tocar.
+
+`updated_at` sigue el mismo criterio que `seeded_at` en `config/kb_meta` — se
+mueve **solo cuando el contenido cambió**, para que la segunda corrida seguida
+pueda hacer cero escrituras de verdad. (No confundir con el `updated_at` que
+está *adentro* de `recommendation_rules`: ese es la fecha de edición del
+archivo y lo escribe una persona en el PR.)
+
+### Los candados: qué se rechaza antes de tocar la red
+
+El seed del catálogo es agnóstico del esquema a propósito; este **no**, y por un
+motivo concreto de `config/README.md` §4.3: la interfaz elige ícono y color a
+partir del `tag`, así que **un tag mal escrito no rompe nada visible, se degrada
+en silencio**. Lo que se valida:
+
+- `tags` es una lista cerrada, sin repetidos;
+- el `tag` de **cada** regla y el `fallback_tag` pertenecen a esa lista;
+- no hay dos reglas con el mismo `id`;
+- cada regla tiene `if`, `priority` numérica y `templates.es`;
+- ninguna condición nombra un identificador que no esté en
+  `evaluation.identifiers_allowed`.
+
+Ese último chequeo es **léxico, no sintáctico**: se sacan del `if` los nombres
+que parecen identificadores y se comparan con la lista. Alcanza para cazar un
+`sodium_per_kcal` mal tipeado; no dice si la expresión está bien formada — la
+gramática la implementa el motor, no el seed.
+
+Todo esto pasa **antes** de abrir una conexión: un documento inválido frena la
+corrida sin haber hablado con Firestore.
+
+### Opciones
+
+```
+--project <id>     obligatorio; no hay proyecto por defecto a propósito
+--rules <ruta>     por defecto config/recommendation_rules.json
+--catalog <ruta>   de dónde sale la kb_version; por defecto kb/build/foods.canonical.json
+--emulator         escribe contra el emulador en vez del proyecto real
+--token <token>    access token OAuth (o la variable SEED_TOKEN)
+--host <host>      sobrescribe el host del destino
+--database <id>    base de datos de Firestore; por defecto "(default)"
+--dry-run          calcula el diff, lo reporta y no escribe nada
+--help
+```
+
+### El circuito local de la Fase 2
+
+Con el emulador levantado, un solo comando desde la raíz publica el catálogo y
+la configuración contra `localhost:8080`:
+
+```bash
+# terminal 1 — el emulador de Firestore necesita Java (CLAUDE.md)
+PATH="/opt/homebrew/opt/openjdk/bin:$PATH" npm run emulators
+
+# terminal 2
+npm run kb:seed:local
+```
+
+`kb:seed:local` corre los dos seeds en orden —primero el catálogo, después la
+configuración— porque `config/app` estampa la `kb_version` del catálogo que se
+acaba de publicar. No le pases argumentos extra: npm los agregaría al final del
+comando compuesto, o sea solo a la segunda mitad; para un simulacro usá
+`npm run kb:seed -- --dry-run …` o `npm run kb:seed:config -- --dry-run …`
+por separado.
+
+Del lado del frontend, `apps/web/.env.local` con `VITE_FUNCTIONS_EMULATOR=1`
+completa el circuito (ver `apps/web/.env.local.example`).
+
 ## Los tests
 
 ```bash
-npm --prefix kb/seed test            # unitarios; no necesitan nada levantado
-npm --prefix kb/seed run test:emulator   # el circuito completo; EXIGE el emulador
+npm --prefix kb/seed test                    # unitarios; no necesitan nada levantado
+npm --prefix kb/seed run test:emulator       # los dos circuitos; EXIGEN el emulador
+npm --prefix kb/seed run test:emulator:config  # solo el de configuración
 ```
 
 Los unitarios prueban la **decisión** (`planificar` es pura: recibe el catálogo
@@ -205,6 +316,20 @@ anuncie que `config/kb_meta` se escribiría — y que efectivamente no lo escrib
 
 Usa el proyecto `nutriscann-seed-qa`, que no existe en GCP, y vacía sus datos
 por el endpoint `/emulator/v1/...`, que **solo existe en el emulador**.
+
+El circuito del **seed de configuración** va aparte (`emulador-config.test.ts`,
+proyecto `nutriscann-config-qa`) y afirma sobre las escrituras de cada corrida:
+
+1. el documento no existe → se crea con las reglas del repo, enteras;
+2. otra vez → 0 escrituras **y `updated_at` no se mueve**;
+3. otra mano agrega `copy` y `max_scans_per_day` → sigue en 0 escrituras;
+4. las reglas editadas a mano → se repara **solo** `recommendation_rules`, y
+   `copy` sobrevive al merge;
+5. sube la `kb_version` → se escribe solo ese campo;
+6. una corrida más → 0 escrituras.
+
+No lee `kb/build`: construye su propia `kb_version`, así no se vuelve
+intermitente cuando el catálogo se está recompilando.
 
 ## Detalles de implementación
 

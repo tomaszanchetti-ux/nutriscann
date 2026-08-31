@@ -16,6 +16,9 @@
     "kb:build": "npm --prefix kb run build",
     "kb:test": "npm --prefix kb run test",
     "kb:seed": "npm --prefix kb/seed run seed --",
+    "kb:seed:config": "npm --prefix kb/seed run seed:config --",
+    "$comment_seed_local": "El circuito de desarrollo de la Fase 2: catálogo + configuración contra el EMULADOR, en ese orden (config/app estampa la kb_version del mismo catálogo que se acaba de publicar). Necesita el emulador de Firestore levantado, y el emulador necesita Java: PATH=\"/opt/homebrew/opt/openjdk/bin:$PATH\" npm run emulators. El proyecto es el real solo de nombre — el emulador crea el que le pidan y nada sale de localhost. No le pases argumentos extra: npm los agregaría al final, o sea a la segunda mitad nada más; para un simulacro usá kb:seed o kb:seed:config sueltos con --dry-run.",
+    "kb:seed:local": "npm --prefix kb/seed run seed -- --project nutriscann-f809e --emulator --host localhost:8080 && npm --prefix kb/seed run seed:config -- --project nutriscann-f809e --emulator --host localhost:8080",
     "kb:seed:test": "npm --prefix kb/seed run test:emulator",
     "emulators": "firebase emulators:start",
     "deploy": "firebase deploy"
