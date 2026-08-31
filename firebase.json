@@ -11,7 +11,22 @@
       "source": "functions",
       "codebase": "default",
       "runtime": "nodejs22",
-      "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"]
+      "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"],
+      "$comment_ignore": "Los cinco primeros son los que la CLI ignora por defecto y hay que repetirlos: declarar `ignore` REEMPLAZA la lista, no la amplía, y perder `*.local` subiría .secret.local (la API key en texto plano) al paquete de deploy. `.secret.local` y `.env*` van además explícitos porque no está garantizado que el glob `*.local` matchee archivos que empiezan con punto (minimatch usa dot:false por defecto) — una línea contra un riesgo que no vale la pena correr (Q/A WS04). Los tests compilados y testing.js se excluyen porque leen del disco (kb/build/) y no tienen nada que hacer en producción.",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local",
+        ".secret.local",
+        ".env*",
+        "lib/**/*.test.js",
+        "lib/**/*.test.js.map",
+        "lib/**/testing.js",
+        "lib/**/testing.js.map",
+        "src/**/*.test.ts"
+      ]
     }
   ],
   "hosting": {

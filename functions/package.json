@@ -13,6 +13,8 @@
     "watch": "tsc --watch",
     "serve": "npm run build && firebase emulators:start --only functions,firestore",
     "lint": "tsc --noEmit",
+    "test": "npm run build && node --test lib/engine/*.test.js lib/kb/*.test.js lib/analyze/*.test.js",
+    "$comment_test_emulador": "El circuito contra el emulador de Firestore se saltea solo si el emulador no está levantado (`PATH=\"/opt/homebrew/opt/openjdk/bin:$PATH\" npm run emulators` en otra terminal, y `npm run kb:seed:local` para sembrarlo). Ningún test llama a la API de Anthropic de verdad: el cliente entra inyectado.",
     "logs": "firebase functions:log"
   },
   "dependencies": {
