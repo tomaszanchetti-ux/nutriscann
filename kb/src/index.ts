@@ -1,7 +1,7 @@
 /**
  * Punto de entrada del build de la base de conocimiento.
  *
- *   npm run build              compila el catálogo y verifica los 5 candados
+ *   npm run build              compila el catálogo y verifica los 6 candados
  *   npm run build -- --rapido  saltea la segunda corrida (candado 5)
  *   npm run build -- --seco    corre y reporta, pero no escribe nada
  *
@@ -83,6 +83,21 @@ function report(outcome: BuildOutcome): void {
   }
   line("porciones sobrescritas", stats.curatedPortions);
   line("etiquetas de porción en español", stats.curatedPortionLabels);
+
+  const regla = result.curation.genericRule;
+  line("fichas genéricas marcadas (DT-13)", regla === null ? "(sin regla declarada)" : stats.genericFoods);
+  if (regla !== null) {
+    line(
+      `  con caveat de sodio ≥ ${regla.umbral_sodio_mg} mg`,
+      `${stats.genericCaveats} (${regla.criteria_version})`,
+    );
+  }
+  line("guardas de vocabulario", result.curation.guardas.length);
+  if (stats.guardViolations.length > 0) {
+    console.log("  ✗ guardas violadas:");
+    for (const v of stats.guardViolations) console.log(`    - ${v.id} · "${v.termino}" · ${v.donde}`);
+  }
+
   line("PENDIENTES (names.es = null)", stats.pendingCuration.length);
   if (result.curation.problems.length > 0) {
     console.log("  ⚠ problemas de forma en la curación:");

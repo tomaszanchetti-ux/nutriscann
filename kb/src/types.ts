@@ -111,8 +111,9 @@ export function aliasConfidence(alias: Alias): number {
  *
  * `caveats` es opcional y aparece solo donde hace falta: es el lugar donde una
  * entrada de curación manual declara lo que su fuente NO dice (valores por 100
- * ml y no por 100 g, sin dato de fibra). Los alimentos de USDA no lo llevan, así
- * que la clave no existe en sus documentos y el catálogo no engorda por nada.
+ * ml y no por 100 g, sin dato de fibra), y desde la DT-13 también donde el build
+ * escribe la salvedad de un genérico de sodio alto. La clave no existe en las
+ * demás fichas y el catálogo no engorda por nada.
  */
 export interface CanonicalFood {
   id: string;
@@ -126,6 +127,15 @@ export interface CanonicalFood {
   default_portion_g: number;
   provenance: Record<string, Provenance>;
   deprecated: boolean;
+  /**
+   * La ficha mide el PROMEDIO de una familia, no un alimento (DT-13). USDA lo
+   * dice en su inglés (`Cheese, NFS`, `Beans, NS as to type`) y la curación lo
+   * borra del español a propósito, así que sin esta marca el motor de la fase 2
+   * tendría que volver a parsear el nombre en inglés para saber cuánto creerle
+   * a un match. Solo existe donde vale `true`: un `generic: false` en las otras
+   * mil fichas sería una clave que no dice nada, repetida mil veces.
+   */
+  generic?: true;
   caveats?: string[];
   /**
    * De qué está hecho, cuando el alimento se DERIVÓ de una receta (card 1.7).

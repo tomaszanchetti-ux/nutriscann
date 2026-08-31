@@ -10,6 +10,12 @@
  * Lo que NO es tolerante es un archivo mal formado: si existe y no respeta el
  * contrato, el build avisa fuerte. Tolerar la ausencia no es tolerar la basura.
  *
+ * Y hay DOS archivos donde ni siquiera la ausencia se tolera —`genericos.dt13.json`
+ * y `guardas.vocabulario.json`—, porque no son vocabulario a medio escribir sino
+ * política aprobada. Este módulo los lee igual que a los demás (devuelve `null` o
+ * una lista vacía y anota el problema): quien los declara obligatorios es el
+ * candado 0, en `locks.ts`. La lectura no decide; decide el candado.
+ *
  * Contrato acordado:
  *   names.es.json           { "<fdc_id>": { "name": "...", "aliases": ["..."] } }
  *   portions.overrides.json { "<fdc_id>": { "default_portion_g": N, "label_es": "..." } }
@@ -17,6 +23,8 @@
  *   manual.foods.json       { "foods": [ { id, per_100g, ... } ] }
  *   cooking.transforms.json { "transforms": { "<metodo>": { factor_peso, ... } } }
  *   recipes.foods.json      { "recipes": [ { id, metodo, ingredientes, ... } ] }
+ *   genericos.dt13.json     { marcadores_en, umbral_sodio_mg, plantilla_caveat }
+ *   guardas.vocabulario.json { "guardas": [ { termino, prohibido_en, motivo } ] }
  *
  * Las dos claves del override son independientes: se puede corregir solo los
  * gramos, solo la etiqueta en español, o las dos.
@@ -24,6 +32,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { PLACEHOLDER_SODIO, type GenericRule } from "./genericos";
 import { OPTIONAL_KEYS, REQUIRED_KEYS } from "./nutrients";
 import { CURATION_DIR } from "./sources";
 import type { CookingTransform } from "./transforms";
@@ -94,6 +103,21 @@ export interface Recipe {
   caveats: string[];
 }
 
+/**
+ * Una guarda de vocabulario: un término que NO puede nombrar a ciertas fichas.
+ *
+ * Nace con `chorizo`, que es un embutido y también la mitad del nombre de un
+ * corte vacuno (`Bife de chorizo`). La comparación es por igualdad exacta sobre
+ * el término normalizado, no por subcadena: el nombre compuesto es correcto y lo
+ * que se prohíbe es el término a secas, como nombre o como alias.
+ */
+export interface GuardaVocabulario {
+  termino: string;
+  /** Los ids del catálogo donde ese término está prohibido. */
+  prohibido_en: string[];
+  motivo: string;
+}
+
 export interface Curation {
   names: Map<number, CuratedName>;
   portions: Map<number, CuratedPortion>;
@@ -105,6 +129,10 @@ export interface Curation {
   transforms: Map<string, CookingTransform>;
   /** Recetas compuestas, en el orden del archivo. */
   recipes: Recipe[];
+  /** La política de genéricos (DT-13). `null` mientras el archivo no exista. */
+  genericRule: GenericRule | null;
+  /** Guardas de vocabulario, en el orden del archivo. */
+  guardas: GuardaVocabulario[];
   /** Archivos que se encontraron, para que el reporte diga qué se mezcló. */
   filesFound: string[];
   /** Problemas de forma en archivos que sí existen. */
@@ -144,6 +172,8 @@ export function loadCuration(dir: string = CURATION_DIR): Curation {
   const manualFoods: ManualFood[] = [];
   const transforms = new Map<string, CookingTransform>();
   const recipes: Recipe[] = [];
+  const guardas: GuardaVocabulario[] = [];
+  let genericRule: GenericRule | null = null;
   const filesFound: string[] = [];
   const problems: string[] = [];
 
@@ -357,7 +387,118 @@ export function loadCuration(dir: string = CURATION_DIR): Curation {
     }
   }
 
-  return { names, portions, regionalAliases, manualFoods, transforms, recipes, filesFound, problems };
+  // --- La política de genéricos (DT-13) -------------------------------------
+  const genericFile = join(dir, "genericos.dt13.json");
+  if (existsSync(genericFile)) {
+    filesFound.push("genericos.dt13.json");
+    const raw = readJsonObject(genericFile, problems);
+    if (raw !== null) genericRule = parseGenericRule(raw, "genericos.dt13.json", problems);
+  }
+
+  // --- Guardas de vocabulario -----------------------------------------------
+  const guardasFile = join(dir, "guardas.vocabulario.json");
+  if (existsSync(guardasFile)) {
+    filesFound.push("guardas.vocabulario.json");
+    const raw = readJsonObject(guardasFile, problems);
+    const list = raw?.["guardas"];
+    if (raw !== null && !Array.isArray(list)) {
+      problems.push('guardas.vocabulario.json: se esperaba { "guardas": [ ... ] }');
+    } else {
+      for (const [index, item] of ((list ?? []) as unknown[]).entries()) {
+        const label = `guardas.vocabulario.json[${index}]`;
+        if (item === null || typeof item !== "object" || Array.isArray(item)) {
+          problems.push(`${label}: se esperaba un objeto`);
+          continue;
+        }
+        const entry = item as { termino?: unknown; prohibido_en?: unknown; motivo?: unknown };
+        if (typeof entry.termino !== "string" || entry.termino.trim() === "") {
+          problems.push(`${label}: "termino" ausente o vacío`);
+          continue;
+        }
+        if (
+          !Array.isArray(entry.prohibido_en) ||
+          entry.prohibido_en.length === 0 ||
+          entry.prohibido_en.some((id) => typeof id !== "string" || id.trim() === "")
+        ) {
+          problems.push(`${label}: "prohibido_en" es una lista NO vacía de ids del catálogo`);
+          continue;
+        }
+        // Una guarda sin motivo es una prohibición sin razón: dentro de un año
+        // nadie sabe si sigue valiendo y se borra la guarda en vez del error.
+        if (typeof entry.motivo !== "string" || entry.motivo.trim() === "") {
+          problems.push(`${label}: falta "motivo"`);
+          continue;
+        }
+        guardas.push({
+          termino: entry.termino.trim(),
+          prohibido_en: (entry.prohibido_en as string[]).map((id) => id.trim()),
+          motivo: entry.motivo.trim(),
+        });
+      }
+    }
+  }
+
+  return {
+    names,
+    portions,
+    regionalAliases,
+    manualFoods,
+    transforms,
+    recipes,
+    genericRule,
+    guardas,
+    filesFound,
+    problems,
+  };
+}
+
+/**
+ * Valida la política de genéricos. Exigente por la misma razón que la curación
+ * manual: es una regla que toca cientos de fichas de una, así que un error acá
+ * no se ve como un alimento raro sino como trescientos.
+ */
+function parseGenericRule(
+  raw: Record<string, unknown>,
+  label: string,
+  problems: string[],
+): GenericRule | null {
+  const before = problems.length;
+
+  const marcadores: string[] = [];
+  const rawMarcadores = raw["marcadores_en"];
+  if (!Array.isArray(rawMarcadores) || rawMarcadores.length === 0) {
+    problems.push(`${label}: "marcadores_en" es una lista NO vacía de textos`);
+  } else {
+    for (const marcador of rawMarcadores) {
+      if (typeof marcador === "string" && marcador.trim() !== "") marcadores.push(marcador.trim());
+      else problems.push(`${label}: "marcadores_en" debe ser una lista de textos`);
+    }
+  }
+
+  const umbral = Number(raw["umbral_sodio_mg"]);
+  if (!Number.isFinite(umbral) || umbral < 0) {
+    problems.push(`${label}: "umbral_sodio_mg" debe ser un número >= 0`);
+  }
+
+  const plantilla = typeof raw["plantilla_caveat"] === "string" ? (raw["plantilla_caveat"] as string).trim() : "";
+  if (plantilla === "") {
+    problems.push(`${label}: falta "plantilla_caveat"`);
+  } else if (!plantilla.includes(PLACEHOLDER_SODIO)) {
+    // Un caveat que avisa que "puede variar" sin decir de qué número habla no
+    // informa nada: quien lo lee no tiene cómo saber si le importa.
+    problems.push(`${label}: la plantilla tiene que traer ${PLACEHOLDER_SODIO}`);
+  }
+
+  const version = typeof raw["criteria_version"] === "string" ? (raw["criteria_version"] as string).trim() : "";
+  if (version === "") problems.push(`${label}: falta "criteria_version"`);
+
+  if (problems.length !== before) return null;
+  return {
+    criteria_version: version,
+    marcadores_en: marcadores,
+    umbral_sodio_mg: umbral,
+    plantilla_caveat: plantilla,
+  };
 }
 
 /** Valida una receta entera. Exigente por el mismo motivo que la curación manual. */

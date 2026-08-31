@@ -47,12 +47,12 @@ Un catálogo correcto **por construcción**, no por disciplina.
 
 ```bash
 cd kb && npm install     # sin dependencias de runtime: solo TypeScript
-npm run build            # compila el catálogo y verifica los cinco candados
+npm run build            # compila el catálogo y verifica los seis candados
 npm run build -- --seco  # corre y reporta, pero no escribe nada
 npm test                 # candados en frío + el pipeline completo dos veces
 ```
 
-El build **no escribe nada hasta que los cinco candados dan verde**. Termina con
+El build **no escribe nada hasta que los seis candados dan verde**. Termina con
 código 1 y la lista de fallas: un catálogo mutilado publicado es peor que un
 build que no corre, porque el error aparece en el reporte de un usuario.
 
@@ -66,8 +66,21 @@ diff revisable en un pull request):
 
 El build **falla** —y por lo tanto no hay seed— si:
 
+0. **Política declarada.** Falta `curation/genericos.dt13.json` o
+   `curation/guardas.vocabulario.json`, o alguno de los dos no respeta su
+   contrato. Lleva el cero porque es la **precondición**: sin la política, el
+   candado 1 se queda sin la llave con la que re-deriva las marcas. Es la
+   excepción declarada a la tolerancia de la capa 3 — el vocabulario se escribe
+   de a poco y un catálogo sin traducir se publica igual, pero **una decisión de
+   producto ya tomada no puede desaparecer sin ruido**. Existe por una falla
+   medida: borrar el archivo de la DT-13 daba un build en verde que publicaba un
+   catálogo con cero marcas `generic` y cero caveats.
 1. **Esquema.** Un alimento no valida: los cuatro macros y las calorías tienen
-   que estar y ser números finitos. Nada de `NaN` ni de `Infinity`.
+   que estar y ser números finitos. Nada de `NaN` ni de `Infinity`. Acá viven
+   además los candados de vocabulario —el nombre viejo de una ficha renombrada,
+   las guardas de `curation/guardas.vocabulario.json`— y el de la DT-13, que
+   **re-deriva** de la regla declarada la marca `generic` y el caveat de cada
+   ficha y exige que el catálogo diga exactamente eso, en las dos direcciones.
 2. **Aceptación por fuente.** Menos de 600 alimentos de FNDDS, 250 de SR Legacy,
    1 manual o 1 receta con nutrientes resueltos. Este candado existe por una
    trampa medida: FNDDS referencia los nutrientes por `nutrient_nbr` y los otros
@@ -121,7 +134,7 @@ refactorizar el catálogo ni migrar Firestore.
 el catálogo se publica igual y el seed no espera a nadie. Los cuatro macros y
 las calorías, en cambio, nunca son `null` — sin ellos el alimento no entra.
 
-Cuatro extensiones del contrato (todas aditivas, desde la card 1.6/1.7):
+Cinco extensiones del contrato (todas aditivas, desde la card 1.6/1.7/2.DT):
 
 - **`source`** puede valer además `manual` (etiqueta comercial o referencia web,
   con el matiz declarado en su provenance) y `receta` (valores derivados por el
@@ -130,9 +143,15 @@ Cuatro extensiones del contrato (todas aditivas, desde la card 1.6/1.7):
   1,0 implícita) o el objeto `{ "alias": "Milanesa", "confidence": 0.6 }` con la
   escala cerrada 1,0 · 0,8 · 0,6 · 0,5 — un gemelo aproximado declara cuánto se
   parece, y esa reserva viaja hasta el usuario.
-- **`caveats`** (solo en alimentos `manual` y `receta`, es candado): las
-  salvedades de la ficha en texto plano ("valores por 100 ml", "receta estándar
-  declarada, no medición de laboratorio").
+- **`caveats`**: las salvedades de la ficha en texto plano ("valores por 100 ml",
+  "receta estándar declarada, no medición de laboratorio"). Las escribe a mano la
+  curación en los alimentos `manual` y `receta`, y desde la DT-13 las **genera el
+  build** en los genéricos de sodio alto. Sigue siendo candado: un alimento de
+  USDA solo puede llevar el caveat que la política de genéricos produce para esa
+  ficha exacta, y el candado lo verifica re-derivándolo.
+- **`generic: true`** (solo en alimentos de USDA, DT-13): la ficha mide el
+  **promedio de una familia**, no un alimento. La clave solo existe donde vale
+  `true`. La lee el motor de la fase 2 para bajar la confianza de un match.
 - **`receta`** (solo en alimentos `receta`): los ingredientes con sus gramos y
   refs, el método de cocción aplicado y los pesos de entrada/salida — todo lo
   necesario para rehacer la cuenta a mano.
@@ -164,6 +183,12 @@ el build imprime los pendientes. Lo que no tolera es un archivo mal formado: si
 existe y no respeta el contrato, lo reporta. Tolerar la ausencia no es tolerar
 la basura.
 
+**Dos archivos son la excepción, y está declarada:** `genericos.dt13.json` y
+`guardas.vocabulario.json` no son vocabulario a medio escribir, son **política
+aprobada**. Si falta uno, o está mal formado, el candado 0 rompe el build. La
+tolerancia existe para que la traducción avance de a poco, no para que una
+decisión de producto se pueda borrar sin que nadie se entere.
+
 ```jsonc
 // curation/names.es.json
 { "173944": { "name": "Banana", "aliases": ["plátano", "banano"] } }
@@ -186,8 +211,20 @@ que el resto de las porciones sigue declarando su origen USDA.
 
 ## Estado
 
-**Las cuatro capas en pie (WS03, 30/08/2026).** El build compila 1.025 alimentos
-(703 FNDDS + 307 SR Legacy + 6 manuales + 9 recetas compuestas) con los cinco
-candados en verde, la curación en español completa y las transformaciones de
-cocción medidas de los propios datasets. La capa 4 es `seed/` (card 1.5): la
-publicación idempotente a Firestore, con su propio README.
+**Las cuatro capas en pie (card 2.DT, 31/08/2026).** El build compila **1.022**
+alimentos (701 FNDDS + 306 SR Legacy + 6 manuales + 9 recetas compuestas) en la
+versión **3.0.0**, con los seis candados en verde, la curación en español
+completa y las transformaciones de cocción medidas de los propios datasets. La
+capa 4 es `seed/` (card 1.5): la publicación idempotente a Firestore, con su
+propio README.
+
+Qué cambió respecto de la 2.1.0 (1.025 alimentos):
+
+- **DT-8** — se resolvieron los siete pares que la DT-7 había dejado ambiguos.
+  Tres eran la misma medición contada dos veces y se **fusionaron** (puré de papa,
+  frijoles secos cocidos, croquetas de papa congeladas): de ahí los tres alimentos
+  menos, y de ahí que la versión sea un **mayor** — retirar fichas de un catálogo
+  ya publicado rompe una promesa, y se anuncia con el número.
+- **DT-13** — la política de los **genéricos**: 339 fichas salen marcadas
+  `generic: true` y 101 de ellas, además, con un caveat generado que dice cuánto
+  sodio promedia. El umbral y el texto viven en `curation/genericos.dt13.json`.

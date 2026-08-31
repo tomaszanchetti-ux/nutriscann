@@ -17,5 +17,7 @@
  "168485": {"default_portion_g": 150, "label_es": "1 porción"},
  "169207": {"default_portion_g": 120, "label_es": "1 porción"},
  "170054": {"default_portion_g": 125, "label_es": "1/2 taza"},
- "170172": {"default_portion_g": 100, "label_es": "1/2 taza"}
+ "170172": {"default_portion_g": 100, "label_es": "1/2 taza"},
+
+ "171247": {"default_portion_g": 5, "label_es": "1 cucharada rallada"}
 }

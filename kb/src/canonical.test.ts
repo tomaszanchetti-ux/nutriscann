@@ -41,6 +41,8 @@ function emptyCuration(): Curation {
     manualFoods: [],
     transforms: new Map(),
     recipes: [],
+    genericRule: null,
+    guardas: [],
     filesFound: [],
     problems: [],
   };

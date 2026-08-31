@@ -79,6 +79,9 @@ function emptyStats(): BuildStats {
     curatedPortions: 0,
     curatedPortionLabels: 0,
     portionNeedsReview: [],
+    genericFoods: 0,
+    genericCaveats: 0,
+    guardViolations: [],
     descriptionMismatches: [],
     foodsWithoutPortions: [],
   };
@@ -166,7 +169,7 @@ test("candado 2: el catálogo completo pasa el piso por fuente", () => {
 test("candado 2: si las recetas desaparecen, el build explota", () => {
   // Mismo motivo que el piso de la curación manual: `recipes.foods.json` se lee
   // de forma tolerante, así que vaciarlo no lanza nada y el catálogo saldría sin
-  // ninguna ficha derivada, con los cinco candados en verde.
+  // ninguna ficha derivada, con todos los candados en verde.
   const result = lockPerSource(
     catalog([
       ...manyFoods("usda_fndds", MINIMUM_BY_SOURCE.usda_fndds),

@@ -10,6 +10,8 @@
  * tocar un solo archivo de USDA.
  */
 import type { BuildStats } from "./canonical";
+import type { Curation } from "./curation";
+import { caveatDeSodio, esGenerico, type GenericRule } from "./genericos";
 import { ALIAS_CONFIDENCE_SCALE, type CanonicalFood, type Catalog, type FoodSource } from "./types";
 
 export interface LockResult {
@@ -161,8 +163,88 @@ export const GOLDEN_CHECKS: GoldenCheck[] = [
 const isNumber = (value: unknown): value is number =>
   typeof value === "number" && Number.isFinite(value);
 
-/** Candado 1 — el esquema. Ningún alimento entra sin sus cuatro macros. */
-export function lockSchema(catalog: Catalog, stats: BuildStats): LockResult {
+/**
+ * Los archivos de curación que NO son opcionales: son política aprobada.
+ *
+ * El build lee `curation/` de forma tolerante a propósito —un catálogo sin
+ * traducir se publica igual— y estos dos son la excepción declarada.
+ */
+export const POLICY_FILES = ["genericos.dt13.json", "guardas.vocabulario.json"] as const;
+
+/**
+ * Candado 0 — la política declarada.
+ *
+ * Es una PRECONDICIÓN y por eso lleva el cero: corre antes que los otros porque
+ * de él dependen. La tolerancia del build vale para el vocabulario, que se
+ * escribe de a poco; no vale para una decisión de producto ya tomada.
+ *
+ * Existe por una falla medida en el Q/A: borrar `genericos.dt13.json` daba un
+ * build en verde que publicaba un catálogo con CERO marcas `generic` y CERO
+ * caveats, y borrar `guardas.vocabulario.json` dejaba pasar un alias `Chorizo`
+ * sobre el bife de chorizo. Los dos silencios son de la misma familia que el
+ * mapeo vacío de FNDDS del candado 2: nada explota, simplemente no queda nada.
+ *
+ * Y hay un motivo más, propio de la DT-13: la regla es la LLAVE del candado 1.
+ * Sin ella en la mano, `lockSchema` no puede re-derivar las marcas y deja pasar
+ * un `generic: true` de más. Un candado cuya llave puede desaparecer sin ruido
+ * no es un candado.
+ */
+export function lockPolitica(curation: Curation | null): LockResult {
+  const failures: string[] = [];
+
+  if (curation === null) {
+    failures.push(
+      "el candado corrió sin la curación en la mano: no hay con qué verificar que la política " +
+        "declarada esté, y sin verificarla el catálogo no se publica",
+    );
+  } else {
+    if (curation.genericRule === null) {
+      failures.push(
+        `curation/${POLICY_FILES[0]} no está o no respeta el contrato: sin la política de la DT-13 ` +
+          "el catálogo saldría con cero marcas `generic` y cero caveats generados, y el candado 1 " +
+          "se quedaría sin la llave con la que re-deriva las marcas",
+      );
+    }
+    if (curation.guardas.length === 0) {
+      failures.push(
+        `curation/${POLICY_FILES[1]} no está, no trae guardas o ninguna respeta el contrato: sin él, ` +
+          "un alias `Chorizo` sobre el bife de chorizo pasaría sin que nadie lo note",
+      );
+    }
+    // Un archivo de política a medias es peor que uno ausente: publica una parte
+    // de lo que Tomás aprobó y calla el resto. Cualquier problema de forma en
+    // estos dos archivos es fatal, aunque lo que sobrevivió alcance para arrancar.
+    for (const problem of curation.problems) {
+      if (POLICY_FILES.some((file) => problem.includes(file))) failures.push(problem);
+    }
+  }
+
+  const guardas = curation?.guardas.length ?? 0;
+  return {
+    id: "0-politica",
+    name: "Política de curación declarada",
+    passed: failures.length === 0,
+    detail:
+      `${POLICY_FILES[0]}=${curation?.genericRule?.criteria_version ?? "AUSENTE"} · ` +
+      `${POLICY_FILES[1]}=${guardas} guarda${guardas === 1 ? "" : "s"}`,
+    failures,
+  };
+}
+
+/**
+ * Candado 1 — el esquema. Ningún alimento entra sin sus cuatro macros.
+ *
+ * `genericRule` es la política de la DT-13 tal como la declaró la curación. El
+ * candado la recibe para poder RE-DERIVAR la marca `generic` y el caveat de cada
+ * ficha y exigir que coincidan con lo que el catálogo trae. Sin la regla en la
+ * mano, un caveat en un alimento de USDA se rechaza como antes: es la única
+ * puerta por la que puede entrar, y sin la llave la puerta no existe.
+ */
+export function lockSchema(
+  catalog: Catalog,
+  stats: BuildStats,
+  genericRule: GenericRule | null = null,
+): LockResult {
   const failures: string[] = [];
 
   for (const item of stats.unresolved) {
@@ -186,10 +268,16 @@ export function lockSchema(catalog: Catalog, stats: BuildStats): LockResult {
         "el alias no falla, simplemente no matchea nunca",
     );
   }
+  for (const violacion of stats.guardViolations) {
+    failures.push(
+      `${violacion.id} rompe la guarda de vocabulario "${violacion.termino}" ` +
+        `(${violacion.donde}): ${violacion.motivo}`,
+    );
+  }
 
   const seen = new Set<string>();
   for (const food of catalog.foods) {
-    const problems = validateFood(food);
+    const problems = validateFood(food, genericRule);
     if (seen.has(food.id)) problems.push("id duplicado");
     seen.add(food.id);
     for (const problem of problems) failures.push(`${food.id}: ${problem}`);
@@ -204,11 +292,41 @@ export function lockSchema(catalog: Catalog, stats: BuildStats): LockResult {
   };
 }
 
-/** Los chequeos de forma de un alimento. Devuelve la lista de problemas. */
-export function validateFood(food: CanonicalFood): string[] {
+/**
+ * Los chequeos de forma de un alimento. Devuelve la lista de problemas.
+ *
+ * Con `genericRule` en la mano, además de la forma se verifica la POLÍTICA: la
+ * marca `generic` y el caveat de sodio se vuelven a derivar de la regla declarada
+ * y se exige que el catálogo diga exactamente eso. Así la regla no puede fallar
+ * en silencio en ninguna de las dos direcciones —ni dejar sin marcar a un
+ * genérico, ni marcar de más— y un caveat escrito a mano en un alimento de USDA
+ * sigue sin tener por dónde entrar.
+ */
+export function validateFood(food: CanonicalFood, genericRule: GenericRule | null = null): string[] {
   const problems: string[] = [];
   const esManual = food.source === "manual";
   const esReceta = food.source === "receta";
+  const esUsda = !esManual && !esReceta;
+
+  // --- La política de genéricos (DT-13) --------------------------------------
+  if (food.generic !== undefined && food.generic !== true) {
+    problems.push("generic, si existe, solo puede valer true (una ficha que no es genérica no lleva la clave)");
+  }
+  /** El caveat que la regla le manda a esta ficha, o `null` si no le toca ninguno. */
+  let caveatEsperado: string | null = null;
+  if (genericRule !== null) {
+    const deberiaSerGenerico = esUsda && esGenerico(food.names.en, genericRule.marcadores_en);
+    if (deberiaSerGenerico && food.generic !== true) {
+      problems.push(
+        `"${food.names.en}" trae un marcador de genérico de USDA y la ficha no está marcada ` +
+          "`generic`: el motor la trataría como una medición de un alimento concreto",
+      );
+    }
+    if (!deberiaSerGenerico && food.generic === true) {
+      problems.push(`la ficha está marcada \`generic\` y "${food.names.en}" no trae ningún marcador de USDA`);
+    }
+    if (deberiaSerGenerico) caveatEsperado = caveatDeSodio(food.per_100g.sodium_mg, genericRule);
+  }
 
   // El id declara de dónde viene el alimento con solo mirarlo: `fdc-<n>` es de
   // USDA, `manual-<algo>` lo escribió la curación. Los dos espacios de nombres
@@ -263,13 +381,40 @@ export function validateFood(food: CanonicalFood): string[] {
     // cuenta que el build no hizo.
     problems.push("el bloque receta solo puede existir en un alimento de source `receta`");
   }
+  if (esUsda) {
+    // Un caveat es lo que la fuente NO dice. Los alimentos de USDA no tienen
+    // dónde declararlo —el build los arma de los CSVs— así que el único caveat
+    // que pueden llevar es el que GENERA la política de genéricos, y se compara
+    // contra el texto que esa política produce para esta ficha exacta. Todo lo
+    // demás es un valor que entró por una puerta que no existe.
+    //
+    // Se cuenta la lista ENTERA y no se pregunta si el caveat está: `includes`
+    // se conforma con una copia y dejaba pasar la misma salvedad repetida dos
+    // veces. El build no puede producir eso, pero el candado no está para
+    // describir lo que el build hace hoy — está para que mañana no pueda.
+    const traidos = food.caveats ?? [];
+    const copias = caveatEsperado === null ? 0 : traidos.filter((c) => c === caveatEsperado).length;
+    if (caveatEsperado !== null && copias === 0) {
+      // La otra dirección del mismo candado: la regla existe, la ficha le toca, y
+      // el caveat no está. Un genérico de 1.757 mg de sodio publicado sin la
+      // salvedad es exactamente el número que después aparece en un reporte.
+      problems.push(
+        `la ficha es genérica y su sodio (${String(food.per_100g.sodium_mg)} mg) pasa el umbral ` +
+          "de la DT-13, y no trae el caveat generado",
+      );
+    }
+    if (copias > 1) {
+      problems.push(`el caveat generado por la DT-13 aparece ${copias} veces: la política lo emite UNA`);
+    }
+    for (const ajeno of traidos.filter((c) => c !== caveatEsperado)) {
+      problems.push(
+        `caveats en un alimento de USDA solo puede traer el caveat generado por la DT-13; ` +
+          `"${String(ajeno).slice(0, 60)}…" no lo es`,
+      );
+    }
+  }
   if (food.caveats !== undefined) {
-    if (!esManual && !esReceta) {
-      // Un caveat es lo que la fuente NO dice. Los alimentos de USDA no tienen
-      // dónde declararlo —el build los arma de los CSVs— así que un caveat en
-      // uno de ellos es un valor que entró por una puerta que no existe.
-      problems.push("caveats solo puede existir en un alimento de curación manual o de receta");
-    } else if (!Array.isArray(food.caveats) || food.caveats.length === 0) {
+    if (!Array.isArray(food.caveats) || food.caveats.length === 0) {
       problems.push("caveats, si existe, es una lista NO vacía (si no hay caveats, no va la clave)");
     } else if (food.caveats.some((c) => typeof c !== "string" || c.trim() === "")) {
       problems.push("caveats debe ser una lista de textos");

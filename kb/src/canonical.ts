@@ -9,7 +9,8 @@
  */
 import { createHash } from "node:crypto";
 
-import type { Curation, ManualFood, Recipe } from "./curation";
+import type { Curation, GuardaVocabulario, ManualFood, Recipe } from "./curation";
+import { caveatDeSodio, esGenerico, type GenericRule } from "./genericos";
 import { derivarReceta, type ResolvedIngredient } from "./transforms";
 import { OPTIONAL_KEYS, REQUIRED_KEYS, type NutrientBundle } from "./nutrients";
 import { groupOverrides, toSourceId, type Selection } from "./selection";
@@ -77,6 +78,15 @@ export interface BuildStats {
    * ese silencio es el mismo del que nos defiende el candado por fuente.
    */
   orphanRegionalAliases: number[];
+  /** Fichas marcadas `generic: true` por la política DT-13. */
+  genericFoods: number;
+  /** Fichas genéricas que además se llevaron el caveat de sodio (DT-13). */
+  genericCaveats: number;
+  /**
+   * Guardas de vocabulario violadas. Rompen el build: un término que nombra a la
+   * ficha equivocada manda al usuario a otro alimento, sin decir nada.
+   */
+  guardViolations: { id: string; termino: string; donde: string; motivo: string }[];
   /** Alimentos que entraron enteros por curación manual. */
   manualFoods: number;
   /** Alimentos derivados de una receta compuesta (card 1.7). */
@@ -112,7 +122,7 @@ export interface AssembleResult {
  * Se exporta para poder testear el desempate solo: este camino decide más de
  * doscientos valores y el candado de aceptación por fuente NO lo cubre (cuenta
  * alimentos de FNDDS y SR, y Foundation no aporta alimentos propios). Sin test
- * unitario, una regresión acá pasaría los cinco candados en verde.
+ * unitario, una regresión acá pasaría todos los candados en verde.
  */
 export function pickFoundationCandidate(
   candidates: number[],
@@ -154,6 +164,9 @@ export function assemble(input: AssembleInput): AssembleResult {
     inheritedAliases: 0,
     staleAliases: [],
     orphanRegionalAliases: [],
+    genericFoods: 0,
+    genericCaveats: 0,
+    guardViolations: [],
     manualFoods: 0,
     recipeFoods: 0,
     recipeFailures: [],
@@ -361,6 +374,17 @@ export function assemble(input: AssembleInput): AssembleResult {
   // acaba de entrar): los ingredientes tienen que estar todos resueltos antes.
   applyRecipes(foods, curation, stats);
 
+  // --- La política de genéricos (DT-13) --------------------------------------
+  // Al final del todo, sobre los valores DEFINITIVOS: el sodio con el que se
+  // decide el caveat es el que sale al catálogo, no el que traía el CSV antes de
+  // que Foundation o la curación manual lo pisaran.
+  applyGenericRule(foods, curation.genericRule, stats);
+
+  // Las guardas se leen sobre el catálogo ya armado, por lo mismo: un alias
+  // heredado de una exclusión o agregado por una entrada manual también tiene
+  // que pasar por acá.
+  checkVocabularyGuards(foods, curation.guardas, stats);
+
   // Orden estable: por id, comparado como texto (el id es el que viaja a
   // Firestore, así que el orden del archivo es el orden del catálogo).
   foods.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
@@ -370,22 +394,27 @@ export function assemble(input: AssembleInput): AssembleResult {
     selection: selection.criteria_version,
     sources: input.sourceIds,
   };
-  // 2.1.0 con la card 1.7.
+  // 3.0.0 con la card 2.DT (las decisiones DT-8 y DT-13 de Tomás).
   //
   // El 2.0.0 lo justificó la DT-7: retiró ocho alimentos del catálogo y renombró
-  // veintiuno, y un menor promete que lo que estaba sigue estando. Después se
-  // sumaron seis renombres más por la misma regla —el patrón `fat added` que el
-  // primer barrido no vio—, hasta los veintisiete de hoy, y una fuente nueva
-  // —`receta`— con una clave nueva y opcional en el contrato (`receta`, solo en
-  // los alimentos derivados).
+  // veintiuno, y un menor promete que lo que estaba sigue estando. La 2.1.0 fue
+  // MENOR porque lo suyo era aditivo —seis renombres de la misma ola y la fuente
+  // `receta`, con su clave nueva y opcional— y porque el 2.0.0 nunca se había
+  // publicado: no había consumidor al que romperle nada.
   //
-  // Es MENOR y no un segundo mayor por una razón concreta: el 2.0.0 nunca se
-  // publicó a Firestore, así que no hay consumidor que lo haya leído y no hay
-  // promesa que romper. Los seis renombres son la misma ola que el mayor ya
-  // anunció, antes de que llegara a nadie. Lo que sí cambia el contrato —la clave
-  // `receta` y el valor `receta` en `source`— es aditivo: quien lea el catálogo
-  // como lo leía en 2.0.0 no pierde un solo campo.
-  const kbVersion = `2.1.0+${contentHash({ generated_from: generatedFrom, foods })}`;
+  // Este es un MAYOR y por el motivo contrario en los dos frentes. La DT-8 fusiona
+  // tres pares de fichas idénticas y por lo tanto RETIRA tres alimentos
+  // (fdc-169768, fdc-2707348 y fdc-2709517), que es exactamente lo que el 2.0.0
+  // declaró como cambio mayor; y esta vez la versión anterior SÍ está publicada en
+  // Firestore, así que hay ids que un consumidor ya leyó. El seed los marcará
+  // `deprecated` y no los borra —la regla 6 del proyecto—, pero quien tenga uno de
+  // esos ids guardado deja de encontrar una ficha viva: eso es romper una promesa,
+  // y se anuncia con el número.
+  //
+  // Lo de la DT-13, en cambio, es aditivo y no habría movido el mayor solo: la
+  // clave `generic` es nueva y opcional, y los caveats generados usan una clave
+  // que el contrato ya tenía.
+  const kbVersion = `3.0.0+${contentHash({ generated_from: generatedFrom, foods })}`;
 
   return {
     catalog: { kb_version: kbVersion, generated_from: generatedFrom, foods },
@@ -586,6 +615,97 @@ export function applyRecipes(foods: CanonicalFood[], curation: Curation, stats: 
     foods.push(food);
     byId.set(food.id, food);
     stats.recipeFoods += 1;
+  }
+}
+
+/**
+ * Aplica la política de genéricos (DT-13) sobre el catálogo ya armado.
+ *
+ * Dos salidas, una sola regla declarada en `curation/genericos.dt13.json`:
+ *  - `generic: true` en toda ficha de USDA cuyo inglés traiga un marcador;
+ *  - un caveat con el sodio de la propia ficha, cuando pasa el umbral.
+ *
+ * Solo alcanza a los alimentos de USDA a propósito. Un alimento manual o una
+ * receta no promedian ninguna familia: los escribió o los derivó la curación
+ * para un plato concreto, y su reserva ya está escrita a mano en sus caveats.
+ *
+ * El caveat generado se AGREGA: si la ficha ya traía caveats, no se pisa ni uno.
+ */
+export function applyGenericRule(
+  foods: CanonicalFood[],
+  rule: GenericRule | null,
+  stats: BuildStats,
+): void {
+  if (rule === null) return;
+  for (const food of foods) {
+    if (food.source !== "usda_fndds" && food.source !== "usda_sr_legacy") continue;
+    if (!esGenerico(food.names.en, rule.marcadores_en)) continue;
+
+    food.generic = true;
+    food.provenance = sortKeys({ ...food.provenance, generic: "curation" });
+    stats.genericFoods += 1;
+
+    const caveat = caveatDeSodio(food.per_100g.sodium_mg, rule);
+    if (caveat === null) continue;
+    food.caveats = [...(food.caveats ?? []), caveat];
+    food.provenance = sortKeys({ ...food.provenance, caveats: "curation" });
+    stats.genericCaveats += 1;
+  }
+}
+
+/**
+ * Hace cumplir las guardas de vocabulario sobre el catálogo ya armado.
+ *
+ * Es el hermano del candado del nombre viejo: aquel impide que un nombre ya
+ * corregido vuelva de alias, este impide que un término caiga en la ficha
+ * equivocada aunque nadie lo haya escrito todavía. Igualdad exacta sobre el
+ * término normalizado, y no subcadena: `Bife de chorizo` contiene `chorizo` y
+ * está bien; lo prohibido es la ficha llamándose `Chorizo` a secas.
+ *
+ * La confianza no salva: un `chorizo` a 0,5 sobre un corte vacuno no dice "esto
+ * se parece", dice "esto es otra cosa". Para eso está el rechazo, no la escala.
+ */
+export function checkVocabularyGuards(
+  foods: CanonicalFood[],
+  guardas: GuardaVocabulario[],
+  stats: BuildStats,
+): void {
+  if (guardas.length === 0) return;
+  const byId = new Map(foods.map((food) => [food.id, food]));
+
+  for (const guarda of guardas) {
+    const termino = plano(guarda.termino);
+    for (const id of guarda.prohibido_en) {
+      const food = byId.get(id);
+      // Una guarda que apunta a una ficha que no existe no falla: simplemente no
+      // guarda nada. Es el mismo silencio del alias huérfano, y se trata igual.
+      if (food === undefined) {
+        stats.guardViolations.push({
+          id,
+          termino: guarda.termino,
+          donde: "la ficha no está en el catálogo: la guarda no guarda nada",
+          motivo: guarda.motivo,
+        });
+        continue;
+      }
+      if (food.names.es !== null && plano(food.names.es) === termino) {
+        stats.guardViolations.push({
+          id,
+          termino: guarda.termino,
+          donde: `names.es = "${food.names.es}"`,
+          motivo: guarda.motivo,
+        });
+      }
+      for (const alias of food.aliases.es) {
+        if (plano(aliasText(alias)) !== termino) continue;
+        stats.guardViolations.push({
+          id,
+          termino: guarda.termino,
+          donde: `alias "${aliasText(alias)}" con confianza ${aliasConfidence(alias)}`,
+          motivo: guarda.motivo,
+        });
+      }
+    }
   }
 }
 

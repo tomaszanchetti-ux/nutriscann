@@ -147,6 +147,7 @@ function stats(): BuildStats {
     inheritedAliases: 0, staleAliases: [], orphanRegionalAliases: [], manualFoods: 0, recipeFoods: 0,
     recipeFailures: [], manualOverridesByField: {}, manualOverrideFoods: 0,
     curatedPortions: 0, curatedPortionLabels: 0, portionNeedsReview: [],
+    genericFoods: 0, genericCaveats: 0, guardViolations: [],
     descriptionMismatches: [], foodsWithoutPortions: [],
   };
 }
@@ -176,7 +177,8 @@ function receta(over: Partial<Recipe> = {}): Recipe {
 function curacion(recipes: Recipe[]): Curation {
   return {
     names: new Map(), portions: new Map(), regionalAliases: new Map(), manualFoods: [],
-    transforms: new Map([["mezclado", MEZCLADO]]), recipes, filesFound: [], problems: [],
+    transforms: new Map([["mezclado", MEZCLADO]]), recipes, genericRule: null, guardas: [],
+    filesFound: [], problems: [],
   };
 }
 

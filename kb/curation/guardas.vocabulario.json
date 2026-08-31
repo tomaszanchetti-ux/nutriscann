@@ -1,0 +1,31 @@
+{
+ "$comment": [
+  "Guardas de vocabulario: términos que NO pueden caer en una ficha determinada.",
+  "",
+  "Es el hermano del candado del nombre viejo (dt7.pairs.json). Aquel impide que",
+  "un nombre que ya se corrigió vuelva de alias; este impide que una palabra",
+  "nombre a la ficha equivocada, aunque nadie la haya escrito nunca todavía. Los",
+  "dos existen por lo mismo: un error de vocabulario que se arregla a mano vuelve.",
+  "",
+  "La guarda compara el término NORMALIZADO —sin tildes, en minúsculas— contra el",
+  "nombre en español y contra CADA alias de la ficha, con cualquier confianza. Es",
+  "igualdad exacta, no subcadena: `Bife de chorizo` contiene `chorizo` y es un",
+  "nombre correcto; lo prohibido es que la ficha se llame `Chorizo` a secas o lleve",
+  "`Chorizo` de alias.",
+  "",
+  "Si una guarda se viola, el build rompe: la ficha no llega al seed.",
+  "",
+  "El motor de la fase 2 tendrá su propia guarda para el match difuso —acá se",
+  "blinda el catálogo, no el matcher—, pero un catálogo bien curado es el primer",
+  "lugar donde el error se puede frenar, y el más barato."
+ ],
+ "criteria_version": "guardas-v1",
+ "generated": "2026-08-31",
+ "guardas": [
+  {
+   "termino": "chorizo",
+   "prohibido_en": ["fdc-2705835"],
+   "motivo": "`Bife de chorizo` (Beef, steak, strip) es un CORTE VACUNO y el chorizo es un EMBUTIDO: los dos existen en España y en Argentina, y son dos alimentos distintos con dos perfiles distintos (239 kcal y 361 mg de sodio el corte, contra los 341 kcal y 983 mg del chorizo fresco de fdc-2706179). `chorizo` a secas es del embutido, donde ya vive con confianza 0,6; en el corte, ni siquiera con reserva: no es un gemelo aproximado, es otra cosa."
+  }
+ ]
+}

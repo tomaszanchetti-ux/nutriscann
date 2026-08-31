@@ -2,7 +2,7 @@
  * El pipeline completo contra los CSVs reales de USDA.
  *
  * Es el único test que lee los datasets: verifica que el catálogo se compile,
- * que los cinco candados den verde y que dos corridas completas produzcan el
+ * que los seis candados den verde y que dos corridas completas produzcan el
  * mismo archivo byte a byte. Tarda unos segundos porque efectivamente recorre
  * los CSVs dos veces: esa es justamente la prueba.
  */
@@ -10,13 +10,14 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { runContentLocks, runPipeline } from "./build";
+import { caveatDeSodio, esGenerico } from "./genericos";
 import { GOLDEN_CHECKS, MINIMUM_BY_SOURCE, lockIdempotence } from "./locks";
 import { loadExclusions } from "./selection";
 import { aliasText } from "./types";
 
-test("el pipeline compila el catálogo y pasa los cinco candados", { timeout: 600_000 }, async () => {
+test("el pipeline compila el catálogo y pasa los seis candados", { timeout: 600_000 }, async () => {
   const first = await runPipeline();
-  const locks = runContentLocks(first.catalog, first.stats, first.alcohol);
+  const locks = runContentLocks(first.catalog, first.stats, first.alcohol, first.curation);
 
   for (const lock of locks) {
     assert.equal(lock.passed, true, `candado ${lock.id} falló: ${lock.failures.join(" | ")}`);
@@ -34,7 +35,7 @@ test("el pipeline compila el catálogo y pasa los cinco candados", { timeout: 60
   assert.deepEqual(first.stats.recipeFailures, [], "ninguna receta puede quedar sin derivar");
   assert.ok(first.stats.bySource.usda_fndds >= MINIMUM_BY_SOURCE.usda_fndds);
   assert.ok(first.stats.bySource.usda_sr_legacy >= MINIMUM_BY_SOURCE.usda_sr_legacy);
-  assert.match(first.catalog.kb_version, /^2\.1\.0\+[0-9a-f]{8}$/);
+  assert.match(first.catalog.kb_version, /^3\.0\.0\+[0-9a-f]{8}$/);
 
   const second = await runPipeline();
   const idempotence = lockIdempotence(first.json, second.json);
@@ -65,6 +66,87 @@ test("las fichas que la DT-7 excluyó NO están en el catálogo, y sus reemplazo
       assert.ok(textos.includes(alias), `"${alias}" tendría que haber quedado como alias de fdc-${item.duplicado_de}`);
     }
   }
+});
+
+test("la política DT-13 alcanza a TODOS los genéricos del catálogo real", { timeout: 600_000 }, async () => {
+  const { catalog, curation, stats } = await runPipeline();
+  const regla = curation.genericRule;
+  assert.ok(regla !== null, "la política de genéricos tiene que estar declarada");
+
+  let marcados = 0;
+  let conCaveat = 0;
+  for (const food of catalog.foods) {
+    const esUsda: boolean = food.source === "usda_fndds" || food.source === "usda_sr_legacy";
+    const deberia: boolean = esUsda && esGenerico(food.names.en, regla.marcadores_en);
+    assert.equal(food.generic === true, deberia, `${food.id} "${food.names.en}": la marca generic no coincide`);
+    if (!deberia) continue;
+    marcados += 1;
+    const esperado = caveatDeSodio(food.per_100g.sodium_mg, regla);
+    if (esperado === null) continue;
+    conCaveat += 1;
+    assert.deepEqual(food.caveats, [esperado], `${food.id} no trae el caveat generado`);
+  }
+  // Los conteos que declaró el Bloque 0 de la card, con el catálogo ya fusionado.
+  assert.equal(marcados, stats.genericFoods);
+  assert.equal(conCaveat, stats.genericCaveats);
+  assert.ok(marcados > 300, `se esperaban más de 300 genéricos, hay ${marcados}`);
+  assert.ok(conCaveat > 90, `se esperaban más de 90 caveats generados, hay ${conCaveat}`);
+});
+
+test("`chorizo` a secas es del EMBUTIDO, nunca del corte vacuno", { timeout: 600_000 }, async () => {
+  // La guarda vive en curation/guardas.vocabulario.json y la hace cumplir el
+  // candado 1; este test mira el catálogo real desde el otro lado: quién se
+  // queda con la palabra. El matcher de la fase 2 tendrá su propia guarda.
+  const { catalog, stats } = await runPipeline();
+  assert.deepEqual(stats.guardViolations, [], "ninguna guarda de vocabulario puede estar violada");
+
+  const plano = (v: string): string =>
+    v.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+  const duenos = catalog.foods
+    .filter((food) => food.aliases.es.some((alias) => plano(aliasText(alias)) === "chorizo"))
+    .map((food) => food.id);
+  assert.deepEqual(duenos, ["fdc-2706179"], "el alias `chorizo` es del chorizo fresco y de nadie más");
+
+  const bife = catalog.foods.find((food) => food.id === "fdc-2705835");
+  assert.ok(bife, "el bife de chorizo tiene que seguir en el catálogo: es otro alimento, no un duplicado");
+  assert.equal(bife.names.es, "Bife de chorizo");
+  for (const alias of bife.aliases.es) assert.notEqual(plano(aliasText(alias)), "chorizo");
+});
+
+test("las decisiones DT-8 quedaron ejecutadas en el catálogo", { timeout: 600_000 }, async () => {
+  const { catalog } = await runPipeline();
+  const byId = new Map(catalog.foods.map((food) => [food.id, food]));
+
+  // Las tres fusiones: sale una ficha, queda la otra. (Que el vocabulario se
+  // herede lo verifica el test de las exclusiones, que recorre el archivo entero.)
+  for (const [sale, queda] of [
+    ["fdc-169768", "fdc-2709492"],
+    ["fdc-2707348", "fdc-2707347"],
+    ["fdc-2709517", "fdc-2709511"],
+  ]) {
+    assert.equal(byId.has(sale as string), false, `${sale} tendría que estar fusionado`);
+    assert.ok(byId.has(queda as string), `${queda} tiene que quedar`);
+  }
+
+  // Los dos pares de parmesano se CONSERVAN: la diferencia es real.
+  for (const id of ["fdc-2705728", "fdc-171247", "fdc-2705730"]) {
+    assert.ok(byId.has(id), `${id} tiene que seguir en el catálogo`);
+  }
+  // Y la porción absurda de la ficha de SR quedó corregida: 100 g de parmesano
+  // rallado no son una porción, son un envase.
+  const parmesanoSr = byId.get("fdc-171247");
+  assert.equal(parmesanoSr?.default_portion_g, 5);
+  assert.equal(parmesanoSr?.provenance["default_portion_g"], "curation");
+  assert.ok(
+    parmesanoSr?.portion_hints.some((hint) => hint.grams === 5 && hint.label_es === "1 cucharada rallada"),
+    "la porción por defecto tiene que llevar su etiqueta en español",
+  );
+
+  // Los pepinillos y la mantequilla genérica NO se tocaron.
+  assert.ok(byId.has("fdc-169378"), "los pepinillos dulces siguen: el nombre ya los distingue");
+  const mantequilla = byId.get("fdc-2710154");
+  assert.equal(mantequilla?.generic, true, "la mantequilla NFS se conserva, marcada como genérica");
+  assert.ok((mantequilla?.caveats ?? []).length > 0, "y con el caveat de la DT-13, porque pasa el umbral");
 });
 
 test("los alimentos descartados por Atwater no entran al catálogo", { timeout: 600_000 }, async () => {
