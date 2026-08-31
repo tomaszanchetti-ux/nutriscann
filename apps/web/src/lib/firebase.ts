@@ -51,3 +51,40 @@ export function functionUrl(name: string): string {
   }
   return `https://${FUNCTIONS_REGION}-${PROJECT_ID}.cloudfunctions.net/${name}`;
 }
+
+/**
+ * ¿La lectura de `config/app` va al emulador de Firestore?
+ *
+ * Es una variable SEPARADA de la de funciones, y no la misma, porque los dos
+ * casos existen por separado: probar el backend desplegado leyendo la config
+ * real es lo normal, y levantar solo el emulador de Firestore para editar
+ * textos sin tocar producción también. Atarlas obligaría a apagar una para
+ * usar la otra.
+ */
+export const USA_EMULADOR_DE_FIRESTORE = import.meta.env.VITE_FIRESTORE_EMULATOR === "1";
+
+/** Puerto del emulador de Firestore. El de `firebase.json` es el 8080. */
+const PUERTO_FIRESTORE = import.meta.env.VITE_FIRESTORE_EMULATOR_PORT ?? "8080";
+
+/**
+ * La URL REST de un documento de Firestore.
+ *
+ * POR QUÉ REST Y NO EL SDK. Lo único que el navegador lee de Firestore es
+ * `config/app`: un documento chiquito, público por las reglas, una vez por
+ * arranque. Traer `firebase/firestore` para eso costaba **110 kB gzip** medidos
+ * —el bundle pasaba de 92 a 202 kB— en una app que se abre desde un teléfono
+ * con la cámara en la mano. Un `fetch` a la API REST hace lo mismo con cero
+ * bytes de dependencia, y es el mismo criterio con el que está escrito el seed
+ * del catálogo ("REST sin dependencias", `kb/seed/README.md`).
+ *
+ * La lectura va SIN credenciales: las reglas de `firestore.rules` declaran
+ * `allow read: if true` para `config/{docId}`, así que la API key alcanza. Nada
+ * de esto abre una puerta nueva — es exactamente el permiso que el SDK usaría.
+ */
+export function firestoreDocUrl(coleccion: string, documento: string): string {
+  const ruta = `v1/projects/${PROJECT_ID}/databases/(default)/documents/${coleccion}/${documento}`;
+  if (USA_EMULADOR_DE_FIRESTORE) {
+    return `http://127.0.0.1:${PUERTO_FIRESTORE}/${ruta}`;
+  }
+  return `https://firestore.googleapis.com/${ruta}?key=${encodeURIComponent(options.apiKey ?? "")}`;
+}
