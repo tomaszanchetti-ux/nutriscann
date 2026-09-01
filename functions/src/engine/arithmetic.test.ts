@@ -11,7 +11,7 @@ import { describe, it } from "node:test";
 import type { Per100g } from "../kb/types";
 import { escalar, gramosValidos, porcentajesDeMacros, sumarTotales } from "./arithmetic";
 import { CONFIANZA_MINIMA_PARA_UN_TOTAL } from "./constants";
-import type { EngineItem, TotalesNutrientes } from "./types";
+import type { EngineItem, SumaDeNutrientes } from "./types";
 
 const COMPLETA: Per100g = {
   kcal: 200,
@@ -152,8 +152,14 @@ describe("card 2.8 — un total donde nadie se identificó no es un total comple
     const items = comidaDePlastico();
     const t = sumarTotales(items);
     assert.ok(t);
-    // La suma sigue calculada y a la vista: lo que cambió es cómo se la llama.
-    assert.equal(t.nutrients.kcal, 1020);
+    // CARD 6.1 — LA COMPUERTA CIERRA ENTERA. Hasta la 2.8 la suma seguía viajando
+    // en el payload (1.020 kcal acá, 1.550,4 en el plato 28 del golden set) con
+    // `completo: false` al lado: el JSON decía las dos cosas a la vez y quien lo
+    // pintara decidía cuál. Ahora el payload dice lo mismo que la declaración.
+    assert.equal(t.nutrients.kcal, null);
+    assert.equal(t.total_no_publicable, true);
+    // Pero el CONTEO no se toca: los dos ítems entraron a la suma, y eso es lo que
+    // permite seguir explicando de qué está hecho el plato.
     assert.equal(t.items_incluidos, 2);
     assert.equal(t.items_sin_datos, 0);
     assert.equal(t.grams_total, 510);
@@ -161,6 +167,39 @@ describe("card 2.8 — un total donde nadie se identificó no es un total comple
     // Y los ítems que se le pasaron no se tocaron.
     assert.equal(items.length, 2);
     assert.ok(items.every((i) => i.nutrients !== null && i.food_id !== null));
+  });
+
+  it("card 6.1 — LOS OCHO valores viajan en `null`, no solo el de portada", () => {
+    // DT-28, punto 3. La compuerta de la 2.8 apagaba la declaración y dejaba los
+    // números adentro del JSON: el plato 28 del golden set salía `completo: false`
+    // y con 1.550,4 kcal en `totals.nutrients.kcal`. Un payload que dice las dos
+    // cosas a la vez le deja la decisión a quien lo pinte.
+    const t = sumarTotales(comidaDePlastico());
+    assert.ok(t);
+    assert.deepEqual(t.nutrients, {
+      kcal: null,
+      protein_g: null,
+      carbs_g: null,
+      fat_g: null,
+      fiber_g: null,
+      sat_fat_g: null,
+      sugars_g: null,
+      sodium_mg: null,
+    });
+    // Y el `null` de la compuerta NO se puede confundir con el `null` de "la
+    // fuente no lo mide": hay una marca que lo dice.
+    assert.equal(t.total_no_publicable, true);
+  });
+
+  it("card 6.1 — un total que SÍ se publica no lleva la marca ni pierde un número", () => {
+    // La otra mitad del candado: la compuerta tiene que ser la excepción, no la
+    // regla. Sin este test, apagar todos los totales pasaría los tests de arriba.
+    const t = sumarTotales([item({ termino_en: "manzana", grams: 180, confidence: 0.95 })]);
+    assert.ok(t);
+    assert.equal(t.total_no_publicable, undefined);
+    assert.equal(typeof t.nutrients.kcal, "number");
+    assert.ok((t.nutrients.kcal ?? 0) > 0);
+    assert.ok(t.macro_pct !== null);
   });
 
   it("NO toca un plato correcto de confianza baja: el 24, con sus dos fichas buenas", () => {
@@ -219,7 +258,7 @@ describe("card 2.8 — un total donde nadie se identificó no es un total comple
 });
 
 describe("porcentajes de macros (Atwater 4/4/9)", () => {
-  const base: TotalesNutrientes = {
+  const base: SumaDeNutrientes = {
     kcal: 200,
     protein_g: 10,
     carbs_g: 20,

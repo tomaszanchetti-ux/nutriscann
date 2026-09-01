@@ -79,6 +79,7 @@ export type {
   PorcentajesDeMacros,
   Preparacion,
   TipoDeMatch,
+  SumaDeNutrientes,
   TotalesNutrientes,
   VisionComponent,
   VisionItem,

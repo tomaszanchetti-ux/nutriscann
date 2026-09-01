@@ -14,7 +14,32 @@ import { OPTIONAL_KEYS, REQUIRED_KEYS, type OptionalNutrientKey } from "../kb/nu
 import type { Per100g } from "../kb/types";
 import { ATWATER, CONFIANZA_MINIMA_PARA_UN_TOTAL } from "./constants";
 import { redondear } from "./match";
-import type { EngineItem, EngineTotals, Per100gEscalado, PorcentajesDeMacros, TotalesNutrientes } from "./types";
+import type {
+  EngineItem,
+  EngineTotals,
+  Per100gEscalado,
+  PorcentajesDeMacros,
+  SumaDeNutrientes,
+  TotalesNutrientes,
+} from "./types";
+
+/**
+ * LOS OCHO VALORES EN BLANCO: lo que viaja cuando la compuerta del total cierra.
+ *
+ * No es un total de cero —eso afirmaría que el plato no aporta nada— ni un objeto
+ * ausente: es la misma forma de siempre con los ocho valores declarados como no
+ * publicables. Ver `TotalesNutrientes` en `types.ts`.
+ */
+const TOTAL_SIN_PUBLICAR: TotalesNutrientes = {
+  kcal: null,
+  protein_g: null,
+  carbs_g: null,
+  fat_g: null,
+  fiber_g: null,
+  sat_fat_g: null,
+  sugars_g: null,
+  sodium_mg: null,
+};
 
 /**
  * Los valores de una porción: `per_100g × gramos / 100`.
@@ -80,7 +105,7 @@ export function interpretarGramos(gramos: number): { gramos: number; problema: s
  * fibra que USDA cuenta distinto, redondeos de la fuente. `sin_explicar` la
  * muestra en vez de esconderla repartiéndola entre los tres macros.
  */
-export function porcentajesDeMacros(totales: TotalesNutrientes): PorcentajesDeMacros | null {
+export function porcentajesDeMacros(totales: SumaDeNutrientes): PorcentajesDeMacros | null {
   if (!Number.isFinite(totales.kcal) || totales.kcal <= 0) return null;
   const pct = (gramos: number, factor: number): number => redondear((gramos * factor * 100) / totales.kcal, 1);
   const protein = pct(totales.protein_g, ATWATER.protein);
@@ -105,7 +130,7 @@ export function sumarTotales(items: EngineItem[]): EngineTotals | null {
   const gramsTotal = redondear(items.reduce((s, i) => s + i.grams, 0));
   if (conDatos.length === 0) return null;
 
-  const nutrients = { kcal: 0, protein_g: 0, carbs_g: 0, fat_g: 0 } as TotalesNutrientes;
+  const nutrients = { kcal: 0, protein_g: 0, carbs_g: 0, fat_g: 0 } as SumaDeNutrientes;
   for (const key of REQUIRED_KEYS) {
     nutrients[key] = redondear(conDatos.reduce((s, i) => s + (i.nutrients?.[key] ?? 0), 0));
   }
@@ -144,8 +169,12 @@ export function sumarTotales(items: EngineItem[]): EngineTotals | null {
     `${redondear(CONFIANZA_MINIMA_PARA_UN_TOTAL * 100, 1)} %. Los alimentos y sus valores siguen abajo, ` +
     `uno por uno, pero sumarlos y llamar a eso "el total del plato" sería afirmar algo que el análisis no sostiene.`;
 
+  // LA COMPUERTA CIERRA ENTERA (card 6.1). Antes apagaba la declaración y dejaba
+  // los números adentro del JSON; ahora el payload dice lo mismo que la
+  // declaración. Los ítems no se tocan: cada alimento sigue con sus valores.
   return {
-    nutrients,
+    nutrients: sinNadieIdentificado ? TOTAL_SIN_PUBLICAR : nutrients,
+    ...(sinNadieIdentificado ? { total_no_publicable: true as const } : {}),
     opcionales_ausentes: ausentes,
     macro_pct,
     macro_pct_motivo:

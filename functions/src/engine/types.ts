@@ -154,8 +154,16 @@ export interface EngineItem {
   composicion?: Composicion;
 }
 
-/** Los ocho valores sumados de todo el plato. */
-export interface TotalesNutrientes {
+/**
+ * LA SUMA CRUDA de todo el plato: lo que da la aritmética, antes de decidir si se
+ * puede publicar.
+ *
+ * Los cuatro obligatorios salen siempre número —ninguna ficha entra al catálogo
+ * sin ellos— y los cuatro opcionales salen `null` cuando alguna ficha no los
+ * declara (ver la regla sobre el vacío en `arithmetic.ts`). No es lo que viaja en
+ * el payload: eso es `TotalesNutrientes`.
+ */
+export interface SumaDeNutrientes {
   kcal: number;
   protein_g: number;
   carbs_g: number;
@@ -165,6 +173,25 @@ export interface TotalesNutrientes {
   sugars_g: number | null;
   sodium_mg: number | null;
 }
+
+/**
+ * LOS OCHO VALORES QUE VIAJAN, Y LOS OCHO PUEDEN SER `null`.
+ *
+ * Card 6.1 — LA COMPUERTA TAMBIÉN CIERRA EL PAYLOAD. Hasta la card 2.8 la
+ * compuerta del total (`CONFIANZA_MINIMA_PARA_UN_TOTAL`) apagaba la DECLARACIÓN
+ * —`completo: false`, `macro_pct: null` y el motivo escrito— pero los números
+ * seguían viajando: la foto de comida de plástico del golden set salía con
+ * `completo: false` y con **1.550,4 kcal** en `totals.nutrients.kcal`. Un JSON
+ * que dice "esto no se puede afirmar" y a la vez trae el número en firme le deja
+ * la decisión a quien lo pinte, y un cliente que se porte mal convierte una
+ * reserva del motor en una cifra de portada.
+ *
+ * Con los ocho en `null` el payload dice lo mismo que la declaración: no hay
+ * total. Los ítems NO se tocan — cada alimento sigue abajo con su ficha, sus
+ * gramos y sus propios `nutrients` — y `opcionales_ausentes` sigue explicando
+ * por qué faltaba lo que ya faltaba.
+ */
+export type TotalesNutrientes = { [K in keyof SumaDeNutrientes]: number | null };
 
 /** El reparto de calorías por macro, en porcentaje del total. */
 export interface PorcentajesDeMacros {
@@ -180,7 +207,21 @@ export interface PorcentajesDeMacros {
 }
 
 export interface EngineTotals {
+  /**
+   * La suma del plato — o los ocho valores en `null` cuando la compuerta del
+   * total cerró. `macro_pct_motivo` dice cuál de las dos cosas pasó.
+   */
   nutrients: TotalesNutrientes;
+  /**
+   * `true` cuando los ocho `nutrients` vienen en `null` porque la compuerta
+   * cerró: no es que la fuente no los declare, es que el análisis no sostiene el
+   * total. Solo aparece cuando vale `true`, igual que `generic` en el catálogo.
+   *
+   * Existe para que quien lea el payload no tenga que deducirlo de un `null`:
+   * `fiber_g: null` en un total normal significa "la fuente no lo mide" y acá
+   * significa otra cosa. Dos ausencias distintas no pueden leerse igual.
+   */
+  total_no_publicable?: true;
   /** Por qué un opcional salió `null`. Solo aparecen los que salieron `null`. */
   opcionales_ausentes: Partial<Record<"fiber_g" | "sat_fat_g" | "sugars_g" | "sodium_mg", string>>;
   macro_pct: PorcentajesDeMacros | null;

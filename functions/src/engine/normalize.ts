@@ -61,6 +61,59 @@ export function claveDeMatching(texto: string): string {
 }
 
 /**
+ * Cuántas lecturas como mucho se le sacan a un término con barras. Ver
+ * `lecturasDelTermino`.
+ */
+export const MAXIMO_DE_LECTURAS = 6;
+
+/**
+ * LAS LECTURAS DE UN TÉRMINO: la barra de la visión es una O, no una palabra.
+ *
+ * Cuando el modelo no se decide entre dos nombres escribe los dos con una barra
+ * en el medio: `cured ham, serrano/iberico`, `jamón serrano/ibérico`. Normalizar
+ * convierte esa barra en un espacio, y ahí el problema no es de puntuación sino
+ * de sentido: `jamon serrano iberico` es una frase que NADIE escribió, y contra
+ * ella el alias `Jamón serrano` (0,8) deja de matchear exacto y cae al difuso.
+ *
+ * MEDIDO EN EL GOLDEN SET DE 30, y es la única regresión que tuvo la corrida v2:
+ * en el plato 18 la visión escribió `serrano` a secas y el motor llegó a
+ * `Jamón crudo` (195 kcal) por el alias; en el plato 16 escribió
+ * `serrano/iberico` y terminó en `Jamón` cocido (117 kcal), un 40 % menos. La
+ * ficha correcta estaba, el alias estaba, y lo único que había cambiado era la
+ * barra.
+ *
+ * LA REGLA: cada pedazo con barras se lee una vez por rama, y las ramas se
+ * suman —no se multiplican— cuando hay más de un pedazo. `A b/c d e/f` da cuatro
+ * lecturas y no seis: cada barra se resuelve por su cuenta, con las demás
+ * enteras. Es deliberado y es lo que mantiene el costo acotado; el caso real es
+ * siempre UNA barra.
+ *
+ * LA PRIMERA LECTURA ES SIEMPRE LA LITERAL, y quien elige entre ellas
+ * (`buscarAlimento`) solo se queda con otra si es ESTRICTAMENTE mejor. Un término
+ * sin barras devuelve una sola lectura y el motor se comporta exactamente igual
+ * que antes: esto no puede cambiar ningún match que no tuviera una barra adentro.
+ */
+export function lecturasDelTermino(texto: string): string[] {
+  if (typeof texto !== "string") return [""];
+  const lecturas = [texto];
+  if (!texto.includes("/")) return lecturas;
+  // Un "pedazo con barras" es una corrida de caracteres sin espacios que tiene al
+  // menos una barra: `serrano/iberico`, `and/or`, `1/2`.
+  const pedazos = texto.match(/\S*\/\S*/g) ?? [];
+  for (const pedazo of pedazos) {
+    const ramas = pedazo.split("/").map((r) => r.trim()).filter((r) => r.length > 0);
+    // Una barra que no separa dos nombres (`/ solo`, `1/`) no dice nada.
+    if (ramas.length < 2) continue;
+    for (const rama of ramas) {
+      if (lecturas.length >= MAXIMO_DE_LECTURAS) return lecturas;
+      const lectura = texto.replace(pedazo, rama);
+      if (!lecturas.includes(lectura)) lecturas.push(lectura);
+    }
+  }
+  return lecturas;
+}
+
+/**
  * El piso de letras para plegar un plural. Debajo de esto la `s` final suele ser
  * parte del nombre y no una marca de plural (`gas`, `res`, `mas`).
  */
@@ -123,6 +176,112 @@ export function plegarPlural(normalizado: string): string {
 const MARCADOR_GENERICO = /^(?:nfs|ns as to\b.*|from (?:fresh|canned|frozen|dried|fast food|restaurant|restaurant or fast food))$/i;
 
 /**
+ * LA COLA DESCRIPTIVA: los pedazos que dicen CÓMO SE MIDIÓ el alimento, no cuál es.
+ *
+ * `MARCADOR_GENERICO` cubre la familia de "no lo especificamos más" y cubre
+ * SEGMENTOS ENTEROS entre comas. Falta la otra mitad, que la evaluación del golden
+ * set de 30 midió como la ÚNICA causa de los 5 silencios que quedaban: USDA le
+ * agrega al nombre una cola que declara si la grasa se sumó, si la cáscara se comió
+ * o si la piel entró a la medición. `Cucumber, with peel, raw` es un pepino;
+ * `Corn, canned, cooked, fat added, NS as to fat type` es maíz de lata. Nadie
+ * fotografía "maíz con la grasa agregada": fotografía maíz.
+ *
+ * SON FRASES, NO PALABRAS, Y SE SACAN DE CUALQUIER POSICIÓN. Dos razones medidas:
+ *
+ *   · en inglés la cola a veces es un segmento entre comas (`, fat added,`) y a
+ *     veces va pegada al medio del nombre (`Cucumber, with peel, raw`);
+ *   · EN ESPAÑOL NO HAY COMAS. La curación escribe `Pepino crudo con cáscara`,
+ *     `Maíz de lata cocido con grasa`, `Papa asada con cáscara` — un nombre
+ *     corrido. Una regla que solo partiera por comas no mordería NI UNA vez del
+ *     lado español, que es justamente el lado donde escribe el usuario. Medido en
+ *     el Bloque 0 de la WS06: "pepino" no encontraba `Pepino crudo con cáscara`,
+ *     con la ficha existiendo.
+ *
+ * SOLO LO QUE SUMA, NUNCA LO QUE RESTA, Y ESTO SE MIDIÓ CARO. La primera versión
+ * de esta lista incluía las formas negativas —`without salt`, `sin grasa`,
+ * `fat free`— por simetría, y la simetría era falsa: un marcador ADITIVO dice que
+ * la medición incluyó algo que el alimento normalmente trae, mientras que uno
+ * SUSTRACTIVO nombra OTRO PRODUCTO. Medido sobre el catálogo 3.1.0, con las
+ * negativas adentro:
+ *
+ *   · "mayonesa kraft" pasaba de *Mayonesa* (680 kcal/100 g) a *Mayonesa SIN
+ *     GRASA Kraft* (64) — y a confianza 1,0, porque la variante entraba por el
+ *     nivel exacto. **Diez veces menos calorías.**
+ *   · "butter" pasaba de `Butter, NFS` (743) a `Butter, without salt` (717);
+ *     "aderezo italiano" de 268 kcal a 47; "leche chocolatada con menos azúcar"
+ *     al descremado.
+ *
+ * La luz baja en grasa no es la comida sin la etiqueta: es otra ficha, y el
+ * catálogo la mide aparte a propósito (lo mismo que `Apple, raw, without skin`,
+ * que `DESCRIPTORES_DE_PRESENTACION` ya declara fuera de alcance por la fibra).
+ *
+ * QUÉ ENTRA Y QUÉ NO. Entra una frase solo si SUMA algo a la medición (se agregó
+ * grasa, se comió la piel, se salaron) y su ausencia deja el mismo alimento. No
+ * entra nada que nombre comida, que reste, ni que cambie de ficha: `with cheese`
+ * es un ingrediente, `breaded` es otra ficha con pan rallado, `green` en
+ * `Cabbage, green` es una variedad.
+ *
+ * LAS FRASES SE ESCRIBEN LEGIBLES Y SE COMPARAN PLEGADAS, igual que el resto del
+ * vocabulario: `con cáscara` se escribe con tilde y se compara como `con cascara`.
+ */
+export const COLAS_DESCRIPTIVAS: readonly string[] = [
+  // inglés — la grasa que la medición SUMÓ
+  "fat added", "salt added",
+  // inglés — la piel y la cáscara que entraron a la medición
+  "with peel", "with skin", "peel eaten", "skin eaten",
+];
+
+/**
+ * EL LADO ESPAÑOL SE ESCRIBE DISTINTO Y HAY QUE LEERLO DISTINTO.
+ *
+ * La curación no escribe frases fijas: escribe `con` y un sustantivo, y los
+ * encadena con una `y` — `Lentejas cocidas con sal y grasa`,
+ * `Papa asada con cáscara`, `Maíz de lata cocido con grasa`. Una lista de frases
+ * cerradas tendría que enumerar todas las combinaciones; una lista de
+ * SUSTANTIVOS más la regla de la conjunción las cubre todas y no enumera nada.
+ *
+ * SOLO `con`, NUNCA `sin`, por la misma razón que la lista inglesa dejó afuera las
+ * negativas: `Mayonesa sin grasa` no es mayonesa, y sacarle el `sin grasa` la
+ * hacía ganar la palabra "mayonesa" a 64 kcal cuando la mayonesa son 680.
+ */
+export const SUSTANTIVOS_DE_MEDICION: readonly string[] = ["grasa", "cascara", "piel", "sal", "hueso"];
+
+/** Las colas inglesas, ya plegadas y partidas en palabras. */
+const COLAS_EN = COLAS_DESCRIPTIVAS.map((frase) => tokens(claveDeMatching(frase))).sort((a, b) => b.length - a.length);
+const MEDICION = new Set(SUSTANTIVOS_DE_MEDICION.map((p) => claveDeMatching(p)));
+
+/**
+ * La clave SIN su cola descriptiva. Devuelve la misma clave si no tenía ninguna.
+ *
+ * Recorre por PALABRAS, nunca por subcadenas, que es lo que impide que `con sal`
+ * muerda adentro de `pasta con salsa`. Y una clave que fuera ENTERA su propia
+ * cola se devuelve intacta: vaciar un nombre no es normalizarlo.
+ */
+export function sinColaDescriptiva(clave: string): string {
+  const palabras = tokens(clave);
+  const salida: string[] = [];
+  let i = 0;
+  while (i < palabras.length) {
+    const palabra = palabras[i] ?? "";
+    if (palabra === "con" && MEDICION.has(palabras[i + 1] ?? "")) {
+      i += 2;
+      // `con sal Y grasa`: la conjunción encadena más sustantivos de medición, y
+      // sacar solo el primero dejaría una `y` huérfana colgada del nombre.
+      while (palabras[i] === "y" && MEDICION.has(palabras[i + 1] ?? "")) i += 2;
+      continue;
+    }
+    const frase = COLAS_EN.find((cola) => cola.every((p, j) => palabras[i + j] === p));
+    if (frase !== undefined) {
+      i += frase.length;
+      continue;
+    }
+    salida.push(palabra);
+    i += 1;
+  }
+  return salida.length === 0 ? clave : salida.join(" ");
+}
+
+/**
  * Las CLAVES EXTRA con las que también se puede encontrar un nombre del catálogo.
  *
  * La ficha NO CAMBIA: sigue llamándose `Beef, steak, NFS` y es lo que se le
@@ -154,10 +313,23 @@ export function variantesDeIndice(texto: string): string[] {
   if (typeof texto !== "string") return [];
   const literal = claveDeMatching(texto);
   const variantes = new Set<string>();
-  const agregar = (partes: string[]): void => {
-    const clave = claveDeMatching(partes.join(" "));
+  const agregarClave = (clave: string): void => {
     if (clave.length > 0 && clave !== literal) variantes.add(clave);
   };
+  // CADA VARIANTE SE AGREGA DOS VECES: con su cola descriptiva y sin ella. Las
+  // dos, nunca una en lugar de la otra — es lo que vuelve a la regla puramente
+  // ADITIVA. La clave que el índice ya tenía la sigue teniendo, y la nueva se
+  // suma; una variante no puede sacarle el lugar a otra ni a un nombre escrito.
+  const agregar = (partes: string[]): void => {
+    const clave = claveDeMatching(partes.join(" "));
+    agregarClave(clave);
+    agregarClave(sinColaDescriptiva(clave));
+  };
+  // EL NOMBRE ENTERO, SIN SU COLA. Es la única vía que muerde del lado español:
+  // `Pepino crudo con cáscara` no tiene ni una coma, así que ninguna de las
+  // pasadas por segmentos lo toca, y sin esta línea la ficha seguiría invisible
+  // para quien escribe "pepino".
+  agregarClave(sinColaDescriptiva(literal));
   for (const version of [texto, texto.replace(/\([^)]*\)/g, " ")]) {
     const utiles = version
       .split(",")

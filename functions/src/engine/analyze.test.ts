@@ -94,12 +94,24 @@ describe("card 2.6 — el escaneo con los dos nombres", () => {
   });
 
   it("y la arepa SIGUE saliendo sin datos, que es lo correcto", () => {
-    // El candado de que el recall se abrió sin abrir la puerta a inventar: la
-    // arepa no está en el catálogo (0 coincidencias, verificado) y el queso que
-    // lleva adentro no la puede reemplazar.
+    // El candado de que el recall se abrió sin abrir la puerta a inventar: el
+    // queso que lleva adentro no puede reemplazar al plato que lo lleva.
+    //
+    // EL ESCENARIO SE CONSTRUYE, Y ACÁ HUBO QUE RECONSTRUIRLO (card 6.1). La
+    // versión anterior se apoyaba en un hueco del catálogo real ("arepa = 0
+    // coincidencias, verificado") y el hueco se cerró: la curación de la WS06
+    // sumó `fdc-168070` *Arepa*. La REGLA que este test defiende no cambió —lo
+    // que viene detrás de un conector es un acompañamiento— y ahora se mide sobre
+    // un índice donde el plato no está y el relleno sí, que es exactamente la
+    // situación que la regla existe para resolver. Un candado que depende de que
+    // al catálogo le siga faltando algo no es un candado: es una casualidad.
+    const sinElPlato = indiceDeFixture([
+      fichaFalsa({ id: "test-queso", names: { en: "Cheese, NFS", es: "Queso" } }),
+      fichaFalsa({ id: "test-pan", names: { en: "Bread, NFS", es: "Pan" } }),
+    ]);
     const r = analizarEscaneo(
       escaneo([{ food_en: "arepa, grilled, filled with cheese", food_es: "arepa", grams: 150, confidence: 0.85 }]),
-      index,
+      sinElPlato,
     );
     const item = r.items[0];
     assert.ok(item);

@@ -37,6 +37,7 @@ import {
   estadoDeCoccion,
   empiezaConPalabra,
   inicioDelAcompanamiento,
+  lecturasDelTermino,
   mismasPreparaciones,
   posicionDeSecuencia,
   sinDescriptores,
@@ -246,6 +247,32 @@ function difusoEnIndice(
     if (cocido.mejor === null || candidato.confianza > cocido.mejor.confianza) cocido.mejor = candidato;
   };
 
+  /**
+   * A IGUALDAD EXACTA, GANA EL TÉRMINO QUE ESCRIBIÓ LA CURACIÓN.
+   *
+   * Es la misma precedencia que ya ordena el índice ("a igual largo gana el
+   * término escrito sobre la variante deducida", en `construirIndice`) llevada al
+   * desempate del difuso, donde hacía falta y no estaba. Antes el orden de la
+   * lista decidía solo, y la lista se ordena por LARGO: una variante larga le
+   * ganaba a un nombre real corto que empataba con ella.
+   *
+   * MEDIDO, y por eso existe: con la cola descriptiva de la card 6.1,
+   * `carrot, shredded` empataba en 0,6 entre `Carrots, raw` (el nombre escrito) y
+   * `carrot fresh cooked` (la variante de `Carrots, fresh, cooked, fat added,
+   * NS as to fat type`), y ganaba la variante por ser más larga: la zanahoria
+   * rallada de una ensalada pasaba de 41 kcal a 72. La regla nueva no cambia
+   * ningún match donde alguien gane por confianza; solo decide los empates, y los
+   * decide siempre para el mismo lado.
+   */
+  const leGana = (nuevo: CandidatoDifuso, actual: CandidatoDifuso, valor: (c: CandidatoDifuso) => number): boolean => {
+    const a = valor(nuevo);
+    const b = valor(actual);
+    if (a !== b) return a > b;
+    return actual.entrada.variante === true && nuevo.entrada.variante !== true;
+  };
+  const porCobertura = (c: CandidatoDifuso): number => c.cobertura;
+  const porConfianza = (c: CandidatoDifuso): number => c.confianza;
+
   for (const entrada of lista) {
     if (guardaQueViola(consulta, entrada.food_id, guardas) !== null) continue;
 
@@ -278,7 +305,7 @@ function difusoEnIndice(
         // núcleo que estructura las guardas y la dirección B— y entre dos núcleos
         // sigue ganando el más largo, que es el más específico.
         const mejor = esNucleo ? mejorNucleo : mejorOtro;
-        if (mejor === null || cobertura > mejor.cobertura) {
+        if (mejor === null || leGana(candidato, mejor, porCobertura)) {
           if (esNucleo) mejorNucleo = candidato;
           else mejorOtro = candidato;
         }
@@ -303,7 +330,7 @@ function difusoEnIndice(
         confianza: confianzaDifusa(entrada, cobertura),
       };
       anotarCocido(candidato);
-      if (cobertura >= COBERTURA_DIFUSA_MIN && (mejorB === null || cobertura > mejorB.cobertura)) {
+      if (cobertura >= COBERTURA_DIFUSA_MIN && (mejorB === null || leGana(candidato, mejorB, porCobertura))) {
         mejorB = candidato;
       }
       continue;
@@ -368,7 +395,7 @@ function difusoEnIndice(
     // de A o de B; dejar entrar a C ahí rompería la garantía de que la dirección
     // nueva no toca ningún match que ya existía. La contradicción de estado ya
     // está frenada en la condición 4, que es lo que hacía falta acá.
-    if (cobertura >= COBERTURA_DIFUSA_MIN && (mejorC === null || candidato.confianza > mejorC.confianza)) {
+    if (cobertura >= COBERTURA_DIFUSA_MIN && (mejorC === null || leGana(candidato, mejorC, porConfianza))) {
       mejorC = candidato;
     }
   }
@@ -448,8 +475,33 @@ function mejorEntreIdiomas(en: CandidatoDifuso | null, es: CandidatoDifuso | nul
  * Busca un alimento. Devuelve `null` cuando el catálogo no tiene nada que
  * ofrecer — y `null` es una respuesta legítima, no un error: un alimento sin
  * ficha se declara sin ficha y sin números (regla dura 2).
+ *
+ * LA BARRA DE LA VISIÓN SE LEE COMO UNA O (card 6.1). `serrano/iberico` no es un
+ * nombre: son dos, y el modelo no se decidió. Cada rama se busca por separado con
+ * la MISMA cascada, y gana la mejor — con la lectura literal primero y ganando
+ * todos los empates, así que un término sin barras recorre exactamente el mismo
+ * camino que antes. Ver `lecturasDelTermino` en `normalize.ts`.
  */
 export function buscarAlimento(termino: string, index: CatalogIndex): MatchResult | null {
+  const lecturas = lecturasDelTermino(termino);
+  const literal = lecturas[0] ?? "";
+  let mejor = buscarUnaLectura(literal, index);
+  for (const lectura of lecturas.slice(1)) {
+    const candidato = buscarUnaLectura(lectura, index);
+    if (candidato === null) continue;
+    if (mejor !== null && confianzaVisible(candidato) <= confianzaVisible(mejor)) continue;
+    mejor = {
+      ...candidato,
+      motivo:
+        `${candidato.motivo} La visión escribió "${termino}" con una barra —dos nombres para el mismo ` +
+        `alimento— y esta ficha salió de leer solo "${lectura.trim()}".`,
+    };
+  }
+  return mejor;
+}
+
+/** La cascada entera sobre UNA lectura del término. */
+function buscarUnaLectura(termino: string, index: CatalogIndex): MatchResult | null {
   const consulta = claveDeMatching(termino);
   if (consulta.length === 0) return null;
 

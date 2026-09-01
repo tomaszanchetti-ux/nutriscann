@@ -14,7 +14,15 @@ import { describe, it } from "node:test";
 import { construirIndice, GUARDAS_DE_VOCABULARIO } from "./catalog";
 import { COBERTURA_DIFUSA_MIN, CONFIANZA_DIFUSA_MAX } from "./constants";
 import { buscarAlimento, buscarConDosNombres, guardaQueViola } from "./match";
-import { claveDeMatching, contieneSecuencia, empiezaConPalabra, normalizar, variantesDeIndice } from "./normalize";
+import {
+  claveDeMatching,
+  contieneSecuencia,
+  empiezaConPalabra,
+  lecturasDelTermino,
+  normalizar,
+  sinColaDescriptiva,
+  variantesDeIndice,
+} from "./normalize";
 import { aliasConfidence, aliasText } from "../kb/types";
 import { catalogoReal, fichaFalsa, fichaReal, indiceDeFixture, indiceReal } from "./testing";
 
@@ -415,11 +423,20 @@ describe("card 2.6 — la paradoja de la cobertura (causa C)", () => {
   });
 
   it("lo que viene detrás de un conector es un ACOMPAÑAMIENTO, no el plato", () => {
-    // La arepa no está en el catálogo (verificado: 0 coincidencias) y el queso
-    // sí. Sin esta regla, una arepa rellena de queso devolvía QUESO.
-    assert.equal(buscarAlimento("arepa, grilled, filled with cheese", index), null);
+    // Sin esta regla, una arepa rellena de queso devolvía QUESO.
+    //
+    // EL ESCENARIO SE CONSTRUYE (card 6.1): la versión anterior se apoyaba en que
+    // el catálogo real no tenía arepa, y la curación de la WS06 la agregó
+    // (`fdc-168070`). El hueco era del catálogo, no de la regla, así que el
+    // candado pasa a un índice donde el relleno existe y el plato no — que es la
+    // situación exacta que la regla resuelve, y la única que la puede medir.
+    const soloElRelleno = indiceDeFixture([
+      fichaFalsa({ id: "test-queso", names: { en: "Cheese, NFS", es: "Queso" } }),
+      fichaFalsa({ id: "test-pan", names: { en: "Bread, NFS", es: "Pan" } }),
+    ]);
+    assert.equal(buscarAlimento("arepa, grilled, filled with cheese", soloElRelleno), null);
     // Y el queso solo, nombrado como tal, sigue llegando al queso.
-    assert.equal(buscarAlimento("cheese, white, fresh", index)?.ficha.id, "fdc-2705704");
+    assert.equal(buscarAlimento("cheese, white, fresh", soloElRelleno)?.ficha.id, "test-queso");
   });
 
   it("las guardas de la DT-15 aguantan todas las puertas nuevas", () => {
@@ -647,5 +664,216 @@ describe("fichas retiradas", () => {
     const trucado = indiceDeFixture([{ ...retirada, deprecated: false }]);
     trucado.porId.set("test-vieja", retirada);
     assert.equal(buscarAlimento("Tortilla vieja", trucado), null);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// CARD 6.1 — LOS MÍNIMOS DE LA DT-28
+// ---------------------------------------------------------------------------
+
+describe("card 6.1 — la cola descriptiva de USDA (DT-28, punto 1)", () => {
+  /**
+   * EL ESCENARIO SE CONSTRUYE, no se busca en el catálogo. Las cinco fichas de
+   * abajo llevan los nombres EXACTOS que la evaluación del golden set señaló como
+   * causa de los silencios (`evaluacion-v2.md` §5) — con su cola descriptiva y su
+   * nombre español corrido —, pero son fichas de fixture: así el candado mide EL
+   * MOTOR y no queda a merced de lo que la curación mueva en `kb/`.
+   */
+  const conCola = indiceDeFixture([
+    fichaFalsa({
+      id: "test-pepino",
+      names: { en: "Cucumber, with peel, raw", es: "Pepino crudo con cáscara" },
+    }),
+    fichaFalsa({
+      id: "test-pollo",
+      names: { en: "Chicken, NS as to part and cooking method, skin eaten", es: "Pollo con piel" },
+    }),
+    fichaFalsa({
+      id: "test-papa",
+      names: { en: "Potato, roasted, from fresh, peel eaten, NS as to fat", es: "Papa asada con cáscara" },
+    }),
+    fichaFalsa({
+      id: "test-maiz",
+      names: { en: "Corn, canned, cooked, fat added, NS as to fat type", es: "Maíz de lata cocido con grasa" },
+    }),
+    fichaFalsa({ id: "test-otro", names: { en: "Bread, NFS", es: "Pan" } }),
+  ]);
+
+  it("`cucumber, sliced` llega al pepino, que se llama `Cucumber, WITH PEEL, raw`", () => {
+    const r = buscarAlimento("cucumber, sliced", conCola);
+    assert.ok(r, "el pepino seguía mudo");
+    assert.equal(r.ficha.id, "test-pepino");
+  });
+
+  it("EN ESPAÑOL TAMBIÉN: `pepino` llega a `Pepino crudo con cáscara`", () => {
+    // El hallazgo del Bloque 0 de la WS06. El nombre español no tiene ni una coma,
+    // así que la regla por segmentos no lo tocaba: la cola se saca del nombre
+    // entero o del lado español no muerde nunca.
+    const r = buscarAlimento("pepino", conCola);
+    assert.ok(r, "el índice español seguía sin la variante");
+    assert.equal(r.ficha.id, "test-pepino");
+  });
+
+  it("`chicken thigh, roasted` llega al pollo detrás de `skin eaten`", () => {
+    const r = buscarAlimento("chicken thigh, roasted", conCola);
+    assert.ok(r);
+    assert.equal(r.ficha.id, "test-pollo");
+  });
+
+  it("`papa asada` llega a `Papa asada con cáscara`", () => {
+    const r = buscarAlimento("papa asada", conCola);
+    assert.ok(r);
+    assert.equal(r.ficha.id, "test-papa");
+  });
+
+  it("`maíz cocido` llega a `Maíz de lata cocido CON GRASA`", () => {
+    const r = buscarAlimento("maíz de lata cocido", conCola);
+    assert.ok(r);
+    assert.equal(r.ficha.id, "test-maiz");
+  });
+
+  it("la cola se saca ENTERA y por palabras, nunca a pedazos", () => {
+    assert.equal(sinColaDescriptiva("pepino crudo con cascara"), "pepino crudo");
+    assert.equal(sinColaDescriptiva("corn canned cooked fat added"), "corn canned cooked");
+    assert.equal(sinColaDescriptiva("chicken skin eaten"), "chicken");
+    // `con sal` no puede morder adentro de `con salsa`: se comparan PALABRAS.
+    assert.equal(sinColaDescriptiva("pasta con salsa"), "pasta con salsa");
+    // Y la conjunción que unía dos colas no queda colgada.
+    assert.equal(sinColaDescriptiva("lenteja cocida con sal y grasa"), "lenteja cocida");
+    // Un nombre que ES su cola no se puede vaciar: devuelve lo que había.
+    assert.equal(sinColaDescriptiva("con grasa"), "con grasa");
+  });
+
+  it("LO QUE RESTA NO ES COLA: `sin grasa` nombra otro producto y se respeta", () => {
+    // EL CANDADO MÁS CARO DE ESTA CARD, y salió de una medición sobre el catálogo
+    // real. Con las formas negativas adentro de la lista, "mayonesa" resolvía a
+    // la mayonesa SIN GRASA a confianza 1,0: 64 kcal/100 g donde la mayonesa son
+    // 680. Un marcador que SUMA ("con grasa", "with peel") describe la medición;
+    // uno que RESTA nombra otro alimento, y el catálogo lo mide aparte.
+    assert.equal(sinColaDescriptiva("mayonesa sin grasa kraft"), "mayonesa sin grasa kraft");
+    assert.equal(sinColaDescriptiva("butter without salt"), "butter without salt");
+    assert.equal(sinColaDescriptiva("papa hervida sin cascara"), "papa hervida sin cascara");
+    // Y la variante tampoco nace por otra puerta: el nombre entero no la genera.
+    assert.equal(
+      variantesDeIndice("Salad dressing, KRAFT Mayo Fat Free Mayonnaise Dressing").includes("mayonesa"),
+      false,
+    );
+    const light = indiceDeFixture([
+      fichaFalsa({
+        id: "test-mayonesa",
+        names: { en: "Salad dressing, mayonnaise, regular", es: "Mayonesa" },
+        per_100g: { kcal: 680, protein_g: 1, carbs_g: 1, fat_g: 75, fiber_g: 0, sat_fat_g: 12, sugars_g: 1, sodium_mg: 600 },
+      }),
+      fichaFalsa({
+        id: "test-light",
+        names: { en: "KRAFT Mayo Fat Free Mayonnaise Dressing", es: "Mayonesa sin grasa KRAFT" },
+        per_100g: { kcal: 64, protein_g: 0, carbs_g: 13, fat_g: 0, fiber_g: 0, sat_fat_g: 0, sugars_g: 5, sodium_mg: 800 },
+      }),
+      fichaFalsa({ id: "test-otro", names: { en: "Bread, NFS", es: "Pan" } }),
+    ]);
+    assert.equal(buscarAlimento("mayonesa", light)?.ficha.id, "test-mayonesa");
+  });
+
+  it("LA VARIANTE SUMA, NO REEMPLAZA: la clave con cola sigue estando", () => {
+    // La garantía de que la regla es aditiva. Si la variante nueva ocupara el
+    // lugar de la vieja, un término que encontraba la ficha por la clave con cola
+    // dejaría de encontrarla, y eso sería una regresión disfrazada de mejora.
+    const variantes = variantesDeIndice("Corn, canned, cooked, fat added, NS as to fat type");
+    assert.ok(variantes.includes("corn canned cooked fat added"), variantes.join(" | "));
+    assert.ok(variantes.includes("corn canned cooked"), variantes.join(" | "));
+  });
+
+  it("un nombre sin cola no gana ni una variante nueva", () => {
+    assert.deepEqual(variantesDeIndice("Coleslaw"), []);
+    assert.deepEqual(variantesDeIndice("Beef, steak, NFS").sort(), ["beef steak", "steak beef"]);
+  });
+});
+
+describe("card 6.1 — a igual confianza gana el término ESCRITO (DT-28, punto 1)", () => {
+  /**
+   * El desempate que la cola descriptiva hizo necesario, con el caso medido: la
+   * zanahoria cruda de una ensalada empataba en 0,6 con la zanahoria COCIDA CON
+   * GRASA, y ganaba la cocida solo por tener el nombre más largo. 41 kcal contra
+   * 72 por un criterio de desempate.
+   */
+  const zanahorias = indiceDeFixture([
+    fichaFalsa({ id: "test-cruda", names: { en: "Carrots, raw", es: "Zanahorias crudas" } }),
+    fichaFalsa({
+      id: "test-cocida",
+      names: { en: "Carrots, fresh, cooked, fat added, NS as to fat type", es: "Zanahorias cocidas con grasa" },
+      per_100g: { kcal: 72, protein_g: 1, carbs_g: 8, fat_g: 3, fiber_g: 2, sat_fat_g: 1, sugars_g: 3, sodium_mg: 200 },
+    }),
+    fichaFalsa({ id: "test-otro", names: { en: "Bread, NFS", es: "Pan" } }),
+  ]);
+
+  it("`carrot, shredded` se queda con la cruda, que es el nombre escrito", () => {
+    const r = buscarAlimento("carrot, shredded", zanahorias);
+    assert.ok(r);
+    assert.equal(r.ficha.id, "test-cruda");
+  });
+});
+
+describe("card 6.1 — la barra de la visión es una O (DT-28, punto 2)", () => {
+  const jamones = indiceDeFixture([
+    fichaFalsa({
+      id: "test-crudo",
+      names: { en: "Ham, prosciutto", es: "Jamón crudo" },
+      aliases: { es: [{ alias: "Jamón serrano", confidence: 0.8 }] },
+      per_100g: { kcal: 195, protein_g: 25, carbs_g: 0, fat_g: 10, fiber_g: 0, sat_fat_g: 3, sugars_g: 0, sodium_mg: 2000 },
+    }),
+    fichaFalsa({
+      id: "test-cocido",
+      names: { en: "Ham", es: "Jamón" },
+      per_100g: { kcal: 117, protein_g: 19, carbs_g: 1.6, fat_g: 3.9, fiber_g: 0, sat_fat_g: 1.3, sugars_g: 1.5, sodium_mg: 1149 },
+    }),
+    fichaFalsa({ id: "test-otro", names: { en: "Bread, NFS", es: "Pan" } }),
+  ]);
+
+  it("`jamón serrano/ibérico` vuelve a encontrar el ALIAS, no el jamón cocido", () => {
+    // La única regresión de la corrida v2 del golden set: con la barra adentro, el
+    // alias `Jamón serrano` (0,8) dejaba de matchear exacto y el difuso terminaba
+    // en `Jamón` cocido, un 40 % menos de calorías.
+    const r = buscarAlimento("jamón serrano/ibérico", jamones);
+    assert.ok(r);
+    assert.equal(r.ficha.id, "test-crudo");
+    assert.equal(r.nivel, "alias");
+    assert.equal(r.confianza_match, 0.8);
+    assert.match(r.motivo, /barra/);
+  });
+
+  it("las lecturas: la literal primero y una por rama", () => {
+    assert.deepEqual(lecturasDelTermino("cured ham, serrano/iberico"), [
+      "cured ham, serrano/iberico",
+      "cured ham, serrano",
+      "cured ham, iberico",
+    ]);
+    // Sin barra no hay nada que leer de otra manera: una sola lectura, y el motor
+    // se comporta exactamente igual que antes.
+    assert.deepEqual(lecturasDelTermino("cured ham, serrano"), ["cured ham, serrano"]);
+    // Dos pedazos con barra se SUMAN, no se multiplican: 1 + 2 + 2, no 1 + 4.
+    assert.equal(lecturasDelTermino("a b/c d e/f").length, 5);
+    // Una barra que no separa dos nombres no dice nada.
+    assert.deepEqual(lecturasDelTermino("pasta 1/"), ["pasta 1/"]);
+  });
+
+  it("una rama nunca le gana a la lectura literal: solo la reemplaza si es MEJOR", () => {
+    // `Ham` a secas resuelve exacto al jamón cocido. Si la rama pudiera ganar
+    // empates, cualquier término con barra se volvería impredecible.
+    const r = buscarAlimento("Ham", jamones);
+    assert.ok(r);
+    assert.equal(r.ficha.id, "test-cocido");
+    assert.equal(r.confianza_match, 1);
+  });
+
+  it("el barrido: ningún `names.en` del catálogo real cambia por leer las barras", () => {
+    // Seis fichas del catálogo tienen una barra en el nombre (`Hot chocolate /
+    // cocoa, NFS`, `Iced Tea / Lemonade juice drink`…). Todas tienen que seguir
+    // encontrándose a sí mismas por la lectura literal.
+    const conBarra = catalogoReal().foods.filter((f) => !f.deprecated && f.names.en.includes("/"));
+    assert.ok(conBarra.length > 0, "el catálogo dejó de tener nombres con barra");
+    for (const f of conBarra) {
+      const r = buscarAlimento(f.names.en, index);
+      assert.equal(r?.ficha.id, f.id, f.names.en);
+    }
   });
 });
