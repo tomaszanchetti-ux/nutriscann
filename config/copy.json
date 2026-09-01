@@ -1,0 +1,115 @@
+{
+  "$schema_version": 1,
+  "updated_at": "2026-09-01",
+
+  "note": "Los textos de la interfaz. Es la fuente de verdad del campo 'copy' de config/app en Firestore: se edita acá, se revisa en un PR y se publica con 'npm run kb:seed:config'. Es la regla dura n.º 1 del proyecto hecha operativa — nada hardcodeado: cambiar una palabra que el usuario lee NO requiere desplegar. Los valores que están en apps/web/src/lib/config.ts son el ARRANQUE EN FRÍO (lo que se muestra si Firestore no contesta), no la configuración.",
+
+  "publishing_note": "OJO, se publica distinto que recommendation_rules.json: de las reglas se publica el documento ENTERO, y de este archivo se publica SOLO el objeto 'copy'. El motivo es el contrato: config/app.copy es un mapa de texto a texto (Record<string,string> en functions/src/config.ts) y el front lee cada clave como stringValue. Un '$schema_version' numérico adentro de ese mapa rompería el tipo. Los metadatos, entonces, viven afuera y se quedan en el repo.",
+
+  "keys_note": "Lista CERRADA de claves válidas, y el seed rechaza el archivo si 'copy' no tiene exactamente estas — ni una de menos ni una de más. No es burocracia: el front lee cada clave POR SU NOMBRE contra la interfaz CopyDeLaApp (apps/web/src/lib/config.ts). Una clave mal tipeada no rompe nada visible — la pantalla cae al arranque en frío y se ve bien —, así que el error se degrada en silencio y hay que cazarlo antes de publicar. Agregar un texto nuevo es un cambio de las dos puntas: la clave acá y el campo en CopyDeLaApp.",
+
+  "keys": {
+    "capture_prompt": {
+      "since": "fase-0",
+      "used_in": "PantallaCaptura — el título de la pantalla inicial"
+    },
+    "capture_cta": {
+      "since": "fase-0",
+      "used_in": "PantallaCaptura — el botón que abre la cámara"
+    },
+    "capture_help": {
+      "since": "card-2.3",
+      "used_in": "PantallaCaptura — la línea de ayuda debajo del título"
+    },
+    "scanning_steps": {
+      "since": "fase-0",
+      "used_in": "PantallaEscaneo — los pasos que rotan durante la espera",
+      "format": "UN SOLO STRING con los pasos separados por '|'. No es una lista porque 'copy' es un mapa de textos y una lista no entra ahí; el front lo parte. La forma la fijó lo que la Fase 0 dejó publicado, no una decisión nueva.",
+      "warning": "Los pasos son VERDAD, no decoración: describen lo que el motor está haciendo de verdad (visión → catálogo → aritmética). Cambiar el orden o inventar un paso que no existe convierte la pantalla de espera en una animación que miente."
+    },
+    "scanning_title": {
+      "since": "card-2.3",
+      "used_in": "PantallaEscaneo — el título de la pantalla de espera"
+    },
+    "report_kcal_label": {
+      "since": "card-2.3",
+      "used_in": "PantallaReporte — la etiqueta del número grande, en el centro del donut"
+    },
+    "report_macros_title": {
+      "since": "card-2.3",
+      "used_in": "PantallaReporte — solo en el caso 'sin totales', cuando ningún alimento se pudo cuantificar y no hay donut que dibujar"
+    },
+    "report_items_title": {
+      "since": "card-2.3",
+      "used_in": "PantallaReporte — el encabezado de la lista de alimentos"
+    },
+    "report_partial_title": {
+      "since": "card-2.3",
+      "used_in": "PantallaReporte → AvisoParcial — el título del aviso cuando el total no cubre todo el plato"
+    },
+    "report_cta": {
+      "since": "card-2.3",
+      "used_in": "PantallaReporte (el botón del final) y PantallaMensaje (el botón cuando no había comida). Es la MISMA clave en los dos lugares a propósito: vuelven a la misma pantalla."
+    },
+    "not_food_title": {
+      "since": "card-2.3",
+      "used_in": "PantallaMensaje — el título cuando la foto no es de comida"
+    },
+    "error_not_food": {
+      "since": "fase-0",
+      "used_in": "PantallaMensaje — el detalle cuando la foto no es de comida. Solo se usa si el backend NO mandó su propio mensaje: el del backend gana, porque es específico de esa foto."
+    },
+    "error_title": {
+      "since": "card-2.3",
+      "used_in": "App — el título de la pantalla de error, cualquiera sea el motivo"
+    },
+    "error_unreadable": {
+      "since": "fase-0",
+      "used_in": "App — el detalle del error cuando el motor devuelve 'imagen_ilegible'"
+    },
+    "error_network": {
+      "since": "card-2.3",
+      "used_in": "App — el detalle del error cuando la llamada no llegó al servidor ('sin_red')"
+    },
+    "error_unexpected": {
+      "since": "card-2.3",
+      "used_in": "App — el detalle del error cuando falla algo que no sabemos nombrar"
+    },
+    "error_cta": {
+      "since": "card-2.3",
+      "used_in": "App → PantallaMensaje — el botón que reintenta después de un error"
+    },
+    "disclaimer": {
+      "since": "card-2.3",
+      "used_in": "PieDeDiagnostico — el pie legal, visible en todas las pantallas"
+    }
+  },
+
+  "copy_note": "Estos son los textos, y son LO ÚNICO que viaja a Firestore. Están tal cual el arranque en frío de apps/web/src/lib/config.ts al 01/09/2026, sin reescribir: publicar un texto distinto del que ya se probó visualmente sería meter un cambio de producto adentro de una card de infraestructura. Ver DEUDAS: la pasada de estilo a español de España es un trabajo aparte y con dueño.",
+
+  "copy": {
+    "capture_prompt": "¿Qué estás comiendo?",
+    "capture_cta": "Sacar foto del plato",
+    "capture_help": "Sacá la foto desde arriba, con el plato entero y buena luz.",
+
+    "scanning_steps": "Identificando ingredientes…|Consultando la base nutricional…|Calculando calorías y macros…",
+    "scanning_title": "Mirando tu plato",
+
+    "report_kcal_label": "calorías del plato",
+    "report_macros_title": "De dónde vienen esas calorías",
+    "report_items_title": "Qué hay en el plato",
+    "report_partial_title": "Este total es parcial",
+    "report_cta": "Escanear otro plato",
+
+    "not_food_title": "Acá no veo comida",
+    "error_not_food": "Eso no parece un plato de comida. ¿Probamos con otra foto?",
+
+    "error_title": "No pude analizar la foto",
+    "error_unreadable": "No pude reconocer el plato. ¿Probás con más luz?",
+    "error_network": "No hay respuesta del servidor. Revisá tu conexión y probá de nuevo.",
+    "error_unexpected": "Algo salió mal de este lado. Probá de nuevo en un momento.",
+    "error_cta": "Probar de nuevo",
+
+    "disclaimer": "Información nutricional orientativa, calculada sobre datos de USDA. No es consejo médico."
+  }
+}

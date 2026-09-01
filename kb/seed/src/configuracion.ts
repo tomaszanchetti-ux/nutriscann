@@ -10,12 +10,24 @@
  *
  * Lo que este seed gobierna y lo que NO
  * ------------------------------------
- * `config/app` es un documento COMPARTIDO: la Fase 2 publica ahí las reglas y
- * la versión del catálogo, pero el mismo documento tiene los textos de la
- * interfaz (`copy`) y el tope de análisis por día (`max_scans_per_day`), que
- * son de otra mano. Por eso la escritura es un MERGE con máscara de campos:
- * el seed toca sus cuatro campos y **no puede** pisar el resto ni por
- * accidente — no es una promesa del código, es lo que permite la máscara.
+ * `config/app` es un documento COMPARTIDO: acá se publican las reglas, los
+ * textos de la interfaz y la versión del catálogo, pero el mismo documento
+ * tiene el tope de análisis por día (`max_scans_per_day`), que es de otra mano.
+ * Por eso la escritura es un MERGE con máscara de campos: el seed toca sus
+ * cinco campos y **no puede** pisar el resto ni por accidente — no es una
+ * promesa del código, es lo que permite la máscara.
+ *
+ * `copy` entró acá con la DT-18 (card 2.5). Antes lo había sembrado la Fase 0 a
+ * mano en la consola y su fuente de verdad no estaba en ningún lado: cinco
+ * textos publicados que nadie podía revisar en un PR, y trece más que el
+ * reporte necesitaba y vivían en el arranque en frío del front. Ahora salen de
+ * `config/copy.json`, por el mismo circuito que las reglas.
+ *
+ * OJO con lo que implica gobernar `copy`: la máscara lo nombra ENTERO, así que
+ * la escritura reemplaza el mapa completo. Una clave agregada a mano en la
+ * consola desaparece en la corrida siguiente. Eso no es un efecto colateral, es
+ * la regla n.º 3 del proyecto aplicada a la configuración: la fuente de verdad
+ * es el repo y Firestore es la copia.
  *
  * La idempotencia funciona igual que en el catálogo: se lee lo publicado, se
  * compara en JSON canónico y si no difiere no se escribe. `updated_at` se
@@ -26,6 +38,7 @@
 import { iguales } from "./comparacion";
 import { ClienteFirestore, type DocumentoJson } from "./firestore";
 import type { Reglas } from "./reglas";
+import type { Textos } from "./textos";
 import type { ValorJson } from "./valores";
 
 export const COLECCION_CONFIG = "config";
@@ -41,7 +54,12 @@ export const CAMPO_FECHA = "updated_at";
  * Los campos de `config/app` que este seed gobierna. Todo lo que no esté en
  * esta lista es de otra mano y se preserva.
  */
-export const CAMPOS_GOBERNADOS = ["recommendation_rules", "kb_version", "updated_by"] as const;
+export const CAMPOS_GOBERNADOS = [
+  "recommendation_rules",
+  "copy",
+  "kb_version",
+  "updated_by",
+] as const;
 
 /** Los campos que viajan en la máscara: los gobernados más la fecha. */
 export const CAMPOS_DE_LA_MASCARA = [...CAMPOS_GOBERNADOS, CAMPO_FECHA];
@@ -64,10 +82,12 @@ export interface PlanConfig {
 export function planificarConfig(
   publicado: DocumentoJson | null,
   reglas: Reglas,
+  textos: Textos,
   kbVersion: string,
 ): PlanConfig {
   const deseado: Record<string, ValorJson> = {
     recommendation_rules: reglas.documento,
+    copy: textos.documento,
     kb_version: kbVersion,
     updated_by: AUTOR,
   };
@@ -112,12 +132,13 @@ export interface OpcionesConfig {
 export async function correrSeedConfig(
   cliente: ClienteFirestore,
   reglas: Reglas,
+  textos: Textos,
   kbVersion: string,
   opciones: OpcionesConfig = {},
 ): Promise<ResultadoConfig> {
   const seco = opciones.seco === true;
   const publicado = await cliente.obtenerDocumento(COLECCION_CONFIG, DOCUMENTO_APP);
-  const plan = planificarConfig(publicado, reglas, kbVersion);
+  const plan = planificarConfig(publicado, reglas, textos, kbVersion);
   const escrituras = escriturasDelPlanConfig(plan);
 
   if (seco || escrituras === 0) return { plan, escrituras, seco };

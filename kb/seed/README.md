@@ -202,20 +202,30 @@ SEED_TOKEN="$(gcloud auth print-access-token --account=tomaszanchetti@gmail.com)
 
 ### Qué escribe, y sobre todo qué NO
 
-`config/app` es un documento **compartido**: además de las reglas tiene los
-textos de la interfaz (`copy`) y el tope de análisis por día
-(`max_scans_per_day`), que son de otra mano. Por eso la escritura es un
-**merge con máscara de cuatro campos**:
+`config/app` es un documento **compartido**: además de lo que publica el seed
+tiene el tope de análisis por día (`max_scans_per_day`), que es de otra mano.
+Por eso la escritura es un **merge con máscara de cinco campos**:
 
 | Campo | Qué es |
 |---|---|
 | `recommendation_rules` | El documento de `config/recommendation_rules.json` **entero**, tal cual |
+| `copy` | El mapa `copy` de `config/copy.json` — los textos de la interfaz, **entero** |
 | `kb_version` | La versión del catálogo canónico — el mismo archivo que publica `foods/`, para que las dos no puedan divergir |
 | `updated_by` | `"seed-config"` |
 | `updated_at` | Cuándo cambió por última vez lo publicado |
 
 Todo lo demás queda intacto, y eso no es una promesa del código: es lo único
-que la máscara permite tocar.
+que la máscara permite tocar. El reporte de cada corrida imprime las dos listas
+—lo gobernado y lo preservado— para que la garantía se pueda leer en vez de
+suponerse.
+
+**`copy` se escribe ENTERO.** La máscara nombra el campo completo, así que una
+clave agregada a mano en la consola desaparece en la corrida siguiente. No es
+un efecto colateral: es la regla n.º 3 del proyecto aplicada a la
+configuración — la fuente de verdad es el repo y Firestore es la copia. Hasta
+la **DT-18** (card 2.5) `copy` era "de otra mano": cinco textos que la Fase 0
+había sembrado a mano en la consola, sin fuente en el repo, y trece más que el
+reporte necesitaba y solo existían en el arranque en frío del front.
 
 `updated_at` sigue el mismo criterio que `seeded_at` en `config/kb_meta` — se
 mueve **solo cuando el contenido cambió**, para que la segunda corrida seguida
@@ -228,7 +238,7 @@ archivo y lo escribe una persona en el PR.)
 El seed del catálogo es agnóstico del esquema a propósito; este **no**, y por un
 motivo concreto de `config/README.md` §4.3: la interfaz elige ícono y color a
 partir del `tag`, así que **un tag mal escrito no rompe nada visible, se degrada
-en silencio**. Lo que se valida:
+en silencio**. De las **reglas** se valida:
 
 - `tags` es una lista cerrada, sin repetidos;
 - el `tag` de **cada** regla y el `fallback_tag` pertenecen a esa lista;
@@ -242,6 +252,25 @@ que parecen identificadores y se comparan con la lista. Alcanza para cazar un
 `sodium_per_kcal` mal tipeado; no dice si la expresión está bien formada — la
 gramática la implementa el motor, no el seed.
 
+De los **textos** se valida lo mismo en espíritu, porque el modo de fallar es el
+mismo: el front trae su arranque en frío, así que una clave mal tipeada deja la
+pantalla igual de linda mostrando el texto viejo del código.
+
+- `copy` tiene **exactamente** las claves que declara `keys`: ni una de menos
+  —un texto que la interfaz espera y nadie sembró— ni una de más;
+- ningún texto está vacío (un vacío no borra nada: el front lo descarta y
+  muestra el del arranque en frío);
+- `scanning_steps` no tiene tramos vacíos entre separadores `|`, porque el front
+  los descarta sin avisar y el paso desaparecería sin dejar rastro.
+
+Lo que **no** se valida es el contenido: largos, ortografía ni idioma. Los
+textos son configuración; el seed los publica tal cual y no opina.
+
+Un candado más vive en los tests y no en el seed: `textos.test.ts` compara las
+claves de `config/copy.json` con los campos de `CopyDeLaApp`
+(`apps/web/src/lib/config.ts`), que es quien los lee. Si el front suma un texto
+y nadie lo siembra, se entera ahí — no en la pantalla de un usuario.
+
 Todo esto pasa **antes** de abrir una conexión: un documento inválido frena la
 corrida sin haber hablado con Firestore.
 
@@ -250,6 +279,7 @@ corrida sin haber hablado con Firestore.
 ```
 --project <id>     obligatorio; no hay proyecto por defecto a propósito
 --rules <ruta>     por defecto config/recommendation_rules.json
+--copy <ruta>      por defecto config/copy.json
 --catalog <ruta>   de dónde sale la kb_version; por defecto kb/build/foods.canonical.json
 --emulator         escribe contra el emulador en vez del proyecto real
 --token <token>    access token OAuth (o la variable SEED_TOKEN)
@@ -320,13 +350,16 @@ por el endpoint `/emulator/v1/...`, que **solo existe en el emulador**.
 El circuito del **seed de configuración** va aparte (`emulador-config.test.ts`,
 proyecto `nutriscann-config-qa`) y afirma sobre las escrituras de cada corrida:
 
-1. el documento no existe → se crea con las reglas del repo, enteras;
+1. el documento no existe → se crea con las reglas y los textos del repo,
+   enteros, y cada texto vuelve como `stringValue`;
 2. otra vez → 0 escrituras **y `updated_at` no se mueve**;
-3. otra mano agrega `copy` y `max_scans_per_day` → sigue en 0 escrituras;
-4. las reglas editadas a mano → se repara **solo** `recommendation_rules`, y
-   `copy` sobrevive al merge;
-5. sube la `kb_version` → se escribe solo ese campo;
-6. una corrida más → 0 escrituras.
+3. otra mano agrega `max_scans_per_day` → sigue en 0 escrituras;
+4. las reglas editadas a mano → se repara **solo** `recommendation_rules`, y el
+   tope diario sobrevive al merge;
+5. los textos editados a mano, con una clave inventada de yapa → se repara
+   **solo** `copy`, entero: la clave de la consola no sobrevive;
+6. sube la `kb_version` → se escribe solo ese campo;
+7. una corrida más → 0 escrituras.
 
 No lee `kb/build`: construye su propia `kb_version`, así no se vuelve
 intermitente cuando el catálogo se está recompilando.

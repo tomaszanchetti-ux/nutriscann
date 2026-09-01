@@ -11,6 +11,9 @@ base y se cambian **sin desplegar**.
 | Archivo | Qué es |
 |---|---|
 | `recommendation_rules.json` | Las reglas con las que el motor elige qué recomendación mostrar. Se siembra en el campo `recommendation_rules` de `config/app`. |
+| `copy.json` | Los textos que el usuario lee. Su objeto `copy` se siembra en el campo `copy` de `config/app`. Ver §8. |
+
+Las secciones 1 a 7 son sobre `recommendation_rules.json`; la 8, sobre `copy.json`.
 
 ---
 
@@ -260,3 +263,74 @@ lo que queda por calibrar con datos de uso reales está registrado como **DT-6**
 - Escribir una plantilla que **afirme algo que las reglas no midieron** (ver §4.1).
 - Escribir una plantilla que diagnostique, prescriba o nombre una enfermedad.
   NutriScann es informativo y de fitness. El tono es cálido y accionable, nunca sermón.
+
+---
+
+## 8. `copy.json` — los textos de la interfaz
+
+Todo lo que el usuario **lee** en la app: el título de la pantalla de captura, el
+botón de la cámara, los pasos de la espera, los encabezados del reporte, los
+mensajes de error y el pie legal. Son **18 claves** y se editan sin desplegar,
+que es la regla dura n.º 1 del proyecto en su forma más literal.
+
+### La estructura, y en qué se diferencia de las reglas
+
+De `recommendation_rules.json` se publica el documento **entero**. De `copy.json`
+se publica **solo el objeto `copy`**:
+
+| Parte del archivo | ¿Viaja a Firestore? |
+|---|---|
+| `copy` | **Sí.** Es exactamente el contenido del campo `config/app.copy` |
+| `keys` | No. La lista cerrada de claves válidas, con dónde se usa cada una |
+| `$schema_version`, `updated_at`, las notas | No. Se quedan en el repo, que es donde sirven |
+
+El motivo es el contrato: `config/app.copy` es un mapa de **texto a texto**
+(`Record<string,string>` en `functions/src/config.ts`) y el navegador lee cada
+clave como `stringValue`. Un `$schema_version` numérico adentro de ese mapa lo
+rompería.
+
+`scanning_steps` es la única clave con forma propia: viaja como **un solo
+string** con los pasos separados por `|`, porque un mapa de textos no admite una
+lista. El front lo parte. La forma la fijó lo que la Fase 0 dejó publicado.
+
+### Por qué el seed valida las claves
+
+Igual que con los `tags` de las reglas, y por el mismo motivo: **el error no se
+ve**. El front trae su arranque en frío (`apps/web/src/lib/config.ts`), así que
+una clave mal tipeada acá deja la pantalla perfecta mostrando el texto viejo del
+código. Nadie abre un ticket por una pantalla que se ve bien.
+
+Por eso `keys` es una lista **cerrada** y el seed rechaza el archivo si `copy` no
+tiene exactamente esas claves. Y por eso los tests de `kb/seed` comparan esa
+lista con la interfaz `CopyDeLaApp` del front, que es quien las lee.
+
+### Cómo se cambia un texto
+
+```
+1. Editar el valor en config/copy.json, en una branch.
+2. PR. Alcanza con el texto viejo y el nuevo.
+3. Merge a main → el seed publica config/app.copy.
+4. La app toma el cambio sin desplegar nada.
+```
+
+**Cómo se agrega un texto nuevo** — son las dos puntas, siempre:
+
+```
+1. El campo en CopyDeLaApp y su valor de arranque en frío, en apps/web.
+2. La clave en `keys` (con dónde se usa) y su texto en `copy`, acá.
+```
+
+Falta una de las dos y el seed o el test lo frenan: una clave que nadie declara
+no se publica, y un campo del front que nadie sembró se denuncia en
+`textos.test.ts`.
+
+**Lo que no se hace nunca:**
+
+- Editar `copy` a mano en la consola de Firebase. El próximo seed **pisa el mapa
+  entero** —la máscara nombra el campo completo— y una clave agregada ahí
+  desaparece sin dejar rastro.
+- Escribir un texto directamente en un componente de `apps/web`. Los valores del
+  código son arranque en frío y nada más; un texto que solo vive ahí necesita un
+  deploy para cambiar una coma.
+- Dejar una clave vacía para "sacar" un texto de la interfaz. El front descarta
+  los vacíos y muestra el del arranque en frío: no se saca nada, se tapa.
