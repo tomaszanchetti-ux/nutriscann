@@ -1,5 +1,5 @@
 /**
- * EL CENSO DE COBERTURA MEDITERRÁNEA — card 6.3.
+ * EL CENSO DE COBERTURA MEDITERRÁNEA — card 6.3, actualizado por la card 6.4.
  *
  *   cd functions && npm run build      # el censo mide con el motor COMPILADO
  *   node kb/cobertura/censar.js        # reescribe censo.json
@@ -70,11 +70,12 @@ const CLASES = [
 // ---------------------------------------------------------------------------
 const VEREDICTOS = {
   // --- La ficha nombra otro alimento ---------------------------------------
-  "Tortilla de camarones": "ficha_equivocada",
-  "Cocochas en salsa": "ficha_equivocada",
-  "Pastel de cabracho": "ficha_equivocada",
-  "Gazpachos manchegos o galianos": "ficha_equivocada",
-  "Leche frita": "ficha_equivocada",
+  // VACÍO DESDE LA CARD 6.4, y no por relajar el criterio: los CINCO platos que
+  // vivían acá —tortilla de camarones, cocochas, pastel de cabracho, gazpachos
+  // manchegos y leche frita— tienen ahora su PROPIA ficha, derivada por receta
+  // compuesta, y llegan a ella por su nombre con confianza 1,0. La guarda de
+  // cada uno sigue puesta: impide que el término vuelva a la ficha equivocada
+  // el día que alguien escriba un alias de más.
 
   // --- Composiciones que la visión desarma ---------------------------------
   // De directoalpaladar: entradas que la fuente escribió como CATEGORÍA y no
@@ -112,16 +113,21 @@ const VEREDICTOS = {
 };
 
 const VEREDICTOS_INGREDIENTES = {
-  harina: "ficha_equivocada",
   huevos: "ficha_equivocada",
   patatas: "ficha_equivocada",
-  espaguetis: "ficha_equivocada",
   "fideos finos": "ficha_equivocada",
   "salsa marinara": "ficha_equivocada",
   "salsa Worcester": "ficha_equivocada",
   pimentón: "ficha_equivocada",
   "huesos de aceituna": "ficha_equivocada",
   "puré instantáneo": "ausente_ficha",
+  // --- Nuevos en la card 6.4: el efecto colateral de las fichas nuevas ------
+  // Tres términos que ANTES daban silencio y ahora caen mal. Se anotan como lo
+  // que son y no se esconden: una ficha nueva abre puertas y también ventanas.
+  "pasta de tomate": "ficha_equivocada",
+  "pasta filo": "ficha_equivocada",
+  "huevas de salmón": "ficha_equivocada",
+  gallina: "ficha_equivocada",
 };
 
 // ---------------------------------------------------------------------------
@@ -130,15 +136,15 @@ const VEREDICTOS_INGREDIENTES = {
 // ---------------------------------------------------------------------------
 const NOTAS = {
   "Tortilla de camarones":
-    "La tortillita de camarones de Cádiz es una fritura de harina de garbanzo con camarones enteros (~350 kcal/100 g). Cae en `Tortilla de trigo` (`Tortilla, NFS`, 262 kcal) por la palabra `tortilla`, que en América nombra el pan plano. Guarda puesta por adelantado; la ficha la tiene que traer la card 6.4.",
+    "RESUELTO en la card 6.4 con ficha propia (`receta-tortilla-de-camarones`, 278 kcal/100 g, harina de garbanzo + harina de trigo + camarón, método `frito` con el 6,5 % medido). Antes caía en `Tortilla de trigo` (262 kcal) por la palabra `tortilla`, que en América nombra el pan plano. La ficha declara que subestima: la tortillita real ronda las 350 y una fritura de encaje absorbe más aceite que la mediana de FNDDS.",
   "Cocochas en salsa":
-    "Papada de merluza o bacalao en emulsión de aceite y ajo. Cae en `Salsa mexicana` (`Salsa, NFS`, 34 kcal) arrastrada por la palabra `salsa`. Guarda puesta por adelantado sobre `cocochas`.",
+    "RESUELTO en la card 6.4 con ficha propia (`receta-cocochas-en-salsa`, 168 kcal/100 g). Antes caía en `Salsa mexicana` (34 kcal) arrastrada por la palabra `salsa`. La receta declara sus 80 g de aceite sobre 500 de pescado, que es exactamente lo que le faltaba a `Bacalao al vapor` para poder representar el plato.",
   "Pastel de cabracho":
-    "Pudín frío de pescado, huevo, nata y tomate (~180 kcal/100 g). Cae en `Tarta` (`Pie, NFS`, 296 kcal): acá `pastel` no quiere decir postre. La guarda es sobre el término completo — `Pastel` a secas sigue siendo alias legítimo de la tarta.",
+    "RESUELTO en la card 6.4 con ficha propia (`receta-pastel-de-cabracho`, 161 kcal/100 g). Antes caía en `Tarta` (`Pie, NFS`, 296 kcal): acá `pastel` no quiere decir postre. La guarda sigue puesta sobre el término completo — `Pastel` a secas es alias legítimo de la tarta.",
   "Gazpachos manchegos o galianos":
-    "El nombre que más miente del censo: es un GUISO CALIENTE de caza sobre torta de pan ácimo (~200 kcal/100 g) y cae en la sopa fría andaluza de 26 kcal — casi ocho veces menos. El plural manchego y el singular andaluz son dos platos distintos.",
+    "RESUELTO en la card 6.4 con ficha propia (`receta-gazpachos-manchegos`, 164 kcal/100 g). Era el nombre que más mentía del censo: un GUISO CALIENTE de caza sobre torta de pan ácimo que caía en la sopa fría andaluza de 26 kcal, casi ocho veces menos. El plural manchego y el singular andaluz siguen siendo dos platos distintos y la guarda lo sostiene.",
   "Leche frita":
-    "Postre de crema cuajada rebozada y frita (~250 kcal/100 g). Cae en `Leche` (52 kcal), que además de equivocarse por cinco es un LÍQUIDO: la porción también saldría mal.",
+    "RESUELTO en la card 6.4 con ficha propia (`receta-leche-frita`, 202 kcal/100 g). Antes caía en `Leche` (52 kcal), que además de equivocarse por cinco es un LÍQUIDO. La ficha declara que subestima —la crema pierde agua al espesar y el método `frito` no lo modela—, así que el postre real ronda las 250.",
   "Sopa de ajo":
     "La ficha `Sopa` (`Soup, NFS`, 49 kcal) es de la familia correcta y subestima ~2× (la sopa castellana lleva pan, aceite y huevo). No se emite alias: colgar un plato concreto de la sopa genérica congelaría el error. Candidato de la card 6.4.",
   "Bacalao al pilpil":
@@ -157,19 +163,23 @@ const NOTAS = {
   "Pechuga de pavo al cava con uvas y verduras":
     "CORREGIDO en parte: el pavo dejó de ser pollo (alias `Pechuga de pavo` 0,8 sobre `Pavo`). Sigue siendo una composición: la visión va a ver pavo, uvas y verduras por separado.",
   "Pechuga de pavo con naranjas": "Mismo caso: el pavo ya no es pollo, y el plato lo desarma la visión.",
-  "Salmón griego": "NO HAY NINGUNA FICHA DE SALMÓN en el catálogo (medido: cero coincidencias en 1.036 fichas). Es el hueco de proteína más caro del censo.",
-  "Salmón marinado con cítricos y tomates a la plancha": "Mismo hueco: no hay salmón en el catálogo.",
-  "Mejillones con tomate y ajo": "No hay ficha de mejillón en el catálogo (`mejillones` y `mussels` dan silencio). El tomate y el ajo sí están.",
-  "Pez espada con tomates rellenos": "No hay ficha de pez espada en el catálogo (`pez espada` y `swordfish` dan silencio).",
+  "Salmón griego": "CERRADO EN PARTE por la card 6.4: el catálogo ya tiene cuatro fichas de salmón (fdc-2706285 `Salmón` 274 · a la plancha 259 · ahumado 117 · crudo 188), así que el hueco de proteína más caro del censo dejó de existir. El plato sigue siendo una composición y por eso llega por el difuso: la visión va a ver salmón, feta y hortalizas por separado.",
+  "Salmón marinado con cítricos y tomates a la plancha": "Mismo caso: ya hay salmón. Llega a `Salmón ahumado`, que es la ficha más cercana a un marinado (el alias `Salmón marinado` está emitido a 0,6 sobre ella: cambia la técnica de curado, no la especie ni el corte).",
+  "Mejillones con tomate y ajo": "CERRADO EN PARTE por la card 6.4: `Mejillones` (fdc-2706350, 109 kcal) ya existe y responde a `mejillones` y a `mussels` con match exacto. El plato sigue siendo una composición.",
+  "Pez espada con tomates rellenos": "CERRADO EN PARTE por la card 6.4: `Pez espada a la plancha` (fdc-173704, 172 kcal) ya existe, con `Pez espada` y `Emperador` de alias a 0,8. El plato sigue siendo una composición.",
   "Paella de marisco con espárragos": "La paella ya llega por el alias nuevo `Paella de marisco` (0,8); lo que baja la confianza es el espárrago del título, que la visión iba a ver aparte de todos modos.",
   "Pa amb tomàquet": "RESCATADO en esta card: estaba en silencio y el catálogo ya tenía el plato bajo `Pan con tomate` (0,8) sobre `Bruschetta`. Es el mismo plato con el nombre en catalán.",
   Filloas: "RESCATADO en esta card: la filloa gallega es un crepe (harina, leche, huevo) y el catálogo tiene `Crepe`. 0,8.",
   "Papas arrugadas con mojo picón":
     "RESCATADO en esta card: son papa hervida con piel en agua muy salada, que es exactamente fdc-2709393. Se emitió a 0,6 con el mojo nombrado y a 0,8 sin él, porque el mojo es aceite y la ficha no lo tiene.",
-  Fideuá: "Sin ficha y sin gemelo: el catálogo no tiene ningún fideo corto cocido. Ver el hueco de `espaguetis` en el censo de ingredientes — es el mismo agujero.",
-  "Tocinillo de cielo": "Sin ficha. El `Flan` del catálogo (178 kcal) NO sirve de gemelo: el tocinillo es yema y almíbar, ~300 kcal, sin leche.",
-  "Quesada pasiega": "Sin ficha. `Tarta de queso` (399 kcal) no es gemelo: la quesada es cuajada y harina, sin base de queso crema.",
-  "Calçots": "Sin ficha. El catálogo tiene cebolla de verdeo cruda, que no es un calçot asado a la brasa; el gemelo habría que medirlo, no suponerlo.",
+  Fideuá: "RESUELTO en la card 6.4 (`receta-fideua`, 157 kcal/100 g). El agujero era doble y se tapó de una vez: el catálogo no tenía NINGUNA pasta cocida simple, y `Pasta cocida` (fdc-2708357) entró en la misma card.",
+  "Tocinillo de cielo": "RESUELTO en la card 6.4 (`receta-tocinillo-de-cielo`, 303 kcal/100 g: partes iguales de yema y azúcar más el agua del almíbar). El `Flan` (178) seguía sin servir de gemelo, y por eso se derivó la receta en vez de emitir un alias.",
+  "Quesada pasiega": "RESUELTO en la card 6.4 (`receta-quesada-pasiega`, 277 kcal/100 g). `Tarta de queso` (399) sigue sin ser gemelo: la quesada es cuajada y harina, sin base de queso crema.",
+  "Calçots": "SIGUE SIN FICHA, y el motivo está medido: el calçot es una cebolleta ASADA A LA BRASA y no existe factor de rendimiento para verdura asada (DT-10: cinco pares en dos familias que se contradicen, de 0,714 a 1,111). Una receta de un solo ingrediente con factor 1,000 devolvería la cebolleta cruda con otro nombre, que es peor que el silencio.",
+  "Torrezno de Soria": "SIGUE SIN FICHA, con el motivo afinado por la card 6.4, que sí abrió los datasets: el INGREDIENTE existe y entró al catálogo (`Panceta cruda`, fdc-167812, 518 kcal). Lo que no existe es el RENDIMIENTO: el torrezno pierde muchísima agua y suelta grasa al freírse, y no hay ningún par crudo/frito de panceta en los tres datasets con el que medirlo. Elegir el factor hasta llegar a las ~600 kcal que se le suponen es el defecto de la arepa y del açaí.",
+  "Perdices estofadas": "SIGUE SIN FICHA. Medido sobre los datasets crudos: `partridge` da CERO coincidencias en los tres. Lo que sí hay —y entró en la card 6.4— es codorniz (fdc-2706149, 226) y faisán (fdc-2706150, 238); colgar `perdiz` de cualquiera de las dos sería cambiar de especie sobre una comparación que nadie hizo.",
+  "Besugo a la espalda": "SIGUE SIN FICHA. Medido sobre los datasets crudos: `porgy`, `sea bream` y `bream` dan CERO coincidencias en los tres. USDA no mide ningún espárido. La `Lubina` del catálogo (161 kcal) es otra familia, y emitirle un alias sería vocabulario sobre una ficha preexistente, que esta card no tocó por regla.",
+  "Ensalada Halloumi": "SIGUE SIN FICHA. Medido: `halloumi` da CERO coincidencias en los tres datasets. El `Queso feta` (265) no sirve de gemelo —el halloumi ronda las 321 y es de pasta prensada, no de salmuera fresca—, así que la ensalada no se puede derivar sin inventar su ingrediente principal.",
 };
 
 const NOTAS_INGREDIENTES = {
@@ -179,65 +189,59 @@ const NOTAS_INGREDIENTES = {
   "lechuga romana": "CORREGIDO en esta card: caía en `Lechuga cocida` (49 kcal contra 20). Especie correcta, preparación equivocada.",
   "pechuga de pavo": "CORREGIDO en esta card: caía en `Pechuga de pollo`. Otra especie.",
   harina:
-    "El catálogo NO tiene harina de trigo (sí de papa, arroz, soja, garbanzo, mijo, arrurruz, malta y trigo sarraceno). `harina` cae en `Harina de papa`. Hueco real, aunque la harina casi nunca se fotografía suelta.",
+    "CORREGIDO en la card 6.4: hasta hoy el catálogo NO tenía harina de trigo (sí de papa, arroz, soja, garbanzo, mijo, arrurruz, malta y trigo sarraceno) y `harina` caía en `Harina de papa` (357 kcal). Ahora llega a `Harina de trigo` (fdc-168894, 364), que es la ficha correcta. Sigue llegando por el difuso porque la palabra sola no tiene alias propio, y no se le emite: `harina` a secas tampoco dice de qué es.",
   huevos:
     "Cae en `Huevos rotos` (receta-huevos-rotos, 213 kcal), que es un PLATO entero, no el ingrediente. El catálogo tiene `Huevo crudo` y `Huevo cocido`. No se emitió alias porque `huevos` a secas no dice la preparación y elegirla por decreto sería inventar: es el hueco de plurales de la DT-26.",
   patatas:
     "Cae en `Papas fritas` (225 kcal) teniendo `Papas crudas con cáscara` (77) y `Papa hervida con cáscara` (126). No se emitió alias: `patatas` sin preparación es genuinamente ambiguo, y en el pipeline real la visión SIEMPRE escribe la preparación. Es un artefacto de medir una lista de receta.",
   espaguetis:
-    "Cae en `Pasta con salsa` por el alias `Espaguetis a la boloñesa`; en inglés `spaghetti` cae en `Spaghetti sauce with meat`, o sea la SALSA. El catálogo no tiene pasta cocida simple: solo `Pasta seca enriquecida` (371 kcal, cruda). El golden set ya lo había medido — `spaghetti, cooked` da silencio. Hueco de la card 6.4.",
-  "fideos finos": "Cae en `Fideos finos de soja` (331 kcal) siendo fideo de trigo del cocido. Mismo agujero que `espaguetis`.",
+    "CORREGIDO en la card 6.4: caía en `Pasta con salsa` por el alias `Espaguetis a la boloñesa` y ahora llega a `Pasta cocida` (fdc-2708357, 157 kcal), que es la ficha nueva del lote. El alias `Espaguetis cocidos` está emitido en texto plano sobre ella; el plural pelado sigue llegando por el difuso, que es el hueco de plurales de la DT-26 y no de ficha.",
+  "fideos finos": "Cae en `Fideos finos de soja` (331 kcal) siendo fideo de trigo del cocido. El agujero de base se tapó —ya hay `Pasta cocida`—, pero el término sigue ganándolo la soja por la palabra `finos`: es curación, no ficha.",
   "salsa marinara": "Cae en `Salsa mexicana` (`Salsa, NFS`). No se emitió alias: la `Salsa de tomate en lata` del catálogo no lleva el aceite ni el ajo de una marinara, y el término no es del mercado español.",
   "salsa Worcester": "Cae en `Salsa mexicana` por la palabra `salsa`. Sin ficha propia.",
   pimentón:
     "Cae en `Pimiento rojo crudo` por el alias `Pimentón rojo crudo`, que es el nombre del morrón en varios países de América. En España `pimentón` es la especia. NO se tocó: desambiguar a favor de España rompería el vocabulario americano, y las especias están diferidas a v2 por la DT-29.",
   "huesos de aceituna": "Cae en `Aceitunas`. No es comida: es un residuo de la receta. Se deja documentado, no se cura.",
   "puré instantáneo": "Silencio, teniendo `Puré de papa instantáneo` (fdc-2709503) en el catálogo. Hueco de vocabulario, no de ficha.",
-  "queso halloumi": "Cae en `Queso` genérico (381 kcal contra ~321 del halloumi). Familia correcta, sin ficha propia. Candidato de la card 6.4.",
-  "lomos de salmón": "No hay ninguna ficha de salmón en el catálogo.",
-  "huevas de salmón": "No hay ninguna ficha de salmón en el catálogo.",
-  mejillones: "No hay ficha de mejillón en el catálogo.",
-  "pez espada": "No hay ficha de pez espada en el catálogo.",
+  "queso halloumi": "Cae en `Queso` genérico (381 kcal contra ~321 del halloumi). Familia correcta, sin ficha propia. La card 6.4 abrió los datasets y midió que `halloumi` da CERO coincidencias en los tres: no es que no se haya buscado.",
+  "lomos de salmón": "CORREGIDO en la card 6.4: ya hay cuatro fichas de salmón y el término llega a `Salmón crudo` (188 kcal), que es lo que es un lomo sin cocinar.",
+  "huevas de salmón": "Llega a `Salmón` (274 kcal) por el difuso, y NO es la ficha correcta: las huevas son otro alimento (más grasa, más sodio, otra textura). USDA sí las mide —`Fish, roe, mixed species` en SR Legacy— y la card 6.4 decidió NO promoverlas: aparecen una sola vez en las dos fuentes y no son un plato del mercado español. Hueco declarado.",
+  mejillones: "CORREGIDO en la card 6.4: `Mejillones` (fdc-2706350, 109 kcal) entró al catálogo y responde a `mejillones` y a `mussels` con match exacto.",
+  "pez espada": "CORREGIDO en la card 6.4: `Pez espada a la plancha` (fdc-173704, 172 kcal) entró al catálogo, con `Pez espada` y `Emperador` de alias a 0,8.",
+  alcachofas:
+    "CORREGIDO en la card 6.4: daba silencio y ahora llega a `Alcachofa cocida` (fdc-2709766, 53 kcal). Llega por el difuso porque el plural pelado no dispara el alias `Alcachofas cocidas`; es el hueco de plurales de la DT-26.",
+  "pasta de tomate":
+    "NUEVO EN LA CARD 6.4, y es el precio de la ficha nueva: antes daba silencio y ahora cae en `Pasta cocida` (157 kcal) a 0,25 por la palabra `pasta`. Es el patrón exacto de la `salsa` de las cocochas. La guarda está escrita, pero HOY NO MUERDE en el difuso (DT-32): las guardas del catálogo solo impiden nombrar la ficha, no llegar a ella. Se declara el costo en vez de esconderlo.",
+  "pasta filo": "Mismo caso que `pasta de tomate`: silencio antes, `Pasta cocida` a 0,30 ahora. Guarda escrita, sin morder hasta la DT-32.",
+  gallina:
+    "NUEVO EN LA CARD 6.4: antes daba silencio y ahora cae en `Gallina en pepitoria` (161 kcal), que es el PLATO entero y no el ave. El catálogo sigue sin ficha de gallina —USDA no la mide como especie aparte— y la receta usa `Pollo guisado` con esa reserva escrita.",
+  "maíz tierno":
+    "CORREGIDO en la card 6.4: `Maíz fresco cocido sin grasa` (fdc-2709910, 86 kcal) entró al catálogo y cierra el hueco que la DT-26 había mandado a la DT-33 (`sweet corn, cooked` del golden set).",
 };
 
 /**
- * PISTAS PARA LA CARD 6.4, sobre los `ausente_ficha`.
+ * LOS BLOQUEOS QUE QUEDAN, sobre los `ausente_ficha`.
  *
- * ALCANCE DECLARADO, porque es fácil leer de más: esto se midió contra el
- * CATÁLOGO —las 1.036 fichas seleccionadas— y NO contra los datasets crudos de
- * USDA, que tienen unos 15.000 alimentos y que esta card no abrió. Por eso las
- * filas dicen "hay base en el catálogo" o "no la hay", y NINGUNA dice "USDA no
- * lo tiene": eso no se buscó y no se puede afirmar. Un plato sin pista acá es un
- * plato que no se probó, no un plato descartado.
+ * La card 6.3 escribió esta tabla como PISTAS para la 6.4, y con un alcance
+ * declarado: se había medido contra el CATÁLOGO y no contra los datasets crudos,
+ * así que ninguna fila podía decir "USDA no lo tiene".
+ *
+ * LA CARD 6.4 ABRIÓ LOS DATASETS, y por eso la tabla cambió de naturaleza: ya no
+ * son pistas, son BLOQUEOS con el motivo medido. De los 48 platos que la 6.3
+ * dejó sin ficha quedan CINCO, y cada uno dice qué se buscó y qué se encontró.
+ * "Cero coincidencias en los tres datasets" ahora sí se puede afirmar: se buscó.
  */
 const CANDIDATOS = {
-  Fideuá: "no hay base: el catálogo no tiene ningún fideo corto cocido (ver el hueco de `espaguetis`)",
-  "Tocinillo de cielo": "hay `Flan` (178 kcal) y NO sirve: el tocinillo es yema y almíbar, ~300 kcal, sin leche",
-  "Quesada pasiega": "hay `Tarta de queso` (399 kcal) y NO sirve: la quesada es cuajada y harina, sin queso crema",
-  Calçots: "hay `Cebolla de verdeo cruda`; el calçot va a la brasa y el gemelo habría que medirlo, no suponerlo",
-  Torrezno: "hay `Tocino cocido` (484 kcal); el torrezno es panceta con corteza, candidato a medir",
-  "Torrezno de Soria": "hay `Tocino cocido` (484 kcal); el torrezno es panceta con corteza, candidato a medir",
-  "Calamares en su tinta": "hay `Arroz con calamares` y `Calamares rebozados`; ninguno es calamar guisado en su tinta",
-  "Caldereta de cordero u oveja": "hay `Cordero` genérico (292 kcal) y `Cordero asado` (0,6); la caldereta es guiso con patata",
-  "Paletilla de cordero lechal al horno o lechazo": "hay `Cordero` genérico y `Cordero asado` (0,6): candidato razonable a alias, no a ficha",
-  "Conejo al ajillo": "NO hay ninguna ficha de conejo en el catálogo",
-  "Perdices estofadas": "NO hay ninguna ficha de perdiz ni de codorniz en el catálogo",
-  Mollejas: "NO hay ninguna ficha de molleja en el catálogo",
-  "Riñones al Jerez": "NO hay ninguna ficha de riñón en el catálogo",
-  "Caracoles a la llauna": "NO hay ninguna ficha de caracol en el catálogo",
-  "All i pebre de anguila": "hay `Roll de sushi de anguila`, que no sirve; anguila suelta no hay",
-  "Caldereta de langosta": "NO hay ninguna ficha de langosta en el catálogo",
-  "Besugo a la espalda": "hay `Lubina` (`Fish, bass, NFS`, 161 kcal) como base de pescado blanco al horno",
-  "Merluza a la gallega": "hay `receta-merluza-en-salsa-verde` (152 kcal) y `Pescado` genérico; la gallega es con patata y pimentón",
-  "Bonito con tomate": "hay `Atún` (85) y `Atún cocido` (176); el guiso con tomate no está",
-  Arancini: "hay `Arroz blanco cocido con mantequilla` (`Risotto`, 147) como base; el arancini es rebozado y frito",
-  "Pasta Alla Norma": "hay `Pasta con salsa` (125) como base de familia",
-  "Ensalada Niçoise": "hay las partes (atún, huevo, judías, patata, aceitunas) pero ninguna ficha de la ensalada",
-  "Ensalada griega": "hay `Queso feta` (265) y las hortalizas; la ensalada armada no está",
-  "Ensalada Halloumi": "NO hay ficha de halloumi (el `queso halloumi` cae en `Queso` genérico)",
-  "Baba Ghanoush": "hay `Berenjena cruda` y no hay tahini: las dos piezas del plato faltan o están crudas",
-  Shakshuka: "hay `Huevo cocido` y `Tomate cocido`; el plato armado no está",
-  "Ensalada Fattoush": "hay las hortalizas y `Pita` (card 6.2); la ensalada armada no está",
+  Calçots:
+    "BLOQUEADO POR EL RENDIMIENTO. El ingrediente está (`Cebolla de verdeo cruda`, fdc-170005, 32 kcal) y el calçot es esa cebolleta ASADA A LA BRASA. No hay factor medido para verdura asada (DT-10: cinco pares en dos familias que se contradicen, 0,714 a 1,111), y una receta de un solo ingrediente con factor 1,000 devolvería la cebolleta cruda con otro nombre.",
+  "Torrezno de Soria":
+    "BLOQUEADO POR EL RENDIMIENTO, no por falta de ingrediente. La card 6.4 promovió `Panceta cruda` (fdc-167812, 518 kcal), que es el corte exacto. Lo que no existe es el par crudo/frito de panceta con el que medir cuánta agua pierde y cuánta grasa suelta el torrezno: elegir ese factor hasta llegar a las ~600 kcal que se le suponen es el defecto de la arepa (card 6.2) y del açaí (DT-11).",
+  "Perdices estofadas":
+    "BLOQUEADO POR LA ESPECIE. Medido en los tres datasets: `partridge` da CERO coincidencias. Codorniz y faisán SÍ existen y entraron en la card 6.4 (fdc-2706149, 226 · fdc-2706150, 238), pero nadie midió la perdiz contra ninguna de las dos: un alias a 0,5 diría «se parece» donde lo cierto es «no lo sabemos».",
+  "Besugo a la espalda":
+    "BLOQUEADO POR LA ESPECIE. Medido en los tres datasets: `porgy`, `sea bream` y `bream` dan CERO coincidencias — USDA no mide ningún espárido. La `Lubina` del catálogo (161 kcal) es otra familia; además, emitirle un alias sería tocar una ficha preexistente, cosa que la card 6.4 no hizo por regla.",
+  "Ensalada Halloumi":
+    "BLOQUEADO POR EL INGREDIENTE PRINCIPAL. Medido: `halloumi` da CERO coincidencias en los tres datasets, y el `Queso feta` (265 kcal) no sirve de gemelo — el halloumi ronda las 321 y es de pasta prensada, no de salmuera fresca. Derivar la ensalada exigiría inventar el queso que le da nombre.",
 };
 
 /** Especias y hierbas: DT-29 las difirió a v2 por decisión de Tomás. */

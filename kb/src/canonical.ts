@@ -469,7 +469,22 @@ export function assemble(input: AssembleInput): AssembleResult {
   // motivo que la 3.1.0: un catálogo que dice cosas distintas es un catálogo
   // distinto, y `config/app` estampa esta versión para poder decir con qué
   // vocabulario se calculó cada reporte.
-  const kbVersion = `3.3.0+${contentHash({ generated_from: generatedFrom, foods })}`;
+  //
+  // 3.4.0 con la card 6.4 (las fichas que faltaban del censo mediterráneo).
+  //
+  // Es MENOR y no MAYOR aunque entren 76 alimentos, por el mismo motivo que la
+  // 3.2.0: el cambio es ADITIVO en el sentido fuerte. Entran 33 fichas de USDA
+  // promovidas desde los datasets crudos (kb/selection/dt33.v1.json) y 43 fichas
+  // derivadas por receta compuesta (kb/curation/recipes.foods.json); NO sale
+  // ninguna, NO cambia ningún id y NO cambia ni un número de las 1.036 que ya
+  // estaban — verificado por diff en la card. Un `food_id` guardado por un
+  // consumidor sigue encontrando exactamente lo mismo.
+  //
+  // Sube el menor y no se queda en parche porque un catálogo con 1.112 alimentos
+  // —y con salmón, mejillón, pasta cocida y cuarenta y tres platos españoles que
+  // antes no existían— es un catálogo distinto, y `config/app` estampa esta
+  // versión para poder decir contra qué se calculó cada reporte.
+  const kbVersion = `3.4.0+${contentHash({ generated_from: generatedFrom, foods })}`;
 
   return {
     catalog: { kb_version: kbVersion, generated_from: generatedFrom, foods },

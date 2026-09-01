@@ -11,8 +11,8 @@
   "functions/src/engine/cobertura.test.ts y corre en cada `npm test`."
  ],
  "medido": "2026-09-01",
- "kb_version": "3.3.0+e905338b",
- "fichas_en_el_catalogo": 1036,
+ "kb_version": "3.4.0+1c2270c1",
+ "fichas_en_el_catalogo": 1112,
  "clases": [
   "ok",
   "confianza_injusta",
@@ -23,35 +23,35 @@
  "resumen": {
   "platos": {
    "total": 141,
-   "ok": 38,
-   "confianza_injusta": 21,
-   "ficha_equivocada": 5,
-   "ausente_ficha": 48,
+   "ok": 85,
+   "confianza_injusta": 22,
+   "ficha_equivocada": 0,
+   "ausente_ficha": 5,
    "descomponible": 29
   },
   "ingredientes": {
    "total": 196,
-   "ok": 37,
-   "confianza_injusta": 91,
-   "ficha_equivocada": 9,
-   "ausente_ficha": 59,
+   "ok": 45,
+   "confianza_injusta": 96,
+   "ficha_equivocada": 11,
+   "ausente_ficha": 44,
    "descomponible": 0
   },
   "por_lista": {
    "directoalpaladar": {
     "total": 101,
-    "ok": 34,
-    "confianza_injusta": 18,
-    "ficha_equivocada": 5,
-    "ausente_ficha": 39,
+    "ok": 73,
+    "confianza_injusta": 19,
+    "ficha_equivocada": 0,
+    "ausente_ficha": 4,
     "descomponible": 5
    },
    "nuevoestilo": {
     "total": 40,
-    "ok": 4,
+    "ok": 12,
     "confianza_injusta": 3,
     "ficha_equivocada": 0,
-    "ausente_ficha": 9,
+    "ausente_ficha": 1,
     "descomponible": 24
    }
   }
@@ -292,16 +292,34 @@
   {
    "lista": "directoalpaladar",
    "plato": "Arroz a banda",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-arroz-a-banda",
+    "ficha_es": "Arroz a banda",
+    "ficha_en": "Arroz a banda, Alicante rice cooked in fish broth",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Arroz a banda",
+    "generic": false,
+    "kcal_100g": 152.527
+   }
   },
   {
    "lista": "directoalpaladar",
    "plato": "Marmitako",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-marmitako",
+    "ficha_es": "Marmitako",
+    "ficha_en": "Marmitako, Basque tuna and potato stew",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Marmitako",
+    "generic": false,
+    "kcal_100g": 105.095
+   }
   },
   {
    "lista": "directoalpaladar",
@@ -322,33 +340,51 @@
   {
    "lista": "directoalpaladar",
    "plato": "Tortilla de camarones",
-   "clasificacion": "ficha_equivocada",
+   "clasificacion": "ok",
    "match": {
-    "ficha_id": "fdc-2707822",
-    "ficha_es": "Tortilla de trigo",
-    "ficha_en": "Tortilla, NFS",
-    "nivel": "difuso",
-    "confianza_match": 0.282,
-    "confianza_visible": 0.24,
-    "termino_matcheado": "Tortilla, NFS",
-    "generic": true,
-    "kcal_100g": 262
+    "ficha_id": "receta-tortilla-de-camarones",
+    "ficha_es": "Tortilla de camarones",
+    "ficha_en": "Tortillita de camarones, Cadiz shrimp fritter",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Tortilla de camarones",
+    "generic": false,
+    "kcal_100g": 278.286
    },
-   "nota": "La tortillita de camarones de Cádiz es una fritura de harina de garbanzo con camarones enteros (~350 kcal/100 g). Cae en `Tortilla de trigo` (`Tortilla, NFS`, 262 kcal) por la palabra `tortilla`, que en América nombra el pan plano. Guarda puesta por adelantado; la ficha la tiene que traer la card 6.4."
+   "nota": "RESUELTO en la card 6.4 con ficha propia (`receta-tortilla-de-camarones`, 278 kcal/100 g, harina de garbanzo + harina de trigo + camarón, método `frito` con el 6,5 % medido). Antes caía en `Tortilla de trigo` (262 kcal) por la palabra `tortilla`, que en América nombra el pan plano. La ficha declara que subestima: la tortillita real ronda las 350 y una fritura de encaje absorbe más aceite que la mediana de FNDDS."
   },
   {
    "lista": "directoalpaladar",
    "plato": "Paletilla de cordero lechal al horno o lechazo",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "hay `Cordero` genérico y `Cordero asado` (0,6): candidato razonable a alias, no a ficha"
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-172499",
+    "ficha_es": "Paletilla de cordero al horno",
+    "ficha_en": "Lamb, shoulder, whole (arm and blade), separable lean only, trimmed to 1/4\" fat, choice, cooked, roasted",
+    "nivel": "difuso",
+    "confianza_match": 0.24,
+    "confianza_visible": 0.24,
+    "termino_matcheado": "Paletilla de cordero",
+    "generic": false,
+    "kcal_100g": 204
+   }
   },
   {
    "lista": "directoalpaladar",
    "plato": "Gallina en pepitoria",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-gallina-en-pepitoria",
+    "ficha_es": "Gallina en pepitoria",
+    "ficha_en": "Gallina en pepitoria, chicken in almond and egg yolk sauce",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Gallina en pepitoria",
+    "generic": false,
+    "kcal_100g": 161.228
+   }
   },
   {
    "lista": "directoalpaladar",
@@ -388,8 +424,8 @@
    "plato": "Calçots",
    "clasificacion": "ausente_ficha",
    "match": null,
-   "nota": "Sin ficha. El catálogo tiene cebolla de verdeo cruda, que no es un calçot asado a la brasa; el gemelo habría que medirlo, no suponerlo.",
-   "candidato_en_el_catalogo": "hay `Cebolla de verdeo cruda`; el calçot va a la brasa y el gemelo habría que medirlo, no suponerlo"
+   "nota": "SIGUE SIN FICHA, y el motivo está medido: el calçot es una cebolleta ASADA A LA BRASA y no existe factor de rendimiento para verdura asada (DT-10: cinco pares en dos familias que se contradicen, de 0,714 a 1,111). Una receta de un solo ingrediente con factor 1,000 devolvería la cebolleta cruda con otro nombre, que es peor que el silencio.",
+   "candidato_en_el_catalogo": "BLOQUEADO POR EL RENDIMIENTO. El ingrediente está (`Cebolla de verdeo cruda`, fdc-170005, 32 kcal) y el calçot es esa cebolleta ASADA A LA BRASA. No hay factor medido para verdura asada (DT-10: cinco pares en dos familias que se contradicen, 0,714 a 1,111), y una receta de un solo ingrediente con factor 1,000 devolvería la cebolleta cruda con otro nombre."
   },
   {
    "lista": "directoalpaladar",
@@ -432,16 +468,34 @@
   {
    "lista": "directoalpaladar",
    "plato": "Ensaimada mallorquina",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-ensaimada",
+    "ficha_es": "Ensaimada mallorquina",
+    "ficha_en": "Ensaimada mallorquina, Majorcan lard-laminated coiled pastry",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Ensaimada mallorquina",
+    "generic": false,
+    "kcal_100g": 407.949
+   }
   },
   {
    "lista": "directoalpaladar",
    "plato": "Pote gallego",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-pote-gallego",
+    "ficha_es": "Pote gallego",
+    "ficha_en": "Pote gallego, Galician bean, greens and pork stew",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Pote gallego",
+    "generic": false,
+    "kcal_100g": 88.037
+   }
   },
   {
    "lista": "directoalpaladar",
@@ -494,16 +548,34 @@
   {
    "lista": "directoalpaladar",
    "plato": "Morteruelo",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-morteruelo",
+    "ficha_es": "Morteruelo",
+    "ficha_en": "Morteruelo, Cuenca game and liver pate",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Morteruelo",
+    "generic": false,
+    "kcal_100g": 265.092
+   }
   },
   {
    "lista": "directoalpaladar",
    "plato": "Riñones al Jerez",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "NO hay ninguna ficha de riñón en el catálogo"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-rinones-al-jerez",
+    "ficha_es": "Riñones al Jerez",
+    "ficha_en": "Kidneys in sherry sauce (rinones al Jerez)",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Riñones al Jerez",
+    "generic": false,
+    "kcal_100g": 158.614
+   }
   },
   {
    "lista": "directoalpaladar",
@@ -524,17 +596,35 @@
   {
    "lista": "directoalpaladar",
    "plato": "Txangurro a la donostiarra",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-txangurro",
+    "ficha_es": "Txangurro a la donostiarra",
+    "ficha_en": "Txangurro a la donostiarra, San Sebastian stuffed spider crab",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Txangurro a la donostiarra",
+    "generic": false,
+    "kcal_100g": 124.781
+   }
   },
   {
    "lista": "directoalpaladar",
    "plato": "Fideuá",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "nota": "Sin ficha y sin gemelo: el catálogo no tiene ningún fideo corto cocido. Ver el hueco de `espaguetis` en el censo de ingredientes — es el mismo agujero.",
-   "candidato_en_el_catalogo": "no hay base: el catálogo no tiene ningún fideo corto cocido (ver el hueco de `espaguetis`)"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-fideua",
+    "ficha_es": "Fideuá",
+    "ficha_en": "Fideua, Valencian short-noodle seafood dish",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Fideuá",
+    "generic": false,
+    "kcal_100g": 157.245
+   },
+   "nota": "RESUELTO en la card 6.4 (`receta-fideua`, 157 kcal/100 g). El agujero era doble y se tapó de una vez: el catálogo no tenía NINGUNA pasta cocida simple, y `Pasta cocida` (fdc-2708357) entró en la misma card."
   },
   {
    "lista": "directoalpaladar",
@@ -588,24 +678,51 @@
   {
    "lista": "directoalpaladar",
    "plato": "Tocinillo de cielo",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "nota": "Sin ficha. El `Flan` del catálogo (178 kcal) NO sirve de gemelo: el tocinillo es yema y almíbar, ~300 kcal, sin leche.",
-   "candidato_en_el_catalogo": "hay `Flan` (178 kcal) y NO sirve: el tocinillo es yema y almíbar, ~300 kcal, sin leche"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-tocinillo-de-cielo",
+    "ficha_es": "Tocinillo de cielo",
+    "ficha_en": "Tocinillo de cielo, Spanish egg yolk and syrup custard",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Tocinillo de cielo",
+    "generic": false,
+    "kcal_100g": 303.2
+   },
+   "nota": "RESUELTO en la card 6.4 (`receta-tocinillo-de-cielo`, 303 kcal/100 g: partes iguales de yema y azúcar más el agua del almíbar). El `Flan` (178) seguía sin servir de gemelo, y por eso se derivó la receta en vez de emitir un alias."
   },
   {
    "lista": "directoalpaladar",
    "plato": "Caracoles a la llauna",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "NO hay ninguna ficha de caracol en el catálogo"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-caracoles-a-la-llauna",
+    "ficha_es": "Caracoles a la llauna",
+    "ficha_en": "Caracoles a la llauna, Catalan pan-roasted snails",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Caracoles a la llauna",
+    "generic": false,
+    "kcal_100g": 160.565
+   }
   },
   {
    "lista": "directoalpaladar",
    "plato": "Coca",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-coca",
+    "ficha_es": "Coca",
+    "ficha_en": "Coca de recapte, Catalan flatbread with roasted vegetables",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Coca",
+    "generic": false,
+    "kcal_100g": 197.28
+   }
   },
   {
    "lista": "directoalpaladar",
@@ -661,21 +778,40 @@
    "plato": "Torrezno de Soria",
    "clasificacion": "ausente_ficha",
    "match": null,
-   "candidato_en_el_catalogo": "hay `Tocino cocido` (484 kcal); el torrezno es panceta con corteza, candidato a medir"
+   "nota": "SIGUE SIN FICHA, con el motivo afinado por la card 6.4, que sí abrió los datasets: el INGREDIENTE existe y entró al catálogo (`Panceta cruda`, fdc-167812, 518 kcal). Lo que no existe es el RENDIMIENTO: el torrezno pierde muchísima agua y suelta grasa al freírse, y no hay ningún par crudo/frito de panceta en los tres datasets con el que medirlo. Elegir el factor hasta llegar a las ~600 kcal que se le suponen es el defecto de la arepa y del açaí.",
+   "candidato_en_el_catalogo": "BLOQUEADO POR EL RENDIMIENTO, no por falta de ingrediente. La card 6.4 promovió `Panceta cruda` (fdc-167812, 518 kcal), que es el corte exacto. Lo que no existe es el par crudo/frito de panceta con el que medir cuánta agua pierde y cuánta grasa suelta el torrezno: elegir ese factor hasta llegar a las ~600 kcal que se le suponen es el defecto de la arepa (card 6.2) y del açaí (DT-11)."
   },
   {
    "lista": "directoalpaladar",
    "plato": "Calamares en su tinta",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "hay `Arroz con calamares` y `Calamares rebozados`; ninguno es calamar guisado en su tinta"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-calamares-en-su-tinta",
+    "ficha_es": "Calamares en su tinta",
+    "ficha_en": "Squid in its own ink (calamares en su tinta)",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Calamares en su tinta",
+    "generic": false,
+    "kcal_100g": 86.337
+   }
   },
   {
    "lista": "directoalpaladar",
    "plato": "Escudella y carn d'olla",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-escudella",
+    "ficha_es": "Escudella y carn d'olla",
+    "ficha_en": "Escudella i carn d'olla, Catalan meat and vegetable stew",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Escudella y carn d'olla",
+    "generic": false,
+    "kcal_100g": 91.264
+   }
   },
   {
    "lista": "directoalpaladar",
@@ -730,9 +866,18 @@
   {
    "lista": "directoalpaladar",
    "plato": "All i pebre de anguila",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "hay `Roll de sushi de anguila`, que no sirve; anguila suelta no hay"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-all-i-pebre",
+    "ficha_es": "All i pebre de anguila",
+    "ficha_en": "All i pebre, Valencian eel stew with garlic and paprika",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "All i pebre de anguila",
+    "generic": false,
+    "kcal_100g": 165.093
+   }
   },
   {
    "lista": "directoalpaladar",
@@ -759,33 +904,51 @@
   {
    "lista": "directoalpaladar",
    "plato": "Conejo al ajillo",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "NO hay ninguna ficha de conejo en el catálogo"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-conejo-al-ajillo",
+    "ficha_es": "Conejo al ajillo",
+    "ficha_en": "Rabbit in garlic and olive oil (conejo al ajillo)",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Conejo al ajillo",
+    "generic": false,
+    "kcal_100g": 243.629
+   }
   },
   {
    "lista": "directoalpaladar",
    "plato": "Gazpachos manchegos o galianos",
-   "clasificacion": "ficha_equivocada",
+   "clasificacion": "ok",
    "match": {
-    "ficha_id": "fdc-2710106",
-    "ficha_es": "Gazpacho",
-    "ficha_en": "Soup, gazpacho",
-    "nivel": "difuso",
-    "confianza_match": 0.178,
-    "confianza_visible": 0.18,
-    "termino_matcheado": "Gazpacho",
+    "ficha_id": "receta-gazpachos-manchegos",
+    "ficha_es": "Gazpachos manchegos",
+    "ficha_en": "Gazpachos manchegos, La Mancha game stew on flatbread",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Gazpachos manchegos o galianos",
     "generic": false,
-    "kcal_100g": 26
+    "kcal_100g": 163.901
    },
-   "nota": "El nombre que más miente del censo: es un GUISO CALIENTE de caza sobre torta de pan ácimo (~200 kcal/100 g) y cae en la sopa fría andaluza de 26 kcal — casi ocho veces menos. El plural manchego y el singular andaluz son dos platos distintos."
+   "nota": "RESUELTO en la card 6.4 con ficha propia (`receta-gazpachos-manchegos`, 164 kcal/100 g). Era el nombre que más mentía del censo: un GUISO CALIENTE de caza sobre torta de pan ácimo que caía en la sopa fría andaluza de 26 kcal, casi ocho veces menos. El plural manchego y el singular andaluz siguen siendo dos platos distintos y la guarda lo sostiene."
   },
   {
    "lista": "directoalpaladar",
    "plato": "Porrusalda",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-porrusalda",
+    "ficha_es": "Porrusalda",
+    "ficha_en": "Porrusalda, Basque leek and potato soup",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Porrusalda",
+    "generic": false,
+    "kcal_100g": 61.617
+   }
   },
   {
    "lista": "directoalpaladar",
@@ -806,40 +969,59 @@
   {
    "lista": "directoalpaladar",
    "plato": "Arroz al caldero",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-arroz-al-caldero",
+    "ficha_es": "Arroz al caldero",
+    "ficha_en": "Arroz al caldero, Mar Menor rice cooked in fish broth",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Arroz al caldero",
+    "generic": false,
+    "kcal_100g": 150.736
+   }
   },
   {
    "lista": "directoalpaladar",
    "plato": "Cocochas en salsa",
-   "clasificacion": "ficha_equivocada",
+   "clasificacion": "ok",
    "match": {
-    "ficha_id": "fdc-2709736",
-    "ficha_es": "Salsa mexicana",
-    "ficha_en": "Salsa, NFS",
-    "nivel": "difuso",
-    "confianza_match": 0.231,
-    "confianza_visible": 0.2,
-    "termino_matcheado": "Salsa, NFS",
-    "generic": true,
-    "kcal_100g": 34
+    "ficha_id": "receta-cocochas-en-salsa",
+    "ficha_es": "Cocochas en salsa",
+    "ficha_en": "Cocochas en salsa verde, hake throats in garlic emulsion",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Cocochas en salsa",
+    "generic": false,
+    "kcal_100g": 167.979
    },
-   "nota": "Papada de merluza o bacalao en emulsión de aceite y ajo. Cae en `Salsa mexicana` (`Salsa, NFS`, 34 kcal) arrastrada por la palabra `salsa`. Guarda puesta por adelantado sobre `cocochas`."
+   "nota": "RESUELTO en la card 6.4 con ficha propia (`receta-cocochas-en-salsa`, 168 kcal/100 g). Antes caía en `Salsa mexicana` (34 kcal) arrastrada por la palabra `salsa`. La receta declara sus 80 g de aceite sobre 500 de pescado, que es exactamente lo que le faltaba a `Bacalao al vapor` para poder representar el plato."
   },
   {
    "lista": "directoalpaladar",
    "plato": "Merluza a la gallega",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "hay `receta-merluza-en-salsa-verde` (152 kcal) y `Pescado` genérico; la gallega es con patata y pimentón"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-merluza-a-la-gallega",
+    "ficha_es": "Merluza a la gallega",
+    "ficha_en": "Hake Galician style with potatoes and paprika",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Merluza a la gallega",
+    "generic": false,
+    "kcal_100g": 142.849
+   }
   },
   {
    "lista": "directoalpaladar",
    "plato": "Perdices estofadas",
    "clasificacion": "ausente_ficha",
    "match": null,
-   "candidato_en_el_catalogo": "NO hay ninguna ficha de perdiz ni de codorniz en el catálogo"
+   "nota": "SIGUE SIN FICHA. Medido sobre los datasets crudos: `partridge` da CERO coincidencias en los tres. Lo que sí hay —y entró en la card 6.4— es codorniz (fdc-2706149, 226) y faisán (fdc-2706150, 238); colgar `perdiz` de cualquiera de las dos sería cambiar de especie sobre una comparación que nadie hizo.",
+   "candidato_en_el_catalogo": "BLOQUEADO POR LA ESPECIE. Medido en los tres datasets: `partridge` da CERO coincidencias. Codorniz y faisán SÍ existen y entraron en la card 6.4 (fdc-2706149, 226 · fdc-2706150, 238), pero nadie midió la perdiz contra ninguna de las dos: un alias a 0,5 diría «se parece» donde lo cierto es «no lo sabemos»."
   },
   {
    "lista": "directoalpaladar",
@@ -900,16 +1082,34 @@
   {
    "lista": "directoalpaladar",
    "plato": "Butifarra con alubias",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-butifarra-con-alubias",
+    "ficha_es": "Butifarra con alubias",
+    "ficha_en": "Butifarra amb seques, Catalan sausage with white beans",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Butifarra con alubias",
+    "generic": false,
+    "kcal_100g": 231.488
+   }
   },
   {
    "lista": "directoalpaladar",
    "plato": "Pestiños",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-pestinos",
+    "ficha_es": "Pestiños",
+    "ficha_en": "Pestinos, Andalusian fried wine pastries in honey",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Pestiños",
+    "generic": false,
+    "kcal_100g": 374.663
+   }
   },
   {
    "lista": "directoalpaladar",
@@ -964,16 +1164,34 @@
   {
    "lista": "directoalpaladar",
    "plato": "Cocido montañés",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-cocido-montanes",
+    "ficha_es": "Cocido montañés",
+    "ficha_en": "Cocido montanes, Cantabrian bean and cabbage stew",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Cocido montañés",
+    "generic": false,
+    "kcal_100g": 103.171
+   }
   },
   {
    "lista": "directoalpaladar",
    "plato": "Cardos a la navarra",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-cardos-a-la-navarra",
+    "ficha_es": "Cardos a la navarra",
+    "ficha_en": "Cardoon Navarre style with almonds and ham",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Cardos a la navarra",
+    "generic": false,
+    "kcal_100g": 109.333
+   }
   },
   {
    "lista": "directoalpaladar",
@@ -1010,10 +1228,19 @@
   {
    "lista": "directoalpaladar",
    "plato": "Quesada pasiega",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "nota": "Sin ficha. `Tarta de queso` (399 kcal) no es gemelo: la quesada es cuajada y harina, sin base de queso crema.",
-   "candidato_en_el_catalogo": "hay `Tarta de queso` (399 kcal) y NO sirve: la quesada es cuajada y harina, sin queso crema"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-quesada-pasiega",
+    "ficha_es": "Quesada pasiega",
+    "ficha_en": "Quesada pasiega, Cantabrian curd cheese cake",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Quesada pasiega",
+    "generic": false,
+    "kcal_100g": 277.139
+   },
+   "nota": "RESUELTO en la card 6.4 (`receta-quesada-pasiega`, 277 kcal/100 g). `Tarta de queso` (399) sigue sin ser gemelo: la quesada es cuajada y harina, sin base de queso crema."
   },
   {
    "lista": "directoalpaladar",
@@ -1052,14 +1279,24 @@
    "plato": "Besugo a la espalda",
    "clasificacion": "ausente_ficha",
    "match": null,
-   "candidato_en_el_catalogo": "hay `Lubina` (`Fish, bass, NFS`, 161 kcal) como base de pescado blanco al horno"
+   "nota": "SIGUE SIN FICHA. Medido sobre los datasets crudos: `porgy`, `sea bream` y `bream` dan CERO coincidencias en los tres. USDA no mide ningún espárido. La `Lubina` del catálogo (161 kcal) es otra familia, y emitirle un alias sería vocabulario sobre una ficha preexistente, que esta card no tocó por regla.",
+   "candidato_en_el_catalogo": "BLOQUEADO POR LA ESPECIE. Medido en los tres datasets: `porgy`, `sea bream` y `bream` dan CERO coincidencias — USDA no mide ningún espárido. La `Lubina` del catálogo (161 kcal) es otra familia; además, emitirle un alias sería tocar una ficha preexistente, cosa que la card 6.4 no hizo por regla."
   },
   {
    "lista": "directoalpaladar",
    "plato": "Caldereta de cordero u oveja",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "hay `Cordero` genérico (292 kcal) y `Cordero asado` (0,6); la caldereta es guiso con patata"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-caldereta-de-cordero",
+    "ficha_es": "Caldereta de cordero",
+    "ficha_en": "Caldereta de cordero, Spanish lamb and potato stew",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Caldereta de cordero u oveja",
+    "generic": false,
+    "kcal_100g": 155.581
+   }
   },
   {
    "lista": "directoalpaladar",
@@ -1080,9 +1317,18 @@
   {
    "lista": "directoalpaladar",
    "plato": "Caldereta de langosta",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "NO hay ninguna ficha de langosta en el catálogo"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-caldereta-de-langosta",
+    "ficha_es": "Caldereta de langosta",
+    "ficha_en": "Caldereta de langosta, Menorcan spiny lobster stew",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Caldereta de langosta",
+    "generic": false,
+    "kcal_100g": 100.63
+   }
   },
   {
    "lista": "directoalpaladar",
@@ -1103,9 +1349,18 @@
   {
    "lista": "directoalpaladar",
    "plato": "Pipirrana",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-pipirrana",
+    "ficha_es": "Pipirrana",
+    "ficha_en": "Pipirrana, Andalusian chopped tomato and pepper salad",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Pipirrana",
+    "generic": false,
+    "kcal_100g": 79.444
+   }
   },
   {
    "lista": "directoalpaladar",
@@ -1116,50 +1371,68 @@
   {
    "lista": "directoalpaladar",
    "plato": "Leche frita",
-   "clasificacion": "ficha_equivocada",
+   "clasificacion": "ok",
    "match": {
-    "ficha_id": "fdc-2705384",
-    "ficha_es": "Leche",
-    "ficha_en": "Milk, NFS",
-    "nivel": "difuso",
-    "confianza_match": 0.6,
-    "confianza_visible": 0.51,
-    "termino_matcheado": "Leche",
-    "generic": true,
-    "kcal_100g": 52
+    "ficha_id": "receta-leche-frita",
+    "ficha_es": "Leche frita",
+    "ficha_en": "Leche frita, Spanish fried milk custard squares",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Leche frita",
+    "generic": false,
+    "kcal_100g": 201.532
    },
-   "nota": "Postre de crema cuajada rebozada y frita (~250 kcal/100 g). Cae en `Leche` (52 kcal), que además de equivocarse por cinco es un LÍQUIDO: la porción también saldría mal."
+   "nota": "RESUELTO en la card 6.4 con ficha propia (`receta-leche-frita`, 202 kcal/100 g). Antes caía en `Leche` (52 kcal), que además de equivocarse por cinco es un LÍQUIDO. La ficha declara que subestima —la crema pierde agua al espesar y el método `frito` no lo modela—, así que el postre real ronda las 250."
   },
   {
    "lista": "directoalpaladar",
    "plato": "Bonito con tomate",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "hay `Atún` (85) y `Atún cocido` (176); el guiso con tomate no está"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-bonito-con-tomate",
+    "ficha_es": "Bonito con tomate",
+    "ficha_en": "Bonito con tomate, tuna stewed in tomato sauce",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Bonito con tomate",
+    "generic": false,
+    "kcal_100g": 138.593
+   }
   },
   {
    "lista": "directoalpaladar",
    "plato": "Mollejas",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "NO hay ninguna ficha de molleja en el catálogo"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2706158",
+    "ficha_es": "Mollejas",
+    "ficha_en": "Sweetbreads",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Mollejas",
+    "generic": false,
+    "kcal_100g": 124
+   }
   },
   {
    "lista": "directoalpaladar",
    "plato": "Pastel de cabracho",
-   "clasificacion": "ficha_equivocada",
+   "clasificacion": "ok",
    "match": {
-    "ficha_id": "fdc-2707993",
-    "ficha_es": "Tarta",
-    "ficha_en": "Pie, NFS",
-    "nivel": "difuso",
-    "confianza_match": 0.24,
-    "confianza_visible": 0.2,
-    "termino_matcheado": "Pastel",
-    "generic": true,
-    "kcal_100g": 296
+    "ficha_id": "receta-pastel-de-cabracho",
+    "ficha_es": "Pastel de cabracho",
+    "ficha_en": "Pastel de cabracho, Cantabrian scorpionfish terrine",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Pastel de cabracho",
+    "generic": false,
+    "kcal_100g": 160.94
    },
-   "nota": "Pudín frío de pescado, huevo, nata y tomate (~180 kcal/100 g). Cae en `Tarta` (`Pie, NFS`, 296 kcal): acá `pastel` no quiere decir postre. La guarda es sobre el término completo — `Pastel` a secas sigue siendo alias legítimo de la tarta."
+   "nota": "RESUELTO en la card 6.4 con ficha propia (`receta-pastel-de-cabracho`, 161 kcal/100 g). Antes caía en `Tarta` (`Pie, NFS`, 296 kcal): acá `pastel` no quiere decir postre. La guarda sigue puesta sobre el término completo — `Pastel` a secas es alias legítimo de la tarta."
   },
   {
    "lista": "directoalpaladar",
@@ -1214,9 +1487,18 @@
   {
    "lista": "directoalpaladar",
    "plato": "Tumbet",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-tumbet",
+    "ficha_es": "Tumbet",
+    "ficha_en": "Tumbet, Majorcan layered fried vegetables",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Tumbet",
+    "generic": false,
+    "kcal_100g": 115.16
+   }
   },
   {
    "lista": "directoalpaladar",
@@ -1237,16 +1519,34 @@
   {
    "lista": "directoalpaladar",
    "plato": "Arroz con costra",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-arroz-con-costra",
+    "ficha_es": "Arroz con costra",
+    "ficha_en": "Arroz con costra, Alicante baked rice with egg crust",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Arroz con costra",
+    "generic": false,
+    "kcal_100g": 161.266
+   }
   },
   {
    "lista": "directoalpaladar",
    "plato": "Habas a la catalana",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-habas-a-la-catalana",
+    "ficha_es": "Habas a la catalana",
+    "ficha_en": "Faves a la catalana, broad beans with sausage and pork belly",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Habas a la catalana",
+    "generic": false,
+    "kcal_100g": 206.863
+   }
   },
   {
    "lista": "directoalpaladar",
@@ -1283,16 +1583,34 @@
   {
    "lista": "directoalpaladar",
    "plato": "Alcachofas con jamón",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-alcachofas-con-jamon",
+    "ficha_es": "Alcachofas con jamón",
+    "ficha_en": "Artichokes with Serrano ham (alcachofas con jamon)",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Alcachofas con jamón",
+    "generic": false,
+    "kcal_100g": 119.523
+   }
   },
   {
    "lista": "directoalpaladar",
    "plato": "Gachas manchegas",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-gachas-manchegas",
+    "ficha_es": "Gachas manchegas",
+    "ficha_en": "Gachas manchegas, La Mancha savoury flour porridge",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Gachas manchegas",
+    "generic": false,
+    "kcal_100g": 150.423
+   }
   },
   {
    "lista": "nuevoestilo",
@@ -1303,9 +1621,18 @@
   {
    "lista": "nuevoestilo",
    "plato": "Arancini",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "hay `Arroz blanco cocido con mantequilla` (`Risotto`, 147) como base; el arancini es rebozado y frito"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-arancini",
+    "ficha_es": "Arancini",
+    "ficha_en": "Arancini, Sicilian fried rice balls",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Arancini",
+    "generic": false,
+    "kcal_100g": 240.166
+   }
   },
   {
    "lista": "nuevoestilo",
@@ -1326,9 +1653,18 @@
   {
    "lista": "nuevoestilo",
    "plato": "Ensalada Niçoise",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "hay las partes (atún, huevo, judías, patata, aceitunas) pero ninguna ficha de la ensalada"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-ensalada-nicoise",
+    "ficha_es": "Ensalada Niçoise",
+    "ficha_en": "Salade nicoise, Provencal tuna, egg and green bean salad",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Ensalada Niçoise",
+    "generic": false,
+    "kcal_100g": 119.633
+   }
   },
   {
    "lista": "nuevoestilo",
@@ -1367,7 +1703,8 @@
    "plato": "Ensalada Halloumi",
    "clasificacion": "ausente_ficha",
    "match": null,
-   "candidato_en_el_catalogo": "NO hay ficha de halloumi (el `queso halloumi` cae en `Queso` genérico)"
+   "nota": "SIGUE SIN FICHA. Medido: `halloumi` da CERO coincidencias en los tres datasets. El `Queso feta` (265) no sirve de gemelo —el halloumi ronda las 321 y es de pasta prensada, no de salmuera fresca—, así que la ensalada no se puede derivar sin inventar su ingrediente principal.",
+   "candidato_en_el_catalogo": "BLOQUEADO POR EL INGREDIENTE PRINCIPAL. Medido: `halloumi` da CERO coincidencias en los tres datasets, y el `Queso feta` (265 kcal) no sirve de gemelo — el halloumi ronda las 321 y es de pasta prensada, no de salmuera fresca. Derivar la ensalada exigiría inventar el queso que le da nombre."
   },
   {
    "lista": "nuevoestilo",
@@ -1388,16 +1725,34 @@
   {
    "lista": "nuevoestilo",
    "plato": "Pasta Alla Norma",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "hay `Pasta con salsa` (125) como base de familia"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-pasta-alla-norma",
+    "ficha_es": "Pasta Alla Norma",
+    "ficha_en": "Pasta alla Norma, Sicilian pasta with fried aubergine",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Pasta Alla Norma",
+    "generic": false,
+    "kcal_100g": 118.163
+   }
   },
   {
    "lista": "nuevoestilo",
    "plato": "Shakshuka",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "hay `Huevo cocido` y `Tomate cocido`; el plato armado no está"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-shakshuka",
+    "ficha_es": "Shakshuka",
+    "ficha_en": "Shakshuka, eggs poached in spiced tomato sauce",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Shakshuka",
+    "generic": false,
+    "kcal_100g": 95.289
+   }
   },
   {
    "lista": "nuevoestilo",
@@ -1418,9 +1773,18 @@
   {
    "lista": "nuevoestilo",
    "plato": "Ensalada griega",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "hay `Queso feta` (265) y las hortalizas; la ensalada armada no está"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2709830",
+    "ficha_es": "Ensalada griega",
+    "ficha_en": "Greek Salad, no dressing",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Ensalada griega",
+    "generic": false,
+    "kcal_100g": 48
+   }
   },
   {
    "lista": "nuevoestilo",
@@ -1441,9 +1805,18 @@
   {
    "lista": "nuevoestilo",
    "plato": "Ensalada Fattoush",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "hay las hortalizas y `Pita` (card 6.2); la ensalada armada no está"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-ensalada-fattoush",
+    "ficha_es": "Ensalada Fattoush",
+    "ficha_en": "Fattoush, Levantine bread salad",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Ensalada Fattoush",
+    "generic": false,
+    "kcal_100g": 82.468
+   }
   },
   {
    "lista": "nuevoestilo",
@@ -1454,9 +1827,18 @@
   {
    "lista": "nuevoestilo",
    "plato": "Baba Ghanoush",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "hay `Berenjena cruda` y no hay tahini: las dos piezas del plato faltan o están crudas"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2710049",
+    "ficha_es": "Crema de berenjena",
+    "ficha_en": "Eggplant dip",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Baba ghanoush",
+    "generic": false,
+    "kcal_100g": 183
+   }
   },
   {
    "lista": "nuevoestilo",
@@ -1502,8 +1884,18 @@
    "lista": "nuevoestilo",
    "plato": "Pez espada con tomates rellenos",
    "clasificacion": "descomponible",
-   "match": null,
-   "nota": "No hay ficha de pez espada en el catálogo (`pez espada` y `swordfish` dan silencio)."
+   "match": {
+    "ficha_id": "fdc-173704",
+    "ficha_es": "Pez espada a la plancha",
+    "ficha_en": "Fish, swordfish, cooked, dry heat",
+    "nivel": "difuso",
+    "confianza_match": 0.282,
+    "confianza_visible": 0.28,
+    "termino_matcheado": "Pez espada",
+    "generic": false,
+    "kcal_100g": 172
+   },
+   "nota": "CERRADO EN PARTE por la card 6.4: `Pez espada a la plancha` (fdc-173704, 172 kcal) ya existe, con `Pez espada` y `Emperador` de alias a 0,8. El plato sigue siendo una composición."
   },
   {
    "lista": "nuevoestilo",
@@ -1558,8 +1950,18 @@
    "lista": "nuevoestilo",
    "plato": "Salmón marinado con cítricos y tomates a la plancha",
    "clasificacion": "descomponible",
-   "match": null,
-   "nota": "Mismo hueco: no hay salmón en el catálogo."
+   "match": {
+    "ficha_id": "fdc-2706292",
+    "ficha_es": "Salmón ahumado",
+    "ficha_en": "Fish, salmon, smoked",
+    "nivel": "difuso",
+    "confianza_match": 0.18,
+    "confianza_visible": 0.18,
+    "termino_matcheado": "Salmón marinado",
+    "generic": false,
+    "kcal_100g": 117
+   },
+   "nota": "Mismo caso: ya hay salmón. Llega a `Salmón ahumado`, que es la ficha más cercana a un marinado (el alias `Salmón marinado` está emitido a 0,6 sobre ella: cambia la técnica de curado, no la especie ni el corte)."
   },
   {
    "lista": "nuevoestilo",
@@ -1581,7 +1983,17 @@
    "lista": "nuevoestilo",
    "plato": "Chopitos con habitas y ajos tiernos",
    "clasificacion": "descomponible",
-   "match": null
+   "match": {
+    "ficha_id": "fdc-174223",
+    "ficha_es": "Calamar crudo",
+    "ficha_en": "Mollusks, squid, mixed species, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.084,
+    "confianza_visible": 0.08,
+    "termino_matcheado": "Chopitos",
+    "generic": false,
+    "kcal_100g": 92
+   }
   },
   {
    "lista": "nuevoestilo",
@@ -1648,9 +2060,18 @@
   {
    "lista": "nuevoestilo",
    "plato": "Calamares en su tinta",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "candidato_en_el_catalogo": "hay `Arroz con calamares` y `Calamares rebozados`; ninguno es calamar guisado en su tinta"
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-calamares-en-su-tinta",
+    "ficha_es": "Calamares en su tinta",
+    "ficha_en": "Squid in its own ink (calamares en su tinta)",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Calamares en su tinta",
+    "generic": false,
+    "kcal_100g": 86.337
+   }
   },
   {
    "lista": "nuevoestilo",
@@ -1694,15 +2115,35 @@
    "lista": "nuevoestilo",
    "plato": "Salmón griego",
    "clasificacion": "descomponible",
-   "match": null,
-   "nota": "NO HAY NINGUNA FICHA DE SALMÓN en el catálogo (medido: cero coincidencias en 1.036 fichas). Es el hueco de proteína más caro del censo."
+   "match": {
+    "ficha_id": "fdc-2706285",
+    "ficha_es": "Salmón",
+    "ficha_en": "Fish, salmon, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.277,
+    "confianza_visible": 0.24,
+    "termino_matcheado": "Salmón",
+    "generic": true,
+    "kcal_100g": 274
+   },
+   "nota": "CERRADO EN PARTE por la card 6.4: el catálogo ya tiene cuatro fichas de salmón (fdc-2706285 `Salmón` 274 · a la plancha 259 · ahumado 117 · crudo 188), así que el hueco de proteína más caro del censo dejó de existir. El plato sigue siendo una composición y por eso llega por el difuso: la visión va a ver salmón, feta y hortalizas por separado."
   },
   {
    "lista": "nuevoestilo",
    "plato": "Mejillones con tomate y ajo",
    "clasificacion": "descomponible",
-   "match": null,
-   "nota": "No hay ficha de mejillón en el catálogo (`mejillones` y `mussels` dan silencio). El tomate y el ajo sí están."
+   "match": {
+    "ficha_id": "fdc-2706350",
+    "ficha_es": "Mejillones",
+    "ficha_en": "Mussels",
+    "nivel": "difuso",
+    "confianza_match": 0.27,
+    "confianza_visible": 0.27,
+    "termino_matcheado": "Mejillones",
+    "generic": false,
+    "kcal_100g": 109
+   },
+   "nota": "CERRADO EN PARTE por la card 6.4: `Mejillones` (fdc-2706350, 109 kcal) ya existe y responde a `mejillones` y a `mussels` con match exacto. El plato sigue siendo una composición."
   },
   {
    "lista": "nuevoestilo",
@@ -1933,14 +2374,35 @@
   {
    "ingrediente": "alcachofas",
    "platos_que_lo_usan": 2,
-   "clasificacion": "ausente_ficha",
-   "match": null
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709766",
+    "ficha_es": "Alcachofa cocida",
+    "ficha_en": "Artichoke",
+    "nivel": "difuso",
+    "confianza_match": 0.337,
+    "confianza_visible": 0.34,
+    "termino_matcheado": "Alcachofa cocida",
+    "generic": false,
+    "kcal_100g": 53
+   },
+   "nota": "CORREGIDO en la card 6.4: daba silencio y ahora llega a `Alcachofa cocida` (fdc-2709766, 53 kcal). Llega por el difuso porque el plural pelado no dispara el alias `Alcachofas cocidas`; es el hueco de plurales de la DT-26."
   },
   {
    "ingrediente": "alcaparras",
    "platos_que_lo_usan": 1,
-   "clasificacion": "ausente_ficha",
-   "match": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-172238",
+    "ficha_es": "Alcaparras",
+    "ficha_en": "Capers, canned",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Alcaparras",
+    "generic": false,
+    "kcal_100g": 23
+   }
   },
   {
    "ingrediente": "almejas",
@@ -2377,14 +2839,34 @@
   {
    "ingrediente": "chipirones",
    "platos_que_lo_usan": 1,
-   "clasificacion": "ausente_ficha",
-   "match": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-174223",
+    "ficha_es": "Calamar crudo",
+    "ficha_en": "Mollusks, squid, mixed species, raw",
+    "nivel": "alias",
+    "confianza_match": 0.6,
+    "confianza_visible": 0.6,
+    "termino_matcheado": "Chipirones",
+    "generic": false,
+    "kcal_100g": 92
+   }
   },
   {
    "ingrediente": "chopitos",
    "platos_que_lo_usan": 1,
-   "clasificacion": "ausente_ficha",
-   "match": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-174223",
+    "ficha_es": "Calamar crudo",
+    "ficha_en": "Mollusks, squid, mixed species, raw",
+    "nivel": "alias",
+    "confianza_match": 0.5,
+    "confianza_visible": 0.5,
+    "termino_matcheado": "Chopitos",
+    "generic": false,
+    "kcal_100g": 92
+   }
   },
   {
    "ingrediente": "chorizo asturiano",
@@ -2467,8 +2949,18 @@
   {
    "ingrediente": "conejo",
    "platos_que_lo_usan": 1,
-   "clasificacion": "ausente_ficha",
-   "match": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2705912",
+    "ficha_es": "Conejo guisado",
+    "ficha_en": "Rabbit",
+    "nivel": "alias",
+    "confianza_match": 0.8,
+    "confianza_visible": 0.8,
+    "termino_matcheado": "Conejo",
+    "generic": false,
+    "kcal_100g": 204
+   }
   },
   {
    "ingrediente": "cordero deshuesado",
@@ -2503,19 +2995,19 @@
   {
    "ingrediente": "espaguetis",
    "platos_que_lo_usan": 1,
-   "clasificacion": "ficha_equivocada",
+   "clasificacion": "confianza_injusta",
    "match": {
-    "ficha_id": "fdc-2708828",
-    "ficha_es": "Pasta con salsa",
-    "ficha_en": "Pasta with sauce, NFS",
+    "ficha_id": "fdc-2708357",
+    "ficha_es": "Pasta cocida",
+    "ficha_en": "Pasta, cooked",
     "nivel": "difuso",
-    "confianza_match": 0.188,
-    "confianza_visible": 0.16,
-    "termino_matcheado": "Espaguetis a la boloñesa",
-    "generic": true,
-    "kcal_100g": 125
+    "confianza_match": 0.337,
+    "confianza_visible": 0.34,
+    "termino_matcheado": "Espaguetis cocidos",
+    "generic": false,
+    "kcal_100g": 157
    },
-   "nota": "Cae en `Pasta con salsa` por el alias `Espaguetis a la boloñesa`; en inglés `spaghetti` cae en `Spaghetti sauce with meat`, o sea la SALSA. El catálogo no tiene pasta cocida simple: solo `Pasta seca enriquecida` (371 kcal, cruda). El golden set ya lo había medido — `spaghetti, cooked` da silencio. Hueco de la card 6.4."
+   "nota": "CORREGIDO en la card 6.4: caía en `Pasta con salsa` por el alias `Espaguetis a la boloñesa` y ahora llega a `Pasta cocida` (fdc-2708357, 157 kcal), que es la ficha nueva del lote. El alias `Espaguetis cocidos` está emitido en texto plano sobre ella; el plural pelado sigue llegando por el difuso, que es el hueco de plurales de la DT-26 y no de ficha."
   },
   {
    "ingrediente": "espárragos",
@@ -2586,13 +3078,24 @@
     "generic": false,
     "kcal_100g": 331
    },
-   "nota": "Cae en `Fideos finos de soja` (331 kcal) siendo fideo de trigo del cocido. Mismo agujero que `espaguetis`."
+   "nota": "Cae en `Fideos finos de soja` (331 kcal) siendo fideo de trigo del cocido. El agujero de base se tapó —ya hay `Pasta cocida`—, pero el término sigue ganándolo la soja por la palabra `finos`: es curación, no ficha."
   },
   {
    "ingrediente": "gallina",
    "platos_que_lo_usan": 1,
-   "clasificacion": "ausente_ficha",
-   "match": null
+   "clasificacion": "ficha_equivocada",
+   "match": {
+    "ficha_id": "receta-gallina-en-pepitoria",
+    "ficha_es": "Gallina en pepitoria",
+    "ficha_en": "Gallina en pepitoria, chicken in almond and egg yolk sauce",
+    "nivel": "difuso",
+    "confianza_match": 0.21,
+    "confianza_visible": 0.21,
+    "termino_matcheado": "Gallina en pepitoria",
+    "generic": false,
+    "kcal_100g": 161.228
+   },
+   "nota": "NUEVO EN LA CARD 6.4: antes daba silencio y ahora cae en `Gallina en pepitoria` (161 kcal), que es el PLATO entero y no el ave. El catálogo sigue sin ficha de gallina —USDA no la mide como especie aparte— y la receta usa `Pollo guisado` con esa reserva escrita."
   },
   {
    "ingrediente": "gambas",
@@ -2658,25 +3161,35 @@
   {
    "ingrediente": "habas tiernas",
    "platos_que_lo_usan": 1,
-   "clasificacion": "ausente_ficha",
-   "match": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2707367",
+    "ficha_es": "Habas cocidas con sal y grasa",
+    "ficha_en": "Fava beans, cooked",
+    "nivel": "alias",
+    "confianza_match": 0.5,
+    "confianza_visible": 0.5,
+    "termino_matcheado": "Habas tiernas",
+    "generic": false,
+    "kcal_100g": 161
+   }
   },
   {
    "ingrediente": "harina",
    "platos_que_lo_usan": 1,
-   "clasificacion": "ficha_equivocada",
+   "clasificacion": "confianza_injusta",
    "match": {
-    "ficha_id": "fdc-168446",
-    "ficha_es": "Harina de papa",
-    "ficha_en": "Potato flour",
+    "ficha_id": "fdc-168894",
+    "ficha_es": "Harina de trigo",
+    "ficha_en": "Wheat flour, white, all-purpose, enriched, bleached",
     "nivel": "difuso",
-    "confianza_match": 0.257,
-    "confianza_visible": 0.26,
-    "termino_matcheado": "Harina de papa",
+    "confianza_match": 0.277,
+    "confianza_visible": 0.28,
+    "termino_matcheado": "Harina blanca",
     "generic": false,
-    "kcal_100g": 357
+    "kcal_100g": 364
    },
-   "nota": "El catálogo NO tiene harina de trigo (sí de papa, arroz, soja, garbanzo, mijo, arrurruz, malta y trigo sarraceno). `harina` cae en `Harina de papa`. Hueco real, aunque la harina casi nunca se fotografía suelta."
+   "nota": "CORREGIDO en la card 6.4: hasta hoy el catálogo NO tenía harina de trigo (sí de papa, arroz, soja, garbanzo, mijo, arrurruz, malta y trigo sarraceno) y `harina` caía en `Harina de papa` (357 kcal). Ahora llega a `Harina de trigo` (fdc-168894, 364), que es la ficha correcta. Sigue llegando por el difuso porque la palabra sola no tiene alias propio, y no se le emite: `harina` a secas tampoco dice de qué es."
   },
   {
    "ingrediente": "hierbabuena",
@@ -2727,9 +3240,19 @@
   {
    "ingrediente": "huevas de salmón",
    "platos_que_lo_usan": 1,
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "nota": "No hay ninguna ficha de salmón en el catálogo."
+   "clasificacion": "ficha_equivocada",
+   "match": {
+    "ficha_id": "fdc-2706285",
+    "ficha_es": "Salmón",
+    "ficha_en": "Fish, salmon, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.26,
+    "termino_matcheado": "Salmón",
+    "generic": true,
+    "kcal_100g": 274
+   },
+   "nota": "Llega a `Salmón` (274 kcal) por el difuso, y NO es la ficha correcta: las huevas son otro alimento (más grasa, más sodio, otra textura). USDA sí las mide —`Fish, roe, mixed species` en SR Legacy— y la card 6.4 decidió NO promoverlas: aparecen una sola vez en las dos fuentes y no son un plato del mercado español. Hueco declarado."
   },
   {
    "ingrediente": "huevos",
@@ -2915,15 +3438,36 @@
   {
    "ingrediente": "lomos de salmón",
    "platos_que_lo_usan": 2,
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "nota": "No hay ninguna ficha de salmón en el catálogo."
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2706284",
+    "ficha_es": "Salmón crudo",
+    "ficha_en": "Fish, salmon, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.42,
+    "confianza_visible": 0.42,
+    "termino_matcheado": "Lomo de salmón crudo",
+    "generic": false,
+    "kcal_100g": 188
+   },
+   "nota": "CORREGIDO en la card 6.4: ya hay cuatro fichas de salmón y el término llega a `Salmón crudo` (188 kcal), que es lo que es un lomo sin cocinar."
   },
   {
    "ingrediente": "maíz tierno",
    "platos_que_lo_usan": 1,
-   "clasificacion": "ausente_ficha",
-   "match": null
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709910",
+    "ficha_es": "Maíz fresco cocido sin grasa",
+    "ficha_en": "Corn, fresh, cooked, no added fat",
+    "nivel": "difuso",
+    "confianza_match": 0.367,
+    "confianza_visible": 0.37,
+    "termino_matcheado": "Maíz tierno cocido",
+    "generic": false,
+    "kcal_100g": 86
+   },
+   "nota": "CORREGIDO en la card 6.4: `Maíz fresco cocido sin grasa` (fdc-2709910, 86 kcal) entró al catálogo y cierra el hueco que la DT-26 había mandado a la DT-33 (`sweet corn, cooked` del golden set)."
   },
   {
    "ingrediente": "mantequilla",
@@ -2972,9 +3516,19 @@
   {
    "ingrediente": "mejillones",
    "platos_que_lo_usan": 1,
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "nota": "No hay ficha de mejillón en el catálogo."
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2706350",
+    "ficha_es": "Mejillones",
+    "ficha_en": "Mussels",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Mejillones",
+    "generic": false,
+    "kcal_100g": 109
+   },
+   "nota": "CORREGIDO en la card 6.4: `Mejillones` (fdc-2706350, 109 kcal) entró al catálogo y responde a `mejillones` y a `mussels` con match exacto."
   },
   {
    "ingrediente": "menta",
@@ -3275,14 +3829,36 @@
   {
    "ingrediente": "pasta de tomate",
    "platos_que_lo_usan": 1,
-   "clasificacion": "ausente_ficha",
-   "match": null
+   "clasificacion": "ficha_equivocada",
+   "match": {
+    "ficha_id": "fdc-2708357",
+    "ficha_es": "Pasta cocida",
+    "ficha_en": "Pasta, cooked",
+    "nivel": "difuso",
+    "confianza_match": 0.25,
+    "confianza_visible": 0.25,
+    "termino_matcheado": "Pasta, cooked",
+    "generic": false,
+    "kcal_100g": 157
+   },
+   "nota": "NUEVO EN LA CARD 6.4, y es el precio de la ficha nueva: antes daba silencio y ahora cae en `Pasta cocida` (157 kcal) a 0,25 por la palabra `pasta`. Es el patrón exacto de la `salsa` de las cocochas. La guarda está escrita, pero HOY NO MUERDE en el difuso (DT-32): las guardas del catálogo solo impiden nombrar la ficha, no llegar a ella. Se declara el costo en vez de esconderlo."
   },
   {
    "ingrediente": "pasta filo",
    "platos_que_lo_usan": 1,
-   "clasificacion": "ausente_ficha",
-   "match": null
+   "clasificacion": "ficha_equivocada",
+   "match": {
+    "ficha_id": "fdc-2708357",
+    "ficha_es": "Pasta cocida",
+    "ficha_en": "Pasta, cooked",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.3,
+    "termino_matcheado": "Pasta, cooked",
+    "generic": false,
+    "kcal_100g": 157
+   },
+   "nota": "Mismo caso que `pasta de tomate`: silencio antes, `Pasta cocida` a 0,30 ahora. Guarda escrita, sin morder hasta la DT-32."
   },
   {
    "ingrediente": "patatas",
@@ -3456,9 +4032,19 @@
   {
    "ingrediente": "pez espada",
    "platos_que_lo_usan": 1,
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "nota": "No hay ficha de pez espada en el catálogo."
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-173704",
+    "ficha_es": "Pez espada a la plancha",
+    "ficha_en": "Fish, swordfish, cooked, dry heat",
+    "nivel": "alias",
+    "confianza_match": 0.8,
+    "confianza_visible": 0.8,
+    "termino_matcheado": "Pez espada",
+    "generic": false,
+    "kcal_100g": 172
+   },
+   "nota": "CORREGIDO en la card 6.4: `Pez espada a la plancha` (fdc-173704, 172 kcal) entró al catálogo, con `Pez espada` y `Emperador` de alias a 0,8."
   },
   {
    "ingrediente": "pimentón",
@@ -3672,7 +4258,7 @@
     "generic": true,
     "kcal_100g": 381
    },
-   "nota": "Cae en `Queso` genérico (381 kcal contra ~321 del halloumi). Familia correcta, sin ficha propia. Candidato de la card 6.4."
+   "nota": "Cae en `Queso` genérico (381 kcal contra ~321 del halloumi). Familia correcta, sin ficha propia. La card 6.4 abrió los datasets y midió que `halloumi` da CERO coincidencias en los tres: no es que no se haya buscado."
   },
   {
    "ingrediente": "queso parmesano",
@@ -3923,8 +4509,18 @@
   {
    "ingrediente": "tahini",
    "platos_que_lo_usan": 2,
-   "clasificacion": "ausente_ficha",
-   "match": null
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2707587",
+    "ficha_es": "Tahini",
+    "ficha_en": "Tahini",
+    "nivel": "exacto",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Tahini",
+    "generic": false,
+    "kcal_100g": 697
+   }
   },
   {
    "ingrediente": "tinta de calamar",

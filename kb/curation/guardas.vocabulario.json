@@ -160,6 +160,21 @@
    "termino": "Gazpachos manchegos",
    "prohibido_en": ["fdc-2710106"],
    "motivo": "GUARDA QUE SE ADELANTA: el plato NO tiene ficha todavía, y este es el caso donde el nombre miente más de todo el censo. Los gazpachos manchegos —o galianos— son un GUISO CALIENTE de caza sobre torta de pan ácimo, ~200 kcal/100 g. El gazpacho andaluz es una sopa fría de hortalizas, 26 kcal/100 g: casi ocho veces menos. Comparten la palabra y nada más. MEDIDO (01/09/2026): `Gazpachos manchegos o galianos` resolvía a fdc-2710106 `Soup, gazpacho` con 0,18. Es el ejemplo que conviene tener a mano cuando alguien proponga un alias «porque se llaman parecido»: el plural manchego y el singular andaluz son dos platos distintos, y en la card 6.3 el singular ACABA de recibir su alias `Gazpacho andaluz` a 0,8 — lo que hace de esta guarda su hermana necesaria, no un adorno."
+  },
+  {
+   "termino": "pasta de tomate",
+   "prohibido_en": ["fdc-2708357"],
+   "motivo": "GUARDA QUE DECLARA UN COSTO PROPIO. La card 6.4 promovió `Pasta cocida` (fdc-2708357, 157 kcal) para tapar el hueco de la DT-33, y con ella abrió una ventana: `pasta de tomate` daba SILENCIO antes y ahora cae en la pasta a 0,25 por la palabra compartida. En español `pasta` nombra el fideo Y cualquier producto triturado —de tomate, de sésamo, de almendra—, exactamente como `salsa` arrastraba a las cocochas. MEDIDO (01/09/2026): 0,25 por el difuso, con `Salsa de tomate en lata` (fdc-170054, 24 kcal) en el catálogo, o sea seis veces menos energía. ⚠️ Esta guarda blinda el CATÁLOGO y HOY NO MUERDE en el difuso (DT-32): queda escrita para el día en que el build emita las guardas y `construirIndice` las lea."
+  },
+  {
+   "termino": "pasta filo",
+   "prohibido_en": ["fdc-2708357"],
+   "motivo": "El hermano del anterior y el mismo costo declarado: la pasta filo es una masa de hojaldre finísima (~300 kcal/100 g) y no un fideo. MEDIDO (01/09/2026): daba silencio antes de la card 6.4 y ahora cae en `Pasta cocida` a 0,30. El catálogo no tiene ninguna ficha de masa filo —`phyllo` da cero coincidencias útiles— así que acá el silencio era lo correcto. Misma advertencia de la DT-32: no muerde hasta que las guardas lleguen al matcher."
+  },
+  {
+   "termino": "huevas de salmón",
+   "prohibido_en": ["fdc-2706285"],
+   "motivo": "GUARDA QUE DECLARA UN COSTO PROPIO. Las cuatro fichas de salmón de la card 6.4 taparon el hueco de proteína más caro del censo y de paso capturaron un término que no les corresponde: las HUEVAS son otro alimento —otra grasa, otro sodio, otra textura— y ahora caen en `Salmón` (fdc-2706285, 274 kcal) a 0,30. USDA sí las mide (`Fish, roe, mixed species` en SR Legacy) y la card decidió NO promoverlas: aparecen una sola vez en las dos fuentes del censo y no son un plato del mercado español. La guarda deja el hueco declarado para que nadie lo tape con un alias. Misma advertencia de la DT-32."
   }
  ]
 }

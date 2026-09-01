@@ -328,10 +328,11 @@ describe("las fichas genéricas están marcadas y se descuentan", () => {
   });
 });
 
-describe("las nueve recetas del catálogo se encuentran por su nombre", () => {
+describe("las 52 recetas del catálogo se encuentran por su nombre", () => {
   it("cada receta matchea a su propia ficha, no a un ingrediente", () => {
     const recetas = activas.filter((f) => f.receta !== undefined);
-    assert.equal(recetas.length, 9);
+    // 9 con la card 1.7, 52 con la card 6.4 (43 platos españoles y mediterráneos).
+    assert.equal(recetas.length, 52);
     for (const f of recetas) {
       const porEn = buscarAlimento(f.names.en, index);
       assert.equal(porEn?.ficha.id, f.id, f.names.en);

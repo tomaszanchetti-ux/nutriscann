@@ -6,7 +6,9 @@ tiene? Y sobre todo: ¿cómo nos enteramos el día que uno de los que sí sabía
 de saber?
 
 Nació con la card 6.3 (WS06, 01/09/2026), por la directiva de producto que puso
-a España y a la dieta mediterránea como mercado inicial.
+a España y a la dieta mediterránea como mercado inicial. La card 6.4 lo volvió a
+correr después de sumar 76 fichas: **de 48 platos sin ficha quedan 5**, y los
+cinco dicen qué se buscó y qué no se encontró.
 
 ## Qué hay acá
 
@@ -43,7 +45,7 @@ cd functions && npm test          # el candado verifica que no se perdió nada
 | `ok` | El término llega a la ficha **correcta** por un camino escrito del catálogo (nombre exacto o alias). | La máquina mide el camino; la persona confirmó que la ficha es la correcta. |
 | `confianza_injusta` | La ficha es correcta y el término llegó por el **difuso**, que nunca pasa de 0,6 y en la práctica publica 0,10–0,30. El plato está cubierto y el usuario no se entera. | Idem. |
 | `ficha_equivocada` | La ficha nombra **otro alimento**: otra especie, otra familia, o el ingrediente crudo en lugar del plato. | La persona, mirando la ficha. Nunca la máquina. |
-| `ausente_ficha` | No hay ficha, y la que hay no sirve ni como gemelo. Es la lista de entrada de la card 6.4. | La persona. |
+| `ausente_ficha` | No hay ficha, y la que hay no sirve ni como gemelo. Fue la lista de entrada de la card 6.4, que cerró 43 de los 48; los 5 que quedan traen su motivo medido en `CANDIDATOS`. | La persona. |
 | `descomponible` | El «plato» es una composición ad-hoc que la visión desarma en ingredientes. No se juzga por su nombre —no hay ficha que pueda tenerlo— sino por la cobertura de sus ingredientes. | La persona. |
 
 **El corte entre `ok` y `confianza_injusta` es el NIVEL de la cascada, no un
@@ -59,31 +61,45 @@ Un censo que dedujera «correcta» de «confianza alta» estaría midiendo la
 confianza dos veces y la corrección ni una. Está escrito a mano en las tablas de
 `censar.js`, con el motivo de cada uno.
 
-## Lo que midió, antes y después de la curación de la card 6.3
+## Lo que midió, en las tres corridas
 
 Los 141 platos, con el motor real y el catálogo real:
 
-| Clase | Antes (3.2.0) | Después (3.3.0) |
-|---|---:|---:|
-| `ok` | 24 | **38** |
-| `confianza_injusta` | 31 | 21 |
-| `ficha_equivocada` | 6 | 5 |
-| `ausente_ficha` | 51 | 48 |
-| `descomponible` | 29 | 29 |
+| Clase | 3.2.0 (antes de la 6.3) | 3.3.0 (card 6.3) | 3.4.0 (card 6.4) |
+|---|---:|---:|---:|
+| `ok` | 24 | 38 | **85** |
+| `confianza_injusta` | 31 | 21 | 22 |
+| `ficha_equivocada` | 6 | 5 | **0** |
+| `ausente_ficha` | 51 | 48 | **5** |
+| `descomponible` | 29 | 29 | 29 |
 
 Los 196 ingredientes clave:
 
-| Clase | Antes | Después |
-|---|---:|---:|
-| `ok` | 32 | **37** |
-| `confianza_injusta` | 91 | 91 |
-| `ficha_equivocada` | 14 | **9** |
-| `ausente_ficha` | 59 | 59 |
+| Clase | 3.2.0 | 3.3.0 | 3.4.0 |
+|---|---:|---:|---:|
+| `ok` | 32 | 37 | **45** |
+| `confianza_injusta` | 91 | 91 | 96 |
+| `ficha_equivocada` | 14 | 9 | 11 |
+| `ausente_ficha` | 59 | 59 | **44** |
 
-**Ninguna ficha entró, salió ni cambió de nutrientes.** Los movimientos son todos
-de vocabulario, verificados con un barrido de 31.097 consultas sobre los dos
-catálogos: 0 matches perdidos, 0 confianzas bajadas, y los 136 cambios trazan uno
-a uno a las nueve curaciones de la card.
+**La card 6.3 no movió ninguna ficha**: sus 136 cambios eran de vocabulario y
+trazan uno a uno a sus nueve curaciones (barrido de 31.097 consultas, 0 perdidos).
+
+**La card 6.4 movió 76 fichas, y todas hacia adentro**: 33 promovidas de USDA
+(`kb/selection/dt33.v1.json`) y 43 derivadas por receta compuesta
+(`kb/curation/recipes.foods.json`). Verificado con un barrido de 3.222 términos
+—todo el vocabulario del catálogo anterior, los 141 platos, los 196 ingredientes
+y los 93 términos del golden set— sobre los dos catálogos: **0 matches perdidos,
+0 confianzas bajadas, 62 matches nuevos y 7 cambios de ficha, los siete
+correcciones** (los cinco `ficha_equivocada` a su ficha propia, `espaguetis` de
+`Pasta con salsa` a `Pasta cocida` y `harina` de `Harina de papa` a `Harina de
+trigo`). Y por diff del catálogo: **0 fichas retiradas y 0 fichas preexistentes
+cambiadas, byte a byte**.
+
+El `ficha_equivocada` de ingredientes SUBE de 9 a 11, y eso también está medido:
+`pasta de tomate` y `pasta filo` daban silencio y ahora caen en `Pasta cocida`
+por la palabra compartida. Es el precio de la ficha nueva y se declara en vez de
+esconderse; sus guardas están escritas y no muerden hasta la DT-32.
 
 ### Lo que se aprendió midiendo
 
@@ -106,9 +122,39 @@ ingrediente más frecuente de las dos fuentes y no tenía puerta propia.
 pipeline real la visión siempre la dice. Se dejaron documentados y **sin curar**:
 elegir una preparación por decreto sería inventar.
 
-**4. Hay tres huecos de proteína que ninguna curación arregla.** No existe en el
-catálogo **ninguna** ficha de salmón, de mejillón ni de pez espada. Tampoco hay
-pasta cocida simple. Son fichas, no vocabulario: card 6.4.
+**4. Hay tres huecos de proteína que ninguna curación arregla.** No existía en el
+catálogo **ninguna** ficha de salmón, de mejillón ni de pez espada. Tampoco había
+pasta cocida simple. Eran fichas, no vocabulario: los tapó la card 6.4.
+
+### Lo que aprendió la card 6.4, que abrió los datasets
+
+**5. La mitad de los huecos no eran de USDA: eran de la selección.** El censo de
+la 6.3 declaró su alcance —se midió contra el CATÁLOGO y no contra los datasets
+crudos— y por eso ninguna de sus pistas podía decir "USDA no lo tiene". Al
+abrirlos, seis de los siete huecos centrales de la DT-33 estaban medidos desde
+2018: lo que faltaba era la promoción. La lección operativa es del método: **una
+pista con el alcance declarado se puede convertir en un hallazgo; una sin alcance
+declarado se convierte en una creencia.**
+
+**6. Un `X, NFS` de FNDDS no siempre es un promedio: a veces es UNA preparación
+disfrazada.** `Fish, swordfish` es 80,7 % pez espada + 14,9 % rebozado + 4 %
+aceite, y `Fish, eel` es idéntico en estructura. Es el mismo caso por el que la
+DT-7 renombró `Bacalao` a `Bacalao rebozado`. Se mira el `input_food` ANTES de
+elegir la ficha, no después.
+
+**7. El nombre inglés de una ficha de USDA es una decisión de selección.** Para
+el mejillón había dos candidatos con el mismo alimento: el de SR (172 kcal,
+`Mollusks, mussel, blue, cooked, moist heat`) y el de FNDDS (109, `Mussels`).
+**Medido:** con el de SR, el término inglés `mussels` da SILENCIO; con el de
+FNDDS, match exacto. Como `names.en` lo escribe el CSV y la curación no lo toca
+(DT-26), elegir la ficha ES elegir el vocabulario inglés — y eso hay que pesarlo
+en la selección, no descubrirlo después.
+
+**8. Los cinco bloqueos que quedan son de dos tipos, y ninguno es "no lo
+buscamos".** Dos por RENDIMIENTO (calçots y torrezno: el ingrediente está y el
+factor de cocción no existe medido) y tres por ESPECIE o INGREDIENTE (perdiz,
+besugo y halloumi: cero coincidencias en los tres datasets). El motivo de cada
+uno vive en la tabla `CANDIDATOS` de `censar.js`.
 
 ## Los límites, declarados
 

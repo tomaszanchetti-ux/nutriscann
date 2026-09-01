@@ -465,6 +465,1159 @@
     "La almendra de la ficha es cruda y la del turrón va tostada; tostar concentra un poco.",
     "Estuvo BLOQUEADA una ronda por falta de una ficha de miel. El bloqueo era autoinfligido: `Honey` (fdc-169640) estaba en SR Legacy y no se había buscado."
    ]
+  },
+
+  {
+   "id": "receta-marmitako",
+   "names": {"en": "Marmitako, Basque tuna and potato stew", "es": "Marmitako"},
+   "aliases": ["Marmitako de bonito", "Marmita de bonito"],
+   "category": "Seafood mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2706310", "grams": 400, "$nota": "bonito del norte — USDA mide `tuna, cooked`"},
+    {"ref": "fdc-2709393", "grams": 600, "$nota": "patata cascada"},
+    {"ref": "fdc-2709795", "grams": 100},
+    {"ref": "fdc-2709801", "grams": 100},
+    {"ref": "fdc-2709719", "grams": 100},
+    {"ref": "fdc-2710186", "grams": 40},
+    {"ref": "fdc-2707132", "grams": 500, "$nota": "el caldo se queda: es un guiso caldoso"},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 350, "label_en": "1 bowl", "label_es": "1 plato hondo"},
+    {"grams": 250, "label_en": "1 small serving", "label_es": "1 ración pequeña"}
+   ],
+   "default_portion_g": 350,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 400 g de bonito, 600 g de patata, 100 g de cebolla, 100 g de pimiento rojo, 100 g de tomate, 40 g de aceite de oliva, 500 g de caldo y 5 g de sal.",
+    "RESERVA DE ESPECIE: USDA no mide bonito del norte. Se usa `Atún cocido` (fdc-2706310), que es la misma familia (Scombridae) y el mismo corte de lomo.",
+    "El caldo entra como ingrediente porque se queda en el plato: el marmitako es un guiso caldoso.",
+    "Sin ñora ni pimiento choricero, que es como se hace en la costa vasca y que la ficha no puede cuantificar: no hay ficha de ñora en ningún dataset."
+   ]
+  },
+  {
+   "id": "receta-arroz-a-banda",
+   "names": {"en": "Arroz a banda, Alicante rice cooked in fish broth", "es": "Arroz a banda"},
+   "aliases": ["Arroz abanda"],
+   "category": "Rice mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2708403", "grams": 700, "$nota": "el arroz ya cocido: el caldo que absorbió está dentro de esta ficha"},
+    {"ref": "fdc-2710186", "grams": 45},
+    {"ref": "fdc-2709795", "grams": 50},
+    {"ref": "fdc-2709719", "grams": 80},
+    {"ref": "fdc-169230", "grams": 8},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 250, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 180, "label_en": "1 tapa portion", "label_es": "1 tapa"}
+   ],
+   "default_portion_g": 250,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 700 g de arroz ya cocido, 45 g de aceite de oliva y un sofrito de 50 g de cebolla, 80 g de tomate y 8 g de ajo.",
+    "EL CALDO NO ENTRA COMO INGREDIENTE, y es a propósito: el arroz a banda se cuece EN el fumet y el caldo desaparece dentro del grano. Sumarlo además del arroz ya cocido contaría el agua dos veces y bajaría la densidad del plato.",
+    "El pescado va aparte —eso es lo que quiere decir «a banda»— y por eso no está en la ficha.",
+    "Sin azafrán ni ñora, que no tienen ficha en el catálogo (DT-29 difirió las especias a la v2)."
+   ]
+  },
+  {
+   "id": "receta-gallina-en-pepitoria",
+   "names": {"en": "Gallina en pepitoria, chicken in almond and egg yolk sauce", "es": "Gallina en pepitoria"},
+   "aliases": ["Pollo en pepitoria", "Pepitoria"],
+   "category": "Poultry mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2705938", "grams": 600, "$nota": "la gallina no tiene ficha: se usa pollo guisado"},
+    {"ref": "fdc-170567", "grams": 50, "$nota": "almendra majada"},
+    {"ref": "fdc-2707173", "grams": 40, "$nota": "yema de huevo cocida, que es lo que liga la salsa"},
+    {"ref": "fdc-2710186", "grams": 40},
+    {"ref": "fdc-2709795", "grams": 100},
+    {"ref": "fdc-169230", "grams": 10},
+    {"ref": "fdc-2707593", "grams": 30, "$nota": "pan frito del majado"},
+    {"ref": "fdc-2707132", "grams": 250},
+    {"ref": "fdc-174837", "grams": 80, "$nota": "vino blanco"},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 300, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 200, "label_en": "1 small serving", "label_es": "1 ración pequeña"}
+   ],
+   "default_portion_g": 300,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 600 g de ave, 50 g de almendra, 40 g de yema cocida, 40 g de aceite, 100 g de cebolla, 10 g de ajo, 30 g de pan, 250 g de caldo, 80 g de vino blanco y 5 g de sal.",
+    "RESERVA DE ESPECIE: USDA no mide gallina. Se usa `Pollo guisado` (fdc-2705938), que es la misma especie de otra edad; la gallina de corral es más grasa que un pollo de granja.",
+    "El azafrán del majado no entra: las especias están diferidas a la v2 (DT-29) y su aporte calórico es nulo.",
+    "El caldo y el vino entran como ingredientes porque se quedan en la salsa."
+   ]
+  },
+  {
+   "id": "receta-pote-gallego",
+   "names": {"en": "Pote gallego, Galician bean, greens and pork stew", "es": "Pote gallego"},
+   "aliases": ["Caldo gallego"],
+   "category": "Soups, broth-based",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2707349", "grams": 300, "$nota": "fabas blancas cocidas"},
+    {"ref": "fdc-2709393", "grams": 400},
+    {"ref": "fdc-2709579", "grams": 250, "$nota": "berza o grelos"},
+    {"ref": "fdc-2705885", "grams": 80, "$nota": "unto y lacón: lo más cercano medido es el tocino cocido"},
+    {"ref": "fdc-2706179", "grams": 100},
+    {"ref": "fdc-2710707", "grams": 900, "$nota": "el caldo del pote se come"},
+    {"ref": "fdc-173468", "grams": 8}
+   ],
+   "portion_hints": [
+    {"grams": 350, "label_en": "1 bowl", "label_es": "1 plato hondo"},
+    {"grams": 250, "label_en": "1 small bowl", "label_es": "1 plato pequeño"}
+   ],
+   "default_portion_g": 350,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 300 g de alubia cocida, 400 g de patata, 250 g de berza, 80 g de tocino, 100 g de chorizo, 900 g de agua y 8 g de sal.",
+    "RESERVA DE INGREDIENTE: el lacón y el unto no existen en ningún dataset de USDA. Se usa `Tocino cocido` (fdc-2705885), que es cerdo curado y graso, pero no es lo mismo: el unto es grasa de cerdo rancia y aporta más grasa por gramo.",
+    "El agua entra como ingrediente porque el caldo del pote se come: pesa y diluye.",
+    "El chorizo del catálogo es fresco (fdc-2706179); el del pote gallego es curado y ahumado."
+   ]
+  },
+  {
+   "id": "receta-morteruelo",
+   "names": {"en": "Morteruelo, Cuenca game and liver pate", "es": "Morteruelo"},
+   "aliases": ["Morteruelo conquense"],
+   "category": "Meat mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2706154", "grams": 250, "$nota": "hígado"},
+    {"ref": "fdc-2705938", "grams": 200},
+    {"ref": "fdc-2705912", "grams": 200, "$nota": "conejo o liebre"},
+    {"ref": "fdc-2707593", "grams": 200, "$nota": "pan rallado: el catálogo no tiene ficha de pan rallado"},
+    {"ref": "fdc-2710186", "grams": 60},
+    {"ref": "fdc-167812", "grams": 60, "$nota": "panceta"},
+    {"ref": "fdc-173468", "grams": 6}
+   ],
+   "portion_hints": [
+    {"grams": 60, "label_en": "1 tapa portion", "label_es": "1 tapa"},
+    {"grams": 120, "label_en": "1 serving", "label_es": "1 ración"}
+   ],
+   "default_portion_g": 60,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 250 g de hígado, 200 g de ave, 200 g de conejo, 200 g de pan, 60 g de aceite, 60 g de panceta y 6 g de sal.",
+    "RESERVA DE INGREDIENTE: no hay ficha de pan rallado en ningún dataset (`bread crumb` da cero coincidencias en FNDDS). Se usa `Pan de panadería`, que es el mismo alimento sin secar; el pan rallado tiene menos agua y por eso la ficha subestima un poco la densidad.",
+    "La panceta entra CRUDA (fdc-167812) porque es la única que USDA mide con ese corte; en el morteruelo se sofríe y parte de su grasa queda en el guiso.",
+    "Las especias del morteruelo —canela, clavo, alcaravea— están diferidas a la v2 (DT-29) y su aporte calórico es nulo."
+   ]
+  },
+  {
+   "id": "receta-rinones-al-jerez",
+   "names": {"en": "Kidneys in sherry sauce (rinones al Jerez)", "es": "Riñones al Jerez"},
+   "aliases": ["Riñones al jerez"],
+   "category": "Meat mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2706157", "grams": 500},
+    {"ref": "fdc-2709795", "grams": 150},
+    {"ref": "fdc-169230", "grams": 10},
+    {"ref": "fdc-2710186", "grams": 40},
+    {"ref": "fdc-174837", "grams": 120, "$nota": "el jerez: lo más cercano medido es el vino blanco de mesa"},
+    {"ref": "fdc-170416", "grams": 5},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 150, "label_en": "1 tapa portion", "label_es": "1 tapa"},
+    {"grams": 250, "label_en": "1 serving", "label_es": "1 ración"}
+   ],
+   "default_portion_g": 150,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 500 g de riñón, 150 g de cebolla, 10 g de ajo, 40 g de aceite, 120 g de vino, 5 g de perejil y 5 g de sal.",
+    "RESERVA DE INGREDIENTE: USDA no mide vino de Jerez. Se usa `Vino blanco` de mesa (fdc-174837, 82 kcal/100 ml); un fino o un oloroso son vinos generosos, con más alcohol y —los dulces— con azúcar, así que la ficha subestima el aporte del vino.",
+    "El riñón de la ficha es de ternera cocido a fuego lento (fdc-2706157); el de la tapa suele ser de cordero."
+   ]
+  },
+  {
+   "id": "receta-txangurro",
+   "names": {"en": "Txangurro a la donostiarra, San Sebastian stuffed spider crab", "es": "Txangurro a la donostiarra"},
+   "aliases": ["Txangurro", "Changurro"],
+   "category": "Seafood mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2706344", "grams": 400, "$nota": "centollo: USDA mide cangrejo azul cocido"},
+    {"ref": "fdc-2709795", "grams": 150},
+    {"ref": "fdc-169246", "grams": 100},
+    {"ref": "fdc-2709719", "grams": 150},
+    {"ref": "fdc-2710186", "grams": 40},
+    {"ref": "fdc-174815", "grams": 30, "$nota": "brandy"},
+    {"ref": "fdc-2707593", "grams": 40, "$nota": "pan rallado del gratinado"},
+    {"ref": "fdc-2710154", "grams": 20},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 180, "label_en": "1 stuffed shell", "label_es": "1 caparazón relleno"},
+    {"grams": 100, "label_en": "1 tapa portion", "label_es": "1 tapa"}
+   ],
+   "default_portion_g": 180,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 400 g de carne de centollo, 150 g de cebolla, 100 g de puerro, 150 g de tomate, 40 g de aceite, 30 g de brandy, 40 g de pan rallado, 20 g de mantequilla y 5 g de sal.",
+    "RESERVA DE ESPECIE: USDA no mide centollo. Se usa `Cangrejo` (fdc-2706344), que es cangrejo azul cocido al vapor, 83 kcal/100 g: misma familia y mismo corte de carne blanca.",
+    "RESERVA DE INGREDIENTE: el brandy se cuantifica con el destilado de 80 grados de USDA (fdc-174815), que es la única bebida de alta graduación medida. El alcohol se evapora al flamear y la ficha no lo modela: sobre 30 g de 935, el efecto es de décimas.",
+    "No hay ficha de pan rallado: se usa `Pan de panadería`."
+   ]
+  },
+  {
+   "id": "receta-fideua",
+   "names": {"en": "Fideua, Valencian short-noodle seafood dish", "es": "Fideuá"},
+   "aliases": ["Fideuà", "Fideua de marisco"],
+   "category": "Seafood mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2708357", "grams": 700, "$nota": "el fideo ya cocido: el fumet que absorbió está dentro de esta ficha"},
+    {"ref": "fdc-2706360", "grams": 150},
+    {"ref": "fdc-174223", "grams": 150, "$nota": "sepia o calamar"},
+    {"ref": "fdc-2710186", "grams": 45},
+    {"ref": "fdc-2709795", "grams": 60},
+    {"ref": "fdc-2709719", "grams": 100},
+    {"ref": "fdc-169230", "grams": 8},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 250, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 180, "label_en": "1 small serving", "label_es": "1 ración pequeña"}
+   ],
+   "default_portion_g": 250,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 700 g de fideo ya cocido, 150 g de gamba, 150 g de sepia, 45 g de aceite y un sofrito de 60 g de cebolla, 100 g de tomate y 8 g de ajo.",
+    "EL FUMET NO ENTRA COMO INGREDIENTE: la fideuá se cuece EN el caldo, que desaparece dentro del fideo. La ficha `Pasta cocida` (fdc-2708357) ya trae el agua absorbida; sumar el caldo aparte la contaría dos veces.",
+    "RESERVA DE INGREDIENTE: la sepia entra con la ficha de calamar CRUDO (fdc-174223, 92 kcal), que es lo único que USDA mide sin rebozar. En la fideuá se sofríe, así que la ficha subestima el aporte de esa parte.",
+    "Sin all i oli, que es como se sirve en Valencia y que multiplicaría la grasa del plato."
+   ]
+  },
+  {
+   "id": "receta-caracoles-a-la-llauna",
+   "names": {"en": "Caracoles a la llauna, Catalan pan-roasted snails", "es": "Caracoles a la llauna"},
+   "aliases": ["Cargols a la llauna", "Caracoles a la brasa"],
+   "category": "Seafood mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-167744", "grams": 500},
+    {"ref": "fdc-2710186", "grams": 50},
+    {"ref": "fdc-169230", "grams": 15},
+    {"ref": "fdc-170416", "grams": 5},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 200, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 120, "label_en": "1 tapa portion", "label_es": "1 tapa"}
+   ],
+   "default_portion_g": 200,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 500 g de carne de caracol, 50 g de aceite de oliva, 15 g de ajo, 5 g de perejil y 5 g de sal.",
+    "RESERVA DEL ESTADO: la única ficha de caracol de USDA es CRUDA (fdc-167744, `Mollusks, snail, raw`). El caracol se cocina a la plancha y pierde agua, y no hay ningún par crudo/cocido de caracol en los tres datasets con el que medir el rendimiento: la ficha SUBESTIMA la densidad del plato real.",
+    "Los gramos son de carne, no de caracoles con cáscara: una ración de 200 g de carne son bastantes más de 200 g en el plato.",
+    "Sin all i oli, que es como se sirven en Cataluña."
+   ]
+  },
+  {
+   "id": "receta-conejo-al-ajillo",
+   "names": {"en": "Rabbit in garlic and olive oil (conejo al ajillo)", "es": "Conejo al ajillo"},
+   "aliases": ["Conejo al ajo"],
+   "category": "Meat mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2705912", "grams": 700},
+    {"ref": "fdc-2710186", "grams": 70},
+    {"ref": "fdc-169230", "grams": 30},
+    {"ref": "fdc-174837", "grams": 80},
+    {"ref": "fdc-170416", "grams": 5},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 250, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 150, "label_en": "1 tapa portion", "label_es": "1 tapa"}
+   ],
+   "default_portion_g": 250,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 700 g de conejo, 70 g de aceite de oliva, 30 g de ajo, 80 g de vino blanco, 5 g de perejil y 5 g de sal.",
+    "La ficha de conejo de USDA (fdc-2705912) es conejo GUISADO, sin aceite; lo que aporta esta receta es exactamente el aceite del ajillo, que es lo que separa a los dos platos.",
+    "Los gramos son de carne deshuesada."
+   ]
+  },
+  {
+   "id": "receta-porrusalda",
+   "names": {"en": "Porrusalda, Basque leek and potato soup", "es": "Porrusalda"},
+   "aliases": ["Purrusalda", "Sopa de puerros y patatas"],
+   "category": "Soups, broth-based",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-169246", "grams": 400},
+    {"ref": "fdc-2709393", "grams": 400},
+    {"ref": "fdc-170393", "grams": 150},
+    {"ref": "fdc-2710186", "grams": 40},
+    {"ref": "fdc-2710707", "grams": 900, "$nota": "el caldo se come"},
+    {"ref": "fdc-173468", "grams": 8}
+   ],
+   "portion_hints": [
+    {"grams": 350, "label_en": "1 bowl", "label_es": "1 plato hondo"},
+    {"grams": 250, "label_en": "1 small bowl", "label_es": "1 plato pequeño"}
+   ],
+   "default_portion_g": 350,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 400 g de puerro, 400 g de patata, 150 g de zanahoria, 40 g de aceite de oliva, 900 g de agua y 8 g de sal.",
+    "El agua entra como ingrediente porque es la mayor parte del plato: pesa y diluye.",
+    "El puerro entra CRUDO (fdc-169246): el catálogo tiene puerro cocido pero es `con sal y grasa`, y esta receta declara su propio aceite. Contar los dos duplicaría la grasa.",
+    "Es la versión sin bacalao. La porrusalda con bacalao es otro plato y sube la proteína."
+   ]
+  },
+  {
+   "id": "receta-all-i-pebre",
+   "names": {"en": "All i pebre, Valencian eel stew with garlic and paprika", "es": "All i pebre de anguila"},
+   "aliases": ["All i pebre", "Allipebre"],
+   "category": "Seafood mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-174194", "grams": 500},
+    {"ref": "fdc-2709393", "grams": 500},
+    {"ref": "fdc-2710186", "grams": 50},
+    {"ref": "fdc-169230", "grams": 20},
+    {"ref": "fdc-170567", "grams": 30, "$nota": "almendra del majado"},
+    {"ref": "fdc-2707132", "grams": 400},
+    {"ref": "fdc-173468", "grams": 6}
+   ],
+   "portion_hints": [
+    {"grams": 300, "label_en": "1 bowl", "label_es": "1 plato hondo"},
+    {"grams": 200, "label_en": "1 small serving", "label_es": "1 ración pequeña"}
+   ],
+   "default_portion_g": 300,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 500 g de anguila, 500 g de patata, 50 g de aceite, 20 g de ajo, 30 g de almendra, 400 g de caldo y 6 g de sal.",
+    "El pimentón que le da nombre no entra: las especias están diferidas a la v2 (DT-29) y su aporte calórico es despreciable.",
+    "El caldo entra como ingrediente porque el all i pebre se come con su salsa.",
+    "La anguila de la ficha (fdc-174194) está cocinada al calor seco; en el all i pebre se guisa."
+   ]
+  },
+  {
+   "id": "receta-merluza-a-la-gallega",
+   "names": {"en": "Hake Galician style with potatoes and paprika", "es": "Merluza a la gallega"},
+   "aliases": ["Merluza a la cazuela gallega"],
+   "category": "Seafood mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2706313", "grams": 500, "$nota": "pescadilla — el pariente más cercano de la merluza que USDA sí mide"},
+    {"ref": "fdc-2709393", "grams": 700},
+    {"ref": "fdc-2709795", "grams": 100},
+    {"ref": "fdc-2710186", "grams": 60},
+    {"ref": "fdc-169230", "grams": 10},
+    {"ref": "fdc-2707132", "grams": 200},
+    {"ref": "fdc-173468", "grams": 6}
+   ],
+   "portion_hints": [
+    {"grams": 300, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 220, "label_en": "1 small serving", "label_es": "1 ración pequeña"}
+   ],
+   "default_portion_g": 300,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 500 g de pescado, 700 g de patata, 100 g de cebolla, 60 g de aceite, 10 g de ajo, 200 g de caldo y 6 g de sal.",
+    "RESERVA DE ESPECIE: USDA no mide merluza en ninguno de los tres datasets. Se usa `Pescadilla al horno` (fdc-2706313), que es el mismo criterio ya tomado en `receta-merluza-en-salsa-verde` en la card 1.7: mismo orden, carne blanca magra, y en España la pescadilla es literalmente la merluza pequeña.",
+    "El pimentón de la ajada no entra (DT-29): su aporte calórico es despreciable y el aceite en el que se fríe SÍ está declarado."
+   ]
+  },
+  {
+   "id": "receta-arroz-al-caldero",
+   "names": {"en": "Arroz al caldero, Mar Menor rice cooked in fish broth", "es": "Arroz al caldero"},
+   "aliases": ["Arroz caldero"],
+   "category": "Rice mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2708403", "grams": 700},
+    {"ref": "fdc-2706313", "grams": 200, "$nota": "el pescado de roca del caldero"},
+    {"ref": "fdc-2710186", "grams": 45},
+    {"ref": "fdc-169230", "grams": 10},
+    {"ref": "fdc-168559", "grams": 60, "$nota": "la ñora no tiene ficha: lo más cercano es el pimiento morrón en conserva"},
+    {"ref": "fdc-2709719", "grams": 80},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 250, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 180, "label_en": "1 small serving", "label_es": "1 ración pequeña"}
+   ],
+   "default_portion_g": 250,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 700 g de arroz ya cocido, 200 g de pescado, 45 g de aceite, 10 g de ajo, 60 g de pimiento en conserva, 80 g de tomate y 5 g de sal.",
+    "EL CALDO NO ENTRA: igual que en el arroz a banda, el arroz se cuece en el fumet y esa agua ya está dentro de la ficha de arroz cocido.",
+    "RESERVA DE INGREDIENTE: la ñora seca no existe en ningún dataset. Se usa `Pimiento morrón en lata` (fdc-168559), que es el mismo pimiento sin secar: la ñora está deshidratada y concentra bastante más por gramo.",
+    "El pescado se sirve aparte con all i oli, que no entra en la ficha."
+   ]
+  },
+  {
+   "id": "receta-butifarra-con-alubias",
+   "names": {"en": "Butifarra amb seques, Catalan sausage with white beans", "es": "Butifarra con alubias"},
+   "aliases": ["Butifarra amb seques", "Butifarra con judías"],
+   "category": "Meat mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2706190", "grams": 300, "$nota": "butifarra: USDA solo mide salchicha fresca genérica"},
+    {"ref": "fdc-2707349", "grams": 500},
+    {"ref": "fdc-2710186", "grams": 30},
+    {"ref": "fdc-169230", "grams": 8},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 280, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 180, "label_en": "1 small serving", "label_es": "1 ración pequeña"}
+   ],
+   "default_portion_g": 280,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 300 g de butifarra, 500 g de alubia blanca cocida, 30 g de aceite, 8 g de ajo y 5 g de sal.",
+    "RESERVA DE INGREDIENTE: USDA no mide butifarra. Se usa `Salchicha` (fdc-2706190, `Sausage, NFS`, 325 kcal/100 g), que es una salchicha fresca de cerdo genérica — la misma familia y la misma técnica, pero un promedio de familia y no la butifarra catalana.",
+    "Las alubias entran con la ficha SIN grasa añadida (fdc-2707349) porque esta receta declara su propio aceite."
+   ]
+  },
+  {
+   "id": "receta-cocido-montanes",
+   "names": {"en": "Cocido montanes, Cantabrian bean and cabbage stew", "es": "Cocido montañés"},
+   "aliases": ["Cocido lebaniego"],
+   "category": "Soups, broth-based",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2707349", "grams": 350, "$nota": "alubia blanca"},
+    {"ref": "fdc-2709579", "grams": 350, "$nota": "berza"},
+    {"ref": "fdc-2706179", "grams": 100},
+    {"ref": "fdc-2706173", "grams": 80, "$nota": "morcilla"},
+    {"ref": "fdc-2705885", "grams": 80},
+    {"ref": "fdc-2710707", "grams": 700},
+    {"ref": "fdc-173468", "grams": 8}
+   ],
+   "portion_hints": [
+    {"grams": 350, "label_en": "1 bowl", "label_es": "1 plato hondo"},
+    {"grams": 250, "label_en": "1 small bowl", "label_es": "1 plato pequeño"}
+   ],
+   "default_portion_g": 350,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 350 g de alubia cocida, 350 g de berza, 100 g de chorizo, 80 g de morcilla, 80 g de tocino, 700 g de agua y 8 g de sal.",
+    "El agua entra como ingrediente porque el caldo se come.",
+    "RESERVA DE INGREDIENTE: el chorizo del catálogo es fresco y la morcilla es `Blood sausage` genérica; el compango del cocido montañés es de matanza, curado y ahumado."
+   ]
+  },
+  {
+   "id": "receta-cardos-a-la-navarra",
+   "names": {"en": "Cardoon Navarre style with almonds and ham", "es": "Cardos a la navarra"},
+   "aliases": ["Cardo a la navarra", "Cardo con almendras"],
+   "category": "Vegetable dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-169338", "grams": 600},
+    {"ref": "fdc-170567", "grams": 50},
+    {"ref": "fdc-2705879", "grams": 60, "$nota": "jamón serrano"},
+    {"ref": "fdc-168894", "grams": 20, "$nota": "la harina que liga la salsa"},
+    {"ref": "fdc-2705384", "grams": 200},
+    {"ref": "fdc-2710186", "grams": 40},
+    {"ref": "fdc-169230", "grams": 8},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 250, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 150, "label_en": "1 small serving", "label_es": "1 ración pequeña"}
+   ],
+   "default_portion_g": 250,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 600 g de cardo cocido, 50 g de almendra, 60 g de jamón, 20 g de harina, 200 g de leche, 40 g de aceite, 8 g de ajo y 5 g de sal.",
+    "Es la primera receta del catálogo que puede declarar su harina: hasta la card 6.4 no había ninguna ficha de harina de trigo, y `receta-merluza-en-salsa-verde` tuvo que anotar en sus caveats que por eso subestimaba los hidratos."
+   ]
+  },
+  {
+   "id": "receta-caldereta-de-cordero",
+   "names": {"en": "Caldereta de cordero, Spanish lamb and potato stew", "es": "Caldereta de cordero"},
+   "aliases": ["Caldereta de cordero u oveja", "Caldereta extremeña"],
+   "category": "Meat mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2705905", "grams": 500},
+    {"ref": "fdc-2709393", "grams": 500},
+    {"ref": "fdc-2709801", "grams": 100},
+    {"ref": "fdc-2709795", "grams": 100},
+    {"ref": "fdc-2709719", "grams": 100},
+    {"ref": "fdc-2710186", "grams": 50},
+    {"ref": "fdc-173190", "grams": 100, "$nota": "vino tinto"},
+    {"ref": "fdc-2707132", "grams": 300},
+    {"ref": "fdc-173468", "grams": 6}
+   ],
+   "portion_hints": [
+    {"grams": 320, "label_en": "1 bowl", "label_es": "1 plato hondo"},
+    {"grams": 220, "label_en": "1 small serving", "label_es": "1 ración pequeña"}
+   ],
+   "default_portion_g": 320,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 500 g de cordero, 500 g de patata, 100 g de pimiento rojo, 100 g de cebolla, 100 g de tomate, 50 g de aceite, 100 g de vino tinto, 300 g de caldo y 6 g de sal.",
+    "El cordero entra con la ficha genérica de USDA (fdc-2705905, `Lamb, NS as to cut`, 292 kcal): es un promedio de cortes, y la caldereta se hace con cuello y falda, que son de los más grasos.",
+    "El caldo y el vino entran como ingredientes porque se quedan en el plato.",
+    "Sin el majado de hígado que lleva la versión extremeña, que subiría la densidad."
+   ]
+  },
+  {
+   "id": "receta-caldereta-de-langosta",
+   "names": {"en": "Caldereta de langosta, Menorcan spiny lobster stew", "es": "Caldereta de langosta"},
+   "aliases": ["Caldereta de langosta menorquina"],
+   "category": "Seafood mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-172009", "grams": 500},
+    {"ref": "fdc-2709393", "grams": 300},
+    {"ref": "fdc-2709795", "grams": 120},
+    {"ref": "fdc-2709719", "grams": 150},
+    {"ref": "fdc-2709801", "grams": 80},
+    {"ref": "fdc-2710186", "grams": 50},
+    {"ref": "fdc-174815", "grams": 30, "$nota": "brandy"},
+    {"ref": "fdc-2707132", "grams": 500},
+    {"ref": "fdc-169230", "grams": 10},
+    {"ref": "fdc-173468", "grams": 6}
+   ],
+   "portion_hints": [
+    {"grams": 350, "label_en": "1 bowl", "label_es": "1 plato hondo"},
+    {"grams": 250, "label_en": "1 small serving", "label_es": "1 ración pequeña"}
+   ],
+   "default_portion_g": 350,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 500 g de langosta, 300 g de patata, 120 g de cebolla, 150 g de tomate, 80 g de pimiento, 50 g de aceite, 30 g de brandy, 500 g de caldo, 10 g de ajo y 6 g de sal.",
+    "Los 500 g son de CARNE de langosta, no de langosta con caparazón: una caldereta para cuatro lleva bastante más peso en la cazuela.",
+    "El brandy se cuantifica con el destilado de 80 grados de USDA (fdc-174815), la única bebida de alta graduación medida.",
+    "Sin las rebanadas de pan que se sirven aparte para mojar."
+   ]
+  },
+  {
+   "id": "receta-pipirrana",
+   "names": {"en": "Pipirrana, Andalusian chopped tomato and pepper salad", "es": "Pipirrana"},
+   "aliases": ["Pipirrana jaenera", "Piriñaca"],
+   "category": "Vegetable dishes",
+   "metodo": "crudo",
+   "ingredientes": [
+    {"ref": "fdc-2709719", "grams": 400},
+    {"ref": "fdc-168409", "grams": 200},
+    {"ref": "fdc-2709799", "grams": 150, "$nota": "pimiento verde italiano"},
+    {"ref": "fdc-2709795", "grams": 80},
+    {"ref": "fdc-2710186", "grams": 60},
+    {"ref": "fdc-2709351", "grams": 20},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 200, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 120, "label_en": "1 tapa portion", "label_es": "1 tapa"}
+   ],
+   "default_portion_g": 200,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 400 g de tomate, 200 g de pepino, 150 g de pimiento verde, 80 g de cebolla, 60 g de aceite de oliva, 20 g de vinagre y 5 g de sal.",
+    "Es la pipirrana BASE, sin atún ni huevo duro. Las dos versiones existen y la de Jaén con atún sube la proteína y las calorías; se declara para que quien vea un número bajo sepa por qué.",
+    "El método es `crudo` (factor 1,000, identidad): no se cocina nada."
+   ]
+  },
+  {
+   "id": "receta-bonito-con-tomate",
+   "names": {"en": "Bonito con tomate, tuna stewed in tomato sauce", "es": "Bonito con tomate"},
+   "aliases": ["Atún con tomate", "Bonito encebollado con tomate"],
+   "category": "Seafood mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2706310", "grams": 500},
+    {"ref": "fdc-2709720", "grams": 400, "$nota": "tomate cocido"},
+    {"ref": "fdc-2709795", "grams": 120},
+    {"ref": "fdc-2709801", "grams": 80},
+    {"ref": "fdc-2710186", "grams": 50},
+    {"ref": "fdc-169230", "grams": 8},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 280, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 180, "label_en": "1 small serving", "label_es": "1 ración pequeña"}
+   ],
+   "default_portion_g": 280,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 500 g de bonito, 400 g de tomate cocido, 120 g de cebolla, 80 g de pimiento, 50 g de aceite y 8 g de ajo.",
+    "RESERVA DE ESPECIE: USDA no mide bonito del norte. Se usa `Atún cocido` (fdc-2706310), misma familia y mismo corte.",
+    "El censo de la card 6.3 dejó este plato como `ausente_ficha` con la pista de que había `Atún` (85 kcal) y `Atún cocido` (176) pero no el guiso: esta receta es exactamente el guiso que faltaba."
+   ]
+  },
+  {
+   "id": "receta-tumbet",
+   "names": {"en": "Tumbet, Majorcan layered fried vegetables", "es": "Tumbet"},
+   "aliases": ["Tumbet mallorquín"],
+   "category": "Vegetable dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2709456", "grams": 400, "$nota": "patata frita en rodajas"},
+    {"ref": "fdc-169228", "grams": 300},
+    {"ref": "fdc-2709808", "grams": 200},
+    {"ref": "fdc-2710186", "grams": 33, "$nota": "el 6,5 % MEDIDO de absorción de `frito` sobre los 500 g de hortaliza"},
+    {"ref": "fdc-170054", "grams": 250},
+    {"ref": "fdc-173468", "grams": 6}
+   ],
+   "portion_hints": [
+    {"grams": 250, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 150, "label_en": "1 tapa portion", "label_es": "1 tapa"}
+   ],
+   "default_portion_g": 250,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 400 g de patata frita, 300 g de berenjena, 200 g de calabacín, 33 g de aceite, 250 g de salsa de tomate y 6 g de sal.",
+    "LOS 33 g DE ACEITE NO SON UNA ELECCIÓN: son el 6,5 % del peso de las hortalizas, que es la mediana MEDIDA de absorción del método `frito` sobre 117 platos de FNDDS (kb/curation/cooking.transforms.json). La patata entra ya frita con su propia ficha, así que su aceite no se cuenta dos veces; el método declarado es `mezclado` por eso mismo.",
+    "La berenjena y el calabacín entran CRUDOS porque el catálogo no tiene ninguno frito: la ficha subestima el agua que pierden en la sartén."
+   ]
+  },
+  {
+   "id": "receta-habas-a-la-catalana",
+   "names": {"en": "Faves a la catalana, broad beans with sausage and pork belly", "es": "Habas a la catalana"},
+   "aliases": ["Faves a la catalana", "Habas estofadas a la catalana"],
+   "category": "Beans, peas, legumes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2707367", "grams": 600},
+    {"ref": "fdc-2706190", "grams": 120, "$nota": "butifarra negra"},
+    {"ref": "fdc-167812", "grams": 80, "$nota": "panceta"},
+    {"ref": "fdc-2709795", "grams": 100},
+    {"ref": "fdc-2710186", "grams": 20},
+    {"ref": "fdc-174837", "grams": 60},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 250, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 150, "label_en": "1 small serving", "label_es": "1 ración pequeña"}
+   ],
+   "default_portion_g": 250,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 600 g de haba cocida, 120 g de butifarra, 80 g de panceta, 100 g de cebolla, 20 g de aceite, 60 g de vino blanco y 5 g de sal.",
+    "RESERVA DE INGREDIENTE: la butifarra negra se cuantifica con `Salchicha` (fdc-2706190, salchicha fresca de cerdo genérica); no lleva la sangre de la butifarra negra real, que es lo que le da el color y el hierro.",
+    "La panceta entra cruda (fdc-167812) porque es el único corte que USDA mide; en el guiso suelta parte de su grasa.",
+    "La menta o hierbabuena que lleva el plato está diferida a la v2 (DT-29) y su aporte calórico es nulo."
+   ]
+  },
+  {
+   "id": "receta-alcachofas-con-jamon",
+   "names": {"en": "Artichokes with Serrano ham (alcachofas con jamon)", "es": "Alcachofas con jamón"},
+   "aliases": ["Alcachofas salteadas con jamón"],
+   "category": "Vegetable dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2709766", "grams": 600},
+    {"ref": "fdc-2705879", "grams": 120, "$nota": "jamón serrano en taquitos"},
+    {"ref": "fdc-2710186", "grams": 40},
+    {"ref": "fdc-169230", "grams": 10},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 200, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 120, "label_en": "1 tapa portion", "label_es": "1 tapa"}
+   ],
+   "default_portion_g": 200,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 600 g de alcachofa cocida, 120 g de jamón serrano, 40 g de aceite de oliva, 10 g de ajo y 5 g de sal.",
+    "La alcachofa entra con la ficha nueva de la card 6.4 (fdc-2709766), que es alcachofa hervida SIN grasa: el aceite del salteado va declarado aparte para no contarlo dos veces."
+   ]
+  },
+  {
+   "id": "receta-gachas-manchegas",
+   "names": {"en": "Gachas manchegas, La Mancha savoury flour porridge", "es": "Gachas manchegas"},
+   "aliases": ["Gachas de almorta", "Gachas"],
+   "category": "Cooked grains",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-168894", "grams": 150, "$nota": "harina de almortas: no existe en ningún dataset"},
+    {"ref": "fdc-2710707", "grams": 700, "$nota": "el agua se queda: las gachas son una papilla"},
+    {"ref": "fdc-167812", "grams": 100, "$nota": "panceta o torreznos"},
+    {"ref": "fdc-2710186", "grams": 50},
+    {"ref": "fdc-169230", "grams": 10},
+    {"ref": "fdc-173468", "grams": 6}
+   ],
+   "portion_hints": [
+    {"grams": 250, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 150, "label_en": "1 small serving", "label_es": "1 ración pequeña"}
+   ],
+   "default_portion_g": 250,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 150 g de harina, 700 g de agua, 100 g de panceta, 50 g de aceite, 10 g de ajo y 6 g de sal.",
+    "RESERVA DE INGREDIENTE: la harina de almortas —la que define a las gachas manchegas— NO EXISTE en ninguno de los tres datasets (`grass pea`, `Lathyrus`: cero coincidencias). Se usa harina de trigo (fdc-168894, 364 kcal), que es el sustituto real de la mayoría de las cocinas de hoy; la almorta tiene bastante más proteína (~25 g contra 10) y la ficha la subestima.",
+    "El agua entra como ingrediente porque se queda en el plato: las gachas son una papilla, no un guiso escurrido."
+   ]
+  },
+  {
+   "id": "receta-calamares-en-su-tinta",
+   "names": {"en": "Squid in its own ink (calamares en su tinta)", "es": "Calamares en su tinta"},
+   "aliases": ["Chipirones en su tinta", "Calamares en tinta"],
+   "category": "Seafood mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-174223", "grams": 600},
+    {"ref": "fdc-2709795", "grams": 200},
+    {"ref": "fdc-2709719", "grams": 150},
+    {"ref": "fdc-2709801", "grams": 80},
+    {"ref": "fdc-2710186", "grams": 50},
+    {"ref": "fdc-169230", "grams": 10},
+    {"ref": "fdc-2707132", "grams": 250},
+    {"ref": "fdc-173468", "grams": 6}
+   ],
+   "portion_hints": [
+    {"grams": 250, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 150, "label_en": "1 tapa portion", "label_es": "1 tapa"}
+   ],
+   "default_portion_g": 250,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 600 g de chipirón, 200 g de cebolla, 150 g de tomate, 80 g de pimiento, 50 g de aceite, 10 g de ajo, 250 g de caldo y 6 g de sal.",
+    "LA TINTA NO ENTRA: no tiene ficha en ningún dataset y su peso en el plato es de gramos. Es lo que le da el color, no las calorías.",
+    "El calamar entra crudo (fdc-174223): es lo único que USDA mide sin rebozar. En el guiso se ablanda y suelta agua, así que la ficha subestima un poco la densidad.",
+    "Sin el arroz blanco con el que se sirve, que es otra ficha del catálogo."
+   ]
+  },
+  {
+   "id": "receta-arroz-con-costra",
+   "names": {"en": "Arroz con costra, Alicante baked rice with egg crust", "es": "Arroz con costra"},
+   "aliases": ["Arròs amb costra"],
+   "category": "Rice mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2708403", "grams": 600},
+    {"ref": "fdc-2706179", "grams": 100},
+    {"ref": "fdc-2705938", "grams": 150},
+    {"ref": "fdc-2707152", "grams": 200, "$nota": "cuatro huevos batidos: la costra"},
+    {"ref": "fdc-2707132", "grams": 100},
+    {"ref": "fdc-2710186", "grams": 30},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 280, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 180, "label_en": "1 small serving", "label_es": "1 ración pequeña"}
+   ],
+   "default_portion_g": 280,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 600 g de arroz cocido, 100 g de embutido, 150 g de pollo, 200 g de huevo, 100 g de caldo, 30 g de aceite y 5 g de sal.",
+    "RESERVA DEL RENDIMIENTO: el arroz con costra se termina en el HORNO y el huevo cuaja perdiendo agua. Se aplica `mezclado` (1,000) porque el factor `horneado` de la tabla está medido sobre piezas de carne y pescado, no sobre un arroz con huevo: la ficha SUBESTIMA la densidad real.",
+    "El embutido entra con `Chorizo fresco` (fdc-2706179); en Elche se usa blanquet y longaniza."
+   ]
+  },
+  {
+   "id": "receta-escudella",
+   "names": {"en": "Escudella i carn d'olla, Catalan meat and vegetable stew", "es": "Escudella y carn d'olla"},
+   "aliases": ["Escudella", "Escudella i carn d'olla"],
+   "category": "Soups, broth-based",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2707414", "grams": 250},
+    {"ref": "fdc-2708357", "grams": 150, "$nota": "el galet de la escudella"},
+    {"ref": "fdc-2705938", "grams": 150},
+    {"ref": "fdc-2705822", "grams": 120},
+    {"ref": "fdc-2705885", "grams": 60},
+    {"ref": "fdc-2709393", "grams": 200},
+    {"ref": "fdc-2709889", "grams": 150, "$nota": "col"},
+    {"ref": "fdc-170393", "grams": 100},
+    {"ref": "fdc-2710707", "grams": 900},
+    {"ref": "fdc-173468", "grams": 8}
+   ],
+   "portion_hints": [
+    {"grams": 350, "label_en": "1 bowl", "label_es": "1 plato hondo"},
+    {"grams": 250, "label_en": "1 small bowl", "label_es": "1 plato pequeño"}
+   ],
+   "default_portion_g": 350,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 250 g de garbanzo, 150 g de pasta, 150 g de pollo, 120 g de ternera, 60 g de tocino, 200 g de patata, 150 g de col, 100 g de zanahoria, 900 g de agua y 8 g de sal.",
+    "El agua entra como ingrediente porque el caldo es la mitad del plato.",
+    "SIN LA PILOTA, la albóndiga grande de carne y pan que lleva la carn d'olla de Navidad: no tiene ficha propia y añadirla a ojo cambiaría el plato.",
+    "Los garbanzos entran con la ficha `con sal y grasa` (fdc-2707414), que es la única cocida que hay: por eso esta receta no declara aceite aparte."
+   ]
+  },
+  {
+   "id": "receta-shakshuka",
+   "names": {"en": "Shakshuka, eggs poached in spiced tomato sauce", "es": "Shakshuka"},
+   "aliases": ["Huevos a la shakshuka"],
+   "category": "Eggs and omelets",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2707152", "grams": 200, "$nota": "cuatro huevos escalfados en la salsa"},
+    {"ref": "fdc-2709720", "grams": 500},
+    {"ref": "fdc-2709795", "grams": 120},
+    {"ref": "fdc-2709801", "grams": 100},
+    {"ref": "fdc-2710186", "grams": 40},
+    {"ref": "fdc-169230", "grams": 10},
+    {"ref": "fdc-168462", "grams": 80, "$nota": "espinaca tierna"},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 260, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 520, "label_en": "1 pan to share", "label_es": "1 sartén para compartir"}
+   ],
+   "default_portion_g": 260,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 200 g de huevo, 500 g de tomate cocido, 120 g de cebolla, 100 g de pimiento, 40 g de aceite, 10 g de ajo, 80 g de espinaca y 5 g de sal.",
+    "El comino y la páprika que definen el plato están diferidos a la v2 (DT-29) y su aporte calórico es nulo.",
+    "Sin el pan con el que se moja, que es otra ficha del catálogo."
+   ]
+  },
+  {
+   "id": "receta-ensalada-nicoise",
+   "names": {"en": "Salade nicoise, Provencal tuna, egg and green bean salad", "es": "Ensalada Niçoise"},
+   "aliases": ["Ensalada nizarda"],
+   "category": "Vegetable dishes",
+   "metodo": "crudo",
+   "ingredientes": [
+    {"ref": "fdc-2706309", "grams": 150, "$nota": "atún en aceite escurrido"},
+    {"ref": "fdc-2707153", "grams": 120},
+    {"ref": "fdc-2709852", "grams": 200},
+    {"ref": "fdc-2709393", "grams": 250},
+    {"ref": "fdc-168409", "grams": 100},
+    {"ref": "fdc-169094", "grams": 60},
+    {"ref": "fdc-2706232", "grams": 20},
+    {"ref": "fdc-172238", "grams": 10},
+    {"ref": "fdc-2710186", "grams": 50},
+    {"ref": "fdc-2709351", "grams": 15},
+    {"ref": "fdc-2709789", "grams": 150},
+    {"ref": "fdc-173468", "grams": 4}
+   ],
+   "portion_hints": [
+    {"grams": 300, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 200, "label_en": "1 starter portion", "label_es": "1 entrante"}
+   ],
+   "default_portion_g": 300,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 150 g de atún, 120 g de huevo cocido, 200 g de judía verde, 250 g de patata, 100 g de pepino, 60 g de aceituna negra, 20 g de anchoa, 10 g de alcaparras, 50 g de aceite, 15 g de vinagre, 150 g de lechuga y 4 g de sal.",
+    "La judía verde y las alcaparras son fichas NUEVAS de la card 6.4: sin ellas esta receta no se podía derivar.",
+    "El método es `crudo` (identidad): la patata, el huevo y la judía entran ya cocidos con sus propias fichas.",
+    "La mostaza de Dijon del aliño no tiene ficha en el catálogo y no entra: sobre 1.100 g, su efecto es de décimas."
+   ]
+  },
+  {
+   "id": "receta-ensalada-fattoush",
+   "names": {"en": "Fattoush, Levantine bread salad", "es": "Ensalada Fattoush"},
+   "aliases": ["Fattoush"],
+   "category": "Vegetable dishes",
+   "metodo": "crudo",
+   "ingredientes": [
+    {"ref": "fdc-2709789", "grams": 200, "$nota": "lechuga romana"},
+    {"ref": "fdc-2707616", "grams": 80, "$nota": "pan de pita tostado"},
+    {"ref": "fdc-168409", "grams": 200},
+    {"ref": "fdc-2709719", "grams": 250},
+    {"ref": "fdc-169276", "grams": 60},
+    {"ref": "fdc-2709795", "grams": 80},
+    {"ref": "fdc-167747", "grams": 30},
+    {"ref": "fdc-2710186", "grams": 45},
+    {"ref": "fdc-2709351", "grams": 10},
+    {"ref": "fdc-170416", "grams": 10},
+    {"ref": "fdc-173468", "grams": 4}
+   ],
+   "portion_hints": [
+    {"grams": 250, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 150, "label_en": "1 starter portion", "label_es": "1 entrante"}
+   ],
+   "default_portion_g": 250,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 200 g de lechuga, 80 g de pan de pita, 200 g de pepino, 250 g de tomate, 60 g de rábano, 80 g de cebolla, 30 g de zumo de limón, 45 g de aceite, 10 g de vinagre, 10 g de perejil y 4 g de sal.",
+    "El pan de pita entra con la ficha de la card 6.2 (fdc-2707616) SIN tostar: en el fattoush va frito o tostado, así que la ficha subestima esa parte.",
+    "El zumaque, que es la especia que define al fattoush, está diferido a la v2 (DT-29).",
+    "La menta fresca tampoco entra (DT-29): su aporte calórico es nulo."
+   ]
+  },
+  {
+   "id": "receta-pasta-alla-norma",
+   "names": {"en": "Pasta alla Norma, Sicilian pasta with fried aubergine", "es": "Pasta Alla Norma"},
+   "aliases": ["Pasta a la Norma"],
+   "category": "Pasta mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2708357", "grams": 600},
+    {"ref": "fdc-169228", "grams": 300},
+    {"ref": "fdc-170054", "grams": 250},
+    {"ref": "fdc-2710186", "grams": 40},
+    {"ref": "fdc-2705750", "grams": 60, "$nota": "ricotta salata: el catálogo tiene ricota fresca"},
+    {"ref": "fdc-2709795", "grams": 60},
+    {"ref": "fdc-169230", "grams": 8},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 300, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 200, "label_en": "1 small serving", "label_es": "1 ración pequeña"}
+   ],
+   "default_portion_g": 300,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 600 g de pasta cocida, 300 g de berenjena, 250 g de salsa de tomate, 40 g de aceite, 60 g de ricota, 60 g de cebolla, 8 g de ajo y 5 g de sal.",
+    "RESERVA DE INGREDIENTE: la ricotta salata es un queso PRENSADO Y CURADO (~340 kcal/100 g) y el catálogo solo tiene ricota fresca (fdc-2705750, 148). Sobre 60 g de 1.323, la diferencia mueve el total menos de un 1 %.",
+    "La berenjena entra CRUDA porque el catálogo no tiene ninguna frita: en la Norma va frita en aceite, así que la ficha subestima esa parte.",
+    "La albahaca está diferida a la v2 (DT-29)."
+   ]
+  },
+  {
+   "id": "receta-arancini",
+   "names": {"en": "Arancini, Sicilian fried rice balls", "es": "Arancini"},
+   "aliases": ["Arancino", "Bolas de arroz fritas"],
+   "category": "Rice mixed dishes",
+   "metodo": "frito",
+   "ingredientes": [
+    {"ref": "fdc-2708405", "grams": 400, "$nota": "risotto: arroz cocido con mantequilla"},
+    {"ref": "fdc-2705722", "grams": 80},
+    {"ref": "fdc-171247", "grams": 40},
+    {"ref": "fdc-2707152", "grams": 50},
+    {"ref": "fdc-2707593", "grams": 80, "$nota": "pan rallado del rebozado"}
+   ],
+   "portion_hints": [
+    {"grams": 110, "label_en": "1 arancino", "label_es": "1 arancino"},
+    {"grams": 220, "label_en": "2 arancini", "label_es": "2 arancini"}
+   ],
+   "default_portion_g": 110,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 400 g de risotto, 80 g de mozzarella, 40 g de parmesano, 50 g de huevo y 80 g de pan rallado.",
+    "EL ACEITE NO SE DECLARA A PROPÓSITO: el método es `frito`, y la absorción la pone la tabla de transformaciones con su 6,5 % MEDIDO sobre 117 platos `fried` de FNDDS. Declararlo además lo contaría dos veces.",
+    "RESERVA DE INGREDIENTE: no hay ficha de pan rallado en ningún dataset; se usa `Pan de panadería`, que tiene más agua.",
+    "El risotto entra como `Arroz blanco cocido con mantequilla` (fdc-2708405), que es lo que USDA mide con ese nombre."
+   ]
+  },
+  {
+   "id": "receta-tortilla-de-camarones",
+   "names": {"en": "Tortillita de camarones, Cadiz shrimp fritter", "es": "Tortilla de camarones"},
+   "aliases": ["Tortillita de camarones", "Tortillitas de camarones"],
+   "category": "Seafood mixed dishes",
+   "metodo": "frito",
+   "ingredientes": [
+    {"ref": "fdc-174288", "grams": 100, "$nota": "harina de garbanzo"},
+    {"ref": "fdc-168894", "grams": 50, "$nota": "harina de trigo"},
+    {"ref": "fdc-2706360", "grams": 120, "$nota": "camarón entero"},
+    {"ref": "fdc-2709795", "grams": 40},
+    {"ref": "fdc-170416", "grams": 5},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 35, "label_en": "1 fritter", "label_es": "1 tortillita"},
+    {"grams": 105, "label_en": "1 tapa portion", "label_es": "1 tapa"}
+   ],
+   "default_portion_g": 105,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 100 g de harina de garbanzo, 50 g de harina de trigo, 120 g de camarón, 40 g de cebolleta, 5 g de perejil y 5 g de sal.",
+    "EL AGUA DE LA MASA NO ENTRA, y es la regla del proyecto: el agua que se EVAPORA no es ingrediente. La tortillita se fríe hasta quedar crujiente, así que el agua del batido se va entera.",
+    "EL ACEITE NO SE DECLARA: el método es `frito` y la absorción la pone la tabla con su 6,5 % medido.",
+    "LÍMITE CONOCIDO: la ficha da ~278 kcal/100 g y la tortillita real ronda las 350. El 6,5 % es la MEDIANA de 117 platos fritos de FNDDS y una tortillita de encaje absorbe más que la mediana. Se prefiere el número medido con su reserva escrita a subirlo hasta que dé lo esperado, que es el defecto por el que la arepa descartó su receta en la card 6.2.",
+    "Cierra la guarda `Tortilla de camarones` de la card 6.3, que estaba escrita esperando esta ficha."
+   ]
+  },
+  {
+   "id": "receta-pastel-de-cabracho",
+   "names": {"en": "Pastel de cabracho, Cantabrian scorpionfish terrine", "es": "Pastel de cabracho"},
+   "aliases": ["Pudín de cabracho", "Pastel de pescado"],
+   "category": "Seafood mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2706228", "grams": 500, "$nota": "cabracho: USDA no lo mide; se usa pescado blanco al vapor"},
+    {"ref": "fdc-2707152", "grams": 300, "$nota": "seis huevos"},
+    {"ref": "fdc-170857", "grams": 300, "$nota": "nata de cocinar"},
+    {"ref": "fdc-170054", "grams": 150, "$nota": "tomate frito"},
+    {"ref": "fdc-2710154", "grams": 20},
+    {"ref": "fdc-173468", "grams": 6}
+   ],
+   "portion_hints": [
+    {"grams": 90, "label_en": "1 slice", "label_es": "1 porción"},
+    {"grams": 45, "label_en": "1 canape portion", "label_es": "1 canapé"}
+   ],
+   "default_portion_g": 90,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 500 g de pescado, 300 g de huevo, 300 g de nata, 150 g de tomate frito, 20 g de mantequilla y 6 g de sal.",
+    "RESERVA DE ESPECIE: USDA no mide cabracho. Se usa `Pescado al vapor` (fdc-2706228), que es pescado blanco sin especificar cocido al vapor — la misma técnica con la que se cuece el cabracho antes de triturarlo.",
+    "El pastel se cuaja al baño María y pierde muy poca agua, así que `mezclado` (1,000) es el método adecuado y no una aproximación.",
+    "Cierra la guarda `Pastel de cabracho` de la card 6.3, que estaba escrita esperando esta ficha."
+   ]
+  },
+  {
+   "id": "receta-cocochas-en-salsa",
+   "names": {"en": "Cocochas en salsa verde, hake throats in garlic emulsion", "es": "Cocochas en salsa"},
+   "aliases": ["Cocochas al pilpil", "Cocochas en salsa verde"],
+   "category": "Seafood mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2706245", "grams": 500, "$nota": "cococha: USDA no la mide; se usa bacalao al vapor"},
+    {"ref": "fdc-2710186", "grams": 80, "$nota": "el aceite que emulsiona el pilpil"},
+    {"ref": "fdc-169230", "grams": 15},
+    {"ref": "fdc-170416", "grams": 5},
+    {"ref": "fdc-2707132", "grams": 100},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 180, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 100, "label_en": "1 tapa portion", "label_es": "1 tapa"}
+   ],
+   "default_portion_g": 180,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 500 g de cococha, 80 g de aceite de oliva, 15 g de ajo, 5 g de perejil, 100 g de caldo y 5 g de sal.",
+    "RESERVA DE CORTE: la cococha es la papada de la merluza o del bacalao, mucho más gelatinosa que el lomo. Se usa `Bacalao al vapor` (fdc-2706245), que es la especie correcta con otro corte.",
+    "EL ACEITE ES EL PLATO: 80 g sobre 500 de pescado es lo que hace falta para que ligue el pilpil, y es exactamente lo que la ficha `Bacalao al vapor` no tenía — por eso el censo de la card 6.3 se negó a colgar el plato de ella.",
+    "Cierra la guarda `Cocochas` de la card 6.3, que estaba escrita esperando esta ficha."
+   ]
+  },
+  {
+   "id": "receta-gazpachos-manchegos",
+   "names": {"en": "Gazpachos manchegos, La Mancha game stew on flatbread", "es": "Gazpachos manchegos"},
+   "aliases": ["Galianos", "Gazpachos manchegos o galianos", "Gazpacho manchego"],
+   "category": "Meat mixed dishes",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2707593", "grams": 300, "$nota": "torta de pan ácimo troceada"},
+    {"ref": "fdc-2705912", "grams": 300, "$nota": "conejo o liebre"},
+    {"ref": "fdc-2705938", "grams": 200, "$nota": "pollo de corral"},
+    {"ref": "fdc-2710186", "grams": 60},
+    {"ref": "fdc-2709719", "grams": 100},
+    {"ref": "fdc-2709801", "grams": 60},
+    {"ref": "fdc-169230", "grams": 10},
+    {"ref": "fdc-2707132", "grams": 400},
+    {"ref": "fdc-173468", "grams": 8}
+   ],
+   "portion_hints": [
+    {"grams": 300, "label_en": "1 serving", "label_es": "1 ración"},
+    {"grams": 200, "label_en": "1 small serving", "label_es": "1 ración pequeña"}
+   ],
+   "default_portion_g": 300,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 300 g de torta, 300 g de conejo, 200 g de ave, 60 g de aceite, 100 g de tomate, 60 g de pimiento, 10 g de ajo, 400 g de caldo y 8 g de sal.",
+    "RESERVA DE INGREDIENTE: la torta de gazpacho es un pan ÁCIMO, sin levadura, y el catálogo solo tiene pan de panadería (fdc-2707593). Son densidades parecidas y masas distintas.",
+    "NO ES EL GAZPACHO ANDALUZ y este es el punto entero: aquel es una sopa fría de hortalizas de 26 kcal/100 g y este es un guiso caliente de caza. Cierra la guarda `Gazpachos manchegos` de la card 6.3, que era la hermana necesaria del alias `Gazpacho andaluz` que la misma card emitió.",
+    "La caza mayor (liebre, perdiz) que lleva la versión de monte no tiene ficha: se usa conejo, que es la carne más habitual hoy."
+   ]
+  },
+  {
+   "id": "receta-leche-frita",
+   "names": {"en": "Leche frita, Spanish fried milk custard squares", "es": "Leche frita"},
+   "aliases": ["Leche frita casera"],
+   "category": "Milk desserts",
+   "metodo": "frito",
+   "ingredientes": [
+    {"ref": "fdc-2705384", "grams": 500},
+    {"ref": "fdc-2710257", "grams": 100},
+    {"ref": "fdc-168894", "grams": 80},
+    {"ref": "fdc-2707152", "grams": 60},
+    {"ref": "fdc-2710154", "grams": 20}
+   ],
+   "portion_hints": [
+    {"grams": 60, "label_en": "1 piece", "label_es": "1 porción"},
+    {"grams": 120, "label_en": "2 pieces", "label_es": "2 porciones"}
+   ],
+   "default_portion_g": 60,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 500 g de leche, 100 g de azúcar, 80 g de harina, 60 g de huevo y 20 g de mantequilla.",
+    "EL ACEITE NO SE DECLARA: el método es `frito` y la absorción la pone la tabla con su 6,5 % medido sobre 117 platos de FNDDS.",
+    "LÍMITE CONOCIDO: la crema se cuece hasta espesar y pierde agua ANTES de freírse, y `frito` no modela esa pérdida (su factor de peso es 1,000). La ficha SUBESTIMA la densidad del postre real, que ronda las 250 kcal/100 g.",
+    "Sin el azúcar con canela de encima. Cierra el `ficha_equivocada` del censo, donde `Leche frita` caía en `Leche` (52 kcal), que además de equivocarse por cinco es un líquido."
+   ]
+  },
+  {
+   "id": "receta-tocinillo-de-cielo",
+   "names": {"en": "Tocinillo de cielo, Spanish egg yolk and syrup custard", "es": "Tocinillo de cielo"},
+   "aliases": ["Tocino de cielo"],
+   "category": "Milk desserts",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-2707173", "grams": 300, "$nota": "yemas: el catálogo solo tiene la yema cocida"},
+    {"ref": "fdc-2710257", "grams": 300},
+    {"ref": "fdc-2710707", "grams": 150, "$nota": "el agua del almíbar se queda en el postre"}
+   ],
+   "portion_hints": [
+    {"grams": 60, "label_en": "1 piece", "label_es": "1 porción"},
+    {"grams": 30, "label_en": "1 small piece", "label_es": "1 porción pequeña"}
+   ],
+   "default_portion_g": 60,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 300 g de yema, 300 g de azúcar y 150 g de agua de almíbar — las proporciones clásicas de partes iguales de yema y azúcar.",
+    "RESERVA DE INGREDIENTE: el catálogo solo tiene `Yema de huevo cocida` (fdc-2707173, 357 kcal) y el tocinillo se hace con yema CRUDA (~322 en SR Legacy). Sobre 300 g de 750, la ficha sobreestima en torno a un 4 %.",
+    "El agua del almíbar entra como ingrediente porque se queda en el postre: el tocinillo es una crema, no un caramelo seco.",
+    "El censo de la card 6.3 había descartado el `Flan` (178 kcal) como gemelo porque el tocinillo es yema y almíbar sin leche. Esta receta es exactamente eso, y da ~300 kcal/100 g."
+   ]
+  },
+  {
+   "id": "receta-quesada-pasiega",
+   "names": {"en": "Quesada pasiega, Cantabrian curd cheese cake", "es": "Quesada pasiega"},
+   "aliases": ["Quesada"],
+   "category": "Cakes and pies",
+   "metodo": "horneado_masa",
+   "ingredientes": [
+    {"ref": "fdc-2705750", "grams": 500, "$nota": "cuajada o requesón: el catálogo tiene ricota"},
+    {"ref": "fdc-2710257", "grams": 200},
+    {"ref": "fdc-168894", "grams": 120},
+    {"ref": "fdc-2707152", "grams": 150},
+    {"ref": "fdc-2710154", "grams": 80},
+    {"ref": "fdc-2705384", "grams": 100}
+   ],
+   "portion_hints": [
+    {"grams": 90, "label_en": "1 slice", "label_es": "1 porción"},
+    {"grams": 45, "label_en": "1 small slice", "label_es": "1 porción pequeña"}
+   ],
+   "default_portion_g": 90,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 500 g de cuajada, 200 g de azúcar, 120 g de harina, 150 g de huevo, 80 g de mantequilla y 100 g de leche.",
+    "RESERVA DE INGREDIENTE: USDA no mide cuajada pasiega. Se usa `Ricota` (fdc-2705750, 148 kcal), que es el mismo tipo de queso fresco de suero.",
+    "RESERVA DEL RENDIMIENTO: se aplica `horneado_masa` (0,891), medido sobre TRES masas quebradas de harina de trigo de SR Legacy. La quesada es una masa húmeda de queso, no una masa quebrada: es el factor más cercano que hay medido, no el propio. Es la misma reserva que declaró `receta-tarta-de-santiago` en la card 1.7.",
+    "El censo de la card 6.3 descartó `Tarta de queso` (399 kcal) como gemelo porque la quesada no lleva queso crema. Esta receta da ~275 kcal/100 g."
+   ]
+  },
+  {
+   "id": "receta-ensaimada",
+   "names": {"en": "Ensaimada mallorquina, Majorcan lard-laminated coiled pastry", "es": "Ensaimada mallorquina"},
+   "aliases": ["Ensaimada"],
+   "category": "Sweet bakery products",
+   "metodo": "horneado_masa",
+   "ingredientes": [
+    {"ref": "fdc-168894", "grams": 500},
+    {"ref": "fdc-171401", "grams": 150, "$nota": "la saïm: manteca de cerdo, que es lo que le da el nombre"},
+    {"ref": "fdc-2710257", "grams": 120},
+    {"ref": "fdc-2707152", "grams": 50},
+    {"ref": "fdc-2710707", "grams": 200},
+    {"ref": "fdc-173468", "grams": 5}
+   ],
+   "portion_hints": [
+    {"grams": 80, "label_en": "1 individual ensaimada", "label_es": "1 ensaimada individual"},
+    {"grams": 40, "label_en": "1 small piece", "label_es": "1 porción pequeña"}
+   ],
+   "default_portion_g": 80,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 500 g de harina, 150 g de manteca de cerdo, 120 g de azúcar, 50 g de huevo, 200 g de agua y 5 g de sal.",
+    "RESERVA DEL RENDIMIENTO: se aplica `horneado_masa` (0,891), medido sobre tres masas quebradas de harina de trigo. La ensaimada es una masa fermentada y laminada de la misma harina, así que el factor es del ámbito correcto —masa de trigo horneada— pero no de la misma técnica.",
+    "La levadura y la masa madre no entran: su peso es de gramos y su aporte calórico despreciable.",
+    "Es la ensaimada LISA. La de cabello de ángel o la rellena de crema son otro producto y bastante más dulces."
+   ]
+  },
+  {
+   "id": "receta-pestinos",
+   "names": {"en": "Pestinos, Andalusian fried wine pastries in honey", "es": "Pestiños"},
+   "aliases": ["Pestiño"],
+   "category": "Sweet bakery products",
+   "metodo": "mezclado",
+   "ingredientes": [
+    {"ref": "fdc-168894", "grams": 400},
+    {"ref": "fdc-2710186", "grams": 60, "$nota": "el aceite DE LA MASA"},
+    {"ref": "fdc-174837", "grams": 120, "$nota": "vino blanco de la masa"},
+    {"ref": "fdc-173468", "grams": 4},
+    {"ref": "fdc-2710186", "grams": 38, "$nota": "el aceite ABSORBIDO al freír: el 6,5 % medido sobre los 584 g de masa"},
+    {"ref": "fdc-169640", "grams": 150, "$nota": "el baño de miel"}
+   ],
+   "portion_hints": [
+    {"grams": 35, "label_en": "1 pestino", "label_es": "1 pestiño"},
+    {"grams": 70, "label_en": "2 pestinos", "label_es": "2 pestiños"}
+   ],
+   "default_portion_g": 35,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 400 g de harina, 60 g de aceite en la masa, 120 g de vino blanco, 4 g de sal, 38 g de aceite absorbido al freír y 150 g de miel del baño.",
+    "POR QUÉ EL ACEITE VA EN DOS LÍNEAS Y EL MÉTODO ES `mezclado`: la tabla de transformaciones dice que `frito` es para las frituras que NO declaran su aceite, y el pestiño declara el de la masa. Los 38 g de la segunda línea NO son una elección: son el 6,5 % del peso de la masa, que es la mediana MEDIDA de absorción sobre 117 platos fritos de FNDDS. Declararlo así deja las dos grasas visibles en la receta en vez de esconder una dentro de un factor.",
+    "LÍMITE CONOCIDO: la masa pierde agua al freírse y `mezclado` no lo modela, así que la ficha SUBESTIMA la densidad del pestiño real, que ronda las 430 kcal/100 g.",
+    "El anís y el ajonjolí de la masa están diferidos a la v2 (DT-29)."
+   ]
+  },
+  {
+   "id": "receta-coca",
+   "names": {"en": "Coca de recapte, Catalan flatbread with roasted vegetables", "es": "Coca"},
+   "aliases": ["Coca de recapte", "Coca de verduras"],
+   "category": "Savory bakery products",
+   "metodo": "horneado_masa",
+   "ingredientes": [
+    {"ref": "fdc-168894", "grams": 300},
+    {"ref": "fdc-2710186", "grams": 50},
+    {"ref": "fdc-2710707", "grams": 150},
+    {"ref": "fdc-173468", "grams": 5},
+    {"ref": "fdc-169228", "grams": 200, "$nota": "berenjena asada"},
+    {"ref": "fdc-2709801", "grams": 150, "$nota": "pimiento rojo asado"},
+    {"ref": "fdc-2709795", "grams": 100}
+   ],
+   "portion_hints": [
+    {"grams": 120, "label_en": "1 slice", "label_es": "1 porción"},
+    {"grams": 240, "label_en": "1 large portion", "label_es": "1 porción grande"}
+   ],
+   "default_portion_g": 120,
+   "caveats": [
+    "Receta estándar declarada, no medición de laboratorio: 300 g de harina, 50 g de aceite, 150 g de agua, 5 g de sal, 200 g de berenjena, 150 g de pimiento rojo y 100 g de cebolla.",
+    "RESERVA DEL RENDIMIENTO: se aplica `horneado_masa` (0,891), medido sobre masas quebradas de harina de trigo. La coca es una masa de trigo horneada —ámbito correcto— pero lleva encima hortalizas que también pierden agua y que el factor no modela: la ficha SUBESTIMA la densidad real.",
+    "Las hortalizas entran CRUDAS porque el catálogo no tiene ninguna asada, y el horneado de verduras sigue sin factor medido (DT-10: cinco pares en dos familias que se contradicen). Es la misma reserva de `receta-escalivada`.",
+    "Es la coca de recapte SALADA, sin arenque ni butifarra. La coca dulce de Sant Joan es otro producto."
+   ]
   }
  ],
  "$bloqueadas": {

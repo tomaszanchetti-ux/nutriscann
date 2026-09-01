@@ -1,0 +1,373 @@
+{
+ "$comment": [
+  "DT-33 — las fichas que faltaban del censo mediterráneo (card 6.4, WS06). Promoción:",
+  "alimentos que YA estaban en el universo USDA y que suben a la selección porque el censo",
+  "de cobertura de la card 6.3 midió su hueco contra el catálogo.",
+  "",
+  "LO QUE ESTA CARD ABRIÓ Y LA 6.3 NO: los DATASETS CRUDOS. El censo declaró su alcance",
+  "—«se midió contra el CATÁLOGO y NO contra los datasets crudos, que tienen unos 15.000",
+  "alimentos»— y por eso ninguna de sus pistas decía «USDA no lo tiene». Al abrirlos, seis",
+  "de los siete huecos de proteína y de cereal que la DT-33 llamaba «de ficha» resultaron",
+  "estar medidos por USDA desde siempre: no faltaba el dato, faltaba la promoción.",
+  "",
+  "Las columnas siguen exactamente las reglas de la card 1.1 (porción por defecto:",
+  "'Quantity not specified' en FNDDS, la primera por seq_num en SR Legacy; categoría: WWEIA",
+  "en FNDDS, food_category en SR; n_ingredients: filas de input_food en FNDDS, null en SR).",
+  "",
+  "REGLA DE LA CARD: los números salen de USDA. Ninguna cifra se escribe a mano acá."
+ ],
+ "criteria_version": "dt33-fichas-v1",
+ "generated": "2026-09-01",
+ "justificacion": "DT-33, abierta por el censo de cobertura mediterránea (kb/cobertura/censo.json, card 6.3): 48 de los 141 platos quedaron `ausente_ficha`, 59 de los 196 ingredientes clave también, y el listado de huecos centrales —salmón, mejillón, pez espada, pasta cocida simple, harina de trigo, maíz dulce, repollo cocido sin grasa— no era de vocabulario sino de catálogo. Las 34 fichas de este bloque tapan esos huecos y los ingredientes que las recetas compuestas de la misma card necesitaban para poder derivarse. Ninguna entraba antes porque la selección de la card 1.1 se armó por uso real en recetas de USDA (una dieta estadounidense) y las promociones posteriores miraban platos españoles con nombre propio, no la despensa mediterránea.",
+ "$por_que_estas_y_no_sus_hermanas": {
+  "salmon_NFS_y_no_baked_or_broiled": "MEDIDO: `Fish, salmon, NFS` (fdc-2706285) y `Fish, salmon, baked or broiled` (fdc-2706286) traen los MISMOS ocho nutrientes hasta el último decimal (274 kcal · 25,4 proteína · 18,4 grasa · 4,279 saturada · 294 mg sodio), y el input_food de la NFS es literalmente `Fish, salmon, baked or broiled` al 100 %. Son la misma medición con dos nombres: promover las dos habría metido un duplicado intra-fuente del tipo que la DT-9 todavía tiene abiertos (~34 grupos). Entra la NFS, que es la que responde al término pelado `salmon`, y el horno viaja como alias suyo con confianza 1,0 — que no es una aproximación sino una identidad declarada por la propia fuente.",
+  "pez_espada_de_SR_y_no_de_FNDDS": "El `Fish, swordfish` de FNDDS (fdc-2706301, 231 kcal) NO es pez espada: su input_food es 80,7 % pez espada crudo + 14,9 % REBOZADO + 4 % aceite, y por eso arrastra 7,79 g de hidratos donde un pescado tiene 0. Es exactamente el caso que la DT-7 resolvió renombrando `Bacalao` a `Bacalao rebozado`. En España el pez espada se come a la plancha, así que entra la ficha de SR Legacy `Fish, swordfish, cooked, dry heat` (fdc-173704, 172 kcal, 0 hidratos), que es la que mide el plato real. COSTO MEDIDO Y ACEPTADO: con el nombre largo de SR, el término inglés `swordfish` llega por el difuso a 0,18 en vez de los 0,386 que daría la de FNDDS. Se prefiere el número correcto a la confianza alta sobre el número equivocado.",
+  "anguila_igual": "Mismo caso, mismos números de estructura: `Fish, eel` de FNDDS (fdc-2706247) es 80,7 % anguila + 14,9 % rebozado + 4 % aceite. Entra la de SR (fdc-174194, 236 kcal).",
+  "mejillon_de_FNDDS_y_no_de_SR": "Acá se decidió al revés que en el pez espada, y el motivo es que no hay ningún rebozado de por medio: el `Mussels` de FNDDS (fdc-2706350) es 100 % `Mollusks, mussel, blue, raw` con el rendimiento de cocción de la encuesta, sin ingrediente ajeno. Existe también `Mollusks, mussel, blue, cooked, moist heat` en SR (fdc-174217, 172 kcal contra 109). Se eligió la de FNDDS por vocabulario, y está MEDIDO: con la ficha de SR el término inglés `mussels` da SILENCIO (su names.en es `Mollusks, mussel, blue, cooked, moist heat`, y el inglés de una ficha USDA lo escribe el CSV: la curación no lo puede tocar, DT-26); con la de FNDDS da match exacto. La diferencia de número queda declarada: el mejillón cocido de laboratorio pesa 172 kcal/100 g de carne y la ficha de la encuesta 109.",
+  "langosta_y_bogavante_son_DOS": "El `Lobster` de FNDDS (fdc-2706349, 97 kcal) es 100 % `Crustaceans, lobster, northern` — el BOGAVANTE. La langosta de la caldereta es la espinosa, que SR mide aparte (fdc-172009, 143 kcal cocida). Son un 47 % distintas: colgar `langosta` del bogavante habría sido un error de especie con el número al lado. Entran las dos con su nombre.",
+  "cordero_el_corte_y_no_el_promedio": "Para la paletilla al horno entra `Lamb, shoulder, whole (arm and blade), separable lean only, cooked, roasted` (fdc-172499, 204 kcal) y no el `Cordero` genérico que ya estaba (fdc-2705905, 292): el corte es la PALETILLA (shoulder) y el método es el horno, que es lo que nombra el plato. SR trae 37 cortes de cordero asado; se toma el de paletilla magra, que es el que la carnicería española vende como paletilla de lechal.",
+  "cardo_sin_porcion": "`Cardoon, cooked, boiled, drained, with salt` (fdc-169338) es la ÚNICA entrada de este bloque que USDA publica SIN ninguna porción (`food_portion.csv` no tiene ni una fila para ella). Entra con `default_portion_g: 0` y `portion_needs_review: true`, y la porción se la pone la curación en portions.overrides.json, que es el mecanismo que ya existe. El candado de esquema exige `default_portion_g > 0` sobre la ficha FINAL, no sobre la entrada de la selección.",
+  "alcaparras_y_la_DT29": "La DT-29 difirió a v2 las hierbas y especias, y USDA clasifica a la alcaparra en `Spices and Herbs`. Entra igual, y el motivo es que la DT-29 habla de hierbas y especias SECAS sin impacto calórico (albahaca, azafrán, laurel, orégano): la alcaparra es un botón floral encurtido que se come entero, igual que la aceituna —que está en el catálogo desde la card 1.1 con 116 kcal—, y sus 2.348 mg de sodio por 100 g son un dato que el reporte usa. La clasificación del CSV describe el estante del supermercado, no el rol del alimento en el plato.",
+  "capsulas_que_NO_entraron": "`Fish, salmon, baked or broiled` (duplicado exacto de la NFS) · `Fish, swordfish` y `Fish, eel` de FNDDS (rebozados) · `Mollusks, mussel, blue, cooked, moist heat` (nombre inglés inservible) · `Pork sausage` de FNDDS (325 kcal, idénticas a `Sausage, NFS` que ya está en el catálogo) · `Fish, bass, baked or broiled` (161 kcal, idénticas a la `Fish, bass, NFS` que ya está como `Lubina`). Los cinco son duplicados o falsos amigos, y están escritos acá para que nadie los vuelva a proponer sin leer el motivo."
+ },
+ "$huecos_que_seguian_siendo_huecos": {
+  "besugo": "USDA no mide besugo, ni dorada, ni ningún espárido: `porgy`, `sea bream` y `bream` dan CERO coincidencias en los tres datasets crudos. No es que no se haya buscado — se buscó y no está.",
+  "halloumi": "CERO coincidencias en los tres datasets. El `Queso feta` del catálogo (265 kcal) no sirve de gemelo: el halloumi ronda las 321 y es de pasta prensada, no de salmuera fresca.",
+  "perdiz": "CERO coincidencias. Lo que sí hay es codorniz y faisán, que entran con su nombre. Colgar `perdiz` de cualquiera de las dos sería cambiar de especie sobre una ficha que nadie midió contra la perdiz.",
+  "pan_rallado": "CERO coincidencias de `bread crumb` en FNDDS y en SR solo aparece dentro del paréntesis de `Bread, white, commercially prepared (includes soft bread crumbs)`, que es pan. Las recetas que lo necesitan usan `Pan de panadería` y lo declaran en sus caveats, igual que hacía la receta de migas desde la card 1.7.",
+  "harina_de_almortas": "CERO coincidencias (`grass pea`, `Lathyrus`). Es la harina de las gachas manchegas y no existe en ningún dataset.",
+  "requeson": "NO era un hueco: `Cheese, Ricotta` (fdc-2705750) ya estaba en el catálogo desde la card 1.1, con el nombre `Ricota`. Se propuso promoverla y el candado de bloques aditivos lo frenó en la primera corrida — que es exactamente para lo que está. Las recetas de esta card la usan como ingrediente."
+ },
+ "entries": [
+  {
+   "fdc_id": 2706285,
+   "source": "fndds",
+   "description": "Fish, salmon, NFS",
+   "category": "Fish",
+   "n_ingredients": 1,
+   "n_portions": 7,
+   "default_portion_g": 140,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706287,
+   "source": "fndds",
+   "description": "Fish, salmon, grilled",
+   "category": "Fish",
+   "n_ingredients": 4,
+   "n_portions": 7,
+   "default_portion_g": 140,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706292,
+   "source": "fndds",
+   "description": "Fish, salmon, smoked",
+   "category": "Fish",
+   "n_ingredients": 1,
+   "n_portions": 2,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706284,
+   "source": "fndds",
+   "description": "Fish, salmon, raw",
+   "category": "Fish",
+   "n_ingredients": 2,
+   "n_portions": 2,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706350,
+   "source": "fndds",
+   "description": "Mussels",
+   "category": "Shellfish",
+   "n_ingredients": 1,
+   "n_portions": 3,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 173704,
+   "source": "sr_legacy",
+   "description": "Fish, swordfish, cooked, dry heat",
+   "category": "Finfish and Shellfish Products",
+   "n_ingredients": null,
+   "n_portions": 2,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 174194,
+   "source": "sr_legacy",
+   "description": "Fish, eel, mixed species, cooked, dry heat",
+   "category": "Finfish and Shellfish Products",
+   "n_ingredients": null,
+   "n_portions": 5,
+   "default_portion_g": 28.35,
+   "portion_needs_review": true
+  },
+  {
+   "fdc_id": 2706344,
+   "source": "fndds",
+   "description": "Crab",
+   "category": "Shellfish",
+   "n_ingredients": 1,
+   "n_portions": 5,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706349,
+   "source": "fndds",
+   "description": "Lobster",
+   "category": "Shellfish",
+   "n_ingredients": 1,
+   "n_portions": 5,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 172009,
+   "source": "sr_legacy",
+   "description": "Crustaceans, spiny lobster, mixed species, cooked, moist heat",
+   "category": "Finfish and Shellfish Products",
+   "n_ingredients": null,
+   "n_portions": 2,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 174223,
+   "source": "sr_legacy",
+   "description": "Mollusks, squid, mixed species, raw",
+   "category": "Finfish and Shellfish Products",
+   "n_ingredients": null,
+   "n_portions": 2,
+   "default_portion_g": 28.35,
+   "portion_needs_review": true
+  },
+  {
+   "fdc_id": 167744,
+   "source": "sr_legacy",
+   "description": "Mollusks, snail, raw",
+   "category": "Finfish and Shellfish Products",
+   "n_ingredients": null,
+   "n_portions": 1,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2705912,
+   "source": "fndds",
+   "description": "Rabbit",
+   "category": "Lamb, goat, game",
+   "n_ingredients": 2,
+   "n_portions": 2,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706157,
+   "source": "fndds",
+   "description": "Kidney",
+   "category": "Liver and organ meats",
+   "n_ingredients": 2,
+   "n_portions": 4,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706158,
+   "source": "fndds",
+   "description": "Sweetbreads",
+   "category": "Liver and organ meats",
+   "n_ingredients": 2,
+   "n_portions": 3,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706154,
+   "source": "fndds",
+   "description": "Liver, chicken",
+   "category": "Liver and organ meats",
+   "n_ingredients": 4,
+   "n_portions": 4,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706149,
+   "source": "fndds",
+   "description": "Quail, cooked",
+   "category": "Turkey, duck, other poultry",
+   "n_ingredients": 2,
+   "n_portions": 3,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2706150,
+   "source": "fndds",
+   "description": "Pheasant, cooked",
+   "category": "Turkey, duck, other poultry",
+   "n_ingredients": 2,
+   "n_portions": 4,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 172499,
+   "source": "sr_legacy",
+   "description": "Lamb, shoulder, whole (arm and blade), separable lean only, trimmed to 1/4\" fat, choice, cooked, roasted",
+   "category": "Lamb, Veal, and Game Products",
+   "n_ingredients": null,
+   "n_portions": 2,
+   "default_portion_g": 85,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 167812,
+   "source": "sr_legacy",
+   "description": "Pork, fresh, belly, raw",
+   "category": "Pork Products",
+   "n_ingredients": null,
+   "n_portions": 2,
+   "default_portion_g": 113,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2708357,
+   "source": "fndds",
+   "description": "Pasta, cooked",
+   "category": "Pasta, noodles, cooked grains",
+   "n_ingredients": 2,
+   "n_portions": 3,
+   "default_portion_g": 140,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 168894,
+   "source": "sr_legacy",
+   "description": "Wheat flour, white, all-purpose, enriched, bleached",
+   "category": "Cereal Grains and Pasta",
+   "n_ingredients": null,
+   "n_portions": 1,
+   "default_portion_g": 125,
+   "portion_needs_review": true
+  },
+  {
+   "fdc_id": 2709910,
+   "source": "fndds",
+   "description": "Corn, fresh, cooked, no added fat",
+   "category": "Corn",
+   "n_ingredients": 2,
+   "n_portions": 5,
+   "default_portion_g": 83,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2709889,
+   "source": "fndds",
+   "description": "Cabbage, green, cooked, no added fat",
+   "category": "Cabbage",
+   "n_ingredients": 2,
+   "n_portions": 2,
+   "default_portion_g": 75,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2709852,
+   "source": "fndds",
+   "description": "Green beans, fresh, cooked, no added fat",
+   "category": "String beans",
+   "n_ingredients": 2,
+   "n_portions": 4,
+   "default_portion_g": 70,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2709766,
+   "source": "fndds",
+   "description": "Artichoke",
+   "category": "Other vegetables and combinations",
+   "n_ingredients": 1,
+   "n_portions": 4,
+   "default_portion_g": 75,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2707367,
+   "source": "fndds",
+   "description": "Fava beans, cooked",
+   "category": "Beans, peas, legumes",
+   "n_ingredients": 3,
+   "n_portions": 3,
+   "default_portion_g": 92,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 169338,
+   "source": "sr_legacy",
+   "description": "Cardoon, cooked, boiled, drained, with salt",
+   "category": "Vegetables and Vegetable Products",
+   "n_ingredients": null,
+   "n_portions": 0,
+   "default_portion_g": 0,
+   "portion_needs_review": true
+  },
+  {
+   "fdc_id": 2709808,
+   "source": "fndds",
+   "description": "Summer squash, green, raw",
+   "category": "Other vegetables and combinations",
+   "n_ingredients": 1,
+   "n_portions": 4,
+   "default_portion_g": 58,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 172238,
+   "source": "sr_legacy",
+   "description": "Capers, canned",
+   "category": "Spices and Herbs",
+   "n_ingredients": null,
+   "n_portions": 1,
+   "default_portion_g": 8.6,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2707587,
+   "source": "fndds",
+   "description": "Tahini",
+   "category": "Nuts and seeds",
+   "n_ingredients": 1,
+   "n_portions": 3,
+   "default_portion_g": 28,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2709830,
+   "source": "fndds",
+   "description": "Greek Salad, no dressing",
+   "category": "Vegetable dishes",
+   "n_ingredients": 10,
+   "n_portions": 2,
+   "default_portion_g": 105,
+   "portion_needs_review": false
+  },
+  {
+   "fdc_id": 2710049,
+   "source": "fndds",
+   "description": "Eggplant dip",
+   "category": "Dips, gravies, other sauces",
+   "n_ingredients": 8,
+   "n_portions": 3,
+   "default_portion_g": 60,
+   "portion_needs_review": false
+  }
+ ]
+}

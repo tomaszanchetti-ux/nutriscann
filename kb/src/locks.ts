@@ -194,6 +194,40 @@ export const GOLDEN_CHECKS: GoldenCheck[] = [
       "`tortilla, corn` resolvía a la de trigo (fdc-2707822, 262 kcal) porque esta ficha no " +
       "estaba en el catálogo.",
   },
+  {
+    fdc_id: 2706284,
+    label: "Salmón crudo (FNDDS)",
+    reference:
+      "salmón crudo ≈ 188 kcal/100 g — la media ponderada de las DOS fichas de SR " +
+      "Legacy que el propio FNDDS declara como su composición: 75 % `salmon, " +
+      "Atlantic, farmed, raw` (fdc-175167, 208) + 25 % `salmon, pink, raw` " +
+      "(fdc-175138, 127) = 187,8",
+    expected: { kcal: 188, protein_g: 20.44, fat_g: 11.16 },
+    note:
+      "Entra con la card 6.4, y es el dorado del hueco de proteína más caro del censo: " +
+      "hasta hoy NO había ninguna ficha de salmón en el catálogo. La referencia se calcula " +
+      "desde SR Legacy, un dataset del que este alimento NO toma ni un número (su kcal " +
+      "tiene provenance usda_fndds), así que el caso cruza dos fuentes y no se compara " +
+      "contra sí mismo. Se eligió el salmón CRUDO y no la ficha emblema `Salmón` " +
+      "(fdc-2706285, 274 kcal) justamente por eso: la NFS no tiene referencia " +
+      "independiente al 15 %, porque FNDDS le aplica su propio rendimiento de cocción " +
+      "más un 4 % de aceite.",
+  },
+  {
+    fdc_id: 2708357,
+    label: "Pasta cocida (FNDDS)",
+    reference:
+      "pasta cocida ≈ 158 kcal/100 g — `Pasta, cooked, enriched, without added salt` " +
+      "de SR Legacy (fdc-169737), que NO está en el catálogo",
+    expected: { kcal: 157, protein_g: 5.76, carbs_g: 30.68 },
+    note:
+      "Entra con la card 6.4 y destraba el silencio que el golden set arrastraba desde la " +
+      "card 6.1: `spaghetti, cooked` no tenía a dónde ir porque lo único que había era " +
+      "`Pasta seca enriquecida` (371 kcal, CRUDA) y `Pasta con salsa`. La circularidad " +
+      "está declarada: el input_food de esta ficha ES la de SR, así que el caso verifica " +
+      "que el pipeline leyó la columna correcta —que es para lo que están los dorados—, " +
+      "no que USDA acierte.",
+  },
 ];
 
 const isNumber = (value: unknown): value is number =>

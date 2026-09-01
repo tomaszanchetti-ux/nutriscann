@@ -243,14 +243,36 @@ que el resto de las porciones sigue declarando su origen USDA.
 
 ## Estado
 
-**Las cuatro capas en pie (card 6.2, 01/09/2026).** El build compila **1.036**
-alimentos (707 FNDDS + 314 SR Legacy + 6 manuales + 9 recetas compuestas) en la
-versión **3.2.0**, con los seis candados en verde, la curación en español
+**Las cuatro capas en pie (card 6.4, 01/09/2026).** El build compila **1.112**
+alimentos (730 FNDDS + 324 SR Legacy + 6 manuales + 52 recetas compuestas) en la
+versión **3.4.0**, con los seis candados en verde, la curación en español
 completa y las transformaciones de cocción medidas de los propios datasets. La
 capa 4 es `seed/` (card 1.5): la publicación idempotente a Firestore, con su
 propio README.
 
-Qué cambió respecto de la 3.1.0 (1.022 alimentos):
+Qué cambió respecto de la 3.3.0 (1.036 alimentos):
+
+- **Card 6.4 — las fichas que faltaban del censo mediterráneo (DT-33).** Setenta
+  y seis alimentos nuevos: **33 promovidos de USDA** (`selection/dt33.v1.json`)
+  y **43 derivados por receta compuesta** (`curation/recipes.foods.json`). Tapa
+  los siete huecos que la DT-33 nombraba uno por uno —salmón, mejillón, pez
+  espada, pasta cocida simple, harina de trigo, maíz dulce y repollo cocido sin
+  grasa— y cierra 43 de los 48 platos que el censo de la 6.3 había dejado sin
+  ficha. **Es MENOR porque es aditivo en el sentido fuerte**: no sale ninguna
+  ficha, no cambia ningún id y las 1.036 anteriores salen byte por byte iguales.
+- **La card abrió los datasets crudos, que la 6.3 había declarado fuera de su
+  alcance**, y ahí estaba la mitad de la respuesta: seis de los siete huecos
+  centrales estaban medidos por USDA desde siempre. Lo que faltaba era la
+  promoción, no el dato.
+- Dos casos dorados nuevos: **salmón crudo** (188 kcal, contrastado contra la
+  media ponderada de las dos fichas de SR que FNDDS declara como su composición)
+  y **pasta cocida** (157, contra la ficha de SR que no está en el catálogo).
+- Cinco platos quedan bloqueados y cada uno dice qué se buscó: `Calçots` y
+  `Torrezno de Soria` por falta de rendimiento medido, `Perdices estofadas`,
+  `Besugo a la espalda` y `Ensalada Halloumi` por cero coincidencias de la
+  especie o del ingrediente en los tres datasets (DT-35).
+
+Y antes, respecto de la 3.1.0 (1.022 alimentos):
 
 - **Card 6.2 — el lote de fichas de la DT-27.** Catorce alimentos que ya estaban
   en los datasets declarados y que el golden set de 30 midió como huecos reales:

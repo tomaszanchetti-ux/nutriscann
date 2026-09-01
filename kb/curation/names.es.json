@@ -5160,5 +5160,203 @@
    "Porotos en salsa de tomate",
    "Frijoles horneados"
   ]
+ },
+
+ "2706285": {
+  "name": "Salmón",
+  "aliases": [
+   "Salmón al horno"
+  ]
+ },
+ "2706287": {
+  "name": "Salmón a la plancha",
+  "aliases": [
+   "Salmón a la parrilla"
+  ]
+ },
+ "2706292": {
+  "name": "Salmón ahumado",
+  "aliases": []
+ },
+ "2706284": {
+  "name": "Salmón crudo",
+  "aliases": [
+   "Lomo de salmón crudo"
+  ]
+ },
+ "2706350": {
+  "name": "Mejillones",
+  "aliases": [
+   "Mejillón",
+   "Mejillones al vapor",
+   "Choritos"
+  ]
+ },
+ "173704": {
+  "name": "Pez espada a la plancha",
+  "aliases": [
+   "Emperador a la plancha"
+  ]
+ },
+ "174194": {
+  "name": "Anguila a la plancha",
+  "aliases": []
+ },
+ "2706344": {
+  "name": "Cangrejo",
+  "aliases": [
+   "Carne de cangrejo"
+  ]
+ },
+ "2706349": {
+  "name": "Bogavante",
+  "aliases": []
+ },
+ "172009": {
+  "name": "Langosta cocida",
+  "aliases": []
+ },
+ "174223": {
+  "name": "Calamar crudo",
+  "aliases": [
+   "Chipirón crudo"
+  ]
+ },
+ "167744": {
+  "name": "Caracoles crudos",
+  "aliases": []
+ },
+ "2705912": {
+  "name": "Conejo guisado",
+  "aliases": [
+   "Conejo estofado"
+  ]
+ },
+ "2706157": {
+  "name": "Riñones",
+  "aliases": [
+   "Riñón"
+  ]
+ },
+ "2706158": {
+  "name": "Mollejas",
+  "aliases": [
+   "Molleja"
+  ]
+ },
+ "2706154": {
+  "name": "Hígado de pollo",
+  "aliases": [
+   "Higaditos de pollo"
+  ]
+ },
+ "2706149": {
+  "name": "Codorniz",
+  "aliases": [
+   "Codornices"
+  ]
+ },
+ "2706150": {
+  "name": "Faisán",
+  "aliases": []
+ },
+ "172499": {
+  "name": "Paletilla de cordero al horno",
+  "aliases": [
+   "Paletilla de cordero asada"
+  ]
+ },
+ "167812": {
+  "name": "Panceta cruda",
+  "aliases": [
+   "Tocino fresco crudo"
+  ]
+ },
+ "2708357": {
+  "name": "Pasta cocida",
+  "aliases": [
+   "Pasta hervida",
+   "Espaguetis cocidos",
+   "Macarrones cocidos",
+   "Fideos cocidos"
+  ]
+ },
+ "168894": {
+  "name": "Harina de trigo",
+  "aliases": [
+   "Harina de trigo refinada",
+   "Harina blanca"
+  ]
+ },
+ "2709910": {
+  "name": "Maíz fresco cocido sin grasa",
+  "aliases": [
+   "Maíz dulce cocido",
+   "Maíz tierno cocido"
+  ]
+ },
+ "2709889": {
+  "name": "Repollo verde cocido sin grasa",
+  "aliases": [
+   "Col verde cocida sin grasa",
+   "Repollo cocido sin grasa",
+   "Col cocida sin grasa"
+  ]
+ },
+ "2709852": {
+  "name": "Judías verdes frescas cocidas sin grasa",
+  "aliases": [
+   "Judías verdes cocidas sin grasa"
+  ]
+ },
+ "2709766": {
+  "name": "Alcachofa cocida",
+  "aliases": [
+   "Alcachofas cocidas",
+   "Alcachofas hervidas",
+   "Corazones de alcachofa"
+  ]
+ },
+ "2707367": {
+  "name": "Habas cocidas con sal y grasa",
+  "aliases": [
+   "Habas guisadas"
+  ]
+ },
+ "169338": {
+  "name": "Cardo cocido",
+  "aliases": [
+   "Cardos cocidos"
+  ]
+ },
+ "2709808": {
+  "name": "Calabacín crudo",
+  "aliases": [
+   "Zapallito crudo"
+  ]
+ },
+ "172238": {
+  "name": "Alcaparras",
+  "aliases": [
+   "Alcaparra"
+  ]
+ },
+ "2707587": {
+  "name": "Tahini",
+  "aliases": [
+   "Pasta de sésamo",
+   "Tahina"
+  ]
+ },
+ "2709830": {
+  "name": "Ensalada griega",
+  "aliases": []
+ },
+ "2710049": {
+  "name": "Crema de berenjena",
+  "aliases": [
+   "Baba ganoush",
+   "Baba ghanoush"
+  ]
  }
 }

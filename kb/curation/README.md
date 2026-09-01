@@ -572,7 +572,8 @@ de oro pregunta de qué está hecho el gemelo; este caso agrega que **también h
 que mirar cuánto mide**, porque un gemelo que se equivoca por más de la mitad no
 es un gemelo aunque su lista de ingredientes cierre.
 
-Las cinco guardas vigentes están en `guardas.vocabulario.json` (`guardas-v2`),
+Las **veinte** guardas vigentes están en `guardas.vocabulario.json` (5 con la
+card 2.7, 7 con la 6.2, 17 con la 6.3 y 20 con la 6.4),
 cada una con el número que la justifica, y hay dos tests que las fijan: uno
 comprueba que sigan declaradas —el candado 0 exige que el archivo exista, no que
 traiga *estas* filas— y otro construye la ficha con el alias prohibido y verifica
@@ -669,3 +670,51 @@ un factor, que además perdería ese sodio.
 Una receta que no se puede derivar **no se saltea en silencio**: rompe el build
 nombrando el ingrediente que falta. Ya pasó en la primera corrida, y fue así como
 se supo exactamente qué seis ingredientes sueltos había que promover.
+
+### La ola de 43 recetas de la card 6.4, y las cuatro reglas que salieron de ahí
+
+La card 1.7 dejó nueve recetas; la 6.4 sumó **43** de una vez, para cerrar los
+platos que el censo mediterráneo había dejado sin ficha. Escribir cuarenta y tres
+seguidas obligó a fijar cuatro cosas que hasta ahora estaban implícitas.
+
+**1. El agua que se evapora NO se declara, y eso es un número, no un descuido.**
+La tortillita de camarones se bate con unos 200 g de agua que se van enteros en
+la freidora. Declararla habría bajado la ficha de 278 a 192 kcal/100 g —un 31 %
+por debajo— sobre un plato que ronda las 350. La regla ya estaba escrita («el
+agua que se evapora la representa el factor del método»); lo que faltaba era
+aplicarla al revés: **si el agua se va, no entra la línea.** El agua que se queda
+—el caldo de un pote, el almíbar de un tocinillo, la papilla de unas gachas— sí
+entra, apuntando a `fdc-2710707`.
+
+**2. Cuando la receta declara su aceite, el 6,5 % de `frito` se declara TAMBIÉN,
+y como segunda línea.** La tabla dice que `frito` es para las frituras que no
+declaran su aceite; el pestiño declara el de la masa y además absorbe el de la
+sartén. La salida no es elegir una de las dos grasas: es escribir las dos, con el
+método en `mezclado` y la segunda línea calculada como el 6,5 % del peso de la
+masa — que es la **mediana medida** sobre 117 platos `fried` de FNDDS, no un
+número elegido. El tumbet usa el mismo mecanismo para la berenjena y el
+calabacín. Deja las dos grasas visibles en la receta en vez de esconder una
+dentro de un factor.
+
+**3. Un ingrediente que ya trae su cocción NO se acompaña de su caldo.** El arroz
+a banda, el arroz al caldero y la fideuá se cuecen EN el fumet, y las fichas
+`Arroz blanco cocido` y `Pasta cocida` ya traen esa agua adentro. Sumar el caldo
+aparte la contaría dos veces y bajaría la densidad del plato. La regla se lee al
+revés de la anterior y es la misma: **el agua entra una sola vez, donde de verdad
+está.**
+
+**4. Las reservas se nombran por su TIPO, y son tres.** Escribirlas con la misma
+etiqueta hace que se puedan contar y buscar:
+
+| Etiqueta | Qué declara | Ejemplo |
+|---|---|---|
+| `RESERVA DE ESPECIE` | La ficha mide otro animal o planta | El marmitako usa `Atún cocido` porque USDA no mide bonito |
+| `RESERVA DE INGREDIENTE` | Falta el ingrediente o se sustituye | Las gachas usan harina de trigo: la de almortas no existe en ningún dataset |
+| `RESERVA DEL RENDIMIENTO` | El factor aplicado es el más cercano, no el propio | La ensaimada usa `horneado_masa`, medido sobre masa quebrada |
+
+Y una regla de honestidad que la card estrenó y conviene repetir: cuando la ficha
+derivada queda **por debajo** de lo que se sabe del plato real, se dice el número
+y se dice cuánto —«la ficha da ~278 y la tortillita real ronda las 350»— en vez de
+mover un gramo hasta que cierre. Ese ajuste es exactamente el defecto por el que
+la arepa descartó su receta en la card 6.2 y por el que la pulpa de açaí sigue
+bloqueada.

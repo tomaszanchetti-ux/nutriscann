@@ -42,7 +42,8 @@ SELECTION = CURATION.parent / "selection/selection.v1.json"
 BLOQUES = [CURATION.parent / "selection/regional.v1.json",
            CURATION.parent / "selection/es.sweep.v1.json",
            CURATION.parent / "selection/ingredientes.v1.json",
-           CURATION.parent / "selection/dt27.v1.json"]
+           CURATION.parent / "selection/dt27.v1.json",
+           CURATION.parent / "selection/dt33.v1.json"]
 EXCLUSIONES = CURATION.parent / "selection/exclusions.dt7.json"
 CONFIANZAS = (1, 0.8, 0.6, 0.5)
 COVERAGE = [CURATION.parent / "selection/regional.coverage.json",

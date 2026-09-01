@@ -1,13 +1,18 @@
 /**
  * Los candados de la composición on-demand.
  *
- * EL TEST QUE VALE ES EL PRIMERO: las nueve recetas del catálogo se vuelven a
+ * EL TEST QUE VALE ES EL PRIMERO: las 52 recetas del catálogo se vuelven a
  * componer EN RUNTIME, con los mismos ingredientes y el mismo método, y tienen
  * que dar el mismo `per_100g` que el build escribió en la ficha. Es la única
  * forma de demostrar que la matemática del motor y la del catálogo son LA MISMA
  * —no una reimplementación parecida— y de que la copia de `transforms.ts` no se
  * separó del original. Si mañana alguien toca la fórmula de un lado, nueve
  * fichas dejan de reproducirse y el test lo dice con nombre y apellido.
+ *
+ * Con la card 6.4 pasaron de nueve a 52, y eso lo vuelve bastante más fuerte: las
+ * 43 recetas nuevas de platos españoles y mediterráneos se recomponen en runtime
+ * con los mismos gramos y el mismo método, y dan el per_100g exacto que el build
+ * escribió. La única línea que la card tocó de este archivo es el CONTEO.
  */
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
@@ -23,8 +28,9 @@ const index = indiceReal();
 describe("recomponer las recetas del catálogo", () => {
   const recetas = catalogoReal().foods.filter((f) => f.receta !== undefined);
 
-  it("el catálogo trae las nueve recetas compuestas", () => {
-    assert.equal(recetas.length, 9);
+  it("el catálogo trae las 52 recetas compuestas", () => {
+    // 9 con la card 1.7, 52 con la card 6.4.
+    assert.equal(recetas.length, 52);
   });
 
   for (const ficha of recetas) {

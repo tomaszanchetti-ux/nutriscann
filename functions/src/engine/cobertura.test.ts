@@ -1,5 +1,5 @@
 /**
- * EL CANDADO DE COBERTURA MEDITERRÁNEA — card 6.3.
+ * EL CANDADO DE COBERTURA MEDITERRÁNEA — card 6.3, endurecido por la card 6.4.
  *
  * Corre el censo de `kb/cobertura/censo.json` contra el catálogo real y falla si
  * un plato que alguna vez estuvo cubierto deja de estarlo.
@@ -15,12 +15,16 @@
  *      condición dura: no es "sigue habiendo match", es "sigue siendo ESTE".
  *   2. Ninguno de esos platos BAJA de confianza contra la que el censo grabó.
  *      Puede subir todo lo que quiera.
- *   3. Los cinco platos y los nueve ingredientes que el censo marcó
- *      `ficha_equivocada` siguen marcados: si alguien los arregla, tiene que
+ *   3. Los platos y los ingredientes que el censo marcó `ficha_equivocada`
+ *      siguen cayendo donde el censo dice: si alguien los arregla, tiene que
  *      volver a correr el censo y que el número del resumen lo diga. Un arreglo
  *      silencioso es tan malo como una regresión silenciosa, porque deja el
- *      censo mintiendo.
+ *      censo mintiendo. (Del lado de los PLATOS esta lista quedó VACÍA con la
+ *      card 6.4: los cinco tienen ficha propia, y su reparación la vigila el
+ *      test de más abajo, con los pares escritos a mano.)
  *   4. Los ingredientes `ok` no cambian de ficha (misma condición dura que 1).
+ *   5. Desde la card 6.4: los cinco reparados y los nueve huecos centrales de la
+ *      DT-33 resuelven a la ficha que se les dio, con el par escrito a mano.
  *
  * QUÉ NO VIGILA, declarado a propósito: NADA de lo que está en `ausente_ficha`,
  * `descomponible` ni `confianza_injusta`. Esos son huecos ABIERTOS y el trabajo
@@ -120,7 +124,9 @@ test("el censo se midió contra el catálogo que hay hoy", () => {
 
 test("ningún plato conquistado pierde su ficha ni baja de confianza", () => {
   const cubiertos = censo.platos.filter((f) => f.clasificacion === "ok");
-  assert.ok(cubiertos.length >= 38, `el censo tenía 38 platos cubiertos y ahora declara ${cubiertos.length}`);
+  // El piso SUBE con cada card que conquista cobertura, y nunca baja: 38 con la
+  // card 6.3, 85 con la 6.4 (33 fichas nuevas de USDA y 43 recetas compuestas).
+  assert.ok(cubiertos.length >= 85, `el censo tenía 85 platos cubiertos y ahora declara ${cubiertos.length}`);
 
   const perdidos: string[] = [];
   const bajaron: string[] = [];
@@ -141,7 +147,8 @@ test("ningún plato conquistado pierde su ficha ni baja de confianza", () => {
 
 test("ningún ingrediente conquistado cambia de ficha", () => {
   const cubiertos = censo.ingredientes.filter((f) => f.clasificacion === "ok");
-  assert.ok(cubiertos.length >= 37, `el censo tenía 37 ingredientes cubiertos, ahora ${cubiertos.length}`);
+  // Mismo piso que sube y no baja: 37 con la card 6.3, 45 con la 6.4.
+  assert.ok(cubiertos.length >= 45, `el censo tenía 45 ingredientes cubiertos, ahora ${cubiertos.length}`);
 
   const perdidos: string[] = [];
   for (const fila of cubiertos) {
@@ -210,5 +217,47 @@ test("los platos que la card 6.3 sacó del silencio siguen teniendo voz", () => 
     const hoy = confianzaVisible(plato);
     assert.notEqual(hoy, null, `"${plato}" volvió al silencio`);
     assert.equal((hoy as { id: string }).id, esperado, `"${plato}" cambió de ficha`);
+  }
+});
+
+test("los cinco `ficha_equivocada` de la card 6.3 ya no caen donde caían", () => {
+  // La card 6.4 les dio a los cinco su PROPIA ficha, derivada por receta
+  // compuesta. Este test escribe el par término/ficha a mano —no lo lee del
+  // censo— y además nombra la ficha EQUIVOCADA de la que venían: si mañana
+  // alguien borra la receta, el término vuelve ahí y el test lo dice con el
+  // nombre del error puesto, no con un id suelto.
+  const reparados: Array<[string, string, string]> = [
+    ["Tortilla de camarones", "receta-tortilla-de-camarones", "caía en `Tortilla de trigo` (fdc-2707822, 262 kcal)"],
+    ["Cocochas en salsa", "receta-cocochas-en-salsa", "caía en `Salsa mexicana` (fdc-2709736, 34 kcal)"],
+    ["Pastel de cabracho", "receta-pastel-de-cabracho", "caía en `Tarta` (fdc-2707993, 296 kcal)"],
+    ["Gazpachos manchegos o galianos", "receta-gazpachos-manchegos", "caía en `Gazpacho` (fdc-2710106, 26 kcal)"],
+    ["Leche frita", "receta-leche-frita", "caía en `Leche` (fdc-2705384, 52 kcal)"],
+  ];
+  for (const [termino, esperado, venia] of reparados) {
+    const hoy = confianzaVisible(termino);
+    assert.notEqual(hoy, null, `"${termino}" se quedó sin match; ${venia}`);
+    assert.equal((hoy as { id: string }).id, esperado, `"${termino}" — ${venia}`);
+  }
+});
+
+test("los huecos centrales de la DT-33 siguen tapados", () => {
+  // Los siete que la DT-33 nombraba uno por uno como «no hay NINGUNA ficha».
+  // Van escritos con su término y su ficha para que el candado sea sobre el
+  // MOTOR y no sobre el censo, que se regenera solo.
+  const dt33: Array<[string, string, string]> = [
+    ["salmón", "fdc-2706285", "no había ninguna ficha de salmón en las 1.036"],
+    ["salmon", "fdc-2706285", "el mismo hueco por la puerta del inglés"],
+    ["mejillones", "fdc-2706350", "no había ninguna ficha de mejillón"],
+    ["mussels", "fdc-2706350", "el mismo hueco en inglés"],
+    ["pez espada", "fdc-173704", "no había ninguna ficha de pez espada"],
+    ["pasta cocida", "fdc-2708357", "solo había `Pasta seca enriquecida` (cruda) y `Pasta con salsa`"],
+    ["harina de trigo", "fdc-168894", "había harina de papa, arroz, soja, garbanzo, mijo, arrurruz, malta y trigo sarraceno — de trigo no"],
+    ["maíz dulce cocido", "fdc-2709910", "cero coincidencias de maíz dulce en el catálogo (DT-26 lo mandó acá)"],
+    ["repollo verde cocido sin grasa", "fdc-2709889", "solo estaba el de grasa añadida, 55 kcal contra 32"],
+  ];
+  for (const [termino, esperado, motivo] of dt33) {
+    const hoy = confianzaVisible(termino);
+    assert.notEqual(hoy, null, `"${termino}" volvió al silencio: ${motivo}`);
+    assert.equal((hoy as { id: string }).id, esperado, `"${termino}" — ${motivo}`);
   }
 });

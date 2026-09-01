@@ -179,6 +179,62 @@
   "  `Pollo asado`, en cambio, NO se emite: ahí sí la ficha correcta sería el pollo entero",
   "  (fdc-2705935) y mandar un pollo asado a una pechuga sería el error de la costilla."
  ],
+ "$card_6_4_dt33": [
+  "01/09/2026 — las reservas del lote de fichas de la DT-33. TODAS son sobre fichas NUEVAS:",
+  "esta card no tocó ni un alias de una ficha preexistente, a propósito, porque su regla de",
+  "aditividad era estricta y el diff tenía que poder leerse de un vistazo.",
+  "",
+  "0,8 — GEMELO FUERTE. Es el peldaño del `Bacalao` sobre `Bacalao al vapor`: la ficha ES la",
+  "especie y lo único que el término corto no dice es la preparación, que además es la más",
+  "vista en España.",
+  "  `Pez espada` y `Emperador` -> fdc-173704 (SR, cooked dry heat). El emperador es el mismo",
+  "    pez con el nombre de pescadería.",
+  "  `Anguila` -> fdc-174194 (SR, cooked dry heat).",
+  "  `Langosta` -> fdc-172009 (langosta espinosa cocida). El bogavante tiene ficha propia",
+  "    (fdc-2706349, 97 kcal): son especies distintas y un 47 % de diferencia, así que el",
+  "    término no se reparte entre las dos.",
+  "  `Conejo` -> fdc-2705912. La ficha es conejo GUISADO (99,2 % `rabbit, cooked, stewed`).",
+  "  `Habas` -> fdc-2707367. La ficha lleva un 6,5 % de aceite declarado en su input_food,",
+  "    que es la reserva; es el mismo caso que `Lentejas` 0,8 de la card 2.7.",
+  "  `Paletilla de cordero` -> fdc-172499. La reserva es el desgrase: SR mide el corte",
+  "    `separable lean only` (204 kcal) y la paletilla se come con su grasa.",
+  "",
+  "0,6 — GEMELO CON RESERVA: falta un ingrediente que mueve un macro, o cambia el corte.",
+  "  `Caracoles` -> fdc-167744. La ficha es caracol CRUDO y el plato va cocido con aceite.",
+  "  `Centollo` y `Buey de mar` -> fdc-2706344. Cambia la especie dentro de la familia: la",
+  "    ficha es cangrejo azul cocido al vapor (83 kcal), sin ingrediente ajeno.",
+  "  `Salmón marinado` -> fdc-2706292 (ahumado, 117 kcal). Curado en sal y azúcar contra",
+  "    curado y ahumado: la técnica cambia, la especie y el corte no.",
+  "  `Chipirones` -> fdc-174223. La ficha es calamar CRUDO; el chipirón es el mismo animal",
+  "    pequeño y casi siempre llega a la mesa cocinado.",
+  "  `Lechazo` y `Cordero lechal al horno` -> fdc-172499. El cordero de SR es de mayor edad",
+  "    que un lechal de Castilla, que es más magro y más tierno.",
+  "  `Ensalada griega` -> fdc-2709830, y es un HOMÓNIMO: la ficha ya se llama así, y el alias",
+  "    con su confianza es el único lugar donde la reserva se puede decir (la convención del",
+  "    gazpacho). La reserva está medida en el input_food: la ensalada griega de USDA es",
+  "    51,2 % LECHUGA ROMANA, más apio (6,1 %) y anchoa (3,1 %); la horiatiki que se come en",
+  "    el Mediterráneo no lleva ninguna de las tres.",
+  "",
+  "0,5 — GEMELO POBRE: sirve como estimación, no como número.",
+  "  `Chopitos` -> fdc-174223. El chopito de la barra va REBOZADO Y FRITO y la ficha es",
+  "    calamar crudo (92 kcal contra las ~234 de `Calamares rebozados`). Se emite igual y en",
+  "    el peldaño más bajo porque el silencio mandaba el término al difuso, donde caía peor;",
+  "    el 0,5 dice exactamente lo que hay que decir.",
+  "  `Habas tiernas` -> fdc-2707367. La ficha es haba SECA rehidratada y cocida (161 kcal) y",
+  "    el haba tierna de primavera ronda las 70: el cambio de estado mueve el número a la",
+  "    mitad. Se emite en el peldaño más bajo por eso mismo.",
+  "",
+  "LO QUE NO SE EMITIÓ, con el motivo:",
+  "  `Perdiz` sobre la codorniz o el faisán. Es otra especie y nadie la midió contra",
+  "    ninguna de las dos: el 0,5 diría 'se parece' y lo cierto es 'no lo sabemos'.",
+  "  `Txangurro` sobre el cangrejo. El txangurro a la donostiarra no es carne de cangrejo:",
+  "    es carne de centollo con sofrito y gratinada. Tiene su propia receta compuesta.",
+  "  `Salmón` sobre `Salmón a la plancha` o `Salmón crudo`: el término pelado ya es el NOMBRE",
+  "    de fdc-2706285, con confianza 1,0.",
+  "  `Conejo al ajillo` sobre `Conejo guisado`. Se emitió a 0,6 en el primer borrador y se",
+  "    RETIRÓ al escribir la receta compuesta: el ajillo es aceite, y una receta que lo",
+  "    declara vale más que un alias que avisa que falta. La ficha es `receta-conejo-al-ajillo`."
+ ],
  "aliases": {
   "167987": [
    {
@@ -642,6 +698,97 @@
    {
     "alias": "Pollo a la plancha",
     "confidence": 0.8
+   }
+  ],
+
+  "173704": [
+   {
+    "alias": "Pez espada",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Emperador",
+    "confidence": 0.8
+   }
+  ],
+  "174194": [
+   {
+    "alias": "Anguila",
+    "confidence": 0.8
+   }
+  ],
+  "172009": [
+   {
+    "alias": "Langosta",
+    "confidence": 0.8
+   }
+  ],
+  "2706344": [
+   {
+    "alias": "Centollo",
+    "confidence": 0.6
+   },
+   {
+    "alias": "Buey de mar",
+    "confidence": 0.6
+   }
+  ],
+  "167744": [
+   {
+    "alias": "Caracoles",
+    "confidence": 0.6
+   }
+  ],
+  "2705912": [
+   {
+    "alias": "Conejo",
+    "confidence": 0.8
+   }
+  ],
+  "2707367": [
+   {
+    "alias": "Habas",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Habas tiernas",
+    "confidence": 0.5
+   }
+  ],
+  "174223": [
+   {
+    "alias": "Chipirones",
+    "confidence": 0.6
+   },
+   {
+    "alias": "Chopitos",
+    "confidence": 0.5
+   }
+  ],
+  "2706292": [
+   {
+    "alias": "Salmón marinado",
+    "confidence": 0.6
+   }
+  ],
+  "172499": [
+   {
+    "alias": "Paletilla de cordero",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Lechazo",
+    "confidence": 0.6
+   },
+   {
+    "alias": "Cordero lechal al horno",
+    "confidence": 0.6
+   }
+  ],
+  "2709830": [
+   {
+    "alias": "Ensalada griega",
+    "confidence": 0.6
    }
   ]
  }

@@ -36,7 +36,7 @@ test("el pipeline compila el catálogo y pasa los seis candados", { timeout: 600
   assert.deepEqual(first.stats.recipeFailures, [], "ninguna receta puede quedar sin derivar");
   assert.ok(first.stats.bySource.usda_fndds >= MINIMUM_BY_SOURCE.usda_fndds);
   assert.ok(first.stats.bySource.usda_sr_legacy >= MINIMUM_BY_SOURCE.usda_sr_legacy);
-  assert.match(first.catalog.kb_version, /^3\.3\.0\+[0-9a-f]{8}$/);
+  assert.match(first.catalog.kb_version, /^3\.4\.0\+[0-9a-f]{8}$/);
 
   const second = await runPipeline();
   const idempotence = lockIdempotence(first.json, second.json);
