@@ -27,6 +27,11 @@
  * la máquina de fases. Ver el comentario de `seccion`, abajo. La pestaña
  * "Escanear" devuelve a la sección tal como se la dejó: si había un reporte en
  * pantalla, el reporte sigue ahí, con su propio "Escanear otro plato".)
+ *
+ * (Card 3.4: y una CUARTA sección que ni siquiera está en la barra —los Términos
+ * y Condiciones—, a la que se entra por el enlace del pie desde cualquiera de
+ * las otras tres y de la que se vuelve exactamente a donde se estaba. Mismo
+ * mecanismo: es una sección más, y el circuito del escaneo sigue intacto abajo.)
  */
 import { useEffect, useRef, useState } from "react";
 
@@ -37,6 +42,7 @@ import { PantallaMensaje, PantallaNoEsComida } from "./components/PantallaMensaj
 import { PantallaPerfil } from "./components/PantallaPerfil";
 import { PantallaPremium } from "./components/PantallaPremium";
 import { PantallaReporte } from "./components/PantallaReporte";
+import { PantallaTerminos } from "./components/PantallaTerminos";
 import { PieDeDiagnostico } from "./components/PieDeDiagnostico";
 import { analizarFoto, ErrorDeAnalisis } from "./lib/api";
 import { cargarConfig, CONFIG_DE_ARRANQUE, type ConfigDeLaApp } from "./lib/config";
@@ -78,6 +84,18 @@ export default function App() {
    * como se lo dejó, y el flujo foto→escaneo→reporte no cambió en una línea.
    */
   const [seccion, setSeccion] = useState<Seccion>("escaneo");
+  /**
+   * A DÓNDE DEVUELVE EL "VOLVER" DE LOS TÉRMINOS (card 3.4).
+   *
+   * A los términos se entra desde el pie, que está en las cuatro pantallas: se
+   * puede llegar desde el reporte, desde Perfil o desde Premium. Mandar siempre
+   * a "escaneo" al salir castigaría al que estaba leyendo los planes y quiso
+   * comprobar la letra chica antes de decidir.
+   *
+   * Es un `ref` y no un `useState` a propósito: nadie se dibuja distinto por su
+   * valor, así que no hace falta un re-render cuando cambia.
+   */
+  const seccionDeVuelta = useRef<Seccion>("escaneo");
   const [vistaPrevia, setVistaPrevia] = useState<string | null>(null);
   /** La URL `blob:` viva, para revocarla y no dejar la foto colgada en memoria. */
   const blobActual = useRef<string | null>(null);
@@ -170,6 +188,12 @@ export default function App() {
     }
   }
 
+  /** Entra a los términos recordando desde dónde, para que "Volver" vuelva ahí. */
+  function abrirTerminos() {
+    seccionDeVuelta.current = seccion;
+    setSeccion("terminos");
+  }
+
   /**
    * La barra se esconde MIENTRAS SE ESCANEA, y solo entonces. Esos segundos son
    * el único momento en que la app está haciendo algo que el usuario no puede
@@ -189,6 +213,10 @@ export default function App() {
         )}
 
         {seccion === "premium" && <PantallaPremium onVolver={() => setSeccion("escaneo")} />}
+
+        {seccion === "terminos" && (
+          <PantallaTerminos onVolver={() => setSeccion(seccionDeVuelta.current)} />
+        )}
 
         {/* EL CIRCUITO DEL ESCANEO, ENTERO Y SIN TOCAR (card 3.2). Lo único que
             cambió es que ahora vive dentro de su sección: las cinco fases, sus
@@ -257,7 +285,11 @@ export default function App() {
 
       {mostrarNavegacion && <BarraDeNavegacion activa={seccion} onIr={setSeccion} />}
 
-      <PieDeDiagnostico origenDeConfig={config.origen} disclaimer={config.copy.disclaimer} />
+      <PieDeDiagnostico
+        origenDeConfig={config.origen}
+        disclaimer={config.copy.disclaimer}
+        onVerTerminos={seccion === "terminos" ? null : abrirTerminos}
+      />
     </div>
   );
 }

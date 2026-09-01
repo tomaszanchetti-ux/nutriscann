@@ -12,7 +12,17 @@
  */
 import { COPY_NAVEGACION } from "../lib/copy.premium";
 
-export type Seccion = "escaneo" | "perfil" | "premium";
+/**
+ * Los sitios de la app. Son CUATRO, y la barra muestra TRES.
+ *
+ * `terminos` (card 3.4) entra en la unión porque es un sitio de verdad —tiene su
+ * pantalla y su "Volver"— pero NO en `SECCIONES`: se llega por el enlace del pie
+ * y no por una pestaña. Ver el porqué en la cabecera de `PantallaTerminos`.
+ *
+ * Mientras se está ahí, ninguna pestaña queda marcada como activa: es correcto,
+ * porque ninguna lo está. Tocar cualquiera de las tres sale de los términos.
+ */
+export type Seccion = "escaneo" | "perfil" | "premium" | "terminos";
 
 export interface BarraDeNavegacionProps {
   activa: Seccion;

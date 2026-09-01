@@ -33,7 +33,7 @@ export async function fetchHealth(signal?: AbortSignal): Promise<HealthReport> {
     // durante la Fase 0— la función todavía no desplegada.
     if (signal?.aborted) throw err;
     throw new Error(
-      "No hay respuesta en la dirección del backend. Revisá tu conexión, o que la función esté desplegada.",
+      "No hay respuesta en la dirección del backend. Revisa tu conexión, o que la función esté desplegada.",
     );
   }
 
@@ -183,6 +183,12 @@ export async function analizarFoto(
       // El texto es EL MISMO que el backend manda para este código (ver
       // `functions/src/analyze/errores.ts`, `modelo_no_disponible`): una demo de
       // la pantalla de error que inventa su propio texto no es una demo de nada.
+      //
+      // ⚠️ Por eso la pasada de España (DT-21, card 3.4) NO lo tocó, aunque
+      // vosea: corregirlo acá lo separaría del texto real y la demo pasaría a
+      // mentir. Se corrige el día que se corrija el del backend — que hoy no se
+      // puede hacer sin desplegar, porque su clave de copy no está entre las 47
+      // de `config/copy.json`. Declarado, no olvidado.
       throw new ErrorDeAnalisis(
         "modelo_no_disponible",
         "El servicio de análisis está ocupado. Probá de nuevo en un momento.",
@@ -192,6 +198,13 @@ export async function analizarFoto(
     if (MODO_DE_DEMO === "no_es_comida") {
       // La forma exacta del 200 sin comida que arma el handler: sin scan_id,
       // sin items, sin totales y sin persistir.
+      //
+      // ⚠️ El texto es el ARRANQUE EN FRÍO del backend (`errores.ts`,
+      // `TEXTO_NO_ES_COMIDA_EN_FRIO`), y por eso la pasada de España tampoco lo
+      // tocó: es una copia byte a byte de otro archivo. En producción casi nunca
+      // se ve, porque su clave —`error_not_food`— SÍ está entre las 47 de
+      // `config/copy.json` y el backend manda la publicada, que ya está
+      // corregida.
       return {
         ...RESPUESTA_DE_FIXTURE,
         scan_id: null,
@@ -229,7 +242,7 @@ export async function analizarFoto(
     if (opciones.signal?.aborted) throw err;
     throw new ErrorDeAnalisis(
       "sin_red",
-      "No hay respuesta en la dirección del backend. Revisá tu conexión, o que la función esté desplegada.",
+      "No hay respuesta en la dirección del backend. Revisa tu conexión, o que la función esté desplegada.",
     );
   }
 

@@ -196,12 +196,14 @@
     }
   },
 
-  "copy_note": "Estos son los textos, y son LO ÚNICO que viaja a Firestore. Siguen espejados byte a byte con el arranque en frío de apps/web/src/lib/config.ts al 01/09/2026: cuando uno cambia, cambia el otro en el mismo commit. Ver DEUDAS: la pasada de estilo a español de España es un trabajo aparte y con dueño (card 3.4) — los textos ya escritos en español de España, sin voseo, son los tres 'scanning_steps' de la card 3.2 y las 29 claves nuevas de la card 3.1 (nacen así, no hay que repasarlas). Los 18 originales siguen esperando esa pasada.",
+  "copy_note": "Estos son los textos, y son LO ÚNICO que viaja a Firestore. Siguen espejados byte a byte con el arranque en frío de apps/web/src/lib/config.ts al 01/09/2026: cuando uno cambia, cambia el otro en el mismo commit.",
+
+  "dt21_note": "DT-21 CERRADA DEL LADO DE ESTE ARCHIVO (card 3.4, 01/09/2026): las 47 claves están en español de España y ninguna vosea. Se corrigieron 7 de las 18 originales —'capture_cta' (sacar→hacer una foto, que es como se dice aquí), 'capture_help' (Sacá→Haz), 'not_food_title' (Acá→Aquí), 'error_unreadable' (¿Probás→Prueba), 'error_network' (Revisá/probá→Revisa/prueba) y 'error_unexpected' (Probá→Prueba)— y se sacó la JERGA INTERNA de 6 de las nuevas: 'ficha' y 'catálogo' son palabras nuestras, no del usuario, y en pantalla ahora se dice 'la base nutricional' (el mismo nombre que ya usaban los scanning_steps) y 'alimento'. Las tocadas: los cinco 'match_*_ayuda' y 'report_no_totals_body'. QUEDA UNA, declarada y con dueño: 'item_generic_note' sigue empezando por «Ficha genérica:» porque esa frase la escribe también el catálogo (kb/curation/genericos.dt13.json → plantilla_caveat, que llega al usuario como caveat de la ficha) y las dos tienen que cambiar en el mismo movimiento; cambiar solo esta abriría una incoherencia visible. Fuera de este archivo también quedan los textos en frío de errores del backend (functions/src/analyze/errores.ts), que sí vosean: sus claves ('error_bad_image', 'error_image_too_big', 'error_model_unavailable', 'error_catalog_unavailable'…) NO están en esta lista de 47, así que hoy no se pueden corregir sin desplegar. Las dos que sí comparte el backend con el front —'error_not_food' y 'error_unreadable'— ya quedan corregidas acá para los dos lados.",
 
   "copy": {
     "capture_prompt": "¿Qué estás comiendo?",
-    "capture_cta": "Sacar foto del plato",
-    "capture_help": "Sacá la foto desde arriba, con el plato entero y buena luz.",
+    "capture_cta": "Hacer foto del plato",
+    "capture_help": "Haz la foto desde arriba, con el plato entero y buena luz.",
 
     "scanning_steps": "Identificando qué hay en el plato y cuánto…|Buscando cada alimento en la base nutricional…|Calculando calorías y macros con esos gramos…",
     "scanning_title": "Mirando tu plato",
@@ -212,13 +214,13 @@
     "report_partial_title": "Este total es parcial",
     "report_cta": "Escanear otro plato",
 
-    "not_food_title": "Acá no veo comida",
+    "not_food_title": "Aquí no veo comida",
     "error_not_food": "Eso no parece un plato de comida. ¿Probamos con otra foto?",
 
     "error_title": "No pude analizar la foto",
-    "error_unreadable": "No pude reconocer el plato. ¿Probás con más luz?",
-    "error_network": "No hay respuesta del servidor. Revisá tu conexión y probá de nuevo.",
-    "error_unexpected": "Algo salió mal de este lado. Probá de nuevo en un momento.",
+    "error_unreadable": "No pude reconocer el plato. Prueba con más luz.",
+    "error_network": "No hay respuesta del servidor. Revisa tu conexión y prueba de nuevo.",
+    "error_unexpected": "Algo salió mal de este lado. Prueba de nuevo en un momento.",
     "error_cta": "Probar de nuevo",
 
     "disclaimer": "Información nutricional orientativa, calculada sobre datos de USDA. No es consejo médico.",
@@ -237,15 +239,15 @@
     "donut_rest": "El resto",
 
     "match_exacto": "Coincidencia exacta",
-    "match_exacto_ayuda": "El nombre identificado es, letra por letra, el de una ficha del catálogo.",
+    "match_exacto_ayuda": "El nombre identificado en la foto coincide, letra por letra, con un alimento de la base nutricional.",
     "match_alias": "Por sinónimo",
-    "match_alias_ayuda": "Se llegó a la ficha por un sinónimo curado a mano, con su propia confianza.",
+    "match_alias_ayuda": "Se llegó al alimento por un sinónimo revisado a mano, con su propia confianza.",
     "match_difuso": "Coincidencia aproximada",
-    "match_difuso_ayuda": "No hubo nombre exacto: se usó la ficha más parecida. Es una estimación, no una medición de ESTE plato.",
+    "match_difuso_ayuda": "No hubo un nombre exacto: se usó el alimento más parecido de la base nutricional. Es una estimación, no una medición de ESTE plato.",
     "match_compuesto": "Compuesto en el momento",
-    "match_compuesto_ayuda": "El catálogo no tiene este plato: se sumó a partir de sus ingredientes visibles y del método de cocción.",
+    "match_compuesto_ayuda": "La base nutricional no tiene este plato: se sumó a partir de sus ingredientes visibles y del método de cocción.",
     "match_no_catalogado": "No catalogado",
-    "match_no_catalogado_ayuda": "El catálogo no tiene este alimento. No se muestran números: un valor sin ficha no sería trazable a ninguna fuente.",
+    "match_no_catalogado_ayuda": "La base nutricional no tiene este alimento. No se muestran números: sin un dato de origen, no habría forma de decir de dónde sale.",
 
     "item_confidence_label": "Confianza",
     "item_generic_badge": "genérico",
@@ -253,7 +255,7 @@
     "item_source_label": "Fuente",
 
     "report_no_totals_title": "Sin números para este plato",
-    "report_no_totals_body": "Ninguno de los alimentos identificados tiene ficha en el catálogo, así que no hay nada que sumar. Abajo está lo que sí se reconoció.",
+    "report_no_totals_body": "Ninguno de los alimentos identificados está en la base nutricional, así que no hay nada que sumar. Abajo está lo que sí se reconoció.",
     "report_others_title": "Del resto del análisis",
     "report_weight_label": "Peso identificado"
   }

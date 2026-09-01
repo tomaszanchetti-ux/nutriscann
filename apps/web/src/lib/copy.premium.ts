@@ -213,7 +213,7 @@ export const PLANES: readonly PlanPremium[] = [
     resumen: "El reporte completo de cada plato que fotografíes.",
     incluye: [
       "Calorías, macros y el desglose de cada alimento",
-      "Cada número trazable a su ficha de la base nutricional",
+      "Cada número trazable a su fuente en la base nutricional",
       "Sin publicidad",
     ],
     cta: "Tu plan actual",

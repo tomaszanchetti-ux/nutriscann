@@ -10,11 +10,18 @@
  * También declara de dónde salieron los textos (Firestore o arranque en frío) y
  * si la app está corriendo contra el FIXTURE en vez del backend — eso último en
  * un tono que no se pueda confundir con un resultado real.
+ *
+ * Y desde la card 3.4 es además LA PUERTA A LOS TÉRMINOS Y CONDICIONES. El
+ * reparto: acá va la advertencia en una línea, y el enlace de abajo lleva a la
+ * pantalla que la desarrolla. No se duplica el texto; se continúa. El enlace
+ * está en el pie —o sea, en todas las pantallas— porque la app dice números en
+ * más de una y la advertencia vale para todas.
  */
 import { useEffect, useState } from "react";
 
 import { fetchHealth, MODO_DE_DEMO, USA_FIXTURE_DE_ANALISIS, type HealthReport } from "../lib/api";
 import type { OrigenDeConfig } from "../lib/config";
+import { COPY_TERMINOS } from "../lib/copy.terminos";
 import { PROJECT_ID, USA_EMULADOR_DE_FIRESTORE, USA_EMULADOR_DE_FUNCIONES } from "../lib/firebase";
 
 type EstadoDeSalud =
@@ -25,9 +32,15 @@ type EstadoDeSalud =
 export function PieDeDiagnostico({
   origenDeConfig,
   disclaimer,
+  onVerTerminos,
 }: {
   origenDeConfig: OrigenDeConfig;
   disclaimer: string;
+  /**
+   * Abre los Términos y Condiciones. `null` = ya se está leyéndolos, y entonces
+   * el enlace no se dibuja: un enlace a la pantalla en la que ya estás es ruido.
+   */
+  onVerTerminos: (() => void) | null;
 }) {
   const [salud, setSalud] = useState<EstadoDeSalud>({ fase: "consultando" });
 
@@ -105,6 +118,19 @@ export function PieDeDiagnostico({
           NutriScann. Que esté siempre y no solo en el reporte es a propósito: la
           app dice números en más de una pantalla. */}
       <p className="mt-1 font-sans text-[0.625rem] leading-relaxed text-ink-faint">{disclaimer}</p>
+
+      {/* EL ENLACE A LOS TÉRMINOS (card 3.4). Discreto, pero con área de toque
+          real: 44 px de alto, como todo lo que se toca en esta app. Va después
+          del disclaimer porque es su continuación, no su encabezado. */}
+      {onVerTerminos !== null && (
+        <button
+          type="button"
+          onClick={onVerTerminos}
+          className="flex min-h-11 w-fit items-center rounded-lg font-sans text-[0.6875rem] text-ink-faint underline underline-offset-4 transition-colors active:text-ink-soft"
+        >
+          {COPY_TERMINOS.enlace}
+        </button>
+      )}
     </footer>
   );
 }

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="NutriScann">
+  <title>NutriScann</title>
+  <!--
+    EL ÍCONO DE NUTRISCANN (card 3.4, DT-5).
+
+    Es la app dibujada, no un clipart de comida: el DONUT de macros —el gráfico
+    que el usuario ve en cada reporte— dentro de las cuatro ESQUINAS DE ESCANEO
+    del scanner. Las dos piezas ya existen en la interfaz (`DonutMacros` y
+    `ScannerDeFoto`), así que el ícono no inventa un lenguaje visual nuevo: cita
+    el que ya hay.
+
+    Los colores son los tokens semánticos de `apps/web/src/index.css`, sin una
+    sola tinta nueva:
+      fondo  #12160f  (color-ground)
+      verde  #4fbe82  (color-accent)
+      ámbar  #e7b354  (color-carbs)
+      coral  #ec7b64  (color-protein)
+
+    El morado de las grasas (color-fat) se deja fuera a propósito: a 16 px
+    sobre fondo oscuro se empasta con el coral y el anillo pierde la lectura de
+    tres tramos. Tres colores es lo que aguanta un favicon.
+
+    GEOMETRÍA. Anillo r=118 con trazo 46 → borde exterior a 141 del centro.
+    Las esquinas viven a 152 del centro en cada eje, así que no tocan el anillo.
+    Circunferencia = 2·π·118 = 741,42. Los tramos, con 8 de aire entre ellos:
+      verde 330 (44,5 %) · ámbar 215 (29,0 %) · coral 172 (23,2 %)
+    y sus arranques acumulados en 0, 338 y 561, pasados a grados como
+    -90 + (arranque / 741,42) · 360.
+
+    La variante `icon-maskable.svg` es este mismo dibujo encogido para que TODO
+    entre en el círculo de seguridad de los íconos maskable (80 % del lienzo);
+    aquí las puntas de las esquinas se salen un poco de ese círculo, y por eso
+    este archivo NO se declara como maskable en el manifiesto.
+  -->
+  <rect width="512" height="512" fill="#12160f"/>
+
+  <g fill="none" stroke-linecap="butt">
+    <!-- El aro apagado de fondo: cierra el círculo donde quedan los huecos. -->
+    <circle cx="256" cy="256" r="118" stroke="#2d362b" stroke-width="46"/>
+
+    <!-- Verde (accent) -->
+    <circle cx="256" cy="256" r="118" stroke="#4fbe82" stroke-width="46"
+            stroke-dasharray="330 742" transform="rotate(-90 256 256)"/>
+    <!-- Ámbar (hidratos) -->
+    <circle cx="256" cy="256" r="118" stroke="#e7b354" stroke-width="46"
+            stroke-dasharray="215 742" transform="rotate(74.1 256 256)"/>
+    <!-- Coral (proteínas) -->
+    <circle cx="256" cy="256" r="118" stroke="#ec7b64" stroke-width="46"
+            stroke-dasharray="172 742" transform="rotate(182.4 256 256)"/>
+  </g>
+
+  <!-- Las cuatro esquinas del scanner. -->
+  <g fill="none" stroke="#4fbe82" stroke-width="18" stroke-linecap="round"
+     stroke-linejoin="round" opacity="0.62">
+    <path d="M104 152V104h48"/>
+    <path d="M360 104h48v48"/>
+    <path d="M408 360v48h-48"/>
+    <path d="M152 408h-48v-48"/>
+  </g>
+</svg>

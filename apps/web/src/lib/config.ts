@@ -51,6 +51,15 @@
  * "Coincidencia aproximada" exigía desplegar la PWA. La línea de qué se movió y
  * qué no —frases fijas sí, frases armadas con datos no— está escrita en
  * `dt22_note` de `config/copy.json`, que es donde la va a leer quien edite.
+ *
+ * CARD 3.4 — LA PASADA DE ESPAÑA (DT-21). Los textos de abajo cambiaron de
+ * palabras, no de claves: se fue el voseo ("Sacá"→"Haz", "Probás"→"Prueba",
+ * "Acá"→"Aquí"), se hace una foto en vez de sacarla, y la jerga interna —"ficha",
+ * "catálogo"— salió de los cinco tooltips de match y del cuerpo del reporte sin
+ * totales: en pantalla eso se llama "la base nutricional", igual que en los
+ * pasos de la espera. El detalle de qué se cambió y qué quedó pendiente vive en
+ * `dt21_note` de `config/copy.json`; los dos archivos siguen espejados byte a
+ * byte.
  * ------------------------------------------------------------------------- */
 import { firestoreDocUrl } from "./firebase";
 
@@ -133,21 +142,21 @@ const SEPARADOR_DE_PASOS = "|";
  */
 export const COPY_DE_ARRANQUE: CopyDeLaApp = {
   capture_prompt: "¿Qué estás comiendo?",
-  capture_cta: "Sacar foto del plato",
+  capture_cta: "Hacer foto del plato",
   error_not_food: "Eso no parece un plato de comida. ¿Probamos con otra foto?",
-  error_unreadable: "No pude reconocer el plato. ¿Probás con más luz?",
+  error_unreadable: "No pude reconocer el plato. Prueba con más luz.",
 
-  capture_help: "Sacá la foto desde arriba, con el plato entero y buena luz.",
+  capture_help: "Haz la foto desde arriba, con el plato entero y buena luz.",
   scanning_title: "Mirando tu plato",
   report_kcal_label: "calorías del plato",
   report_macros_title: "De dónde vienen esas calorías",
   report_items_title: "Qué hay en el plato",
   report_partial_title: "Este total es parcial",
   report_cta: "Escanear otro plato",
-  not_food_title: "Acá no veo comida",
+  not_food_title: "Aquí no veo comida",
   error_title: "No pude analizar la foto",
-  error_network: "No hay respuesta del servidor. Revisá tu conexión y probá de nuevo.",
-  error_unexpected: "Algo salió mal de este lado. Probá de nuevo en un momento.",
+  error_network: "No hay respuesta del servidor. Revisa tu conexión y prueba de nuevo.",
+  error_unexpected: "Algo salió mal de este lado. Prueba de nuevo en un momento.",
   error_cta: "Probar de nuevo",
   disclaimer:
     "Información nutricional orientativa, calculada sobre datos de USDA. No es consejo médico.",
@@ -166,18 +175,20 @@ export const COPY_DE_ARRANQUE: CopyDeLaApp = {
   donut_rest: "El resto",
 
   match_exacto: "Coincidencia exacta",
-  match_exacto_ayuda: "El nombre identificado es, letra por letra, el de una ficha del catálogo.",
+  match_exacto_ayuda:
+    "El nombre identificado en la foto coincide, letra por letra, con un alimento de la base nutricional.",
   match_alias: "Por sinónimo",
-  match_alias_ayuda: "Se llegó a la ficha por un sinónimo curado a mano, con su propia confianza.",
+  match_alias_ayuda:
+    "Se llegó al alimento por un sinónimo revisado a mano, con su propia confianza.",
   match_difuso: "Coincidencia aproximada",
   match_difuso_ayuda:
-    "No hubo nombre exacto: se usó la ficha más parecida. Es una estimación, no una medición de ESTE plato.",
+    "No hubo un nombre exacto: se usó el alimento más parecido de la base nutricional. Es una estimación, no una medición de ESTE plato.",
   match_compuesto: "Compuesto en el momento",
   match_compuesto_ayuda:
-    "El catálogo no tiene este plato: se sumó a partir de sus ingredientes visibles y del método de cocción.",
+    "La base nutricional no tiene este plato: se sumó a partir de sus ingredientes visibles y del método de cocción.",
   match_no_catalogado: "No catalogado",
   match_no_catalogado_ayuda:
-    "El catálogo no tiene este alimento. No se muestran números: un valor sin ficha no sería trazable a ninguna fuente.",
+    "La base nutricional no tiene este alimento. No se muestran números: sin un dato de origen, no habría forma de decir de dónde sale.",
 
   item_confidence_label: "Confianza",
   item_generic_badge: "genérico",
@@ -187,7 +198,7 @@ export const COPY_DE_ARRANQUE: CopyDeLaApp = {
 
   report_no_totals_title: "Sin números para este plato",
   report_no_totals_body:
-    "Ninguno de los alimentos identificados tiene ficha en el catálogo, así que no hay nada que sumar. Abajo está lo que sí se reconoció.",
+    "Ninguno de los alimentos identificados está en la base nutricional, así que no hay nada que sumar. Abajo está lo que sí se reconoció.",
   report_others_title: "Del resto del análisis",
   report_weight_label: "Peso identificado",
 };
