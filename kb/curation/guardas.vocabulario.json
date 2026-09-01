@@ -19,13 +19,48 @@
   "blinda el catálogo, no el matcher—, pero un catálogo bien curado es el primer",
   "lugar donde el error se puede frenar, y el más barato."
  ],
- "criteria_version": "guardas-v1",
- "generated": "2026-08-31",
+ "criteria_version": "guardas-v2",
+ "generated": "2026-09-01",
+ "$card_2_7": [
+  "La v2 suma las cuatro guardas de la card 2.7. Las tres primeras fijan los tres alias",
+  "que el golden set de 30 midió como la causa de 3 de los 5 errores de ficha del test.",
+  "El patrón que las une y que conviene leer antes de escribir la próxima:",
+  "",
+  "  UN TÉRMINO GENÉRICO DE TÉCNICA O DE CORTE NO PUEDE SER EL ALIAS DE UNA FICHA",
+  "  CONCRETA, con ninguna confianza. `filete` es una forma de cortar (de ternera, de",
+  "  salmón, de merluza, de pollo) y `asado` es una forma de cocinar (pollo, papa,",
+  "  pimiento). Un alias así no dice «esto se parece a esto»: dice «cualquier cosa",
+  "  cortada/cocida así ES esta ficha», y por eso la confianza no lo salva. Lo que sí",
+  "  puede ser alias es el nombre del plato o del corte: `Tira de asado`, `Bistec`.",
+  "",
+  "La cuarta (`croqueta`/`croquetas` fuera del buñuelo) no es de familia sino de NÚMERO,",
+  "y está escrita en su propio motivo."
+ ],
  "guardas": [
   {
    "termino": "chorizo",
    "prohibido_en": ["fdc-2705835"],
    "motivo": "`Bife de chorizo` (Beef, steak, strip) es un CORTE VACUNO y el chorizo es un EMBUTIDO: los dos existen en España y en Argentina, y son dos alimentos distintos con dos perfiles distintos (239 kcal y 361 mg de sodio el corte, contra los 341 kcal y 983 mg del chorizo fresco de fdc-2706179). `chorizo` a secas es del embutido, donde ya vive con confianza 0,6; en el corte, ni siquiera con reserva: no es un gemelo aproximado, es otra cosa."
+  },
+  {
+   "termino": "filete",
+   "prohibido_en": ["fdc-2705824"],
+   "motivo": "En español `filete` nombra la FORMA DEL CORTE, no la especie: hay filete de ternera, de salmón, de merluza y de pollo. Como alias de fdc-2705824 (`Beef, steak, NFS`, 229 kcal/100 g) hacía que cualquier filete fuera carne de vaca. Medido en el golden set de 30 (plato 23, 01/09/2026): `fish fillet, sauteed with brown sauce` cayó en `Bife` por esta puerta, y encima con confianza 1,0 implícita porque el alias estaba en texto plano. El daño calórico era chico (229 contra ~208 de un salmón a la plancha) y el del nombre no: «Bife» sobre un salmón es indefendible. La carne vacuna se sigue nombrando con `Bistec`, que solo quiere decir eso. La confianza no lo salva: un `filete` a 0,5 sobre un corte vacuno no dice «esto se parece», dice «todo lo fileteado es esto»."
+  },
+  {
+   "termino": "asado",
+   "prohibido_en": ["fdc-169510"],
+   "motivo": "`Asado` a secas es una TÉCNICA DE COCCIÓN —pollo asado, papa asada, pimientos asados—, no un corte. Como alias de fdc-169510 (`Beef, rib, small end`, 291 kcal/100 g) atrapaba cualquier alimento asado. Medido en el golden set de 30 (plato 17, 01/09/2026): `chicken thigh, roasted` salió como `Costilla de res a la parrilla` — otra especie, +49 % de kcal contra la ficha que correspondía. El plato argentino no se pierde: lo cubre `Tira de asado` (0,8), que nombra el corte y no la técnica, con su reserva medida en regional.coverage.json."
+  },
+  {
+   "termino": "croqueta",
+   "prohibido_en": ["fdc-2708024"],
+   "motivo": "Esta guarda NO es de familia: `Fritter, plain` (fdc-2708024) es de verdad una masa de harina, leche, huevo y mantequilla frita en aceite, y por composición la regla de oro la aceptaba. Es de NÚMERO. La ficha da 378 kcal/100 g contra las ~240 de una croqueta española real, y medido en el golden set de 30 (plato 26, 01/09/2026) publicó 415,8 kcal para 110 g de croquetas —un +57 %— con la palabra «Buñuelo» a la vista y una confianza final de 0,51, a nueve centésimas de romper la condición dura del test. El término vive ahora en fdc-2709511 `Croquetas de papa` (237 kcal/100 g) a 0,5: misma técnica, densidad calórica correcta, y la reserva declarada es que el relleno es papa y no bechamel."
+  },
+  {
+   "termino": "croquetas",
+   "prohibido_en": ["fdc-2708024"],
+   "motivo": "El plural de la guarda anterior, por el mismo motivo y con el mismo número. Va escrito aparte porque una guarda declara UN término y la comparación es por igualdad exacta sobre el término normalizado: sin esta fila, `Croquetas` volvería al buñuelo por la puerta de al lado."
   }
  ]
 }

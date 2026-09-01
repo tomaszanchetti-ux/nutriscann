@@ -414,7 +414,17 @@ export function assemble(input: AssembleInput): AssembleResult {
   // Lo de la DT-13, en cambio, es aditivo y no habría movido el mayor solo: la
   // clave `generic` es nueva y opcional, y los caveats generados usan una clave
   // que el contrato ya tenía.
-  const kbVersion = `3.0.0+${contentHash({ generated_from: generatedFrom, foods })}`;
+  //
+  // 3.1.0 con la card 2.7 (la curación quirúrgica que abrió el golden set de 30).
+  //
+  // Es MENOR y no mayor porque no se retira ni una ficha: las 1.022 siguen, con
+  // sus ids intactos, y ningún consumidor que haya guardado un `food_id` deja de
+  // encontrarlo. Lo que cambia es VOCABULARIO —tres aliases que apuntaban a otra
+  // familia de alimento y dos que faltaban— y eso no rompe el contrato con el
+  // seed. No es un parche: sube el número porque un catálogo que dice cosas
+  // distintas es un catálogo distinto, y el `config/app` de Firestore estampa
+  // esta versión para poder decir con qué vocabulario se calculó cada reporte.
+  const kbVersion = `3.1.0+${contentHash({ generated_from: generatedFrom, foods })}`;
 
   return {
     catalog: { kb_version: kbVersion, generated_from: generatedFrom, foods },

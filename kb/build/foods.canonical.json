@@ -1,5 +1,5 @@
 {
-  "kb_version": "3.0.0+b2b227e1",
+  "kb_version": "3.1.0+47b8c77d",
   "generated_from": {
     "selection": "1.1-v2 + 1.6-regional-v1 + 1.6-es-sweep-v1 + 1.7-ingredientes-v1 − dt7-v2",
     "sources": [
@@ -5950,9 +5950,8 @@
       "aliases": {
         "es": [
           "Costilla de vaca a la parrilla",
-          "Tira de asado",
           {
-            "alias": "Asado",
+            "alias": "Tira de asado",
             "confidence": 0.8
           }
         ]
@@ -21965,7 +21964,6 @@
       },
       "aliases": {
         "es": [
-          "Filete",
           "Bistec"
         ]
       },
@@ -33867,6 +33865,10 @@
           {
             "alias": "Lentejas con chorizo",
             "confidence": 0.6
+          },
+          {
+            "alias": "Lentejas",
+            "confidence": 0.8
           }
         ]
       },
@@ -39147,12 +39149,7 @@
         "es": "Buñuelo"
       },
       "aliases": {
-        "es": [
-          {
-            "alias": "Croqueta",
-            "confidence": 0.6
-          }
-        ]
+        "es": []
       },
       "category": "Doughnuts, sweet rolls, pastries",
       "per_100g": {
@@ -39179,7 +39176,6 @@
       ],
       "default_portion_g": 100,
       "provenance": {
-        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -52697,7 +52693,15 @@
         "es": [
           "Croquetas de patata",
           "Croquetas de papa congeladas",
-          "Croquetas de patata congeladas"
+          "Croquetas de patata congeladas",
+          {
+            "alias": "Croqueta",
+            "confidence": 0.5
+          },
+          {
+            "alias": "Croquetas",
+            "confidence": 0.5
+          }
         ]
       },
       "category": "French fries and other fried white potatoes",

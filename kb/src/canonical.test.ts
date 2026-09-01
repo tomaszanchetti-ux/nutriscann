@@ -9,11 +9,17 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { assemble, pickFoundationCandidate, type AssembleInput } from "./canonical";
-import type { Curation } from "./curation";
+import {
+  assemble,
+  checkVocabularyGuards,
+  pickFoundationCandidate,
+  type AssembleInput,
+  type BuildStats,
+} from "./canonical";
+import { loadCuration, type Curation } from "./curation";
 import type { NutrientBundle } from "./nutrients";
 import type { FoundationOverride, Selection } from "./selection";
-import type { PortionHint, UsdaFoodSource } from "./types";
+import type { CanonicalFood, PortionHint, UsdaFoodSource } from "./types";
 
 const BANANA = 173944;
 
@@ -288,4 +294,92 @@ test("el nombre en español y los aliases entran por la misma puerta", () => {
   assert.equal(food.provenance["names.es"], "curation");
   assert.equal(food.provenance["names.en"], "usda_sr_legacy");
   assert.equal(stats.pendingCuration.length, 0);
+});
+
+/**
+ * Los tres aliases tóxicos de la card 2.7, fijados por su guarda.
+ *
+ * El golden set de 30 platos reales (01/09/2026) midió que 3 de los 5 errores de
+ * ficha del test no eran del motor sino de tres filas del catálogo: un alias
+ * español apuntando a otra FAMILIA de alimento. Quitarlos a mano no alcanza —eso
+ * ya se sabe medido, es la razón por la que existe el candado del nombre viejo—,
+ * así que cada uno quedó fijado con una guarda de vocabulario.
+ *
+ * Este test cierra el hueco que la guarda sola deja abierto: el candado 0 exige
+ * que `guardas.vocabulario.json` EXISTA y traiga guardas, pero no sabe CUÁLES, y
+ * borrar una sola fila del archivo daría un build en verde con el alias tóxico
+ * libre de volver. Es el mismo silencio de la DT-13 al que el candado 0 le puso
+ * nombre, un nivel más adentro.
+ *
+ * Se verifican las dos mitades: que la política siga declarada (se lee el
+ * archivo real) y que de verdad muerda (el escenario se CONSTRUYE, no se sale a
+ * buscarlo en el catálogo real: se arma una ficha que lleva el alias prohibido y
+ * se comprueba que la guarda la marque).
+ */
+const TOXICOS_CARD_2_7: { termino: string; ficha: string; que_pasaba: string }[] = [
+  { termino: "filete", ficha: "fdc-2705824", que_pasaba: "un filete de salmón salía como Bife" },
+  { termino: "asado", ficha: "fdc-169510", que_pasaba: "un muslo de pollo asado salía como costilla de res" },
+  { termino: "croqueta", ficha: "fdc-2708024", que_pasaba: "unas croquetas salían como Buñuelo, +57 % de kcal" },
+  { termino: "croquetas", ficha: "fdc-2708024", que_pasaba: "el plural del anterior, por la puerta de al lado" },
+];
+
+test("las guardas de la card 2.7 siguen declaradas, una por una", () => {
+  const { guardas } = loadCuration();
+  for (const toxico of TOXICOS_CARD_2_7) {
+    const guarda = guardas.find((g) => g.termino.toLowerCase() === toxico.termino);
+    assert.ok(
+      guarda !== undefined,
+      `se borró la guarda "${toxico.termino}": sin ella ${toxico.que_pasaba}`,
+    );
+    assert.ok(
+      guarda.prohibido_en.includes(toxico.ficha),
+      `la guarda "${toxico.termino}" dejó de proteger a ${toxico.ficha}`,
+    );
+    assert.notEqual(guarda.motivo.trim(), "", `la guarda "${toxico.termino}" perdió su motivo`);
+  }
+});
+
+test("las guardas de la card 2.7 muerden si el alias vuelve", () => {
+  const { guardas } = loadCuration();
+  for (const toxico of TOXICOS_CARD_2_7) {
+    // La ficha se construye acá: lo único que importa es que lleve el id
+    // protegido y el alias prohibido. Con reserva declarada, además, porque la
+    // confianza NO salva: un `filete` a 0,5 sobre un corte vacuno no dice "esto
+    // se parece", dice "todo lo fileteado es esto".
+    const ficha: CanonicalFood = {
+      id: toxico.ficha,
+      source: "usda_fndds",
+      source_ref: "USDA FDC #0",
+      names: { en: "Whatever, NFS", es: "Lo que sea" },
+      aliases: { es: [{ alias: toxico.termino, confidence: 0.5 }] },
+      category: "test",
+      per_100g: {
+        kcal: 89,
+        protein_g: 1.09,
+        carbs_g: 22.84,
+        fat_g: 0.33,
+        fiber_g: 2.6,
+        sat_fat_g: 0.112,
+        sugars_g: 12.23,
+        sodium_mg: 1,
+      },
+      portion_hints: [],
+      default_portion_g: 100,
+      provenance: {},
+      deprecated: false,
+    };
+    // Se le pasa SOLO la guarda que se está probando: las otras apuntan a fichas
+    // que este catálogo de una sola entrada no tiene, y su ausencia también es
+    // una violación (correcta, pero de otra cosa).
+    const guarda = guardas.filter((g) => g.termino.toLowerCase() === toxico.termino);
+    const stats = { guardViolations: [] } as unknown as BuildStats;
+    checkVocabularyGuards([ficha], guarda, stats);
+    assert.equal(
+      stats.guardViolations.length,
+      1,
+      `la guarda "${toxico.termino}" no marcó el alias que volvió a ${toxico.ficha}`,
+    );
+    assert.equal(stats.guardViolations[0]?.id, toxico.ficha);
+    assert.match(stats.guardViolations[0]?.donde ?? "", /^alias /);
+  }
 });

@@ -211,6 +211,31 @@ ya está cubierto por el nombre, con confianza 1,0. El generador de la card 1.6
 omitió siete por esto (paella, gazpacho, churros, empanada, dulce de leche,
 tiramisú, focaccia).
 
+### El límite del alias: es SOLO español
+
+El contrato lo dice con la forma del campo, y conviene tenerlo escrito porque el
+golden set de 30 hizo la pregunta: `aliases` tiene **una sola clave, `es`**. No
+hay dónde declarar un alias en inglés. El caso concreto medido (plato 08) es
+`bread roll`, que cae en *Pan* (fdc-2707591) teniendo *Panecillo* (fdc-2707595)
+en el catálogo: **no se arregla con un alias**, porque el término está en inglés
+y del lado inglés el único vocabulario que existe es `names.en`, que en las
+fichas de USDA lo escribe el CSV y esta capa no pisa. Es del matcher o de una
+extensión del contrato, no de la curación. Anotado para no volver a intentarlo.
+
+Por el mismo motivo, **la regla del paréntesis solo se puede aplicar donde la
+curación escribe el inglés**: en las fichas `manual` y `receta`. El golden set
+dejó probado (2 de 2, la tortilla de patatas y el bocadillo de calamares, a 0,95
+y 0,88) que un `names.en` con la forma *nombre genérico en inglés (nombre
+regional)* es lo que el modelo tiende a escribir entero. Al revisar las 15 fichas
+propias, **las cinco que tienen un equivalente genérico conocido en inglés ya la
+llevan** —tortilla de patatas, bocadillo de calamares, pan de queso, huevos
+rotos, merluza en salsa verde— y las otras diez son platos cuyo nombre regional
+*es* el término que se usa en inglés (salmorejo, migas, turrón, coxinha, farofa,
+tarta de Santiago, escalivada, ajoblanco, gazpachuelo, açaí), con el descriptor
+en inglés detrás de la coma. **No hay ningún renombre pendiente por esta regla**,
+y los dos platos del test que fallaron con nombre propio —la paella y el risotto—
+son fichas de USDA, donde no hay mecanismo para tocar `names.en`.
+
 ## Los alimentos de curación manual
 
 `manual.foods.json` es la **precedencia más alta del pipeline**
@@ -521,6 +546,37 @@ tildes, en minúsculas—, contra el nombre y contra cada alias: `Bife de choriz
 llamándose `Chorizo` o llevándolo de alias. Y **la confianza no salva**: un
 `chorizo` a 0,5 sobre un corte vacuno no dice "esto se parece", dice "esto es otra
 cosa".
+
+### La regla que salió de la card 2.7: técnica y corte no son alimentos
+
+El golden set de 30 platos reales (01/09/2026) dejó **medida** la regla general
+de la que el chorizo era el primer caso particular:
+
+> **Un término genérico de técnica de cocción o de forma de corte no puede ser el
+> alias de una ficha concreta, con ninguna confianza.**
+
+En español `filete` nombra cómo está cortado —de ternera, de salmón, de merluza,
+de pollo— y `asado` nombra cómo está cocinado —pollo, papa, pimiento—. Un alias
+así no dice "esto se parece a esto": dice "**todo** lo cortado o cocinado así ES
+esta ficha", y por eso la escala no lo arregla. Lo que sí puede ser alias es el
+nombre del plato o del corte: `Tira de asado`, `Bistec`. El costo medido de no
+tener la regla fueron dos de los tres errores de ficha del test —una costilla de
+vaca sobre un muslo de pollo y un bife sobre un filete de salmón.
+
+Y una guarda que **no** es de familia, porque conviene tenerla a la vista: la de
+`croqueta`/`croquetas` sobre el buñuelo. Por composición el buñuelo aprobaba
+—harina, leche, huevo y mantequilla fritos en aceite *son* una masa rebozada— y
+sin embargo se rechazó, **por número**: 378 kcal/100 g contra las ~240 de una
+croqueta real, o sea +57 % sobre la única cifra que el producto publica. La regla
+de oro pregunta de qué está hecho el gemelo; este caso agrega que **también hay
+que mirar cuánto mide**, porque un gemelo que se equivoca por más de la mitad no
+es un gemelo aunque su lista de ingredientes cierre.
+
+Las cinco guardas vigentes están en `guardas.vocabulario.json` (`guardas-v2`),
+cada una con el número que la justifica, y hay dos tests que las fijan: uno
+comprueba que sigan declaradas —el candado 0 exige que el archivo exista, no que
+traiga *estas* filas— y otro construye la ficha con el alias prohibido y verifica
+que la guarda muerda.
 
 ## Las recetas compuestas (card 1.7)
 

@@ -211,14 +211,31 @@ que el resto de las porciones sigue declarando su origen USDA.
 
 ## Estado
 
-**Las cuatro capas en pie (card 2.DT, 31/08/2026).** El build compila **1.022**
+**Las cuatro capas en pie (card 2.7, 01/09/2026).** El build compila **1.022**
 alimentos (701 FNDDS + 306 SR Legacy + 6 manuales + 9 recetas compuestas) en la
-versión **3.0.0**, con los seis candados en verde, la curación en español
+versión **3.1.0**, con los seis candados en verde, la curación en español
 completa y las transformaciones de cocción medidas de los propios datasets. La
 capa 4 es `seed/` (card 1.5): la publicación idempotente a Firestore, con su
 propio README.
 
-Qué cambió respecto de la 2.1.0 (1.025 alimentos):
+Qué cambió respecto de la 3.0.0 (mismos 1.022 alimentos):
+
+- **Card 2.7 — la curación quirúrgica.** El golden set de 30 platos reales midió
+  que **3 de los 5 errores de ficha del test no eran del motor sino de tres filas
+  de este catálogo**: un alias español apuntando a otra familia de alimento.
+  `Filete` (a 1,0) sobre *Bife* mandaba cualquier filete de pescado a la carne
+  vacuna; `Asado` (0,8) sobre una costilla de res atrapaba cualquier cosa asada,
+  pollo incluido; `Croqueta` (0,6) sobre *Buñuelo* publicaba +57 % de calorías.
+  Los tres se retiraron y quedaron fijados con su **guarda de vocabulario**, más
+  dos aliases que faltaban (`Croqueta`/`Croquetas` sobre *Croquetas de papa* a
+  0,5 y `Lentejas` sobre las lentejas cocidas a 0,8). **Es MENOR y no mayor
+  porque no se retira ninguna ficha**: cambian los `aliases` de cinco fichas y
+  nada más — ni un id, ni un nombre, ni un número.
+- El detalle de cada decisión, con la evidencia que la sostiene, vive en el
+  `$card_2_7_curacion_quirurgica` de `curation/aliases.regional.json` y en los
+  motivos de `curation/guardas.vocabulario.json`.
+
+Y antes, respecto de la 2.1.0 (1.025 alimentos):
 
 - **DT-8** — se resolvieron los siete pares que la DT-7 había dejado ambiguos.
   Tres eran la misma medición contada dos veces y se **fusionaron** (puré de papa,

@@ -7,6 +7,48 @@
   "Un alias que dice lo mismo que el nombre del alimento NO se escribe: el plato ya está",
   "cubierto por el nombre, con confianza 1,0."
  ],
+ "$card_2_7_curacion_quirurgica": [
+  "01/09/2026 — el golden set de 30 platos reales midió que 3 de los 5 errores de ficha del",
+  "test no eran del motor sino de TRES filas de este catálogo: un alias español de baja",
+  "confianza apuntando a otra familia de alimento. Lo que se hizo, y por qué:",
+  "",
+  "QUITADO · `Filete` (texto plano, confianza 1,0 implícita) sobre fdc-2705824 `Bife`.",
+  "  Vivía en names.es.json. En español `filete` es un CORTE FINO, no una especie: hay",
+  "  filete de ternera, de salmón, de merluza y de pollo. Un término que nombra la forma",
+  "  del corte no puede ser el nombre de UNA ficha, y menos a 1,0. Medido: la foto 23 del",
+  "  golden set devolvió `fish fillet, sauteed` -> Bife (Beef, steak, NFS) — carne de vaca",
+  "  sobre un filete de pescado. `Bistec` se queda: ese sí es carne vacuna y solo eso.",
+  "",
+  "QUITADO · `Asado` (0,8) sobre fdc-169510 `Costilla de res a la parrilla`.",
+  "  Mismo defecto por el otro lado: `asado` es una TÉCNICA DE COCCIÓN («pollo asado»,",
+  "  «papa asada», «pimientos asados»), no un corte. Medido: la foto 17 devolvió",
+  "  `chicken thigh, roasted` -> Costilla de res (otra especie, +49 % de kcal contra la",
+  "  ficha correcta). El plato argentino NO se pierde: lo cubre `Tira de asado`, que es el",
+  "  nombre del corte y no de la técnica, y que además BAJA de 1,0 a 0,8 — la reserva ya",
+  "  estaba medida en regional.coverage.json (el corte de USDA es `rib, small end 10-12` y",
+  "  la tira argentina se corta atravesando las costillas) y hasta hoy no llegaba al",
+  "  catálogo. La reserva se dice donde se puede decir: en el alias.",
+  "",
+  "REDIRIGIDO · `Croqueta` (0,6) dejó fdc-2708024 `Buñuelo` y pasó a fdc-2709511",
+  "  `Croquetas de papa`, con `Croquetas` al lado y las dos a 0,5. El buñuelo no falla por",
+  "  familia —su input_food es agua+harina+leche+huevo+mantequilla frito en aceite, o sea",
+  "  una masa rebozada y frita— sino por NÚMERO: 378 kcal/100 g contra las ~240 de una",
+  "  croqueta real. Medido: la foto 26 mostró 415,8 kcal para 110 g de croquetas (+57 %),",
+  "  con la palabra «Buñuelo» encima. fdc-2709511 es 100 % `Potato tots, frozen, fried` y",
+  "  da 237 kcal/100 g: la densidad calórica es la correcta y el nombre no miente sobre la",
+  "  técnica. Se emite a 0,5 y no a 0,6 porque el relleno cambia ENTERO (papa en vez de",
+  "  bechamel): es el peldaño de la milanesa —misma técnica, otro contenido—, «sirve como",
+  "  estimación, no como número».",
+  "",
+  "SUMADO · `Lentejas` (0,8) sobre fdc-2707423 `Lentejas cocidas con sal y grasa`.",
+  "  Medido: el guiso de lentejas de la foto 08 llegó a la ficha correcta por el difuso, a",
+  "  14 %. La palabra sola no tenía puerta. NO puede entrar en texto plano: `Lentejas` es",
+  "  el nombre ANTERIOR de esta misma ficha, que la DT-7 renombró, y el candado del nombre",
+  "  viejo rompe el build ante cualquier alias de confianza 1,0 que lo resucite. Con una",
+  "  reserva declarada sí vuelve, y es lo correcto: 0,8 dice «esto se parece» (son lentejas",
+  "  cocidas, y el añadido es sal y grasa de cocción, que la regla de aceptación no cuenta",
+  "  como ingrediente ajeno), no «esto es». Es el mismo camino del `Bacalao` a 0,8."
+ ],
  "aliases": {
   "167987": [
    {
@@ -22,7 +64,7 @@
   ],
   "169510": [
    {
-    "alias": "Asado",
+    "alias": "Tira de asado",
     "confidence": 0.8
    }
   ],
@@ -208,6 +250,10 @@
    {
     "alias": "Lentejas con chorizo",
     "confidence": 0.6
+   },
+   {
+    "alias": "Lentejas",
+    "confidence": 0.8
    }
   ],
   "2707652": [
@@ -220,12 +266,6 @@
    {
     "alias": "Alfajor",
     "confidence": 0.5
-   }
-  ],
-  "2708024": [
-   {
-    "alias": "Croqueta",
-    "confidence": 0.6
    }
   ],
   "2708331": [
@@ -303,6 +343,16 @@
   "2709456": [
    {
     "alias": "Patatas bravas",
+    "confidence": 0.5
+   }
+  ],
+  "2709511": [
+   {
+    "alias": "Croqueta",
+    "confidence": 0.5
+   },
+   {
+    "alias": "Croquetas",
     "confidence": 0.5
    }
   ],
