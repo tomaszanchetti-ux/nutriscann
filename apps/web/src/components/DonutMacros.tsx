@@ -77,15 +77,16 @@
  * se asume nunca que lo que no se midió vale cero.
  * ------------------------------------------------------------------------- */
 import type { CopyDeLaApp } from "../lib/config";
-import { gramos, gramosEnteros, porcentaje, porcentajeEntero } from "../lib/formato";
+import { gramosEnteros, porcentaje, porcentajeEntero } from "../lib/formato";
 import type { PorcentajesDeMacros, TotalesNutrientes } from "../lib/types";
 
 /** El anillo interior: grueso, es el que manda. */
 const RADIO_INTERIOR = 66;
 const GROSOR_INTERIOR = 26;
-/** El exterior: fino, acompaña. La distancia entre los dos los separa de verdad. */
+/** El exterior: hoy NO se dibuja (anillo simple, Q/A de Tomás). El radio se
+ *  conserva porque fija la geometría de `exteriores`, que sigue calculada;
+ *  su grosor (11) vuelve con el render si el anillo revive. */
 const RADIO_EXTERIOR = 88;
-const GROSOR_EXTERIOR = 11;
 const CENTRO = 100;
 
 const VUELTA_INTERIOR = 2 * Math.PI * RADIO_INTERIOR;
@@ -304,23 +305,14 @@ export function DonutMacros({ copy, macro_pct, nutrients, centro }: DonutMacrosP
    * eso no está en `config/app`— y dice lo mismo que la leyenda: el reparto
    * calórico y, dentro de cada macro, de qué está hecho.
    */
-  const descripcion = [
-    `Reparto de calorías: ${macros
-      .map((macro) => `${macro.etiqueta} ${porcentaje(macro.pct)}`)
-      .join(", ")}.`,
-    ...desglose
-      .filter((fila) => fila.macro.partes.length > 0)
-      .map((fila) => {
-        const partes = fila.macro.partes.map(
-          (parte) =>
-            `${parte.etiqueta} ${parte.gramos === null ? copy.nutrient_no_data : `${gramos(parte.gramos)} g`}`,
-        );
-        if (fila.resto !== null && fila.resto > 0) {
-          partes.push(`${fila.macro.etiquetaDelResto} ${gramos(fila.resto)} g`);
-        }
-        return `Dentro de ${fila.macro.etiqueta.toLowerCase()}: ${partes.join(", ")}.`;
-      }),
-  ].join(" ");
+  const descripcion = `Reparto de calorías: ${macros
+    .map((macro) => `${macro.etiqueta} ${porcentaje(macro.pct)}`)
+    .join(", ")}.`;
+  // La descripción dice lo que el gráfico MUESTRA: al volver al anillo simple,
+  // el desglose por macro salió también de acá (contar en la etiqueta lo que el
+  // dibujo no dibuja sería describir otro gráfico). `desglose` sigue resuelto
+  // por si el anillo exterior vuelve.
+  void desglose;
 
   return (
     <div className="flex flex-col gap-6">
@@ -334,27 +326,11 @@ export function DonutMacros({ copy, macro_pct, nutrients, centro }: DonutMacrosP
             stroke="var(--color-surface-2)"
             strokeWidth={GROSOR_INTERIOR}
           />
-          <circle
-            cx={CENTRO}
-            cy={CENTRO}
-            r={RADIO_EXTERIOR}
-            fill="none"
-            stroke="var(--color-surface-2)"
-            strokeWidth={GROSOR_EXTERIOR}
-            opacity={0.55}
-          />
-          {/* Las doce en punto es el arranque de los dos anillos: el gajo de
-              afuera empieza donde empieza el suyo de adentro. */}
+          {/* EL ANILLO EXTERIOR NO SE DIBUJA (Q/A de Tomás, 01/09 por la noche):
+              el donut vuelve al anillo simple. Los gajos de `exteriores` se
+              siguen calculando —la partición es correcta y revivirla es volver a
+              renderizarla acá— pero en pantalla manda un solo círculo. */}
           <g transform={`rotate(-90 ${CENTRO} ${CENTRO})`}>
-            {exteriores.map((gajo) => (
-              <Arco
-                key={gajo.id}
-                gajo={gajo}
-                radio={RADIO_EXTERIOR}
-                grosor={GROSOR_EXTERIOR}
-                vuelta={VUELTA_EXTERIOR}
-              />
-            ))}
             {interiores.map((gajo) => (
               <Arco
                 key={gajo.id}
@@ -395,10 +371,15 @@ export function DonutMacros({ copy, macro_pct, nutrients, centro }: DonutMacrosP
                 className="size-3 shrink-0 rounded-full"
                 style={{ backgroundColor: macro.color }}
               />
-              <dt className="text-sm text-ink-soft">{macro.etiqueta}</dt>
-              <dd className="ml-auto flex items-baseline gap-3 font-mono tabular-nums">
-                <span className="text-ink">{porcentajeEntero(macro.pct)}</span>
-                <span className="w-14 text-right text-sm text-ink-faint">
+              <dt className="min-w-0 flex-1 text-sm text-ink-soft">{macro.etiqueta}</dt>
+              {/* El % y los gramos son COLUMNAS de ancho fijo y sin quiebre: una
+                  etiqueta larga («Hidratos de carbono») envuelve en la suya y
+                  los números quedan alineados fila contra fila (Q/A de Tomás). */}
+              <dd className="flex shrink-0 items-baseline gap-3 font-mono tabular-nums">
+                <span className="w-12 whitespace-nowrap text-right text-ink">
+                  {porcentajeEntero(macro.pct)}
+                </span>
+                <span className="w-14 whitespace-nowrap text-right text-sm text-ink-faint">
                   {macro.gramos === null
                     ? copy.nutrient_no_data
                     : `${gramosEnteros(macro.gramos)} g`}
