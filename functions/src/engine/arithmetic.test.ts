@@ -28,6 +28,9 @@ const SIN_AZUCARES: Per100g = { ...COMPLETA, sugars_g: null };
 
 function item(parcial: Partial<EngineItem> & { termino_en: string }): EngineItem {
   return {
+    // Estos tests miden la ARITMÉTICA, que no mira los términos: el español va
+    // vacío, que es lo que el motor escribe cuando la visión no lo dijo.
+    termino_es: "",
     food_id: "test",
     name_es: parcial.termino_en,
     name_en: parcial.termino_en,

@@ -16,7 +16,7 @@
  * mismo. Es el único cruce del catálogo, y con un índice plano habría bastado
  * para volver el motor no determinístico.
  */
-import { aliasConfidence, aliasText, type CanonicalFood } from "../kb/types";
+import { aliasConfidence, aliasText, type CanonicalFood, type Catalog, type VocabularyGuard } from "../kb/types";
 import { claveDeMatching, estadoDeCoccion, variantesDeIndice } from "./normalize";
 
 /** Un término del catálogo, ya normalizado, apuntando a su ficha. */
@@ -49,33 +49,43 @@ export interface TerminoIndexado {
 /**
  * Una palabra que NO puede resolver a una ficha determinada.
  *
- * Es la hermana en runtime de `kb/curation/guardas.vocabulario.json`. Aquella
- * blinda el CATÁLOGO (impide que la palabra se escriba como nombre o alias de la
- * ficha equivocada, y rompe el build si pasa); esta blinda el MATCHER (impide
- * que la palabra LLEGUE a esa ficha por cualquier otro camino). Las dos existen
- * porque un error de vocabulario que se arregla a mano vuelve.
+ * ES EL MISMO TIPO QUE ESCRIBE LA CURACIÓN (`VocabularyGuard` en `kb/types`), y
+ * desde la DT-32 eso es el arreglo entero. Antes había DOS estructuras
+ * parecidas: `kb/curation/guardas.vocabulario.json` blindaba el CATÁLOGO —impide
+ * que la palabra se escriba como nombre o alias de la ficha equivocada, y rompe
+ * el build si pasa— y una constante escrita a mano acá blindaba el MATCHER. Las
+ * dos listas divergieron hasta dieciocho contra dos, y las que solo existían del
+ * lado de la curación NO impedían que el difuso llegara a la ficha prohibida.
  *
- * Que hoy la cascada ya las respete por su propia estructura no las vuelve
- * redundantes: son el candado que hace que un cambio futuro en el algoritmo de
- * matching rompa un test en vez de romper un plato.
+ * Ahora la lista es UNA: la declara la curación, el candado 1 del build la
+ * verifica contra las fichas, el build la EMITE dentro de `foods.canonical.json`
+ * (clave `guardas`) y `construirIndice` la lee de ahí. Es el patrón de la regla 1
+ * del proyecto — lo declarativo viaja en los datos y lo que hay en el código es
+ * solo arranque en frío.
+ *
+ * Que la cascada del matcher ya respete varias de estas prohibiciones por su
+ * propia estructura no las vuelve redundantes: son el candado que hace que un
+ * cambio futuro en el algoritmo rompa un test en vez de romper un plato.
  */
-export interface GuardaDeVocabulario {
-  /** El término, ya normalizado. La guarda dispara si aparece en la consulta. */
-  termino: string;
-  /** Los `food_id` a los que ese término no puede llegar. */
-  prohibido_en: string[];
-  /**
-   * Palabras que LEVANTAN la prohibición: si la consulta las trae, el usuario
-   * nombró explícitamente la variante y la guarda ya no aplica.
-   */
-  salvo_si_contiene?: string[];
-  motivo: string;
-}
+export type GuardaDeVocabulario = VocabularyGuard;
 
 /**
- * Las guardas vigentes. Son dos y las dos salen de una medición, no de un
- * temor: son los únicos pares del catálogo donde una palabra frecuente puede
- * llegar a una ficha que no es la suya.
+ * EL ARRANQUE EN FRÍO, Y NADA MÁS.
+ *
+ * Estas dos guardas NO son "las vigentes": las vigentes son las que trae el
+ * catálogo (`Catalog.guardas`, 21 en el 3.8.0). Esta constante es el valor que
+ * usa `construirIndice` cuando NADIE le pasó guardas —un fixture de dos fichas,
+ * un llamador viejo, un catálogo anterior a la DT-32 leído de una base sin
+ * migrar—, exactamente como los umbrales del motor son el arranque en frío de lo
+ * que vive en `config/app` (regla 1).
+ *
+ * Son estas dos y no otras dos: `chorizo` es la guarda fundacional y `pepinillos`
+ * la única que hasta la DT-32 vivía SOLO acá. Las dos están también en el archivo
+ * de curación, así que el catálogo real nunca depende de esta lista.
+ *
+ * NO SE AMPLÍA. Una guarda nueva se escribe en `kb/curation/guardas.vocabulario.json`,
+ * donde el build la verifica; agregarla acá volvería a abrir la divergencia que
+ * la DT-32 cerró.
  */
 export const GUARDAS_DE_VOCABULARIO: GuardaDeVocabulario[] = [
   {
@@ -155,6 +165,18 @@ export interface CatalogIndex {
 export const MINIMO_DE_FICHAS = 100;
 
 export interface OpcionesDeIndice {
+  /**
+   * LAS GUARDAS QUE VAN A REGIR ESTE ÍNDICE (DT-32).
+   *
+   * Quien construye el índice las trae del CATÁLOGO — `catalogo.guardas`, que el
+   * build emite desde `kb/curation/guardas.vocabulario.json`. `indiceDelCatalogo`
+   * hace ese paso en un solo lugar y es la puerta que conviene usar.
+   *
+   * Sin esta clave se usa `GUARDAS_DE_VOCABULARIO`, que es arranque en frío y no
+   * la lista vigente: un catálogo anterior a la DT-32 —o una lectura de Firestore
+   * hecha antes de que el seed publicara las guardas— deja al matcher con dos
+   * prohibiciones en vez de veintiuna, y eso hay que saberlo, no descubrirlo.
+   */
   guardas?: GuardaDeVocabulario[];
   /**
    * Baja el piso de `MINIMO_DE_FICHAS`. Es para los tests y los fixtures, que
@@ -162,6 +184,26 @@ export interface OpcionesDeIndice {
    * lo pase está declarando por escrito que sabe lo que hace.
    */
   minimo_de_fichas?: number;
+}
+
+/**
+ * El índice de un catálogo COMPLETO: fichas, versión y guardas, de una sola pieza.
+ *
+ * Es la puerta que hay que usar cuando se tiene el `foods.canonical.json` entero
+ * en la mano (los tests, el censo de cobertura, el replay del golden set). Existe
+ * para que leer las guardas del catálogo sea UNA línea escrita una sola vez y no
+ * una que cada llamador tenga que acordarse de escribir: la DT-32 nació
+ * justamente de que la lista del matcher se mantenía a mano.
+ *
+ * `construirIndice` sigue existiendo con su firma de siempre porque hay un
+ * llamador que NO tiene un catálogo: la carga desde Firestore arma las fichas
+ * documento por documento y las guardas le llegan por otro lado.
+ */
+export function indiceDelCatalogo(catalogo: Catalog, opciones: OpcionesDeIndice = {}): CatalogIndex {
+  return construirIndice(catalogo.foods, catalogo.kb_version, {
+    guardas: catalogo.guardas,
+    ...opciones,
+  });
 }
 
 /**
@@ -196,6 +238,7 @@ export function construirIndice(
     exactoEs: new Map(),
     difusoEn: [],
     difusoEs: [],
+    // Las declaradas si vinieron; el arranque en frío si no. Ver `OpcionesDeIndice`.
     guardas: opciones.guardas ?? GUARDAS_DE_VOCABULARIO,
     colisiones: [],
   };

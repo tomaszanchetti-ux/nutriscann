@@ -533,6 +533,7 @@ test("candado 3: al alimento manual se le exige el 10 % sin el margen de ±20 kc
   const catalogo = {
     kb_version: "test",
     generated_from: { selection: "test", sources: [] as never[] },
+    guardas: [],
     foods: [manualFood],
   };
   const result = lockAtwater(catalogo, new Map());

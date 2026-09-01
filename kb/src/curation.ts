@@ -24,7 +24,7 @@
  *   cooking.transforms.json { "transforms": { "<metodo>": { factor_peso, ... } } }
  *   recipes.foods.json      { "recipes": [ { id, metodo, ingredientes, ... } ] }
  *   genericos.dt13.json     { marcadores_en, umbral_sodio_mg, plantilla_caveat }
- *   guardas.vocabulario.json { "guardas": [ { termino, prohibido_en, motivo } ] }
+ *   guardas.vocabulario.json { "guardas": [ { termino, prohibido_en, salvo_si_contiene?, motivo } ] }
  *
  * Las dos claves del override son independientes: se puede corregir solo los
  * gramos, solo la etiqueta en español, o las dos.
@@ -41,6 +41,7 @@ import {
   type AliasWithConfidence,
   type Per100g,
   type PortionHint,
+  type VocabularyGuard,
 } from "./types";
 
 export interface CuratedName {
@@ -121,19 +122,16 @@ export interface Recipe {
 }
 
 /**
- * Una guarda de vocabulario: un término que NO puede nombrar a ciertas fichas.
+ * Una guarda de vocabulario, tal como la lee la curación.
  *
- * Nace con `chorizo`, que es un embutido y también la mitad del nombre de un
- * corte vacuno (`Bife de chorizo`). La comparación es por igualdad exacta sobre
- * el término normalizado, no por subcadena: el nombre compuesto es correcto y lo
- * que se prohíbe es el término a secas, como nombre o como alias.
+ * EL TIPO SE MUDÓ A `types.ts` CON LA DT-32 y acá queda el alias con el nombre
+ * de siempre. No es cosmética: `types.ts` es el único archivo que se copia byte
+ * a byte a `functions/src/kb/`, y desde que la guarda VIAJA EN EL CATÁLOGO el
+ * motor tiene que hablar exactamente del mismo objeto que escribe la curación.
+ * Mientras el tipo vivía acá, la lista del matcher era otra estructura escrita a
+ * mano y las dos divergieron.
  */
-export interface GuardaVocabulario {
-  termino: string;
-  /** Los ids del catálogo donde ese término está prohibido. */
-  prohibido_en: string[];
-  motivo: string;
-}
+export type GuardaVocabulario = VocabularyGuard;
 
 export interface Curation {
   names: Map<number, CuratedName>;
@@ -479,7 +477,12 @@ export function loadCuration(dir: string = CURATION_DIR): Curation {
           problems.push(`${label}: se esperaba un objeto`);
           continue;
         }
-        const entry = item as { termino?: unknown; prohibido_en?: unknown; motivo?: unknown };
+        const entry = item as {
+          termino?: unknown;
+          prohibido_en?: unknown;
+          salvo_si_contiene?: unknown;
+          motivo?: unknown;
+        };
         if (typeof entry.termino !== "string" || entry.termino.trim() === "") {
           problems.push(`${label}: "termino" ausente o vacío`);
           continue;
@@ -492,6 +495,22 @@ export function loadCuration(dir: string = CURATION_DIR): Curation {
           problems.push(`${label}: "prohibido_en" es una lista NO vacía de ids del catálogo`);
           continue;
         }
+        // La excepción es OPCIONAL, pero si está tiene que ser una lista de
+        // palabras de verdad: una lista vacía o con un texto en blanco es una
+        // excepción que promete levantar la guarda y no la levanta nunca — el
+        // mismo modo de falla silencioso que la card 2.7 le encontró a `sweet`.
+        let salvo: string[] | undefined;
+        if (entry.salvo_si_contiene !== undefined) {
+          if (
+            !Array.isArray(entry.salvo_si_contiene) ||
+            entry.salvo_si_contiene.length === 0 ||
+            entry.salvo_si_contiene.some((p) => typeof p !== "string" || p.trim() === "")
+          ) {
+            problems.push(`${label}: "salvo_si_contiene" es una lista NO vacía de palabras`);
+            continue;
+          }
+          salvo = (entry.salvo_si_contiene as string[]).map((p) => p.trim());
+        }
         // Una guarda sin motivo es una prohibición sin razón: dentro de un año
         // nadie sabe si sigue valiendo y se borra la guarda en vez del error.
         if (typeof entry.motivo !== "string" || entry.motivo.trim() === "") {
@@ -501,6 +520,10 @@ export function loadCuration(dir: string = CURATION_DIR): Curation {
         guardas.push({
           termino: entry.termino.trim(),
           prohibido_en: (entry.prohibido_en as string[]).map((id) => id.trim()),
+          // La clave solo existe cuando la guarda declara una excepción, igual
+          // que `generic` en una ficha: un `undefined` explícito viajaría al
+          // JSON del catálogo como una clave que no dice nada.
+          ...(salvo === undefined ? {} : { salvo_si_contiene: salvo }),
           motivo: entry.motivo.trim(),
         });
       }

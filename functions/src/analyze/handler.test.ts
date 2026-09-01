@@ -210,7 +210,78 @@ test("`items` y `totals` son los del motor, no una copia parecida", async () => 
     "per_100g",
     "source_ref",
     "termino_en",
+    // DT-25 (WS07): el español que dijo la visión. Está en ESTA lista —o sea,
+    // presente aunque el modelo no haya dicho nada en español, como en este
+    // mismo caso, donde vale ""— porque una clave ausente sería ambigua entre
+    // "la visión no lo dijo" y "este scan es anterior a la DT-25", y el replay
+    // del golden set necesita distinguirlas para saber si puede juzgar el ítem.
+    "termino_es",
   ]);
+});
+
+test("`termino_es` viaja al expediente con lo que dijo la visión (DT-25)", async () => {
+  // El motor matchea con los DOS nombres desde la card 2.6 y hasta la DT-25 el
+  // expediente guardaba solo el inglés: un scan no registraba la mitad de lo que
+  // decidió su propio match. Acá se mira el caso que más importa —el que ENTRA
+  // POR EL ESPAÑOL— porque es justamente el que el replay no podía re-jugar.
+  const { deps, persistidos } = andamio(
+    clienteQueDice(
+      mensaje(
+        JSON.stringify({
+          is_food: true,
+          items: [{ food_en: "spanish omelette", food_es: "Tortilla de patatas", grams: 200, confidence: 0.9 }],
+        }),
+      ),
+    ),
+  );
+  const { body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const item = (body as CuerpoDeAnalisis).items[0];
+
+  assert.equal(item?.termino_en, "spanish omelette");
+  assert.equal(item?.termino_es, "Tortilla de patatas", "el español de la visión, tal cual lo dijo");
+  assert.match(item?.motivo ?? "", /en español/, "y este ítem entró por el español: es el caso que el replay no podía juzgar");
+  // Y lo mismo queda en el expediente, que es lo que la deuda pedía: la
+  // persistencia guarda los ítems del motor sin reformatear.
+  assert.equal(persistidos[0]?.resultado.items[0]?.termino_es, "Tortilla de patatas");
+});
+
+test("sin `food_es` el término español es una cadena vacía, no una clave ausente (DT-25)", async () => {
+  // La otra mitad del contrato. Una salida de la visión sin español es normal
+  // —el campo es opcional desde la card 2.6— y el expediente tiene que decir
+  // "no dijo nada", que es distinto de "no se preguntó".
+  const { deps, persistidos } = andamio(
+    clienteQueDice(
+      mensaje(JSON.stringify({ is_food: true, items: [{ food_en: "Apple, raw", grams: 150, confidence: 0.9 }] })),
+    ),
+  );
+  const { body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const item = (body as CuerpoDeAnalisis).items[0];
+
+  assert.equal(item?.termino_es, "");
+  assert.ok("termino_es" in (item ?? {}), "la clave existe igual: su ausencia significa otra cosa");
+  assert.equal(persistidos[0]?.resultado.items[0]?.termino_es, "");
+});
+
+test("un alimento sin ficha también guarda su `termino_es` (DT-25)", async () => {
+  // El camino 3 del motor (`no_catalogado`) es el que MÁS necesita el término
+  // español: es el que alimenta la cola de curación, y curar un término sin
+  // saber cómo lo nombró la visión en español es curar a ciegas.
+  const { deps, persistidos } = andamio(
+    clienteQueDice(
+      mensaje(
+        JSON.stringify({
+          is_food: true,
+          items: [{ food_en: "zzqx invented food", food_es: "comida zzqx inventada", grams: 100, confidence: 0.9 }],
+        }),
+      ),
+    ),
+  );
+  const { body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const item = (body as CuerpoDeAnalisis).items[0];
+
+  assert.equal(item?.match, "no_catalogado");
+  assert.equal(item?.termino_es, "comida zzqx inventada");
+  assert.equal(persistidos[0]?.resultado.items[0]?.termino_es, "comida zzqx inventada");
 });
 
 test("un alimento que el catálogo no tiene entra a la cola de curación", async () => {

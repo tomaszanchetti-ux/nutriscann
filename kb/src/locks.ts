@@ -317,6 +317,8 @@ export function lockSchema(
 ): LockResult {
   const failures: string[] = [];
 
+  failures.push(...problemasDelEncabezado(catalog));
+
   for (const item of stats.unresolved) {
     failures.push(
       `fdc-${item.fdc_id} (${item.source}, "${item.description}") sin ${item.missing.join(", ")}`,
@@ -357,9 +359,74 @@ export function lockSchema(
     id: "1-esquema",
     name: "Validación de esquema",
     passed: failures.length === 0,
-    detail: `${catalog.foods.length} alimentos validados, ${failures.length} problemas`,
+    detail:
+      `${catalog.foods.length} alimentos validados, ${catalog.guardas.length} guardas emitidas, ` +
+      `${failures.length} problemas`,
     failures,
   };
+}
+
+/**
+ * LAS CLAVES DEL ENCABEZADO DEL CATÁLOGO, EN EL ORDEN EN QUE SE ESCRIBEN.
+ *
+ * Cambiar esta lista ES cambiar el contrato del archivo que lee el seed, que
+ * leen los tests que corren sin los CSVs y que lee el motor. Está escrita en un
+ * solo lugar y la verifica el candado 1 para que sumar o sacar una clave sea un
+ * acto deliberado, con su versión y su motivo, y no un efecto secundario de otra
+ * cosa. Hasta la DT-32 eran tres; `guardas` es la cuarta.
+ */
+export const CLAVES_DEL_CATALOGO = ["kb_version", "generated_from", "guardas", "foods"] as const;
+
+/**
+ * La forma del encabezado: las cuatro claves, y las guardas bien escritas.
+ *
+ * LAS GUARDAS SE VERIFICAN ACÁ Y NO SOLO EN LA CURACIÓN porque desde la DT-32
+ * son la ÚNICA lista: la que rompe el build cuando una ficha se llama mal es la
+ * misma que el matcher lee del catálogo. Una guarda a medio escribir que llegue
+ * al archivo no rompe nada visible —el motor la recorre y no dispara nunca—, que
+ * es exactamente el modo de falla silencioso que las guardas existen para evitar.
+ * Y la lista VACÍA es fatal por su cuenta: un catálogo sin guardas es un catálogo
+ * donde `chorizo` puede volver al bife y nadie se entera.
+ */
+function problemasDelEncabezado(catalog: Catalog): string[] {
+  const problemas: string[] = [];
+
+  const claves = Object.keys(catalog);
+  if (claves.join(",") !== CLAVES_DEL_CATALOGO.join(",")) {
+    problemas.push(
+      `el encabezado del catálogo tiene las claves [${claves.join(", ")}] y el contrato declara ` +
+        `[${CLAVES_DEL_CATALOGO.join(", ")}]: sumar o sacar una clave del catálogo es un cambio de ` +
+        "esquema, y va con su versión y su motivo escritos en `assemble`",
+    );
+  }
+
+  if (!Array.isArray(catalog.guardas) || catalog.guardas.length === 0) {
+    problemas.push(
+      "el catálogo salió sin guardas de vocabulario: el matcher las lee de acá (DT-32), así que " +
+        "publicarlo dejaría al difuso sin ninguna de las prohibiciones que la curación declaró",
+    );
+    return problemas;
+  }
+
+  const vistos = new Set<string>();
+  for (const [i, guarda] of catalog.guardas.entries()) {
+    const donde = `guardas[${i}] ("${guarda.termino}")`;
+    if (typeof guarda.termino !== "string" || guarda.termino.trim() === "") {
+      problemas.push(`${donde}: el término está vacío`);
+    }
+    if (vistos.has(guarda.termino)) problemas.push(`${donde}: el término está declarado dos veces`);
+    vistos.add(guarda.termino);
+    if (!Array.isArray(guarda.prohibido_en) || guarda.prohibido_en.length === 0) {
+      problemas.push(`${donde}: no prohíbe la palabra en ninguna ficha`);
+    }
+    if (typeof guarda.motivo !== "string" || guarda.motivo.trim() === "") {
+      problemas.push(`${donde}: falta el motivo`);
+    }
+    if (guarda.salvo_si_contiene !== undefined && guarda.salvo_si_contiene.length === 0) {
+      problemas.push(`${donde}: la excepción está vacía; una excepción que no levanta nada es ruido`);
+    }
+  }
+  return problemas;
 }
 
 /**

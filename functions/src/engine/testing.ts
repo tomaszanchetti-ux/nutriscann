@@ -11,7 +11,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Catalog, CanonicalFood, Per100g } from "../kb/types";
-import { construirIndice, type CatalogIndex } from "./catalog";
+import { construirIndice, indiceDelCatalogo, type CatalogIndex } from "./catalog";
 
 /** La raíz del repo, desde `functions/lib/engine` o desde `functions/src/engine`. */
 export function raizDelRepo(): string {
@@ -28,10 +28,16 @@ export function catalogoReal(): Catalog {
   return cache;
 }
 
-/** El índice del catálogo real. */
+/**
+ * El índice del catálogo real, CON las guardas que el catálogo declara (DT-32).
+ *
+ * Va por `indiceDelCatalogo` y no por `construirIndice` a propósito: si un test
+ * armara el índice sin las guardas, mediría un matcher que no existe en ninguna
+ * parte —ni en producción, que las lee de Firestore, ni en el censo, ni en el
+ * replay del golden— y los tres casos de la DT-32 volverían a "pasar" callados.
+ */
 export function indiceReal(): CatalogIndex {
-  const catalogo = catalogoReal();
-  return construirIndice(catalogo.foods, catalogo.kb_version);
+  return indiceDelCatalogo(catalogoReal());
 }
 
 /** Una ficha del catálogo real por id. Lanza si no está: el test miente si sigue. */

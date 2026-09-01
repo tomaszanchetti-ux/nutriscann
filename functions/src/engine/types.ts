@@ -124,6 +124,28 @@ export interface Composicion {
 export interface EngineItem {
   /** El texto que la visión emitió. Se guarda siempre, matchee o no. */
   termino_en: string;
+  /**
+   * EL MISMO TEXTO, EN ESPAÑOL, TAL COMO LO EMITIÓ LA VISIÓN (DT-25).
+   *
+   * Se guarda SIEMPRE, igual que `termino_en`, y vale `""` cuando la visión no
+   * dijo nada en español. Que la clave EXISTA siempre es la mitad del arreglo:
+   * desde la card 2.6 el motor matchea con los DOS nombres (`buscarConDosNombres`)
+   * y hasta acá el expediente solo guardaba el inglés, así que un scan no
+   * registraba la mitad de lo que decidió su propio match. El costo se midió en
+   * la card 6.1: el replay del golden set no puede volver a jugar lo que entró
+   * por el español y lo declara `no_comparable_es` — 36 de 68 ítems de la
+   * corrida v3, más de la mitad.
+   *
+   * SIEMPRE PRESENTE Y NO OPCIONAL-CUANDO-HAY, que es la decisión que importa:
+   * una clave ausente sería ambigua entre "la visión no dijo nada en español" y
+   * "esta corrida es anterior a la DT-25", y el replay necesita distinguirlas
+   * para saber si puede juzgar el ítem entero o tiene que declararse tuerto. Con
+   * la clave siempre escrita, `""` dice lo primero y la ausencia lo segundo.
+   *
+   * NO ES EL TÉRMINO QUE GANÓ: es lo que la visión dijo. Por cuál de los dos
+   * entró el match lo dice el `motivo`, que lo escribe con todas las letras.
+   */
+  termino_es: string;
   food_id: string | null;
   name_es: string | null;
   name_en: string | null;

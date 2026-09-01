@@ -30,6 +30,30 @@ export const COLECCION_ALIMENTOS = "foods";
 export const COLECCION_CONFIG = "config";
 export const DOCUMENTO_META = "kb_meta";
 
+/**
+ * LAS GUARDAS DE VOCABULARIO QUE VIAJAN A `config/kb_meta` (DT-32).
+ *
+ * El motor las lee de ahí y las pasa al índice: son la mitad de producción del
+ * arreglo de la DT-32 —la otra mitad, la offline, la resuelve el catálogo del
+ * repo—. Sin esto, el matcher desplegado seguiría con las dos guardas de su
+ * arranque en frío contra las veintiuna que declara la curación.
+ *
+ * VAN EN `kb_meta` Y NO EN UNA COLECCIÓN PROPIA porque son parte de la identidad
+ * del catálogo publicado, igual que la `kb_version` y los conteos: se escriben y
+ * se leen en el mismo momento, entran en el hash de la versión (así que un
+ * cambio de guardas SIEMPRE mueve la `kb_version` y por lo tanto reescribe este
+ * documento) y una lectura suelta más por instancia sería pagar de más.
+ *
+ * El seed sigue siendo AGNÓSTICO del esquema: no valida la forma de una guarda
+ * —eso ya lo hizo el candado 1 del build— y copia lo que el encabezado traiga.
+ * Un catálogo anterior a la DT-32, sin la clave, publica una lista vacía y el
+ * motor lo declara al arrancar.
+ */
+function guardasDelCatalogo(catalogo: Catalogo): ValorJson {
+  const guardas = catalogo.encabezado["guardas"];
+  return Array.isArray(guardas) ? guardas : [];
+}
+
 /** Los conteos que se publican en `config/kb_meta` (claves del documento, en inglés). */
 export interface Conteos {
   total: number;
@@ -293,6 +317,7 @@ export async function correrSeed(
       {
         kb_version: catalogo.kb_version,
         counts: { ...conteos },
+        guardas: guardasDelCatalogo(catalogo),
       },
       undefined,
       { seeded_at: { timestampValue: ahora.toISOString() } },

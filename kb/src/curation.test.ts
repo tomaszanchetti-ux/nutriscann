@@ -189,3 +189,42 @@ test("una clave mal tipeada SIGUE siendo un problema: solo se admite el prefijo 
   assert.equal(curation.problems.length, 2);
   assert.match(curation.problems.join(" | "), /no es un fdc_id/);
 });
+
+// --- `salvo_si_contiene`, la excepción de una guarda (DT-32) -----------------
+
+test("una guarda puede declarar la excepción que la levanta", () => {
+  // La clave entró con la DT-32 porque la lista de la curación pasó a ser la que
+  // corre en el matcher, y la del matcher ya la tenía: `pepinillos` no puede
+  // llegar a los dulces SALVO que quien habló haya dicho "dulces".
+  const dir = tempDir({
+    "guardas.vocabulario.json": JSON.stringify({
+      guardas: [
+        { termino: "pepinillos", prohibido_en: ["fdc-169378"], salvo_si_contiene: ["dulces"], motivo: "los de eneldo" },
+        { termino: "chorizo", prohibido_en: ["fdc-2705835"], motivo: "el corte no es el embutido" },
+      ],
+    }),
+  });
+  const curation = loadCuration(dir);
+  assert.deepEqual(curation.problems, []);
+  assert.equal(curation.guardas.length, 2);
+  assert.deepEqual(curation.guardas[0]?.salvo_si_contiene, ["dulces"]);
+  // La clave NO existe donde no se declaró: un `undefined` explícito viajaría al
+  // JSON del catálogo como una clave que no dice nada.
+  assert.equal("salvo_si_contiene" in (curation.guardas[1] ?? {}), false);
+});
+
+test("una excepción vacía o con basura es un problema, no una guarda sin excepción", () => {
+  // Una excepción que no levanta nada promete algo que no cumple, que es el modo
+  // de falla que la card 2.7 ya le encontró a `sweet`. Se reporta en vez de
+  // tolerarse: la guarda entera se descarta y el candado 0 rompe el build.
+  for (const salvo of [[], [""], ["ok", 7]]) {
+    const dir = tempDir({
+      "guardas.vocabulario.json": JSON.stringify({
+        guardas: [{ termino: "x", prohibido_en: ["fdc-1"], salvo_si_contiene: salvo, motivo: "m" }],
+      }),
+    });
+    const curation = loadCuration(dir);
+    assert.equal(curation.guardas.length, 0, JSON.stringify(salvo));
+    assert.match(curation.problems.join(" | "), /salvo_si_contiene.*lista NO vacía/);
+  }
+});

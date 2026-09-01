@@ -28,7 +28,7 @@ const path = require("node:path");
 
 const RAIZ = path.resolve(__dirname, "..", "..");
 const { buscarAlimento } = require(path.join(RAIZ, "functions/lib/engine/match.js"));
-const { construirIndice } = require(path.join(RAIZ, "functions/lib/engine/catalog.js"));
+const { indiceDelCatalogo } = require(path.join(RAIZ, "functions/lib/engine/catalog.js"));
 
 /** El 15 % que el motor le descuenta a una ficha genérica antes de mostrarla. */
 const FACTOR_GENERICO = 0.85;
@@ -122,12 +122,20 @@ const VEREDICTOS_INGREDIENTES = {
   pimentón: "ficha_equivocada",
   "huesos de aceituna": "ficha_equivocada",
   "puré instantáneo": "ausente_ficha",
-  // --- Nuevos en la card 6.4: el efecto colateral de las fichas nuevas ------
-  // Tres términos que ANTES daban silencio y ahora caen mal. Se anotan como lo
-  // que son y no se esconden: una ficha nueva abre puertas y también ventanas.
-  "pasta de tomate": "ficha_equivocada",
-  "pasta filo": "ficha_equivocada",
-  "huevas de salmón": "ficha_equivocada",
+  // --- Los tres de la card 6.4, CERRADOS por la DT-32 (WS07) ----------------
+  // Eran el efecto colateral de las fichas nuevas: tres términos que antes daban
+  // silencio y que la 6.4 dejó cayendo en una ficha que no es la suya, con su
+  // guarda escrita y sin efecto. Desde que el build emite las guardas y el
+  // matcher las lee, los tres VUELVEN AL SILENCIO, que es su destino correcto:
+  // el catálogo no tiene concentrado de tomate, ni masa filo, ni huevas, y un
+  // hueco declarado vale más que una ficha parecida. El veredicto cambia de
+  // `ficha_equivocada` a `ausente_ficha` porque eso es lo que se mide ahora —
+  // pasan a estar en la MISMA clase que los otros huecos declarados del censo.
+  "pasta de tomate": "ausente_ficha",
+  "pasta filo": "ausente_ficha",
+  "huevas de salmón": "ausente_ficha",
+  // `gallina` NO se movió: sigue cayendo en el PLATO `Gallina en pepitoria` y no
+  // tiene guarda (USDA no mide la gallina como especie, DT-35 punto d).
   gallina: "ficha_equivocada",
 };
 
@@ -207,14 +215,14 @@ const NOTAS_INGREDIENTES = {
   "puré instantáneo": "Silencio, teniendo `Puré de papa instantáneo` (fdc-2709503) en el catálogo. Hueco de vocabulario, no de ficha.",
   "queso halloumi": "Cae en `Queso` genérico (381 kcal contra ~321 del halloumi). Familia correcta, sin ficha propia. La card 6.4 abrió los datasets y midió que `halloumi` da CERO coincidencias en los tres: no es que no se haya buscado.",
   "lomos de salmón": "CORREGIDO en la card 6.4: ya hay cuatro fichas de salmón y el término llega a `Salmón crudo` (188 kcal), que es lo que es un lomo sin cocinar.",
-  "huevas de salmón": "Llega a `Salmón` (274 kcal) por el difuso, y NO es la ficha correcta: las huevas son otro alimento (más grasa, más sodio, otra textura). USDA sí las mide —`Fish, roe, mixed species` en SR Legacy— y la card 6.4 decidió NO promoverlas: aparecen una sola vez en las dos fuentes y no son un plato del mercado español. Hueco declarado.",
+  "huevas de salmón": "CERRADO por la DT-32 (WS07): vuelve al SILENCIO. Hasta acá llegaba a `Salmón` (274 kcal) a 0,30 por el difuso, que NO es la ficha correcta —las huevas son otro alimento: más grasa, más sodio, otra textura—, y la guarda que lo decía estaba escrita desde la card 6.4 sin poder impedirlo. Ahora el matcher lee las guardas del catálogo y el hueco vuelve a estar a la vista en vez de tapado con la ficha del músculo. USDA sí las mide —`Fish, roe, mixed species` en SR Legacy— y la card 6.4 decidió NO promoverlas: aparecen una sola vez en las dos fuentes y no son un plato del mercado español. Hueco declarado, y ahora también medido como tal.",
   mejillones: "CORREGIDO en la card 6.4: `Mejillones` (fdc-2706350, 109 kcal) entró al catálogo y responde a `mejillones` y a `mussels` con match exacto.",
   "pez espada": "CORREGIDO en la card 6.4: `Pez espada a la plancha` (fdc-173704, 172 kcal) entró al catálogo, con `Pez espada` y `Emperador` de alias a 0,8.",
   alcachofas:
     "CORREGIDO en la card 6.4: daba silencio y ahora llega a `Alcachofa cocida` (fdc-2709766, 53 kcal). Llega por el difuso porque el plural pelado no dispara el alias `Alcachofas cocidas`; es el hueco de plurales de la DT-26.",
   "pasta de tomate":
-    "NUEVO EN LA CARD 6.4, y es el precio de la ficha nueva: antes daba silencio y ahora cae en `Pasta cocida` (157 kcal) a 0,25 por la palabra `pasta`. Es el patrón exacto de la `salsa` de las cocochas. La guarda está escrita, pero HOY NO MUERDE en el difuso (DT-32): las guardas del catálogo solo impiden nombrar la ficha, no llegar a ella. Se declara el costo en vez de esconderlo.",
-  "pasta filo": "Mismo caso que `pasta de tomate`: silencio antes, `Pasta cocida` a 0,30 ahora. Guarda escrita, sin morder hasta la DT-32.",
+    "CERRADO por la DT-32 (WS07): vuelve al SILENCIO, que es donde estaba antes de la card 6.4. Aquella card promovió `Pasta cocida` para tapar el hueco de la DT-33 y de paso abrió esta ventana: en español `pasta` nombra el fideo Y cualquier producto triturado, así que el término caía en la pasta a 0,25 (157 kcal contra las 24 de `Salsa de tomate en lata`, seis veces menos energía). La guarda estaba escrita desde entonces y no mordía. Ahora el build la emite dentro del catálogo y `construirIndice` la lee: el silencio es el destino correcto porque el catálogo no tiene ficha de concentrado de tomate.",
+  "pasta filo": "CERRADO por la DT-32 (WS07): vuelve al SILENCIO, igual que `pasta de tomate`. Caía en `Pasta cocida` a 0,30 y la pasta filo es una masa de hojaldre finísima (~300 kcal/100 g), no un fideo. El catálogo no tiene ninguna ficha de masa filo —`phyllo` da cero coincidencias útiles—, así que acá el silencio era y sigue siendo lo correcto.",
   gallina:
     "NUEVO EN LA CARD 6.4: antes daba silencio y ahora cae en `Gallina en pepitoria` (161 kcal), que es el PLATO entero y no el ave. El catálogo sigue sin ficha de gallina —USDA no la mide como especie aparte— y la receta usa `Pollo guisado` con esa reserva escrita.",
   "maíz tierno":
@@ -290,7 +298,10 @@ function clasificaSola(match) {
 
 function main() {
   const catalogo = JSON.parse(fs.readFileSync(path.join(RAIZ, "kb/build/foods.canonical.json"), "utf8"));
-  const index = construirIndice(catalogo.foods, catalogo.kb_version);
+  // CON las guardas del catálogo (DT-32): el censo mide el matcher que corre de
+  // verdad, y desde el 3.8.0 ese matcher respeta las guardas que declaró la
+  // curación. Un censo armado sin ellas mediría un motor que no existe.
+  const index = indiceDelCatalogo(catalogo);
   const fuente = JSON.parse(fs.readFileSync(path.join(__dirname, "platos.mediterraneos.json"), "utf8"));
 
   const platos = [];

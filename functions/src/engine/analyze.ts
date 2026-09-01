@@ -99,13 +99,17 @@ class ColaDeCuracion {
 
 function resolverItem(item: VisionItem, index: CatalogIndex, cola: ColaDeCuracion): EngineItem {
   const termino_en = terminoDeVision(item.food_en);
+  // El español de la visión, saneado con la misma regla que el inglés. Se
+  // calcula UNA vez y viaja a los tres caminos de salida: es la entrada del
+  // matching (card 2.6) y desde la DT-25 también parte del expediente.
+  const termino_es = terminoDeVision(item.food_es);
   const confianzaVision = confianzaDeVision(item.confidence);
   const { gramos: gramosDeclarados, problema: problemaDeGramos } = interpretarGramos(item.grams);
   const preparation = item.preparation ?? null;
 
   // 1 — el plato entero, tal cual, contra el catálogo. Los DOS nombres que dijo
   //     la visión, y gana el que el catálogo conoce mejor (card 2.6).
-  const match = buscarConDosNombres(termino_en, terminoDeVision(item.food_es), index);
+  const match = buscarConDosNombres(termino_en, termino_es, index);
   if (match !== null) {
     const esGenerico = match.ficha.generic === true;
     const confianzaMatch = redondear(match.confianza_match * (esGenerico ? FACTOR_GENERICO : 1));
@@ -116,6 +120,7 @@ function resolverItem(item: VisionItem, index: CatalogIndex, cola: ColaDeCuracio
       : match.motivo;
     return {
       termino_en,
+      termino_es,
       food_id: match.ficha.id,
       name_es: match.ficha.names.es,
       name_en: match.ficha.names.en,
@@ -169,6 +174,7 @@ function resolverItem(item: VisionItem, index: CatalogIndex, cola: ColaDeCuracio
     });
     return {
       termino_en,
+      termino_es,
       food_id: null,
       name_es: null,
       name_en: null,
@@ -217,6 +223,7 @@ function resolverItem(item: VisionItem, index: CatalogIndex, cola: ColaDeCuracio
 
   return {
     termino_en,
+    termino_es,
     food_id: null,
     name_es: null,
     name_en: null,

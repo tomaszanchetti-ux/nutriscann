@@ -55,6 +55,7 @@ test("el documento del scan guarda el resultado del motor tal cual", () => {
     items: [
       {
         termino_en: "apple",
+        termino_es: "manzana",
         food_id: "fdc-1",
         name_es: "Manzana",
         name_en: "Apple, raw",

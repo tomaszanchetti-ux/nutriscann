@@ -50,7 +50,7 @@
  *    upsert de la 2.2 contra `curation_queue`, no algo que el motor pueda saber.
  */
 export { analizarEscaneo } from "./analyze";
-export { construirIndice, GUARDAS_DE_VOCABULARIO, MINIMO_DE_FICHAS } from "./catalog";
+export { construirIndice, indiceDelCatalogo, GUARDAS_DE_VOCABULARIO, MINIMO_DE_FICHAS } from "./catalog";
 export type { CatalogIndex, ColisionDeIndice, GuardaDeVocabulario, TerminoIndexado } from "./catalog";
 export { buscarAlimento, guardaQueViola, redondear } from "./match";
 export type { MatchResult, NivelDeMatch } from "./match";

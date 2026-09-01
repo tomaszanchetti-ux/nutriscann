@@ -11,6 +11,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import { CATALOG_FILE, runContentLocks, runPipeline } from "./build";
+import { contentHash } from "./canonical";
 import { caveatDeSodio, esGenerico } from "./genericos";
 import { GOLDEN_CHECKS, MINIMUM_BY_SOURCE, lockAtwater, lockIdempotence } from "./locks";
 import { loadExclusions } from "./selection";
@@ -36,7 +37,31 @@ test("el pipeline compila el catálogo y pasa los seis candados", { timeout: 600
   assert.deepEqual(first.stats.recipeFailures, [], "ninguna receta puede quedar sin derivar");
   assert.ok(first.stats.bySource.usda_fndds >= MINIMUM_BY_SOURCE.usda_fndds);
   assert.ok(first.stats.bySource.usda_sr_legacy >= MINIMUM_BY_SOURCE.usda_sr_legacy);
-  assert.match(first.catalog.kb_version, /^3\.7\.0\+[0-9a-f]{8}$/);
+  assert.match(first.catalog.kb_version, /^3\.8\.0\+[0-9a-f]{8}$/);
+
+  // El ENCABEZADO, que desde la DT-32 tiene cuatro claves y no tres. Es un
+  // candado de esquema y por eso se afirma acá y no solo dentro de `lockSchema`:
+  // el orden es el del archivo commiteado, que se lee y se diffea a mano.
+  assert.deepEqual(Object.keys(first.catalog), ["kb_version", "generated_from", "guardas", "foods"]);
+  assert.deepEqual(
+    first.catalog.guardas,
+    first.curation.guardas,
+    "el catálogo emite EXACTAMENTE las guardas que declaró la curación, sin filtrar ninguna",
+  );
+  assert.ok(first.catalog.guardas.length >= 21, `solo ${first.catalog.guardas.length} guardas emitidas`);
+
+  // Y LAS GUARDAS ENTRAN EN LA VERSIÓN. Sin esto, agregar una guarda dejaría la
+  // `kb_version` quieta: el seed no republicaría y la trazabilidad diría que el
+  // reporte se calculó con un vocabulario que ya no es el que se usó.
+  const conUnaGuardaMenos = {
+    ...first.catalog,
+    guardas: first.catalog.guardas.slice(1),
+  };
+  assert.notEqual(
+    contentHash({ generated_from: conUnaGuardaMenos.generated_from, guardas: conUnaGuardaMenos.guardas, foods: conUnaGuardaMenos.foods }),
+    contentHash({ generated_from: first.catalog.generated_from, guardas: first.catalog.guardas, foods: first.catalog.foods }),
+    "sacar una guarda tiene que mover el hash del catálogo",
+  );
 
   const second = await runPipeline();
   const idempotence = lockIdempotence(first.json, second.json);

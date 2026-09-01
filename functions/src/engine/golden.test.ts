@@ -29,6 +29,7 @@ import {
   type CriteriosDelSet,
   type PlatoGrabado,
 } from "./golden";
+import { buscarAlimento } from "./match";
 import { indiceReal } from "./testing";
 
 const plato = (parcial: Partial<PlatoGrabado> & { id: string }): PlatoGrabado => ({
@@ -252,5 +253,140 @@ describe("card 6.1 — la evidencia grabada del golden set, dentro del repo", ()
       68,
     );
     assert.ok(r.no_comparables > 0, "ningún ítem entró por el español: revisar `idiomaDelMotivo`");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// DT-25 — el replay deja de estar tuerto cuando la corrida grabó `termino_es`
+// ---------------------------------------------------------------------------
+
+describe("DT-25 — el replay usa `termino_es` cuando la corrida lo grabó", () => {
+  // Los escenarios se CONSTRUYEN. Las tres corridas del repo son anteriores a la
+  // DT-25 y no traen el campo: buscar en ellas un ítem que lo tenga sería buscar
+  // algo que por definición no está. Lo que se prueba es la REGLA, con una
+  // corrida armada acá que sí lo trae — la que grabará la v4.
+  const index = indiceReal();
+
+  /** Un ítem grabado con los dos términos, como los va a escribir el expediente nuevo. */
+  const itemNuevo = (parcial: Partial<PlatoGrabado["items"][number]>) => ({
+    termino_en: "",
+    termino_es: "",
+    food_id: null,
+    name_es: null,
+    grams: 100,
+    confidence: 0.9,
+    match: "exacto",
+    ...parcial,
+  });
+
+  it("un ítem que entró por el español SE JUZGA, en vez de declararse no comparable", () => {
+    // El caso exacto que la deuda nombra: la lasaña entró por el alias español y
+    // el replay viejo la marcaba `no_comparable_es` porque solo tenía el inglés.
+    const conEspanol = buscarAlimento("Lasaña", index);
+    assert.ok(conEspanol, "el catálogo tiene que conocer `Lasaña`: si no, el escenario no prueba nada");
+
+    const corrida = [
+      plato({
+        id: "05-lasagna",
+        items: [
+          itemNuevo({
+            termino_en: "lasagna, meat",
+            termino_es: "Lasaña",
+            food_id: conEspanol.ficha.id,
+            motivo: 'Coincidencia exacta con un alias en español ("Lasaña").',
+          }),
+        ],
+      }),
+    ];
+
+    const r = replayDeCorrida(corrida, index);
+    assert.equal(r.con_dos_nombres, 1, "el ítem trae los dos términos: se re-juega entero");
+    assert.equal(r.no_comparables, 0, "y ya no hay nada que el replay no pueda juzgar");
+    assert.equal(r.filas[0]?.cambio, "resuelto_igual");
+  });
+
+  it("MISMO ítem sin `termino_es`: vuelve a ser `no_comparable_es`", () => {
+    // La mitad que prueba que el cambio es del dato y no del azar: es el mismo
+    // escenario con la clave sacada, o sea una corrida vieja.
+    const conEspanol = buscarAlimento("Lasaña", index);
+    assert.ok(conEspanol);
+    const corrida = [
+      plato({
+        id: "05-lasagna",
+        items: [
+          {
+            termino_en: "lasagna, meat",
+            food_id: conEspanol.ficha.id,
+            name_es: null,
+            grams: 100,
+            confidence: 0.9,
+            match: "exacto",
+            motivo: 'Coincidencia exacta con un alias en español ("Lasaña").',
+          },
+        ],
+      }),
+    ];
+    const r = replayDeCorrida(corrida, index);
+    assert.equal(r.con_dos_nombres, 0);
+    assert.equal(r.no_comparables, 1);
+  });
+
+  it("`termino_es` VACÍO no es lo mismo que ausente: la visión no dijo nada y el ítem se juzga igual", () => {
+    // La razón por la que el campo se guarda SIEMPRE. Con la clave presente y
+    // vacía se sabe que la visión no dijo nada en español, así que re-jugar solo
+    // el inglés reproduce exactamente lo que pasó aquel día.
+    const soloIngles = buscarAlimento("Apple, raw", index);
+    assert.ok(soloIngles);
+    const corrida = [
+      plato({
+        id: "01-manzana",
+        items: [
+          itemNuevo({
+            termino_en: "Apple, raw",
+            termino_es: "",
+            food_id: soloIngles.ficha.id,
+            motivo: "Coincidencia exacta con el nombre en inglés del catálogo.",
+          }),
+        ],
+      }),
+    ];
+    const r = replayDeCorrida(corrida, index);
+    assert.equal(r.con_dos_nombres, 1, "la clave está: la corrida es nueva");
+    assert.equal(r.no_comparables, 0);
+    assert.equal(r.filas[0]?.cambio, "resuelto_igual");
+  });
+
+  it("un silencio grabado se sigue midiendo con los dos nombres", () => {
+    // El destrabado es la evidencia limpia del replay y no se puede perder al
+    // sumar el español: si aquel día NI el inglés NI el español encontraron
+    // nada, hoy encontrar algo con los dos sigue siendo un destrabado.
+    const corrida = [
+      plato({
+        id: "05-lasagna",
+        items: [
+          itemNuevo({
+            termino_en: "zzqx invented food",
+            termino_es: "Lasaña",
+            food_id: null,
+            match: "no_catalogado",
+            motivo: "El catálogo no tiene este alimento.",
+          }),
+        ],
+      }),
+    ];
+    const r = replayDeCorrida(corrida, index);
+    assert.equal(r.silencios_grabados, 1);
+    assert.equal(r.destrabados, 1, "el español que aquel día no se grabó hoy abre la ficha");
+  });
+
+  it("LAS TRES CORRIDAS GRABADAS SIGUEN SIENDO VIEJAS, y eso no se maquilla", () => {
+    // El candado que impide el atajo: reconstruir el término español a partir
+    // del nombre de la ficha sería inventar la entrada y después felicitarse por
+    // acertar la salida. v1, v2 y v3 no tienen el dato y salen como salían.
+    for (const nombre of ["respuestas", "respuestas-v2", "respuestas-v3"]) {
+      const r = replayDeCorrida(corridaGrabada(nombre), index);
+      assert.equal(r.con_dos_nombres, 0, `${nombre} no puede traer termino_es: se grabó antes de la DT-25`);
+      assert.ok(r.no_comparables > 0, `${nombre} tiene ítems que entraron por el español y no se pueden juzgar`);
+    }
   });
 });

@@ -152,6 +152,39 @@ export interface CanonicalFood {
   };
 }
 
+/**
+ * Una guarda de vocabulario: un término que NO puede nombrar a ciertas fichas.
+ *
+ * Nace con `chorizo`, que es un embutido y también la mitad del nombre de un
+ * corte vacuno (`Bife de chorizo`). En el BUILD la comparación es por igualdad
+ * exacta sobre el término normalizado, no por subcadena: el nombre compuesto es
+ * correcto y lo que se prohíbe es el término a secas, como nombre o como alias.
+ *
+ * VIVE EN `types.ts` Y NO EN `curation.ts` DESDE LA DT-32, y el motivo es todo el
+ * arreglo de esa deuda: la guarda dejó de ser un asunto interno del build y pasó
+ * a VIAJAR EN EL CATÁLOGO (`Catalog.guardas`), que es el archivo que el motor lee.
+ * Hasta la DT-32 había dos listas —una acá que blindaba el catálogo y otra escrita
+ * a mano en `functions/src/engine/catalog.ts` que blindaba el matcher— y
+ * divergían: dieciocho guardas escritas no impedían que el difuso llegara a la
+ * ficha prohibida. Ahora hay UNA sola lista, la declara la curación y el build la
+ * emite; `types.ts` es el único archivo que se copia byte a byte a `functions/`,
+ * así que poner el tipo acá es lo que hace que las dos puntas hablen del mismo
+ * objeto y no de dos parecidos.
+ */
+export interface VocabularyGuard {
+  termino: string;
+  /** Los ids del catálogo donde ese término está prohibido. */
+  prohibido_en: string[];
+  /**
+   * Palabras que LEVANTAN la prohibición: si la consulta las trae, quien habló
+   * nombró explícitamente la variante y la guarda ya no aplica ("pepinillos
+   * DULCES"). Solo la usa el MATCHER: en el build la comparación es por igualdad
+   * exacta contra el nombre de la ficha y no hay consulta donde buscarlas.
+   */
+  salvo_si_contiene?: string[];
+  motivo: string;
+}
+
 export interface Catalog {
   /** semver + hash corto del contenido: mismo contenido ⇒ misma versión. */
   kb_version: string;
@@ -159,5 +192,20 @@ export interface Catalog {
     selection: string;
     sources: SourceId[];
   };
+  /**
+   * LAS GUARDAS DE VOCABULARIO, EMITIDAS POR EL BUILD (DT-32).
+   *
+   * Es la cuarta clave del encabezado y entró por el patrón de la regla 1 del
+   * proyecto: lo declarativo viaja en el catálogo y la constante del código es
+   * solo arranque en frío. La curación las escribe en
+   * `kb/curation/guardas.vocabulario.json`, el build las verifica contra las
+   * fichas (candado 1) y las copia acá tal cual; `construirIndice` las lee de
+   * este campo y con eso la MISMA lista que rompe el build cuando una ficha se
+   * llama mal impide que el difuso llegue a esa ficha en runtime.
+   *
+   * Entran en la `kb_version`: dos catálogos con las mismas fichas y distintas
+   * guardas responden distinto, así que son contenido y no metadatos.
+   */
+  guardas: VocabularyGuard[];
   foods: CanonicalFood[];
 }

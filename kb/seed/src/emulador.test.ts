@@ -127,6 +127,16 @@ test("circuito del seed contra el emulador de Firestore", async (t) => {
     assert.equal(meta?.["kb_version"], catalogo.kb_version);
     assert.deepEqual(meta?.["counts"], { total, created: total, updated: 0, unchanged: 0, deprecated: 0 });
     assert.equal(typeof meta?.["seeded_at"], "string");
+
+    // DT-32: las guardas de vocabulario viajan con el catálogo publicado. Es la
+    // mitad de PRODUCCIÓN del arreglo — el motor las lee de acá, porque la carga
+    // desde Firestore arma las fichas documento por documento y nunca ve el
+    // `foods.canonical.json`. Sin esto el matcher desplegado corre con las dos
+    // guardas de su arranque en frío contra las veintiuna que declara la curación.
+    const guardas = meta?.["guardas"];
+    assert.ok(Array.isArray(guardas), "`kb_meta.guardas` tiene que estar publicada");
+    assert.deepEqual(guardas, catalogo.encabezado["guardas"], "se publican tal cual las emitió el build");
+    assert.ok(guardas.length >= 21, `solo ${guardas.length} guardas publicadas`);
   });
 
   await t.test("corrida 2 — la misma base: CERO escrituras", async () => {

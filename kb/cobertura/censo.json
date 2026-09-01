@@ -11,7 +11,7 @@
   "functions/src/engine/cobertura.test.ts y corre en cada `npm test`."
  ],
  "medido": "2026-09-01",
- "kb_version": "3.7.0+2c416a9c",
+ "kb_version": "3.8.0+843ecb80",
  "fichas_en_el_catalogo": 1115,
  "clases": [
   "ok",
@@ -33,8 +33,8 @@
    "total": 196,
    "ok": 45,
    "confianza_injusta": 96,
-   "ficha_equivocada": 11,
-   "ausente_ficha": 44,
+   "ficha_equivocada": 8,
+   "ausente_ficha": 47,
    "descomponible": 0
   },
   "por_lista": {
@@ -3258,19 +3258,9 @@
   {
    "ingrediente": "huevas de salmón",
    "platos_que_lo_usan": 1,
-   "clasificacion": "ficha_equivocada",
-   "match": {
-    "ficha_id": "fdc-2706285",
-    "ficha_es": "Salmón",
-    "ficha_en": "Fish, salmon, NFS",
-    "nivel": "difuso",
-    "confianza_match": 0.3,
-    "confianza_visible": 0.26,
-    "termino_matcheado": "Salmón",
-    "generic": true,
-    "kcal_100g": 274
-   },
-   "nota": "Llega a `Salmón` (274 kcal) por el difuso, y NO es la ficha correcta: las huevas son otro alimento (más grasa, más sodio, otra textura). USDA sí las mide —`Fish, roe, mixed species` en SR Legacy— y la card 6.4 decidió NO promoverlas: aparecen una sola vez en las dos fuentes y no son un plato del mercado español. Hueco declarado."
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "nota": "CERRADO por la DT-32 (WS07): vuelve al SILENCIO. Hasta acá llegaba a `Salmón` (274 kcal) a 0,30 por el difuso, que NO es la ficha correcta —las huevas son otro alimento: más grasa, más sodio, otra textura—, y la guarda que lo decía estaba escrita desde la card 6.4 sin poder impedirlo. Ahora el matcher lee las guardas del catálogo y el hueco vuelve a estar a la vista en vez de tapado con la ficha del músculo. USDA sí las mide —`Fish, roe, mixed species` en SR Legacy— y la card 6.4 decidió NO promoverlas: aparecen una sola vez en las dos fuentes y no son un plato del mercado español. Hueco declarado, y ahora también medido como tal."
   },
   {
    "ingrediente": "huevos",
@@ -3847,36 +3837,16 @@
   {
    "ingrediente": "pasta de tomate",
    "platos_que_lo_usan": 1,
-   "clasificacion": "ficha_equivocada",
-   "match": {
-    "ficha_id": "fdc-2708357",
-    "ficha_es": "Pasta cocida",
-    "ficha_en": "Pasta, cooked",
-    "nivel": "difuso",
-    "confianza_match": 0.25,
-    "confianza_visible": 0.25,
-    "termino_matcheado": "Pasta, cooked",
-    "generic": false,
-    "kcal_100g": 157
-   },
-   "nota": "NUEVO EN LA CARD 6.4, y es el precio de la ficha nueva: antes daba silencio y ahora cae en `Pasta cocida` (157 kcal) a 0,25 por la palabra `pasta`. Es el patrón exacto de la `salsa` de las cocochas. La guarda está escrita, pero HOY NO MUERDE en el difuso (DT-32): las guardas del catálogo solo impiden nombrar la ficha, no llegar a ella. Se declara el costo en vez de esconderlo."
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "nota": "CERRADO por la DT-32 (WS07): vuelve al SILENCIO, que es donde estaba antes de la card 6.4. Aquella card promovió `Pasta cocida` para tapar el hueco de la DT-33 y de paso abrió esta ventana: en español `pasta` nombra el fideo Y cualquier producto triturado, así que el término caía en la pasta a 0,25 (157 kcal contra las 24 de `Salsa de tomate en lata`, seis veces menos energía). La guarda estaba escrita desde entonces y no mordía. Ahora el build la emite dentro del catálogo y `construirIndice` la lee: el silencio es el destino correcto porque el catálogo no tiene ficha de concentrado de tomate."
   },
   {
    "ingrediente": "pasta filo",
    "platos_que_lo_usan": 1,
-   "clasificacion": "ficha_equivocada",
-   "match": {
-    "ficha_id": "fdc-2708357",
-    "ficha_es": "Pasta cocida",
-    "ficha_en": "Pasta, cooked",
-    "nivel": "difuso",
-    "confianza_match": 0.3,
-    "confianza_visible": 0.3,
-    "termino_matcheado": "Pasta, cooked",
-    "generic": false,
-    "kcal_100g": 157
-   },
-   "nota": "Mismo caso que `pasta de tomate`: silencio antes, `Pasta cocida` a 0,30 ahora. Guarda escrita, sin morder hasta la DT-32."
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "nota": "CERRADO por la DT-32 (WS07): vuelve al SILENCIO, igual que `pasta de tomate`. Caía en `Pasta cocida` a 0,30 y la pasta filo es una masa de hojaldre finísima (~300 kcal/100 g), no un fideo. El catálogo no tiene ninguna ficha de masa filo —`phyllo` da cero coincidencias útiles—, así que acá el silencio era y sigue siendo lo correcto."
   },
   {
    "ingrediente": "patatas",

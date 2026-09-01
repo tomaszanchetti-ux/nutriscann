@@ -117,18 +117,21 @@ test("las catorce fichas de la DT-27 están, con su nombre y su número", () => 
   }
 });
 
-test("el lote es ADITIVO: nada se retira y la versión es 3.7.0", () => {
+test("el lote es ADITIVO: nada se retira y la versión es 3.8.0", () => {
   // La card 6.3 movió el menor a 3.3.0 SIN tocar este lote (curación de
   // vocabulario pura), la 6.4 lo movió a 3.4.0 SUMANDO fichas (33 de USDA por
   // kb/selection/dt33.v1.json y 43 derivadas por receta) y la 6.4b lo movió a
   // 3.5.0 con dos más: `receta-calcots` y `manual-salsa-de-calcots`, y la 6.4c
   // lo movió a 3.6.0 con una: `manual-torrezno-de-soria`, y la WS07 lo movió a
   // 3.7.0 SIN sumar ninguna —cambia los números de ese mismo torrezno por una
-  // decisión de corte y suma vocabulario—. Las 14 de
+  // decisión de corte y suma vocabulario—, y la DT-32 de esa misma WS07 lo movió
+  // a 3.8.0 SIN TOCAR UNA SOLA FICHA: lo que cambia es el ESQUEMA del catálogo,
+  // que estrena una cuarta clave de encabezado (`guardas`). El diff de `foods`
+  // entre la 3.7.0 y la 3.8.0 es vacío, verificado. Las 14 de
   // la DT-27 no se tocaron —eso lo vigilan los tests de arriba, uno por ficha— y
   // el conteo total se actualiza acá para que sumar una ficha sin pasar por una
   // card siga siendo imposible en silencio.
-  assert.match(catalog.kb_version, /^3\.7\.0\+[0-9a-f]{8}$/);
+  assert.match(catalog.kb_version, /^3\.8\.0\+[0-9a-f]{8}$/);
   // 1.022 de la 3.1.0 + 14 de la DT-27 (card 6.2) + 76 de la DT-33 (card 6.4)
   // + 2 de la card 6.4b + 1 de la card 6.4c.
   assert.equal(catalog.foods.length, 1115);

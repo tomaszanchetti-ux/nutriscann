@@ -558,10 +558,51 @@ export function assemble(input: AssembleInput): AssembleResult {
   // aliases resucite un alias que una card retiró a propósito. `Filete` sobre
   // `fdc-2705824` y `Tira de asado` sobre `fdc-169510` volvían en cada corrida
   // del generador, y el primero además rompe el build por su guarda.
-  const kbVersion = `3.7.0+${contentHash({ generated_from: generatedFrom, foods })}`;
+  //
+  // 3.8.0 con la WS07 (DT-32: las guardas de vocabulario VIAJAN EN EL CATÁLOGO).
+  //
+  // Es MENOR y es un cambio de ESQUEMA, que es una tercera categoría respecto de
+  // las anteriores: no entra ni sale ninguna ficha, no cambia ningún id, no se
+  // mueve un solo número de las 1.115 —el diff de `foods` es vacío—, y sin
+  // embargo el encabezado del catálogo pasa de TRES claves a CUATRO. La cuarta
+  // es `guardas`, y con ella el archivo deja de describir solo lo que el
+  // catálogo TIENE para describir también lo que el vocabulario NO PUEDE hacer.
+  //
+  // Es MENOR y no MAYOR porque la clave es ADITIVA en el sentido que importa
+  // acá: un consumidor viejo que lea `kb_version`, `generated_from` y `foods`
+  // sigue leyendo exactamente lo mismo, y el seed —que a propósito no conoce el
+  // esquema de un alimento y copia el encabezado tal cual— no necesita saber
+  // que existe. Nadie deja de encontrar nada.
+  //
+  // Y no se queda en PARCHE porque es el cambio que cierra la DT-32, que no era
+  // cosmética: había DOS listas de guardas —esta, que blindaba el catálogo, y
+  // una constante escrita a mano en `functions/src/engine/catalog.ts` que
+  // blindaba el matcher— y divergían dieciocho a dos. Las diecinueve que solo
+  // existían del lado de la curación NO impedían que el difuso llegara a la
+  // ficha prohibida: `pasta de tomate` caía en `Pasta cocida` a 0,25, `pasta
+  // filo` a 0,30 y `huevas de salmón` en `Salmón` a 0,30, con su guarda escrita
+  // y sin efecto. Desde esta versión la lista es una sola, la declara la
+  // curación, el candado 1 la verifica contra las fichas y `construirIndice` la
+  // lee del catálogo — el patrón de la regla 1 del proyecto: lo declarativo
+  // viaja en los datos y la constante del motor es solo arranque en frío.
+  //
+  // LA ÚNICA GUARDA NUEVA es `pepinillos`, y no es vocabulario nuevo: era la
+  // única que vivía en la constante del motor y no en el archivo de curación.
+  // Se muda con su `salvo_si_contiene` para que fundir las dos listas no pierda
+  // ninguna fila.
+  //
+  // LAS GUARDAS ENTRAN EN EL HASH, y esa es la otra mitad de la decisión: dos
+  // catálogos con las mismas fichas y distintas guardas RESPONDEN DISTINTO, así
+  // que son contenido y no metadatos. Sin esto, agregar una guarda dejaría la
+  // `kb_version` quieta y el seed no republicaría — la trazabilidad diría que el
+  // reporte se calculó con un vocabulario que ya no es el que se usó.
+  const kbVersion = `3.8.0+${contentHash({ generated_from: generatedFrom, guardas: curation.guardas, foods })}`;
 
   return {
-    catalog: { kb_version: kbVersion, generated_from: generatedFrom, foods },
+    // El orden de las claves ES el orden del archivo (`JSON.stringify` respeta
+    // el de inserción) y `foods` va última a propósito: el encabezado se lee de
+    // un vistazo antes de las 1.115 fichas.
+    catalog: { kb_version: kbVersion, generated_from: generatedFrom, guardas: curation.guardas, foods },
     stats,
     alcohol,
   };

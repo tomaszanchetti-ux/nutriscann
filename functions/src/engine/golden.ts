@@ -21,16 +21,22 @@
  *   · `compararCorridas` — cuánto se movió LA VISIÓN entre dos corridas sobre
  *     las mismas fotos (DT-28, punto 5). Es medición, no arreglo.
  *
- * LO QUE LAS RESPUESTAS GRABADAS NO TIENEN, y hay que decirlo antes de leer
- * cualquier número de acá: **`food_es` no viaja al expediente** (DT-25). El
- * `EngineItem` guarda `termino_en` y nada más, así que un replay solo puede
- * volver a jugar la mitad inglesa de lo que dijo la visión. Todo lo que este
- * archivo mide sobre el matching es un PISO, no el resultado completo.
+ * LO QUE LAS TRES CORRIDAS GRABADAS NO TIENEN, y hay que decirlo antes de leer
+ * cualquier número de acá: **`termino_es` no existía en el expediente** cuando se
+ * grabaron (DT-25). El `EngineItem` guardaba `termino_en` y nada más, así que un
+ * replay de v1, v2 o v3 solo puede volver a jugar la mitad inglesa de lo que dijo
+ * la visión, y lo que mide sobre el matching es un PISO, no el resultado completo.
+ *
+ * DESDE LA WS07 EL EXPEDIENTE SÍ LO GUARDA, y este archivo ya sabe usarlo: una
+ * corrida grabada que traiga `termino_es` se re-juega ENTERA, con los dos nombres,
+ * exactamente como el motor decidió aquel día. Las tres corridas viejas siguen
+ * saliendo `no_comparable_es` y eso no se maquilla: el dato no está, y suponerlo
+ * sería inventar evidencia. La primera corrida que lo aproveche es la v4.
  */
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import type { CatalogIndex } from "./catalog";
-import { buscarAlimento } from "./match";
+import { buscarAlimento, buscarConDosNombres } from "./match";
 import { redondear } from "./match";
 import { raizDelRepo } from "./testing";
 
@@ -41,6 +47,17 @@ import { raizDelRepo } from "./testing";
 /** Un ítem tal como quedó grabado en `golden/set-30/respuestas…/NN-slug.json`. */
 export interface ItemGrabado {
   termino_en: string;
+  /**
+   * El español que dijo la visión, si la corrida es POSTERIOR a la DT-25.
+   *
+   * OPCIONAL EN EL TIPO Y OBLIGATORIO EN EL EXPEDIENTE, y la asimetría es el
+   * punto: `EngineItem.termino_es` existe siempre (vale `""` cuando la visión no
+   * dijo nada en español), pero las corridas v1, v2 y v3 se grabaron antes de que
+   * el campo existiera y no lo traen. Por eso acá la clave AUSENTE significa "esta
+   * corrida es vieja" y `""` significa "la visión no lo dijo" — dos cosas
+   * distintas que el replay tiene que poder separar.
+   */
+  termino_es?: string;
   food_id: string | null;
   name_es: string | null;
   grams: number;
@@ -196,6 +213,12 @@ export interface ResumenDeReplay {
   perdidos: number;
   /** Ítems que entraron por el nombre español. El replay no los puede juzgar. */
   no_comparables: number;
+  /**
+   * Ítems re-jugados CON LOS DOS NOMBRES, porque la corrida grabó `termino_es`
+   * (DT-25). Es la medida de cuánto del replay dejó de estar tuerto: en una
+   * corrida vieja vale 0 y `no_comparables` se lleva la mitad de los ítems.
+   */
+  con_dos_nombres: number;
 }
 
 /**
@@ -208,13 +231,23 @@ export interface ResumenDeReplay {
  * NI el español encontraron nada. Si hoy el nombre inglés SOLO encuentra ficha,
  * el motor abrió algo que antes no tenía, sin discusión posible.
  *
- * NO PUEDE JUZGAR LOS ÍTEMS QUE ENTRARON POR EL ESPAÑOL, y hay que decirlo
- * fuerte: **las respuestas grabadas no traen `food_es`** (DT-25). El expediente
- * guarda `termino_en` y nada más, así que un ítem que aquel día matcheó POR EL
- * NOMBRE ESPAÑOL —la lasaña por el alias `Lasaña`, el jamón por `Jamón serrano`—
- * volvería del replay como si el motor lo hubiera perdido. No lo perdió: el
- * replay está tuerto. Se los reconoce por el MOTIVO, que sí quedó grabado y dice
- * el idioma (`idiomaDelMotivo`), y salen marcados `no_comparable_es`.
+ * NO PUEDE JUZGAR LOS ÍTEMS QUE ENTRARON POR EL ESPAÑOL **EN UNA CORRIDA VIEJA**,
+ * y hay que decirlo fuerte: las respuestas v1, v2 y v3 se grabaron antes de la
+ * DT-25 y no traen `termino_es`. El expediente guardaba `termino_en` y nada más,
+ * así que un ítem que aquel día matcheó POR EL NOMBRE ESPAÑOL —la lasaña por el
+ * alias `Lasaña`, el jamón por `Jamón serrano`— volvería del replay como si el
+ * motor lo hubiera perdido. No lo perdió: el replay está tuerto. Se los reconoce
+ * por el MOTIVO, que sí quedó grabado y dice el idioma (`idiomaDelMotivo`), y
+ * salen marcados `no_comparable_es`. Eso NO se maquilla reconstruyendo el término
+ * español a partir del nombre de la ficha: sería inventar la entrada y después
+ * felicitarse por acertar la salida.
+ *
+ * DESDE LA WS07 EL DATO ESTÁ. Una corrida grabada con el expediente nuevo trae
+ * `termino_es` en cada ítem, y ahí el replay deja de estar tuerto: se re-juega con
+ * `buscarConDosNombres`, que es exactamente la función que decidió el match aquel
+ * día, y no queda ni un `no_comparable_es`. `con_dos_nombres` en el resumen dice
+ * cuántos ítems se pudieron re-jugar enteros — es el número que separa una corrida
+ * vieja de una nueva.
  *
  * LOS QUE ENTRARON POR EL INGLÉS SÍ SE JUZGAN, y ahí `perdido` es una regresión
  * de verdad: `buscarConDosNombres` es determinístico, así que si aquel día ganó el
@@ -231,9 +264,21 @@ export interface ResumenDeReplay {
  */
 export function replayDeCorrida(corrida: PlatoGrabado[], index: CatalogIndex): ResumenDeReplay {
   const filas: FilaDeReplay[] = [];
+  let conDosNombres = 0;
   for (const plato of corrida) {
     for (const item of plato.items) {
-      const r = buscarAlimento(item.termino_en, index);
+      // LA BIFURCACIÓN DE LA DT-25, Y ES SOBRE LA PRESENCIA DE LA CLAVE, no
+      // sobre su contenido. Una corrida posterior a la DT-25 grabó `termino_es`
+      // siempre —vacío si la visión no dijo nada—, así que si la clave está, se
+      // sabe TODO lo que el motor supo aquel día y el ítem se re-juega entero con
+      // `buscarConDosNombres`, que es la función que decidió el match. Si no
+      // está, la corrida es vieja y falta la mitad de la entrada: ahí el replay
+      // sigue tuerto y lo dice.
+      const completo = typeof item.termino_es === "string";
+      if (completo) conDosNombres += 1;
+      const r = completo
+        ? buscarConDosNombres(item.termino_en, item.termino_es ?? "", index)
+        : buscarAlimento(item.termino_en, index);
       const actual = r === null ? null : r.ficha.id;
       const estabaEnSilencio = item.match === "no_catalogado";
       const idioma = idiomaDelMotivo(item.motivo);
@@ -241,7 +286,9 @@ export function replayDeCorrida(corrida: PlatoGrabado[], index: CatalogIndex): R
         ? actual === null
           ? "sigue_en_silencio"
           : "destrabado"
-        : idioma !== "en"
+        : // Con los dos términos grabados no hay nada que no se pueda juzgar: la
+          // entrada es la misma y `buscarConDosNombres` es determinística.
+          !completo && idioma !== "en"
           ? "no_comparable_es"
           : actual === null
             ? "perdido"
@@ -268,6 +315,7 @@ export function replayDeCorrida(corrida: PlatoGrabado[], index: CatalogIndex): R
     otra_ficha: contar("otra_ficha"),
     perdidos: contar("perdido"),
     no_comparables: contar("no_comparable_es"),
+    con_dos_nombres: conDosNombres,
   };
 }
 

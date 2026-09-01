@@ -14,7 +14,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { aliasConfidence, aliasText } from "../kb/types";
-import { construirIndice, MINIMO_DE_FICHAS } from "./catalog";
+import { construirIndice, GUARDAS_DE_VOCABULARIO, MINIMO_DE_FICHAS } from "./catalog";
 import { buscarAlimento } from "./match";
 import { claveDeMatching, normalizar, sinDescriptores } from "./normalize";
 import { catalogoReal, indiceReal } from "./testing";
@@ -339,6 +339,125 @@ describe("las 53 recetas del catálogo se encuentran por su nombre", () => {
       if (f.names.es !== null) {
         const porEs = buscarAlimento(f.names.es, index);
         assert.equal(porEs?.ficha.id, f.id, f.names.es);
+      }
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// DT-32 — las guardas de vocabulario MUERDEN en el matcher
+// ---------------------------------------------------------------------------
+
+describe("DT-32 — las guardas viajan en el catálogo y el índice las lee", () => {
+  it("el catálogo EMITE sus guardas y el índice usa esas, no las del arranque en frío", () => {
+    // El corazón de la deuda: hasta acá el matcher corría con una constante de
+    // DOS guardas mientras la curación declaraba veintiuna, y las diecinueve
+    // que solo existían del lado de kb no impedían nada.
+    assert.ok(Array.isArray(catalogo.guardas), "el catálogo tiene que traer la clave `guardas`");
+    assert.ok(catalogo.guardas.length > GUARDAS_DE_VOCABULARIO.length, "el catálogo declara más que el arranque en frío");
+    assert.deepEqual(index.guardas, catalogo.guardas, "el índice real usa las guardas del catálogo, tal cual");
+  });
+
+  it("el arranque en frío NO se amplía: una guarda nueva va a la curación", () => {
+    // Si alguien agrega una guarda acá en vez de en
+    // `kb/curation/guardas.vocabulario.json`, vuelve a abrir la divergencia que
+    // la DT-32 cerró: la del código no la verifica ningún candado del build.
+    assert.deepEqual(
+      GUARDAS_DE_VOCABULARIO.map((g) => g.termino).sort(),
+      ["chorizo", "pepinillos"],
+      "el arranque en frío son estas dos y nada más",
+    );
+    // Y las dos tienen que estar TAMBIÉN en el catálogo: si no, fundir las dos
+    // listas habría perdido una prohibición.
+    const declaradas = new Set(catalogo.guardas.map((g) => g.termino));
+    for (const g of GUARDAS_DE_VOCABULARIO) {
+      assert.ok(declaradas.has(g.termino), `${g.termino} salió del arranque en frío y no está en el catálogo`);
+    }
+  });
+
+  it("sin guardas declaradas se usa el arranque en frío, no una lista vacía", () => {
+    // El escenario se CONSTRUYE: un catálogo anterior a la DT-32 (o una lectura
+    // de Firestore sin `kb_meta.guardas`) no puede dejar al matcher sin ninguna
+    // prohibición. Cae al arranque en frío, que son dos, y eso se declara.
+    const enFrio = construirIndice(catalogo.foods, catalogo.kb_version);
+    assert.equal(enFrio.guardas, GUARDAS_DE_VOCABULARIO);
+    assert.equal(enFrio.guardas.length, 2);
+  });
+
+  it("los TRES casos que la DT-32 midió dejan de llegar a la ficha prohibida", () => {
+    // Los tres nacieron en la card 6.4 con su guarda escrita y sin efecto:
+    // `pasta de tomate` caía en `Pasta cocida` (fdc-2708357) a 0,25, `pasta filo`
+    // en la misma a 0,30 y `huevas de salmón` en `Salmón` (fdc-2706285) a 0,30.
+    // El destino correcto de los tres es el SILENCIO: el catálogo no tiene
+    // concentrado de tomate, ni masa filo, ni huevas, y el hueco declarado vale
+    // más que la ficha parecida.
+    for (const [consulta, prohibida] of [
+      ["pasta de tomate", "fdc-2708357"],
+      ["pasta filo", "fdc-2708357"],
+      ["huevas de salmón", "fdc-2706285"],
+    ] as const) {
+      const r = buscarAlimento(consulta, index);
+      assert.notEqual(r?.ficha.id, prohibida, `"${consulta}" sigue llegando a ${prohibida}`);
+      assert.equal(r, null, `"${consulta}" tenía que quedar en silencio y dio ${r?.ficha.id}`);
+    }
+  });
+
+  it("y el arranque en frío SÍ los deja pasar: es la guarda la que muerde, no otra cosa", () => {
+    // La otra mitad de la prueba. Sin esto, los tres podrían estar en silencio
+    // por cualquier cambio del matcher y el test estaría celebrando una
+    // casualidad. Con el mismo catálogo y las dos guardas viejas, los tres
+    // vuelven a caer donde caían.
+    const enFrio = construirIndice(catalogo.foods, catalogo.kb_version);
+    assert.equal(buscarAlimento("pasta de tomate", enFrio)?.ficha.id, "fdc-2708357");
+    assert.equal(buscarAlimento("pasta filo", enFrio)?.ficha.id, "fdc-2708357");
+    assert.equal(buscarAlimento("huevas de salmón", enFrio)?.ficha.id, "fdc-2706285");
+  });
+
+  it("la excepción del puerro: `ajo` no llega al puerro, pero `ajo porro` SÍ", () => {
+    // LA REGRESIÓN QUE LA DT-32 CAZÓ AL MEDIR, y por eso este test existe. Las
+    // dos puntas de la guarda no comparan igual —el build por igualdad exacta,
+    // el matcher por "la consulta EMPIEZA con el término"—, así que `ajo` mordía
+    // también `ajo porro crudo`, que es el alias COLOMBIANO del puerro y que el
+    // propio motivo de la guarda declara correcto: el puerro terminaba en `Ajo
+    // crudo`, 143 kcal contra 61. Se arregla con `salvo_si_contiene: ["porro"]`.
+    assert.equal(buscarAlimento("ajo", index)?.ficha.id, "fdc-169230", "`ajo` a secas es el ajo");
+    assert.equal(buscarAlimento("ajos", index)?.ficha.id, "fdc-169230");
+    assert.equal(buscarAlimento("ajo porro crudo", index)?.ficha.id, "fdc-169246", "el puerro crudo");
+    assert.equal(
+      buscarAlimento("ajo porro cocido con sal y grasa", index)?.ficha.id,
+      "fdc-2709935",
+      "el puerro cocido",
+    );
+  });
+
+  it("la excepción de los pepinillos sobrevivió a fundir las dos listas", () => {
+    // `pepinillos` era la ÚNICA guarda que vivía solo en la constante del motor.
+    // Al pasar a mandar la lista del catálogo, si no se hubiera mudado con su
+    // `salvo_si_contiene`, se habría perdido sin ruido.
+    const pepinillos = catalogo.guardas.find((g) => g.termino === "pepinillos");
+    assert.ok(pepinillos, "la guarda de los pepinillos tiene que estar en el catálogo");
+    assert.deepEqual(pepinillos.salvo_si_contiene, ["dulces"]);
+    assert.equal(buscarAlimento("pepinillos", index)?.ficha.id, "fdc-168558", "a secas, los de eneldo");
+    assert.equal(buscarAlimento("pepinillos dulces", index)?.ficha.id, "fdc-169378", "nombrados, los dulces");
+  });
+
+  it("ninguna guarda del catálogo mata el nombre propio de la ficha que protege", () => {
+    // El barrido: una guarda que impidiera encontrar una ficha VIVA por su
+    // propio nombre sería peor que el error que evita. Se recorren las veintiún
+    // guardas contra los nombres de todas las fichas que nombran.
+    const porId = new Map(activas.map((f) => [f.id, f]));
+    for (const guarda of catalogo.guardas) {
+      for (const id of guarda.prohibido_en) {
+        const ficha = porId.get(id);
+        if (ficha === undefined) continue; // una guarda puede adelantarse a una ficha que no existe
+        const nombres = [ficha.names.en, ficha.names.es].filter((n): n is string => n !== null);
+        for (const nombre of nombres) {
+          assert.equal(
+            buscarAlimento(nombre, index)?.ficha.id,
+            id,
+            `la guarda "${guarda.termino}" dejó a ${id} sin poder encontrarse por su nombre "${nombre}"`,
+          );
+        }
       }
     }
   });

@@ -15,12 +15,51 @@
   "",
   "Si una guarda se viola, el build rompe: la ficha no llega al seed.",
   "",
-  "El motor de la fase 2 tendrá su propia guarda para el match difuso —acá se",
-  "blinda el catálogo, no el matcher—, pero un catálogo bien curado es el primer",
-  "lugar donde el error se puede frenar, y el más barato."
+  "DESDE LA DT-32 ESTA LISTA ES LA ÚNICA. El build la EMITE dentro del catálogo",
+  "(`foods.canonical.json`, clave `guardas`) y `construirIndice` la lee de ahí, así",
+  "que la misma fila que rompe el build cuando una ficha se llama mal impide que el",
+  "difuso llegue a esa ficha en runtime. Hasta acá eran DOS listas —esta y una",
+  "constante escrita a mano en functions/src/engine/catalog.ts— y divergían: las",
+  "dieciocho que solo existían de este lado no frenaban al matcher, y lo único que",
+  "de verdad sacaba un término del difuso era darle su alias correcto.",
+  "",
+  "Una guarda puede declarar `salvo_si_contiene`: las palabras que LEVANTAN la",
+  "prohibición porque nombran explícitamente la variante ('pepinillos DULCES'). Solo",
+  "la ejerce el matcher —en el build la comparación es contra el nombre de la ficha",
+  "y no hay consulta donde buscarlas—, y se escribe corta a propósito: una excepción",
+  "que no lleva a la ficha que nombra no es una excepción, es ruido."
  ],
- "criteria_version": "guardas-v4",
+ "criteria_version": "guardas-v5",
  "generated": "2026-09-01",
+ "$card_ws07_dt32": [
+  "La v5 hace UN solo cambio de contenido y es el que cierra la DT-32 sin perder nada:",
+  "entra `pepinillos`, que era la ÚNICA guarda que vivía en la constante del motor y no",
+  "acá. Si la lista del catálogo hubiera pasado a mandar sin ella, el arreglo habría",
+  "cambiado una divergencia de dieciocho por una pérdida de una — los pepinillos dulces",
+  "volverían a quedar sin candado en el matcher.",
+  "",
+  "Con eso las dos listas se funden en veintiuna filas y ninguna se pierde: `chorizo`",
+  "estaba en las dos y es la misma; `pepinillos` viene del motor con su excepción; las",
+  "diecinueve restantes ya estaban acá y ahora, por primera vez, MUERDEN.",
+  "",
+  "Lo que la v5 NO hace, dicho para que nadie lo busque: no agrega guardas nuevas. Las",
+  "tres que la card 6.4 escribió sabiendo que no mordían (`pasta de tomate`, `pasta filo`,",
+  "`huevas de salmón`) no cambian una coma; lo que cambia es que ahora se cumplen.",
+  "",
+  "Y HAY UN SEGUNDO CAMBIO, que no es de contenido sino de PRECISIÓN, y sale de medir:",
+  "`ajo` y `ajos` estrenan `salvo_si_contiene: [\"porro\"]`. Las dos puntas de la guarda no",
+  "comparan igual —el build por igualdad exacta, el matcher por 'la consulta EMPIEZA con el",
+  "término'— y con la lista mordiendo por primera vez esa diferencia se hizo visible:",
+  "`ajo porro crudo`, que el propio motivo de la guarda declara alias CORRECTO del puerro,",
+  "la disparaba y terminaba en `Ajo crudo` (143 kcal contra 61). Eran las ÚNICAS 18",
+  "diferencias del barrido de 28.116 consultas del vocabulario del catálogo, y las 18 el",
+  "mismo par de alias. La excepción es la herramienta que la guarda ya tenía para esto.",
+  "",
+  "LA LECCIÓN PARA LA PRÓXIMA GUARDA, que conviene tener a mano: un término de guarda que",
+  "sea PREFIJO de un nombre legítimo necesita su excepción, y eso solo se descubre",
+  "barriendo el vocabulario entero contra el índice con y sin la lista. Escribir la guarda",
+  "es barato; el barrido es el que dice si muerde de más."
+ ],
  "$card_6_3_cobertura_mediterranea": [
   "La v4 suma diez guardas y TODAS salen del censo de cobertura mediterránea (kb/cobertura/):",
   "son los diez pares término/ficha donde el motor real, medido el 01/09/2026 contra el catálogo",
@@ -42,12 +81,13 @@
   "  por adelantado, para que el día que la ficha entre nadie pueda curar el atajo cómodo de",
   "  colgarlos de la ficha equivocada donde caen hoy. La guarda es barata; el error, no.",
   "",
-  "EL LÍMITE, DECLARADO PARA QUE NADIE LO LEA DE MÁS: estas guardas blindan el CATÁLOGO — rompen el",
-  "build si el término aparece como nombre o alias de la ficha prohibida. NO blindan el matcher: las",
-  "guardas de runtime son otra lista, `GUARDAS_DE_VOCABULARIO` en functions/src/engine/catalog.ts, y",
-  "hoy tiene dos entradas contra las diecisiete de acá. Lo que de verdad saca un término del difuso es",
-  "DARLE SU ALIAS CORRECTO, que es lo que hace la familia A; la familia B seguirá cayendo donde cae",
-  "hasta que la card 6.4 le dé ficha. La divergencia entre las dos listas quedó anotada como deuda."
+  "EL LÍMITE QUE ESTA CARD DECLARÓ, Y QUE LA DT-32 YA LEVANTÓ (se deja escrito porque explica por qué",
+  "la familia A existe): cuando se escribieron, estas guardas blindaban SOLO el catálogo —rompían el",
+  "build si el término aparecía como nombre o alias de la ficha prohibida— y no el matcher, que tenía",
+  "su propia lista de dos entradas en functions/src/engine/catalog.ts. Por eso lo único que de verdad",
+  "sacaba un término del difuso era DARLE SU ALIAS CORRECTO, que es lo que hace la familia A, y la",
+  "familia B siguió cayendo donde caía hasta que la card 6.4 le dio ficha. Desde la DT-32 el build",
+  "emite esta lista al catálogo y el matcher la lee: las veintiuna muerden en las dos puntas."
  ],
  "$card_6_2_dt27": [
   "La v3 suma dos guardas, y las dos existen por una razón MEDIDA y escrita en la DT-26: son",
@@ -82,6 +122,12 @@
    "motivo": "`Bife de chorizo` (Beef, steak, strip) es un CORTE VACUNO y el chorizo es un EMBUTIDO: los dos existen en España y en Argentina, y son dos alimentos distintos con dos perfiles distintos (239 kcal y 361 mg de sodio el corte, contra los 341 kcal y 983 mg del chorizo fresco de fdc-2706179). `chorizo` a secas es del embutido, donde ya vive con confianza 0,6; en el corte, ni siquiera con reserva: no es un gemelo aproximado, es otra cosa."
   },
   {
+   "termino": "pepinillos",
+   "prohibido_en": ["fdc-169378"],
+   "salvo_si_contiene": ["dulces"],
+   "motivo": "LA GUARDA QUE VENÍA DEL MOTOR (DT-32): hasta la WS07 era la única que vivía en `GUARDAS_DE_VOCABULARIO` y no en este archivo, y se muda acá entera —con su excepción— para que la lista sea una sola. `Pepinillos` a secas son los de eneldo (fdc-168558), que es donde el catálogo tiene el alias; los dulces (fdc-169378) son otra cosa —azúcar en vez de salmuera— y solo se nombran diciéndolo. La excepción es SOLO `dulces`, y la lista es corta porque una excepción que no lleva a la ficha que nombra no es una excepción, es ruido: MEDIDO en su día, con `sweet` y `bread and butter` adentro la guarda se levantaba pero la consulta terminaba igual en los de eneldo (el alias `Pepinillos` cubre más de «pepinillos sweet» que cualquier nombre de los dulces). `dulces` sí cumple: es el nombre en español de fdc-169378 y resuelve por coincidencia exacta. LÍMITE DECLARADO: una consulta mezclada como «pepinillos sweet» resuelve a los de eneldo — el catálogo nombra a los dulces en español y el motor no traduce; nombrarlos en inglés es `Pickles, cucumber, sweet`, que sí anda. Ojo con la asimetría de las dos puntas: en el BUILD la comparación es igualdad exacta y `Pepinillos dulces` (el names.es de fdc-169378) NO la viola; en el MATCHER la guarda dispara cuando la consulta EMPIEZA con el término, y ahí es la excepción la que deja pasar al que nombró la variante."
+  },
+  {
    "termino": "filete",
    "prohibido_en": ["fdc-2705824"],
    "motivo": "En español `filete` nombra la FORMA DEL CORTE, no la especie: hay filete de ternera, de salmón, de merluza y de pollo. Como alias de fdc-2705824 (`Beef, steak, NFS`, 229 kcal/100 g) hacía que cualquier filete fuera carne de vaca. Medido en el golden set de 30 (plato 23, 01/09/2026): `fish fillet, sauteed with brown sauce` cayó en `Bife` por esta puerta, y encima con confianza 1,0 implícita porque el alias estaba en texto plano. El daño calórico era chico (229 contra ~208 de un salmón a la plancha) y el del nombre no: «Bife» sobre un salmón es indefendible. La carne vacuna se sigue nombrando con `Bistec`, que solo quiere decir eso. La confianza no lo salva: un `filete` a 0,5 sobre un corte vacuno no dice «esto se parece», dice «todo lo fileteado es esto»."
@@ -114,12 +160,14 @@
   {
    "termino": "ajo",
    "prohibido_en": ["fdc-2709935", "fdc-169246"],
-   "motivo": "El puerro se llama `ajo porro` en Colombia y Venezuela, y el catálogo lo escribe: fdc-2709935 lleva de alias `Ajo porro cocido con sal y grasa` y fdc-169246 `Ajo porro crudo`. Los dos son alias CORRECTOS y no se tocan — lo que la palabra `ajo` a secas no puede hacer es llegar a ellos. MEDIDO en el censo de cobertura mediterránea (01/09/2026): `ajo` y `ajos` resolvían por difuso a `Puerro cocido con sal y grasa` con 0,11, porque la consulta corta está contenida en ese alias largo. Un puerro no es un ajo: 88 kcal/100 g contra 143, y sobre todo son dos hortalizas distintas — la palabra «puerro» encima de un ajo es indefendible por la misma razón que «Bife» encima de un salmón. El ajo es el ingrediente que más veces aparece en las dos fuentes del censo. Desde la card 6.3 vive en fdc-169230 `Ajo crudo` en texto plano, que es lo que de verdad lo saca del difuso."
+   "salvo_si_contiene": ["porro"],
+   "motivo": "El puerro se llama `ajo porro` en Colombia y Venezuela, y el catálogo lo escribe: fdc-2709935 lleva de alias `Ajo porro cocido con sal y grasa` y fdc-169246 `Ajo porro crudo`. Los dos son alias CORRECTOS y no se tocan — lo que la palabra `ajo` a secas no puede hacer es llegar a ellos. MEDIDO en el censo de cobertura mediterránea (01/09/2026): `ajo` y `ajos` resolvían por difuso a `Puerro cocido con sal y grasa` con 0,11, porque la consulta corta está contenida en ese alias largo. Un puerro no es un ajo: 88 kcal/100 g contra 143, y sobre todo son dos hortalizas distintas — la palabra «puerro» encima de un ajo es indefendible por la misma razón que «Bife» encima de un salmón. El ajo es el ingrediente que más veces aparece en las dos fuentes del censo. Desde la card 6.3 vive en fdc-169230 `Ajo crudo` en texto plano, que es lo que de verdad lo saca del difuso. ⚠️ LA EXCEPCIÓN `porro` LA AGREGÓ LA DT-32 Y NO ES UN ADORNO: el día que la guarda empezó a MORDER en el matcher se midió que rompía los dos alias que este mismo motivo declara correctos. La guarda del matcher dispara cuando la consulta EMPIEZA con el término —no por igualdad exacta como la del build—, así que `ajo porro crudo` la disparaba y el puerro terminaba resolviendo a `Ajo crudo` (143 kcal contra 61): el error de nombre que esta guarda existe para impedir, servido al revés. MEDIDO en el barrido de 28.116 consultas del vocabulario del catálogo (01/09/2026): eran las ÚNICAS 18 diferencias de toda la lista de guardas, y las 18 eran este par de alias con sus nueve sufijos. Con `porro` adentro el barrido queda en cero: `ajo` y `ajos` a secas siguen sin poder llegar al puerro, y quien nombra el puerro por su nombre colombiano lo encuentra."
   },
   {
    "termino": "ajos",
    "prohibido_en": ["fdc-2709935", "fdc-169246"],
-   "motivo": "El plural de la guarda anterior, por el mismo motivo y con el mismo número. Va escrito aparte porque una guarda declara UN término y la comparación es por igualdad exacta sobre el término normalizado — el mismo motivo por el que `croqueta` y `croquetas` son dos filas."
+   "salvo_si_contiene": ["porro"],
+   "motivo": "El plural de la guarda anterior, por el mismo motivo, con el mismo número y con la MISMA excepción `porro` (ver el motivo de `ajo`: sin ella la guarda del matcher rompe los dos alias del puerro). Va escrito aparte porque una guarda declara UN término y la comparación es por igualdad exacta sobre el término normalizado — el mismo motivo por el que `croqueta` y `croquetas` son dos filas."
   },
   {
    "termino": "Tomate pera",
@@ -164,17 +212,17 @@
   {
    "termino": "pasta de tomate",
    "prohibido_en": ["fdc-2708357"],
-   "motivo": "GUARDA QUE DECLARA UN COSTO PROPIO. La card 6.4 promovió `Pasta cocida` (fdc-2708357, 157 kcal) para tapar el hueco de la DT-33, y con ella abrió una ventana: `pasta de tomate` daba SILENCIO antes y ahora cae en la pasta a 0,25 por la palabra compartida. En español `pasta` nombra el fideo Y cualquier producto triturado —de tomate, de sésamo, de almendra—, exactamente como `salsa` arrastraba a las cocochas. MEDIDO (01/09/2026): 0,25 por el difuso, con `Salsa de tomate en lata` (fdc-170054, 24 kcal) en el catálogo, o sea seis veces menos energía. ⚠️ Esta guarda blinda el CATÁLOGO y HOY NO MUERDE en el difuso (DT-32): queda escrita para el día en que el build emita las guardas y `construirIndice` las lea."
+   "motivo": "GUARDA QUE DECLARA UN COSTO PROPIO. La card 6.4 promovió `Pasta cocida` (fdc-2708357, 157 kcal) para tapar el hueco de la DT-33, y con ella abrió una ventana: `pasta de tomate` daba SILENCIO antes y ahora cae en la pasta a 0,25 por la palabra compartida. En español `pasta` nombra el fideo Y cualquier producto triturado —de tomate, de sésamo, de almendra—, exactamente como `salsa` arrastraba a las cocochas. MEDIDO (01/09/2026): 0,25 por el difuso, con `Salsa de tomate en lata` (fdc-170054, 24 kcal) en el catálogo, o sea seis veces menos energía. ✅ DT-32 CERRADA (WS07): el build emite las guardas dentro de `foods.canonical.json` y `construirIndice` las lee, así que esta guarda YA MUERDE en el difuso. VERIFICADO: `pasta de tomate` pasó de `Pasta cocida` a 0,25 a SILENCIO — no hay ficha de concentrado de tomate en el catálogo y el silencio es el destino correcto, no un empate."
   },
   {
    "termino": "pasta filo",
    "prohibido_en": ["fdc-2708357"],
-   "motivo": "El hermano del anterior y el mismo costo declarado: la pasta filo es una masa de hojaldre finísima (~300 kcal/100 g) y no un fideo. MEDIDO (01/09/2026): daba silencio antes de la card 6.4 y ahora cae en `Pasta cocida` a 0,30. El catálogo no tiene ninguna ficha de masa filo —`phyllo` da cero coincidencias útiles— así que acá el silencio era lo correcto. Misma advertencia de la DT-32: no muerde hasta que las guardas lleguen al matcher."
+   "motivo": "El hermano del anterior y el mismo costo declarado: la pasta filo es una masa de hojaldre finísima (~300 kcal/100 g) y no un fideo. MEDIDO (01/09/2026): daba silencio antes de la card 6.4 y ahora cae en `Pasta cocida` a 0,30. El catálogo no tiene ninguna ficha de masa filo —`phyllo` da cero coincidencias útiles— así que acá el silencio era lo correcto. ✅ DT-32 CERRADA (WS07): las guardas llegaron al matcher. VERIFICADO: `pasta filo` pasó de `Pasta cocida` a 0,30 a SILENCIO, que es exactamente lo que esta guarda declaraba correcto."
   },
   {
    "termino": "huevas de salmón",
    "prohibido_en": ["fdc-2706285"],
-   "motivo": "GUARDA QUE DECLARA UN COSTO PROPIO. Las cuatro fichas de salmón de la card 6.4 taparon el hueco de proteína más caro del censo y de paso capturaron un término que no les corresponde: las HUEVAS son otro alimento —otra grasa, otro sodio, otra textura— y ahora caen en `Salmón` (fdc-2706285, 274 kcal) a 0,30. USDA sí las mide (`Fish, roe, mixed species` en SR Legacy) y la card decidió NO promoverlas: aparecen una sola vez en las dos fuentes del censo y no son un plato del mercado español. La guarda deja el hueco declarado para que nadie lo tape con un alias. Misma advertencia de la DT-32."
+   "motivo": "GUARDA QUE DECLARA UN COSTO PROPIO. Las cuatro fichas de salmón de la card 6.4 taparon el hueco de proteína más caro del censo y de paso capturaron un término que no les corresponde: las HUEVAS son otro alimento —otra grasa, otro sodio, otra textura— y ahora caen en `Salmón` (fdc-2706285, 274 kcal) a 0,30. USDA sí las mide (`Fish, roe, mixed species` en SR Legacy) y la card decidió NO promoverlas: aparecen una sola vez en las dos fuentes del censo y no son un plato del mercado español. La guarda deja el hueco declarado para que nadie lo tape con un alias. ✅ DT-32 CERRADA (WS07): VERIFICADO, `huevas de salmón` pasó de `Salmón` a 0,30 a SILENCIO — el hueco vuelve a estar a la vista en vez de tapado con la ficha del músculo."
   }
  ]
 }

@@ -48,7 +48,7 @@ if (!fs.existsSync(path.join(LIB, "golden.js"))) {
 
 const golden = require(path.join(LIB, "golden.js"));
 const { indiceReal } = require(path.join(LIB, "testing.js"));
-const { construirIndice } = require(path.join(LIB, "catalog.js"));
+const { indiceDelCatalogo } = require(path.join(LIB, "catalog.js"));
 
 const args = process.argv.slice(2);
 const detalle = args.includes("--detalle");
@@ -63,7 +63,10 @@ const criterios = golden.criteriosDelSet();
 const index = (() => {
   if (!pinneado) return indiceReal();
   const catalogo = JSON.parse(fs.readFileSync(pinneado, "utf8"));
-  return construirIndice(catalogo.foods, catalogo.kb_version);
+  // Un catálogo anterior al 3.8.0 no trae `guardas`; `indiceDelCatalogo` deja
+  // entonces el arranque en frío del motor, que es lo correcto: así el replay
+  // pinneado sigue midiendo el matcher que corría el día de aquella corrida.
+  return indiceDelCatalogo(catalogo);
 })();
 
 /**
@@ -89,9 +92,11 @@ linea(`golden set-30 · catálogo ${index.kb_version} · ${nombreA} (${a.length}
 regla();
 
 // --- 1 · replay --------------------------------------------------------------
-linea("OJO CON EL REPLAY: las respuestas grabadas NO traen `food_es` (DT-25), así que solo se");
-linea("puede volver a jugar la mitad inglesa. Los ítems que aquel día entraron por el nombre");
-linea("español salen marcados `no_comparable_es` y no cuentan ni a favor ni en contra.");
+linea("OJO CON EL REPLAY: una corrida grabada ANTES de la DT-25 no trae `termino_es`, así que");
+linea("solo se puede volver a jugar la mitad inglesa. Los ítems que aquel día entraron por el");
+linea("nombre español salen marcados `no_comparable_es` y no cuentan ni a favor ni en contra.");
+linea("Las corridas nuevas SÍ lo traen y se re-juegan enteras: mirá `con los dos nombres` en");
+linea("cada línea de REPLAY — si dice 0, la corrida es vieja y el replay está tuerto.");
 regla();
 
 const MARCAS = {
@@ -106,8 +111,9 @@ const MARCAS = {
 for (const [nombre, corrida] of [[nombreA, a], [nombreB, b]]) {
   const r = golden.replayDeCorrida(corrida, index);
   linea(
-    `REPLAY ${nombre}: ${r.items} ítems · silencios grabados ${r.silencios_grabados} · ` +
-      `DESTRABADOS ${r.destrabados} · perdidos ${r.perdidos} · otra ficha ${r.otra_ficha} · ` +
+    `REPLAY ${nombre}: ${r.items} ítems · con los dos nombres ${r.con_dos_nombres}/${r.items} · ` +
+      `silencios grabados ${r.silencios_grabados} · DESTRABADOS ${r.destrabados} · ` +
+      `perdidos ${r.perdidos} · otra ficha ${r.otra_ficha} · ` +
       `no comparables (entraron por el español) ${r.no_comparables}`,
   );
   avisarDesfase(nombre, corrida);

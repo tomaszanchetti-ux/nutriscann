@@ -62,6 +62,9 @@ function catalog(foods: CanonicalFood[]): Catalog {
   return {
     kb_version: "3.0.0+testtest",
     generated_from: { selection: "test", sources: ["usda_fndds"] },
+    // El candado 1 exige que el catálogo salga con guardas: acá alcanza con una
+    // bien formada, porque lo que estos tests miden es la política de genéricos.
+    guardas: GUARDA_CHORIZO,
     foods,
   };
 }
