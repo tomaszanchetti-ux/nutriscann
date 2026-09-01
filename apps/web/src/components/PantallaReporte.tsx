@@ -11,7 +11,7 @@
  *   2. donut de macros con % y gramos
  *   3. el aviso de total parcial, si el total es parcial
  *   4. la lista de items con confianza, sello de match y letra chica
- *   5. un solo CTA
+ *   5. el doble CTA (card 3.3): escanear otro plato, y pasarse a premium
  *
  * El count-up del número y la animación de entrada son de la Fase 3.
  */
@@ -19,6 +19,7 @@ import { AvisoParcial } from "./AvisoParcial";
 import { DonutMacros } from "./DonutMacros";
 import { ItemDelPlato } from "./ItemDelPlato";
 import type { CopyDeLaApp } from "../lib/config";
+import { COPY_CTA_PREMIUM } from "../lib/copy.premium";
 import { gramos, gramosEnteros, kcal } from "../lib/formato";
 import type { EngineTotals, RespuestaDeAnalisis } from "../lib/types";
 
@@ -26,9 +27,16 @@ export interface PantallaReporteProps {
   copy: CopyDeLaApp;
   reporte: RespuestaDeAnalisis;
   onOtroPlato: () => void;
+  /** El segundo CTA: lleva a la sección Premium sin perder el reporte. */
+  onPasarseAPremium: () => void;
 }
 
-export function PantallaReporte({ copy, reporte, onOtroPlato }: PantallaReporteProps) {
+export function PantallaReporte({
+  copy,
+  reporte,
+  onOtroPlato,
+  onPasarseAPremium,
+}: PantallaReporteProps) {
   const { totals, items } = reporte;
 
   return (
@@ -72,13 +80,36 @@ export function PantallaReporte({ copy, reporte, onOtroPlato }: PantallaReporteP
         </ul>
       </section>
 
-      <button
-        type="button"
-        onClick={onOtroPlato}
-        className="w-full rounded-2xl bg-accent px-6 py-4 text-base font-semibold text-ground transition-transform active:scale-[0.98]"
-      >
-        {copy.report_cta}
-      </button>
+      {/* EL DOBLE CTA (card 3.3). Los dos botones son del MISMO tamaño —ancho
+          completo, misma tipografía, mismo alto— porque la decisión no está
+          sesgada: escanear otro plato es lo normal, y pasar a premium tiene que
+          poder verse sin que grite. Lo que cambia es el color: el verde lleno
+          sigue siendo la acción principal y el premium usa el verde apagado del
+          sistema, que destaca sobre el fondo sin competir con él.
+
+          El "Escanear otro plato" queda TAL CUAL estaba: mismo texto de
+          `config/app`, mismo `onClick`. */}
+      <div className="flex flex-col gap-3">
+        <button
+          type="button"
+          onClick={onOtroPlato}
+          className="w-full rounded-2xl bg-accent px-6 py-4 text-base font-semibold text-ground transition-transform active:scale-[0.98]"
+        >
+          {copy.report_cta}
+        </button>
+
+        <button
+          type="button"
+          onClick={onPasarseAPremium}
+          className="w-full rounded-2xl border border-accent/45 bg-accent-soft px-6 py-4 text-base font-semibold text-accent transition-transform active:scale-[0.98]"
+        >
+          {COPY_CTA_PREMIUM.etiqueta}
+        </button>
+
+        <p className="text-center text-xs leading-relaxed text-ink-faint">
+          {COPY_CTA_PREMIUM.pie}
+        </p>
+      </div>
 
       <p className="font-mono text-[0.6875rem] leading-relaxed text-ink-faint">
         catálogo {reporte.meta.kb_version} · {reporte.meta.model} · {reporte.meta.latency_ms} ms (

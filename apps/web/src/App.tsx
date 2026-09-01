@@ -21,12 +21,21 @@
  * `PantallaEscaneo`.)
  *
  * Y la v1 NO muestra recomendaciones (decisión del 31/08/2026): solo lo medido.
+ *
+ * (Card 3.3: a las dos interacciones se les suman DOS SECCIONES que no son parte
+ * del circuito —Perfil y Premium—, y por eso viven en un estado propio y no en
+ * la máquina de fases. Ver el comentario de `seccion`, abajo. La pestaña
+ * "Escanear" devuelve a la sección tal como se la dejó: si había un reporte en
+ * pantalla, el reporte sigue ahí, con su propio "Escanear otro plato".)
  */
 import { useEffect, useRef, useState } from "react";
 
+import { BarraDeNavegacion, type Seccion } from "./components/BarraDeNavegacion";
 import { PantallaCaptura } from "./components/PantallaCaptura";
 import { PantallaEscaneo, type FaseDeEscaneo } from "./components/PantallaEscaneo";
 import { PantallaMensaje, PantallaNoEsComida } from "./components/PantallaMensaje";
+import { PantallaPerfil } from "./components/PantallaPerfil";
+import { PantallaPremium } from "./components/PantallaPremium";
 import { PantallaReporte } from "./components/PantallaReporte";
 import { PieDeDiagnostico } from "./components/PieDeDiagnostico";
 import { analizarFoto, ErrorDeAnalisis } from "./lib/api";
@@ -55,6 +64,20 @@ type Estado =
 export default function App() {
   const [config, setConfig] = useState<ConfigDeLaApp>(CONFIG_DE_ARRANQUE);
   const [estado, setEstado] = useState<Estado>({ fase: "captura" });
+  /**
+   * LA SECCIÓN ES UN ESTADO APARTE, NO UNA FASE MÁS (card 3.3).
+   *
+   * `Estado` es la máquina del escaneo: captura → escaneando → reporte, con sus
+   * dos desvíos. Perfil y Premium no son pasos de ese circuito: son otro sitio
+   * de la app. Si se hubieran metido como fases, ir a Premium desde el reporte
+   * habría PISADO el reporte, y volver habría devuelto al usuario a la cámara
+   * con el análisis ya pagado en la basura.
+   *
+   * Así, en cambio, las dos cosas conviven: la sección decide qué se ve, y
+   * `estado` sigue intacto abajo. Se vuelve del Premium al reporte exactamente
+   * como se lo dejó, y el flujo foto→escaneo→reporte no cambió en una línea.
+   */
+  const [seccion, setSeccion] = useState<Seccion>("escaneo");
   const [vistaPrevia, setVistaPrevia] = useState<string | null>(null);
   /** La URL `blob:` viva, para revocarla y no dejar la foto colgada en memoria. */
   const blobActual = useRef<string | null>(null);
@@ -147,64 +170,92 @@ export default function App() {
     }
   }
 
+  /**
+   * La barra se esconde MIENTRAS SE ESCANEA, y solo entonces. Esos segundos son
+   * el único momento en que la app está haciendo algo que el usuario no puede
+   * interrumpir sin perderlo: el barrido es el show, y tres pestañas al pie
+   * invitan a salirse justo cuando no conviene. En todo lo demás está.
+   */
+  const mostrarNavegacion = !(seccion === "escaneo" && estado.fase === "escaneando");
+
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col px-5">
       <main className="flex flex-1 flex-col">
-        {estado.fase === "captura" && (
-          <PantallaCaptura copy={config.copy} onFoto={(archivo) => void analizar(archivo)} />
-        )}
-
-        {estado.fase === "escaneando" && (
-          <PantallaEscaneo
-            titulo={config.copy.scanning_title}
-            pasos={config.scanning_steps}
-            vistaPrevia={vistaPrevia}
-            fase={estado.paso}
+        {seccion === "perfil" && (
+          <PantallaPerfil
+            onVolver={() => setSeccion("escaneo")}
+            onIrAPremium={() => setSeccion("premium")}
           />
         )}
 
-        {estado.fase === "reporte" && (
-          <PantallaReporte
-            copy={config.copy}
-            reporte={estado.reporte}
-            onOtroPlato={volverACapturar}
-          />
-        )}
+        {seccion === "premium" && <PantallaPremium onVolver={() => setSeccion("escaneo")} />}
 
-        {estado.fase === "no_es_comida" && (
-          <PantallaNoEsComida
-            copy={config.copy}
-            mensajeDelBackend={estado.mensaje}
-            onReintentar={volverACapturar}
-          />
-        )}
+        {/* EL CIRCUITO DEL ESCANEO, ENTERO Y SIN TOCAR (card 3.2). Lo único que
+            cambió es que ahora vive dentro de su sección: las cinco fases, sus
+            props y sus salidas son las mismas. */}
+        {seccion === "escaneo" && (
+          <>
+            {estado.fase === "captura" && (
+              <PantallaCaptura copy={config.copy} onFoto={(archivo) => void analizar(archivo)} />
+            )}
 
-        {estado.fase === "error" &&
-          // Reintentar con la misma foto sirve para todo… menos cuando la foto
-          // es justamente lo que no se pudo leer: ahí mandarla de nuevo daría el
-          // mismo error, así que la salida principal pasa a ser la cámara.
-          (estado.codigo === "imagen_ilegible" ? (
-            <PantallaMensaje
-              tono="error"
-              titulo={config.copy.error_title}
-              detalle={estado.mensaje}
-              codigo={estado.codigo}
-              cta={config.copy.report_cta}
-              onCta={volverACapturar}
-            />
-          ) : (
-            <PantallaMensaje
-              tono="error"
-              titulo={config.copy.error_title}
-              detalle={estado.mensaje}
-              codigo={estado.codigo}
-              cta={config.copy.error_cta}
-              onCta={reintentarConLaMismaFoto}
-              ctaSecundaria={config.copy.report_cta}
-              onCtaSecundaria={volverACapturar}
-            />
-          ))}
+            {estado.fase === "escaneando" && (
+              <PantallaEscaneo
+                titulo={config.copy.scanning_title}
+                pasos={config.scanning_steps}
+                vistaPrevia={vistaPrevia}
+                fase={estado.paso}
+              />
+            )}
+
+            {estado.fase === "reporte" && (
+              <PantallaReporte
+                copy={config.copy}
+                reporte={estado.reporte}
+                onOtroPlato={volverACapturar}
+                onPasarseAPremium={() => setSeccion("premium")}
+              />
+            )}
+
+            {estado.fase === "no_es_comida" && (
+              <PantallaNoEsComida
+                copy={config.copy}
+                mensajeDelBackend={estado.mensaje}
+                onReintentar={volverACapturar}
+              />
+            )}
+
+            {estado.fase === "error" &&
+              // Reintentar con la misma foto sirve para todo… menos cuando la
+              // foto es justamente lo que no se pudo leer: ahí mandarla de nuevo
+              // daría el mismo error, así que la salida principal pasa a ser la
+              // cámara.
+              (estado.codigo === "imagen_ilegible" ? (
+                <PantallaMensaje
+                  tono="error"
+                  titulo={config.copy.error_title}
+                  detalle={estado.mensaje}
+                  codigo={estado.codigo}
+                  cta={config.copy.report_cta}
+                  onCta={volverACapturar}
+                />
+              ) : (
+                <PantallaMensaje
+                  tono="error"
+                  titulo={config.copy.error_title}
+                  detalle={estado.mensaje}
+                  codigo={estado.codigo}
+                  cta={config.copy.error_cta}
+                  onCta={reintentarConLaMismaFoto}
+                  ctaSecundaria={config.copy.report_cta}
+                  onCtaSecundaria={volverACapturar}
+                />
+              ))}
+          </>
+        )}
       </main>
+
+      {mostrarNavegacion && <BarraDeNavegacion activa={seccion} onIr={setSeccion} />}
 
       <PieDeDiagnostico origenDeConfig={config.origen} disclaimer={config.copy.disclaimer} />
     </div>
