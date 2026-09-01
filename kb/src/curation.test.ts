@@ -110,3 +110,82 @@ test("una etiqueta vacía se reporta como problema", () => {
   assert.equal(curation.portions.has(173944), false);
   assert.match(curation.problems[0] as string, /label_es/);
 });
+
+// --- Porciones que la curación AGREGA (card 6.2) ----------------------------
+// `label_es` nombra UNA porción, la de por defecto. La cerveza necesitaba otra
+// cosa: el juego entero de medidas de una barra española, que USDA no mide.
+
+test("la curación puede agregar porciones propias, con su etiqueta en español", () => {
+  const dir = tempDir({
+    "portions.overrides.json": JSON.stringify({
+      "168746": {
+        default_portion_g: 200,
+        portion_hints: [
+          { grams: 200, label_en: "1 small draft glass", label_es: "1 caña" },
+          { grams: 500, label_en: "1 half-litre mug", label_es: "1 jarra" },
+        ],
+      },
+    }),
+  });
+  const curation = loadCuration(dir);
+  assert.deepEqual(curation.problems, []);
+  assert.deepEqual(curation.portions.get(168746)?.portion_hints, [
+    { grams: 200, label_en: "1 small draft glass", label_es: "1 caña" },
+    { grams: 500, label_en: "1 half-litre mug", label_es: "1 jarra" },
+  ]);
+});
+
+test("una porción curada SIN label_es no entra: es su única razón de ser", () => {
+  const dir = tempDir({
+    "portions.overrides.json": JSON.stringify({
+      "168746": {
+        portion_hints: [
+          { grams: 200, label_en: "1 small draft glass" },
+          { grams: 0, label_en: "1 nada", label_es: "1 nada" },
+          { grams: 500, label_en: "", label_es: "1 jarra" },
+        ],
+      },
+    }),
+  });
+  const curation = loadCuration(dir);
+  assert.equal(curation.portions.has(168746), false, "ninguna sobrevive, así que no hay override");
+  assert.equal(curation.problems.length, 3);
+  assert.match(curation.problems.join(" | "), /label_es/);
+  assert.match(curation.problems.join(" | "), /grams/);
+  assert.match(curation.problems.join(" | "), /label_en/);
+});
+
+test("`portion_hints` que no es una lista se reporta, no se traga", () => {
+  const dir = tempDir({
+    "portions.overrides.json": JSON.stringify({ "168746": { portion_hints: "1 caña" } }),
+  });
+  const curation = loadCuration(dir);
+  assert.equal(curation.portions.has(168746), false);
+  assert.match(curation.problems[0] as string, /portion_hints/);
+});
+
+// --- Las claves `$algo` son comentarios, no fdc_id --------------------------
+
+test("una clave $comentario en un mapa plano de curación no es un problema", () => {
+  const dir = tempDir({
+    "names.es.json": JSON.stringify({ $comment: ["por qué"], "173944": { name: "Banana" } }),
+    "portions.overrides.json": JSON.stringify({
+      $dt27: "la barra española",
+      "173944": { default_portion_g: 118, label_es: "1 unidad mediana" },
+    }),
+  });
+  const curation = loadCuration(dir);
+  assert.deepEqual(curation.problems, []);
+  assert.equal(curation.names.size, 1);
+  assert.equal(curation.portions.size, 1);
+});
+
+test("una clave mal tipeada SIGUE siendo un problema: solo se admite el prefijo $", () => {
+  const dir = tempDir({
+    "names.es.json": JSON.stringify({ "17394a": { name: "Banana" } }),
+    "portions.overrides.json": JSON.stringify({ comment: "sin el peso" }),
+  });
+  const curation = loadCuration(dir);
+  assert.equal(curation.problems.length, 2);
+  assert.match(curation.problems.join(" | "), /no es un fdc_id/);
+});

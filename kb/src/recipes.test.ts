@@ -146,7 +146,7 @@ function stats(): BuildStats {
     pendingCuration: [], curatedNames: 0, curatedAliases: 0, regionalAliases: 0,
     inheritedAliases: 0, staleAliases: [], orphanRegionalAliases: [], manualFoods: 0, recipeFoods: 0,
     recipeFailures: [], manualOverridesByField: {}, manualOverrideFoods: 0,
-    curatedPortions: 0, curatedPortionLabels: 0, portionNeedsReview: [],
+    curatedPortions: 0, curatedPortionLabels: 0, curatedPortionHints: 0, portionNeedsReview: [],
     genericFoods: 0, genericCaveats: 0, guardViolations: [],
     descriptionMismatches: [], foodsWithoutPortions: [],
   };

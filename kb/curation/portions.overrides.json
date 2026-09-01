@@ -1,4 +1,17 @@
 {
+ "$comment": [
+  "Porción por defecto corregida + etiqueta, para las entradas cuya porción de USDA es",
+  "inservible como sugerencia. Las dos claves originales son independientes: se puede",
+  "corregir solo los gramos, solo la etiqueta en español, o las dos.",
+  "",
+  "Desde la card 6.2 hay una tercera, `portion_hints`: porciones que la curación AGREGA",
+  "a las de USDA, cada una con su etiqueta en español obligatoria. Nació con la cerveza,",
+  "donde lo que falta no es UNA etiqueta sino el juego entero de medidas de una barra",
+  "española —caña, tubo, tercio, jarra, litrona—, que USDA no mide y que fue lo único que",
+  "Tomás aportó como FUENTE en la DT-27 (docs/DEUDAS.md, 01/09/2026). Las de USDA no se",
+  "tocan ni se reordenan: las curadas van detrás."
+ ],
+
  "169387": {"default_portion_g": 20, "label_es": "1 puñado"},
  "169994": {"default_portion_g": 5, "label_es": "1 cucharada picada"},
  "169997": {"default_portion_g": 8, "label_es": "1 puñado"},
@@ -19,5 +32,105 @@
  "170054": {"default_portion_g": 125, "label_es": "1/2 taza"},
  "170172": {"default_portion_g": 100, "label_es": "1/2 taza"},
 
- "171247": {"default_portion_g": 5, "label_es": "1 cucharada rallada"}
+ "171247": {"default_portion_g": 5, "label_es": "1 cucharada rallada"},
+
+ "$dt27": [
+  "Card 6.2 — las porciones del lote de la DT-27.",
+  "",
+  "LAS BEBIDAS. La regla de la card 1.1 toma para SR Legacy la primera porción por seq_num,",
+  "y en las seis bebidas alcohólicas esa porción es `1 fl oz` (28-31 g): nadie pide una onza",
+  "de cerveza. Por eso las seis entran a la selección con `portion_needs_review: true` y se",
+  "corrigen acá. El vocabulario y los mililitros son de Tomás (docs/DEUDAS.md §DT-27,",
+  "01/09/2026); la conversión a gramos sale de la TABLA DE PORCIONES DEL PROPIO USDA, que es",
+  "la única fuente que declara cuánto pesa cada volumen de cada bebida:",
+  "",
+  "  cerveza   fdc-168746 mide 356 g por lata de 12 fl oz (354,88 ml) ⇒ 1,003 g/ml.",
+  "            Con esa densidad los mililitros y los gramos coinciden dentro del 0,4 %, así",
+  "            que la caña de 200 ml entra como 200 g y así con todas. Es lo que ya decía la",
+  "            deuda («densidad ≈ 1»), verificado contra la fuente y no supuesto.",
+  "  vino      fdc-173190 mide 147 g por `serving (5 fl oz)` (147,87 ml) ⇒ 0,994 g/ml.",
+  "            Una copa de 150 ml son 149 g ⇒ 127 kcal el tinto y 122 el blanco.",
+  "  destilado fdc-174815 mide 42 g por `jigger (1.5 fl oz)` (44,36 ml) ⇒ 0,947 g/ml.",
+  "            Una copa de 45 ml son 43 g ⇒ 99 kcal. NO son 45 g: un destilado de 40° pesa",
+  "            un 5 % menos que el agua, y tratar los mililitros como gramos infla el número.",
+  "",
+  "Las medidas de barra, tal como las documentó Tomás: corto/zurito/penalti 100-140 ml (se",
+  "toma 120, el centro del rango) · caña ~200 ml, la estándar · tubo ~330 · doble/cañón ~400",
+  "· jarra/tanque/maceta 500 · quinto/botellín 200 · tercio/mediana 330 · litrona 1.000. Los",
+  "sinónimos regionales viajan dentro de la etiqueta y no como porciones repetidas: `1 caña`",
+  "y `1 quinto` pesan los mismos 200 g, y ofrecer dos veces el mismo peso con dos nombres no",
+  "ayuda a elegir. Por defecto: la caña en las dos rubias de barril, y el tercio en la de",
+  "alta graduación, que en España se sirve en botella y no en caña.",
+  "",
+  "EL RESTO. El limón entra con la porción de USDA que sirve (1 fruta mediana, 58 g) en vez",
+  "de la primera por seq_num, que es una taza de gajos de 212 g. La tortilla de maíz baja de",
+  "los 77 g de `Quantity not specified` —casi tres tortillas— a la unidad que USDA mide como",
+  "`1 medium`, 28 g, que da 61 kcal y cruza con las 60-65 del insumo. La arepa, la pechuga,",
+  "la pita y las alubias ya traían una porción por defecto sensata: solo se les pone nombre."
+ ],
+
+ "168746": {
+  "default_portion_g": 200,
+  "portion_hints": [
+   {"grams": 120, "label_en": "1 short glass (corto, zurito, penalti)", "label_es": "1 corto (zurito, penalti)"},
+   {"grams": 200, "label_en": "1 small draft glass (cana) or small bottle (quinto)", "label_es": "1 caña (o quinto/botellín)"},
+   {"grams": 330, "label_en": "1 third-litre bottle (tercio) or tall glass (tubo)", "label_es": "1 tercio (mediana o tubo)"},
+   {"grams": 400, "label_en": "1 double draft glass (doble, canon)", "label_es": "1 doble (cañón)"},
+   {"grams": 500, "label_en": "1 half-litre mug (jarra)", "label_es": "1 jarra"},
+   {"grams": 1000, "label_en": "1 litre bottle (litrona)", "label_es": "1 litrona"}
+  ]
+ },
+ "168749": {
+  "default_portion_g": 200,
+  "portion_hints": [
+   {"grams": 120, "label_en": "1 short glass (corto, zurito, penalti)", "label_es": "1 corto (zurito, penalti)"},
+   {"grams": 200, "label_en": "1 small draft glass (cana) or small bottle (quinto)", "label_es": "1 caña (o quinto/botellín)"},
+   {"grams": 330, "label_en": "1 third-litre bottle (tercio) or tall glass (tubo)", "label_es": "1 tercio (mediana o tubo)"},
+   {"grams": 400, "label_en": "1 double draft glass (doble, canon)", "label_es": "1 doble (cañón)"},
+   {"grams": 500, "label_en": "1 half-litre mug (jarra)", "label_es": "1 jarra"},
+   {"grams": 1000, "label_en": "1 litre bottle (litrona)", "label_es": "1 litrona"}
+  ]
+ },
+ "171906": {
+  "default_portion_g": 330,
+  "portion_hints": [
+   {"grams": 200, "label_en": "1 small draft glass (cana) or small bottle (quinto)", "label_es": "1 caña (o quinto/botellín)"},
+   {"grams": 330, "label_en": "1 third-litre bottle (tercio) or tall glass (tubo)", "label_es": "1 tercio (mediana o tubo)"},
+   {"grams": 400, "label_en": "1 double draft glass (doble, canon)", "label_es": "1 doble (cañón)"},
+   {"grams": 500, "label_en": "1 half-litre mug (jarra)", "label_es": "1 jarra"}
+  ]
+ },
+ "173190": {
+  "default_portion_g": 149,
+  "portion_hints": [
+   {"grams": 99, "label_en": "1 small glass (100 ml)", "label_es": "1 copa pequeña (100 ml)"},
+   {"grams": 149, "label_en": "1 glass (150 ml)", "label_es": "1 copa (150 ml)"},
+   {"grams": 745, "label_en": "1 bottle (750 ml)", "label_es": "1 botella (750 ml)"}
+  ]
+ },
+ "174837": {
+  "default_portion_g": 149,
+  "portion_hints": [
+   {"grams": 99, "label_en": "1 small glass (100 ml)", "label_es": "1 copa pequeña (100 ml)"},
+   {"grams": 149, "label_en": "1 glass (150 ml)", "label_es": "1 copa (150 ml)"},
+   {"grams": 745, "label_en": "1 bottle (750 ml)", "label_es": "1 botella (750 ml)"}
+  ]
+ },
+ "174815": {
+  "default_portion_g": 43,
+  "portion_hints": [
+   {"grams": 28, "label_en": "1 shot (30 ml)", "label_es": "1 chupito (30 ml)"},
+   {"grams": 43, "label_en": "1 measure (45 ml)", "label_es": "1 copa (45 ml)"},
+   {"grams": 47, "label_en": "1 long drink measure (50 ml)", "label_es": "1 copa de cubata (50 ml)"}
+  ]
+ },
+
+ "167746": {"default_portion_g": 58, "label_es": "1 limón mediano"},
+ "168070": {"default_portion_g": 98, "label_es": "1 arepa"},
+ "2707823": {"default_portion_g": 28, "label_es": "1 tortilla mediana"},
+ "2705954": {"default_portion_g": 120, "label_es": "1 pechuga mediana"},
+ "2705956": {"default_portion_g": 120, "label_es": "1 pechuga mediana"},
+ "2705968": {"default_portion_g": 120, "label_es": "1 pechuga mediana"},
+ "2707616": {"default_portion_g": 57, "label_es": "1 pan de pita mediano"},
+ "2707390": {"default_portion_g": 130, "label_es": "1 ración"}
 }

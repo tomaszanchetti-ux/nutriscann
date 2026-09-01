@@ -1,7 +1,7 @@
 {
-  "kb_version": "3.1.0+47b8c77d",
+  "kb_version": "3.2.0+e19bb31f",
   "generated_from": {
-    "selection": "1.1-v2 + 1.6-regional-v1 + 1.6-es-sweep-v1 + 1.7-ingredientes-v1 − dt7-v2",
+    "selection": "1.1-v2 + 1.6-regional-v1 + 1.6-es-sweep-v1 + 1.7-ingredientes-v1 + dt27-fichas-v1 − dt7-v2",
     "sources": [
       "usda_sr_legacy",
       "usda_foundation",
@@ -483,6 +483,77 @@
         "per_100g.sodium_mg": "usda_sr_legacy",
         "per_100g.sugars_g": "usda_sr_legacy",
         "portion_hints": "usda_sr_legacy"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-167746",
+      "source": "usda_sr_legacy",
+      "source_ref": "USDA FDC #167746",
+      "names": {
+        "en": "Lemons, raw, without peel",
+        "es": "Limón"
+      },
+      "aliases": {
+        "es": [
+          "Limón sin cáscara"
+        ]
+      },
+      "category": "Fruits and Fruit Juices",
+      "per_100g": {
+        "kcal": 29,
+        "protein_g": 1.1,
+        "carbs_g": 9.32,
+        "fat_g": 0.3,
+        "fiber_g": 2.8,
+        "sat_fat_g": 0.039,
+        "sugars_g": 2.5,
+        "sodium_mg": 2
+      },
+      "portion_hints": [
+        {
+          "grams": 212,
+          "label_en": "1 cup, sections",
+          "label_es": null
+        },
+        {
+          "grams": 58,
+          "label_en": "1 fruit (2-1/8\" dia)",
+          "label_es": "1 limón mediano"
+        },
+        {
+          "grams": 84,
+          "label_en": "1 fruit (2-3/8\" dia)",
+          "label_es": null
+        },
+        {
+          "grams": 7,
+          "label_en": "1 wedge or slice (1/8 of one 2-1/8\" dia lemon)",
+          "label_es": null
+        },
+        {
+          "grams": 58,
+          "label_en": "1 NLEA serving",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 58,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_sr_legacy",
+        "default_portion_g": "curation",
+        "names.en": "usda_sr_legacy",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_sr_legacy",
+        "per_100g.fat_g": "usda_sr_legacy",
+        "per_100g.fiber_g": "usda_sr_legacy",
+        "per_100g.kcal": "usda_sr_legacy",
+        "per_100g.protein_g": "usda_sr_legacy",
+        "per_100g.sat_fat_g": "usda_sr_legacy",
+        "per_100g.sodium_mg": "usda_sr_legacy",
+        "per_100g.sugars_g": "usda_sr_legacy",
+        "portion_hints": "usda_sr_legacy",
+        "portion_hints.label_es": "curation"
       },
       "deprecated": false
     },
@@ -1162,6 +1233,61 @@
         "per_100g.sodium_mg": "usda_sr_legacy",
         "per_100g.sugars_g": "usda_sr_legacy",
         "portion_hints": "usda_sr_legacy"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-168070",
+      "source": "usda_sr_legacy",
+      "source_ref": "USDA FDC #168070",
+      "names": {
+        "en": "Restaurant, Latino, arepa (unleavened cornmeal bread)",
+        "es": "Arepa"
+      },
+      "aliases": {
+        "es": [
+          "Arepa de maíz",
+          {
+            "alias": "Arepa",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "category": "Restaurant Foods",
+      "per_100g": {
+        "kcal": 219,
+        "protein_g": 5.48,
+        "carbs_g": 37.14,
+        "fat_g": 5.38,
+        "fiber_g": 2.6,
+        "sat_fat_g": 2.902,
+        "sugars_g": 0.87,
+        "sodium_mg": 270
+      },
+      "portion_hints": [
+        {
+          "grams": 98,
+          "label_en": "1 piece",
+          "label_es": "1 arepa"
+        }
+      ],
+      "default_portion_g": 98,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_sr_legacy",
+        "default_portion_g": "curation",
+        "names.en": "usda_sr_legacy",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_sr_legacy",
+        "per_100g.fat_g": "usda_sr_legacy",
+        "per_100g.fiber_g": "usda_sr_legacy",
+        "per_100g.kcal": "usda_sr_legacy",
+        "per_100g.protein_g": "usda_sr_legacy",
+        "per_100g.sat_fat_g": "usda_sr_legacy",
+        "per_100g.sodium_mg": "usda_sr_legacy",
+        "per_100g.sugars_g": "usda_sr_legacy",
+        "portion_hints": "usda_sr_legacy",
+        "portion_hints.label_es": "curation"
       },
       "deprecated": false
     },
@@ -3053,6 +3179,181 @@
         "per_100g.sodium_mg": "usda_sr_legacy",
         "per_100g.sugars_g": "usda_sr_legacy",
         "portion_hints": "usda_sr_legacy"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-168746",
+      "source": "usda_sr_legacy",
+      "source_ref": "USDA FDC #168746",
+      "names": {
+        "en": "Alcoholic beverage, beer, regular, all",
+        "es": "Cerveza"
+      },
+      "aliases": {
+        "es": [
+          "Cerveza rubia",
+          "Caña de cerveza",
+          "Cerveza de barril"
+        ]
+      },
+      "category": "Beverages",
+      "per_100g": {
+        "kcal": 43,
+        "protein_g": 0.46,
+        "carbs_g": 3.55,
+        "fat_g": 0,
+        "fiber_g": 0,
+        "sat_fat_g": 0,
+        "sugars_g": 0,
+        "sodium_mg": 4
+      },
+      "portion_hints": [
+        {
+          "grams": 29.7,
+          "label_en": "1 fl oz",
+          "label_es": null
+        },
+        {
+          "grams": 356,
+          "label_en": "1 can",
+          "label_es": null
+        },
+        {
+          "grams": 120,
+          "label_en": "1 short glass (corto, zurito, penalti)",
+          "label_es": "1 corto (zurito, penalti)"
+        },
+        {
+          "grams": 200,
+          "label_en": "1 small draft glass (cana) or small bottle (quinto)",
+          "label_es": "1 caña (o quinto/botellín)"
+        },
+        {
+          "grams": 330,
+          "label_en": "1 third-litre bottle (tercio) or tall glass (tubo)",
+          "label_es": "1 tercio (mediana o tubo)"
+        },
+        {
+          "grams": 400,
+          "label_en": "1 double draft glass (doble, canon)",
+          "label_es": "1 doble (cañón)"
+        },
+        {
+          "grams": 500,
+          "label_en": "1 half-litre mug (jarra)",
+          "label_es": "1 jarra"
+        },
+        {
+          "grams": 1000,
+          "label_en": "1 litre bottle (litrona)",
+          "label_es": "1 litrona"
+        }
+      ],
+      "default_portion_g": 200,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_sr_legacy",
+        "default_portion_g": "curation",
+        "names.en": "usda_sr_legacy",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_sr_legacy",
+        "per_100g.fat_g": "usda_sr_legacy",
+        "per_100g.fiber_g": "usda_sr_legacy",
+        "per_100g.kcal": "usda_sr_legacy",
+        "per_100g.protein_g": "usda_sr_legacy",
+        "per_100g.sat_fat_g": "usda_sr_legacy",
+        "per_100g.sodium_mg": "usda_sr_legacy",
+        "per_100g.sugars_g": "usda_sr_legacy",
+        "portion_hints": "usda_sr_legacy",
+        "portion_hints.label_es": "curation"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-168749",
+      "source": "usda_sr_legacy",
+      "source_ref": "USDA FDC #168749",
+      "names": {
+        "en": "Alcoholic beverage, beer, light",
+        "es": "Cerveza light"
+      },
+      "aliases": {
+        "es": [
+          "Cerveza ligera",
+          "Cerveza baja en calorías"
+        ]
+      },
+      "category": "Beverages",
+      "per_100g": {
+        "kcal": 29,
+        "protein_g": 0.24,
+        "carbs_g": 1.64,
+        "fat_g": 0,
+        "fiber_g": 0,
+        "sat_fat_g": 0,
+        "sugars_g": 0.09,
+        "sodium_mg": 4
+      },
+      "portion_hints": [
+        {
+          "grams": 29.5,
+          "label_en": "1 fl oz",
+          "label_es": null
+        },
+        {
+          "grams": 354,
+          "label_en": "1 can or bottle (12 fl oz)",
+          "label_es": null
+        },
+        {
+          "grams": 120,
+          "label_en": "1 short glass (corto, zurito, penalti)",
+          "label_es": "1 corto (zurito, penalti)"
+        },
+        {
+          "grams": 200,
+          "label_en": "1 small draft glass (cana) or small bottle (quinto)",
+          "label_es": "1 caña (o quinto/botellín)"
+        },
+        {
+          "grams": 330,
+          "label_en": "1 third-litre bottle (tercio) or tall glass (tubo)",
+          "label_es": "1 tercio (mediana o tubo)"
+        },
+        {
+          "grams": 400,
+          "label_en": "1 double draft glass (doble, canon)",
+          "label_es": "1 doble (cañón)"
+        },
+        {
+          "grams": 500,
+          "label_en": "1 half-litre mug (jarra)",
+          "label_es": "1 jarra"
+        },
+        {
+          "grams": 1000,
+          "label_en": "1 litre bottle (litrona)",
+          "label_es": "1 litrona"
+        }
+      ],
+      "default_portion_g": 200,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_sr_legacy",
+        "default_portion_g": "curation",
+        "names.en": "usda_sr_legacy",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_sr_legacy",
+        "per_100g.fat_g": "usda_sr_legacy",
+        "per_100g.fiber_g": "usda_sr_legacy",
+        "per_100g.kcal": "usda_sr_legacy",
+        "per_100g.protein_g": "usda_sr_legacy",
+        "per_100g.sat_fat_g": "usda_sr_legacy",
+        "per_100g.sodium_mg": "usda_sr_legacy",
+        "per_100g.sugars_g": "usda_sr_legacy",
+        "portion_hints": "usda_sr_legacy",
+        "portion_hints.label_es": "curation"
       },
       "deprecated": false
     },
@@ -13629,6 +13930,93 @@
       "deprecated": false
     },
     {
+      "id": "fdc-171906",
+      "source": "usda_sr_legacy",
+      "source_ref": "USDA FDC #171906",
+      "names": {
+        "en": "Alcoholic beverages, beer, higher alcohol",
+        "es": "Cerveza de alta graduación"
+      },
+      "aliases": {
+        "es": [
+          {
+            "alias": "IPA",
+            "confidence": 0.8
+          },
+          {
+            "alias": "Cerveza IPA",
+            "confidence": 0.8
+          },
+          {
+            "alias": "Cerveza artesanal",
+            "confidence": 0.6
+          }
+        ]
+      },
+      "category": "Beverages",
+      "per_100g": {
+        "kcal": 58,
+        "protein_g": 0.9,
+        "carbs_g": 0.27,
+        "fat_g": 0,
+        "fiber_g": 0,
+        "sat_fat_g": 0,
+        "sugars_g": 0,
+        "sodium_mg": 4
+      },
+      "portion_hints": [
+        {
+          "grams": 30.6,
+          "label_en": "1 fl oz",
+          "label_es": null
+        },
+        {
+          "grams": 355,
+          "label_en": "1 bottle",
+          "label_es": null
+        },
+        {
+          "grams": 200,
+          "label_en": "1 small draft glass (cana) or small bottle (quinto)",
+          "label_es": "1 caña (o quinto/botellín)"
+        },
+        {
+          "grams": 330,
+          "label_en": "1 third-litre bottle (tercio) or tall glass (tubo)",
+          "label_es": "1 tercio (mediana o tubo)"
+        },
+        {
+          "grams": 400,
+          "label_en": "1 double draft glass (doble, canon)",
+          "label_es": "1 doble (cañón)"
+        },
+        {
+          "grams": 500,
+          "label_en": "1 half-litre mug (jarra)",
+          "label_es": "1 jarra"
+        }
+      ],
+      "default_portion_g": 330,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_sr_legacy",
+        "default_portion_g": "curation",
+        "names.en": "usda_sr_legacy",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_sr_legacy",
+        "per_100g.fat_g": "usda_sr_legacy",
+        "per_100g.fiber_g": "usda_sr_legacy",
+        "per_100g.kcal": "usda_sr_legacy",
+        "per_100g.protein_g": "usda_sr_legacy",
+        "per_100g.sat_fat_g": "usda_sr_legacy",
+        "per_100g.sodium_mg": "usda_sr_legacy",
+        "per_100g.sugars_g": "usda_sr_legacy",
+        "portion_hints": "usda_sr_legacy",
+        "portion_hints.label_es": "curation"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-172023",
       "source": "usda_sr_legacy",
       "source_ref": "USDA FDC #172023",
@@ -15008,6 +15396,77 @@
         "per_100g.sodium_mg": "usda_sr_legacy",
         "per_100g.sugars_g": "usda_sr_legacy",
         "portion_hints": "usda_sr_legacy"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-173190",
+      "source": "usda_sr_legacy",
+      "source_ref": "USDA FDC #173190",
+      "names": {
+        "en": "Alcoholic beverage, wine, table, red",
+        "es": "Vino tinto"
+      },
+      "aliases": {
+        "es": [
+          "Copa de vino tinto"
+        ]
+      },
+      "category": "Beverages",
+      "per_100g": {
+        "kcal": 85,
+        "protein_g": 0.07,
+        "carbs_g": 2.61,
+        "fat_g": 0,
+        "fiber_g": 0,
+        "sat_fat_g": 0,
+        "sugars_g": 0.62,
+        "sodium_mg": 4
+      },
+      "portion_hints": [
+        {
+          "grams": 29.4,
+          "label_en": "1 fl oz",
+          "label_es": null
+        },
+        {
+          "grams": 147,
+          "label_en": "1 serving (5 fl oz)",
+          "label_es": null
+        },
+        {
+          "grams": 99,
+          "label_en": "1 small glass (100 ml)",
+          "label_es": "1 copa pequeña (100 ml)"
+        },
+        {
+          "grams": 149,
+          "label_en": "1 glass (150 ml)",
+          "label_es": "1 copa (150 ml)"
+        },
+        {
+          "grams": 745,
+          "label_en": "1 bottle (750 ml)",
+          "label_es": "1 botella (750 ml)"
+        }
+      ],
+      "default_portion_g": 149,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_sr_legacy",
+        "default_portion_g": "curation",
+        "names.en": "usda_sr_legacy",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_sr_legacy",
+        "per_100g.fat_g": "usda_sr_legacy",
+        "per_100g.fiber_g": "usda_sr_legacy",
+        "per_100g.kcal": "usda_sr_legacy",
+        "per_100g.protein_g": "usda_sr_legacy",
+        "per_100g.sat_fat_g": "usda_sr_legacy",
+        "per_100g.sodium_mg": "usda_sr_legacy",
+        "per_100g.sugars_g": "usda_sr_legacy",
+        "portion_hints": "usda_sr_legacy",
+        "portion_hints.label_es": "curation"
       },
       "deprecated": false
     },
@@ -17151,6 +17610,168 @@
         "per_100g.sodium_mg": "usda_sr_legacy",
         "per_100g.sugars_g": "usda_sr_legacy",
         "portion_hints": "usda_sr_legacy"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-174815",
+      "source": "usda_sr_legacy",
+      "source_ref": "USDA FDC #174815",
+      "names": {
+        "en": "Alcoholic beverage, distilled, all (gin, rum, vodka, whiskey) 80 proof",
+        "es": "Bebida destilada (ginebra, ron, vodka, whisky)"
+      },
+      "aliases": {
+        "es": [
+          "Chupito",
+          {
+            "alias": "Ginebra",
+            "confidence": 0.8
+          },
+          {
+            "alias": "Ron",
+            "confidence": 0.8
+          },
+          {
+            "alias": "Vodka",
+            "confidence": 0.8
+          },
+          {
+            "alias": "Whisky",
+            "confidence": 0.8
+          },
+          {
+            "alias": "Güisqui",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "category": "Beverages",
+      "per_100g": {
+        "kcal": 231,
+        "protein_g": 0,
+        "carbs_g": 0,
+        "fat_g": 0,
+        "fiber_g": 0,
+        "sat_fat_g": 0,
+        "sugars_g": 0,
+        "sodium_mg": 1
+      },
+      "portion_hints": [
+        {
+          "grams": 27.8,
+          "label_en": "1 fl oz",
+          "label_es": null
+        },
+        {
+          "grams": 42,
+          "label_en": "1 jigger (1.5 fl oz)",
+          "label_es": null
+        },
+        {
+          "grams": 28,
+          "label_en": "1 shot (30 ml)",
+          "label_es": "1 chupito (30 ml)"
+        },
+        {
+          "grams": 43,
+          "label_en": "1 measure (45 ml)",
+          "label_es": "1 copa (45 ml)"
+        },
+        {
+          "grams": 47,
+          "label_en": "1 long drink measure (50 ml)",
+          "label_es": "1 copa de cubata (50 ml)"
+        }
+      ],
+      "default_portion_g": 43,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_sr_legacy",
+        "default_portion_g": "curation",
+        "names.en": "usda_sr_legacy",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_sr_legacy",
+        "per_100g.fat_g": "usda_sr_legacy",
+        "per_100g.fiber_g": "usda_sr_legacy",
+        "per_100g.kcal": "usda_sr_legacy",
+        "per_100g.protein_g": "usda_sr_legacy",
+        "per_100g.sat_fat_g": "usda_sr_legacy",
+        "per_100g.sodium_mg": "usda_sr_legacy",
+        "per_100g.sugars_g": "usda_sr_legacy",
+        "portion_hints": "usda_sr_legacy",
+        "portion_hints.label_es": "curation"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-174837",
+      "source": "usda_sr_legacy",
+      "source_ref": "USDA FDC #174837",
+      "names": {
+        "en": "Alcoholic beverage, wine, table, white",
+        "es": "Vino blanco"
+      },
+      "aliases": {
+        "es": [
+          "Copa de vino blanco"
+        ]
+      },
+      "category": "Beverages",
+      "per_100g": {
+        "kcal": 82,
+        "protein_g": 0.07,
+        "carbs_g": 2.6,
+        "fat_g": 0,
+        "fiber_g": 0,
+        "sat_fat_g": 0,
+        "sugars_g": 0.96,
+        "sodium_mg": 5
+      },
+      "portion_hints": [
+        {
+          "grams": 29.4,
+          "label_en": "1 fl oz",
+          "label_es": null
+        },
+        {
+          "grams": 147,
+          "label_en": "1 serving (5 fl oz)",
+          "label_es": null
+        },
+        {
+          "grams": 99,
+          "label_en": "1 small glass (100 ml)",
+          "label_es": "1 copa pequeña (100 ml)"
+        },
+        {
+          "grams": 149,
+          "label_en": "1 glass (150 ml)",
+          "label_es": "1 copa (150 ml)"
+        },
+        {
+          "grams": 745,
+          "label_en": "1 bottle (750 ml)",
+          "label_es": "1 botella (750 ml)"
+        }
+      ],
+      "default_portion_g": 149,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_sr_legacy",
+        "default_portion_g": "curation",
+        "names.en": "usda_sr_legacy",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_sr_legacy",
+        "per_100g.fat_g": "usda_sr_legacy",
+        "per_100g.fiber_g": "usda_sr_legacy",
+        "per_100g.kcal": "usda_sr_legacy",
+        "per_100g.protein_g": "usda_sr_legacy",
+        "per_100g.sat_fat_g": "usda_sr_legacy",
+        "per_100g.sodium_mg": "usda_sr_legacy",
+        "per_100g.sugars_g": "usda_sr_legacy",
+        "portion_hints": "usda_sr_legacy",
+        "portion_hints.label_es": "curation"
       },
       "deprecated": false
     },
@@ -24141,6 +24762,290 @@
       },
       "deprecated": false,
       "generic": true
+    },
+    {
+      "id": "fdc-2705954",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2705954",
+      "names": {
+        "en": "Chicken breast, NS as to cooking method, skin not eaten",
+        "es": "Pechuga de pollo"
+      },
+      "aliases": {
+        "es": [
+          "Pechuga"
+        ]
+      },
+      "category": "Chicken, whole pieces",
+      "per_100g": {
+        "kcal": 144,
+        "protein_g": 28.04,
+        "carbs_g": 0,
+        "fat_g": 3.57,
+        "fiber_g": 0,
+        "sat_fat_g": 0.863,
+        "sugars_g": 0,
+        "sodium_mg": 328
+      },
+      "portion_hints": [
+        {
+          "grams": 135,
+          "label_en": "1 cup, cooked, diced",
+          "label_es": null
+        },
+        {
+          "grams": 120,
+          "label_en": "1 breast",
+          "label_es": "1 pechuga mediana"
+        },
+        {
+          "grams": 30,
+          "label_en": "1 small or thin slice",
+          "label_es": null
+        },
+        {
+          "grams": 60,
+          "label_en": "1 medium slice",
+          "label_es": null
+        },
+        {
+          "grams": 85,
+          "label_en": "1 large or thick slice",
+          "label_es": null
+        },
+        {
+          "grams": 28.35,
+          "label_en": "1 oz, cooked",
+          "label_es": null
+        },
+        {
+          "grams": 155,
+          "label_en": "1 breast quarter (yield after cooking, bone removed)",
+          "label_es": null
+        },
+        {
+          "grams": 120,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 120,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "curation",
+        "generic": "curation",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds",
+        "portion_hints.label_es": "curation"
+      },
+      "deprecated": false,
+      "generic": true
+    },
+    {
+      "id": "fdc-2705956",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2705956",
+      "names": {
+        "en": "Chicken breast, baked, broiled, or roasted, skin not eaten, from raw",
+        "es": "Pechuga de pollo al horno"
+      },
+      "aliases": {
+        "es": [
+          "Pechuga de pollo asada"
+        ]
+      },
+      "category": "Chicken, whole pieces",
+      "per_100g": {
+        "kcal": 161,
+        "protein_g": 30.22,
+        "carbs_g": 0,
+        "fat_g": 3.52,
+        "fiber_g": 0,
+        "sat_fat_g": 0.756,
+        "sugars_g": 0,
+        "sodium_mg": 360
+      },
+      "portion_hints": [
+        {
+          "grams": 135,
+          "label_en": "1 cup, cooked, diced",
+          "label_es": null
+        },
+        {
+          "grams": 105,
+          "label_en": "1 small breast",
+          "label_es": null
+        },
+        {
+          "grams": 120,
+          "label_en": "1 medium breast",
+          "label_es": "1 pechuga mediana"
+        },
+        {
+          "grams": 135,
+          "label_en": "1 large breast",
+          "label_es": null
+        },
+        {
+          "grams": 30,
+          "label_en": "1 small or thin slice",
+          "label_es": null
+        },
+        {
+          "grams": 60,
+          "label_en": "1 medium slice",
+          "label_es": null
+        },
+        {
+          "grams": 85,
+          "label_en": "1 large or thick slice",
+          "label_es": null
+        },
+        {
+          "grams": 28.35,
+          "label_en": "1 oz, cooked",
+          "label_es": null
+        },
+        {
+          "grams": 155,
+          "label_en": "1 breast quarter (yield after cooking, bone removed)",
+          "label_es": null
+        },
+        {
+          "grams": 120,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 120,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "curation",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds",
+        "portion_hints.label_es": "curation"
+      },
+      "deprecated": false
+    },
+    {
+      "id": "fdc-2705968",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2705968",
+      "names": {
+        "en": "Chicken breast, grilled without sauce, skin not eaten",
+        "es": "Pechuga de pollo a la plancha"
+      },
+      "aliases": {
+        "es": [
+          "Pechuga de pollo a la parrilla",
+          {
+            "alias": "Pollo a la plancha",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "category": "Chicken, whole pieces",
+      "per_100g": {
+        "kcal": 176,
+        "protein_g": 29.62,
+        "carbs_g": 0,
+        "fat_g": 5.45,
+        "fiber_g": 0,
+        "sat_fat_g": 1.008,
+        "sugars_g": 0,
+        "sodium_mg": 353
+      },
+      "portion_hints": [
+        {
+          "grams": 135,
+          "label_en": "1 cup, cooked, diced",
+          "label_es": null
+        },
+        {
+          "grams": 105,
+          "label_en": "1 small breast",
+          "label_es": null
+        },
+        {
+          "grams": 120,
+          "label_en": "1 medium breast",
+          "label_es": "1 pechuga mediana"
+        },
+        {
+          "grams": 135,
+          "label_en": "1 large breast",
+          "label_es": null
+        },
+        {
+          "grams": 30,
+          "label_en": "1 small or thin slice",
+          "label_es": null
+        },
+        {
+          "grams": 60,
+          "label_en": "1 medium slice",
+          "label_es": null
+        },
+        {
+          "grams": 85,
+          "label_en": "1 large or thick slice",
+          "label_es": null
+        },
+        {
+          "grams": 28.35,
+          "label_en": "1 oz, cooked",
+          "label_es": null
+        },
+        {
+          "grams": 155,
+          "label_en": "1 breast quarter (yield after cooking, bone removed)",
+          "label_es": null
+        },
+        {
+          "grams": 120,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 120,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "curation",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds",
+        "portion_hints.label_es": "curation"
+      },
+      "deprecated": false
     },
     {
       "id": "fdc-2706089",
@@ -33559,6 +34464,65 @@
       "generic": true
     },
     {
+      "id": "fdc-2707390",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2707390",
+      "names": {
+        "en": "Baked beans",
+        "es": "Alubias en salsa de tomate"
+      },
+      "aliases": {
+        "es": [
+          "Judías en salsa de tomate",
+          "Alubias con tomate",
+          "Porotos en salsa de tomate",
+          "Frijoles horneados"
+        ]
+      },
+      "category": "Beans, peas, legumes",
+      "per_100g": {
+        "kcal": 105,
+        "protein_g": 4.52,
+        "carbs_g": 21.57,
+        "fat_g": 0.89,
+        "fiber_g": 4.4,
+        "sat_fat_g": 0.231,
+        "sugars_g": 8.23,
+        "sodium_mg": 391
+      },
+      "portion_hints": [
+        {
+          "grams": 260,
+          "label_en": "1 cup",
+          "label_es": null
+        },
+        {
+          "grams": 130,
+          "label_en": "Quantity not specified",
+          "label_es": "1 ración"
+        }
+      ],
+      "default_portion_g": 130,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "curation",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds",
+        "portion_hints.label_es": "curation"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2707401",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2707401",
@@ -35999,6 +36963,84 @@
       "deprecated": false
     },
     {
+      "id": "fdc-2707616",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2707616",
+      "names": {
+        "en": "Bread, pita",
+        "es": "Pan de pita"
+      },
+      "aliases": {
+        "es": [
+          "Pita",
+          "Pan pita",
+          "Pan árabe"
+        ]
+      },
+      "category": "Yeast breads",
+      "per_100g": {
+        "kcal": 275,
+        "protein_g": 9.1,
+        "carbs_g": 55.7,
+        "fat_g": 1.2,
+        "fiber_g": 2.2,
+        "sat_fat_g": 0.166,
+        "sugars_g": 1.3,
+        "sodium_mg": 536
+      },
+      "portion_hints": [
+        {
+          "grams": 28,
+          "label_en": "1 small pita",
+          "label_es": null
+        },
+        {
+          "grams": 57,
+          "label_en": "1 medium pita",
+          "label_es": "1 pan de pita mediano"
+        },
+        {
+          "grams": 85,
+          "label_en": "1 large pita",
+          "label_es": null
+        },
+        {
+          "grams": 114,
+          "label_en": "1 extra large pita",
+          "label_es": null
+        },
+        {
+          "grams": 2,
+          "label_en": "1 surface inch",
+          "label_es": null
+        },
+        {
+          "grams": 57,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 57,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "curation",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds",
+        "portion_hints.label_es": "curation"
+      },
+      "deprecated": false
+    },
+    {
       "id": "fdc-2707626",
       "source": "usda_fndds",
       "source_ref": "USDA FDC #2707626",
@@ -37529,6 +38571,79 @@
       },
       "deprecated": false,
       "generic": true
+    },
+    {
+      "id": "fdc-2707823",
+      "source": "usda_fndds",
+      "source_ref": "USDA FDC #2707823",
+      "names": {
+        "en": "Tortilla, corn",
+        "es": "Tortilla de maíz"
+      },
+      "aliases": {
+        "es": [
+          "Tortilla mexicana",
+          "Tortilla de choclo",
+          "Tortilla de elote"
+        ]
+      },
+      "category": "Tortillas",
+      "per_100g": {
+        "kcal": 218,
+        "protein_g": 5.7,
+        "carbs_g": 44.64,
+        "fat_g": 2.85,
+        "fiber_g": 6.3,
+        "sat_fat_g": 0.453,
+        "sugars_g": 0.88,
+        "sodium_mg": 45
+      },
+      "portion_hints": [
+        {
+          "grams": 77,
+          "label_en": "Quantity not specified",
+          "label_es": null
+        },
+        {
+          "grams": 18,
+          "label_en": "1 small",
+          "label_es": null
+        },
+        {
+          "grams": 28,
+          "label_en": "1 medium",
+          "label_es": "1 tortilla mediana"
+        },
+        {
+          "grams": 44,
+          "label_en": "1 large",
+          "label_es": null
+        },
+        {
+          "grams": 65,
+          "label_en": "1 extra large",
+          "label_es": null
+        }
+      ],
+      "default_portion_g": 28,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "usda_fndds",
+        "default_portion_g": "curation",
+        "names.en": "usda_fndds",
+        "names.es": "curation",
+        "per_100g.carbs_g": "usda_fndds",
+        "per_100g.fat_g": "usda_fndds",
+        "per_100g.fiber_g": "usda_fndds",
+        "per_100g.kcal": "usda_fndds",
+        "per_100g.protein_g": "usda_fndds",
+        "per_100g.sat_fat_g": "usda_fndds",
+        "per_100g.sodium_mg": "usda_fndds",
+        "per_100g.sugars_g": "usda_fndds",
+        "portion_hints": "usda_fndds",
+        "portion_hints.label_es": "curation"
+      },
+      "deprecated": false
     },
     {
       "id": "fdc-2707827",

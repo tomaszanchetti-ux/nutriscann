@@ -7,11 +7,12 @@
  * los CSVs dos veces: esa es justamente la prueba.
  */
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 
-import { runContentLocks, runPipeline } from "./build";
+import { CATALOG_FILE, runContentLocks, runPipeline } from "./build";
 import { caveatDeSodio, esGenerico } from "./genericos";
-import { GOLDEN_CHECKS, MINIMUM_BY_SOURCE, lockIdempotence } from "./locks";
+import { GOLDEN_CHECKS, MINIMUM_BY_SOURCE, lockAtwater, lockIdempotence } from "./locks";
 import { loadExclusions } from "./selection";
 import { aliasText } from "./types";
 
@@ -35,12 +36,58 @@ test("el pipeline compila el catálogo y pasa los seis candados", { timeout: 600
   assert.deepEqual(first.stats.recipeFailures, [], "ninguna receta puede quedar sin derivar");
   assert.ok(first.stats.bySource.usda_fndds >= MINIMUM_BY_SOURCE.usda_fndds);
   assert.ok(first.stats.bySource.usda_sr_legacy >= MINIMUM_BY_SOURCE.usda_sr_legacy);
-  assert.match(first.catalog.kb_version, /^3\.1\.0\+[0-9a-f]{8}$/);
+  assert.match(first.catalog.kb_version, /^3\.2\.0\+[0-9a-f]{8}$/);
 
   const second = await runPipeline();
   const idempotence = lockIdempotence(first.json, second.json);
   assert.equal(idempotence.passed, true, idempotence.failures.join(" | "));
   assert.equal(first.catalog.kb_version, second.catalog.kb_version);
+});
+
+/**
+ * El puente entre este archivo y los que corren SIN los datasets.
+ *
+ * `build/foods.canonical.json` se commitea, es lo que lee el seed y es lo que
+ * miran los tests de contenido (`dt27.test.ts`) porque el CI no tiene los CSVs.
+ * Todo eso se apoya en una promesa que hasta ahora no verificaba nadie: que el
+ * archivo commiteado sea EXACTAMENTE el que produce el pipeline. Sin este test,
+ * un catálogo viejo commiteado deja en verde a todos los demás y se publica.
+ */
+test("el catálogo commiteado es byte a byte el que produce el pipeline", { timeout: 600_000 }, async () => {
+  const { json } = await runPipeline();
+  const commiteado = readFileSync(CATALOG_FILE, "utf8");
+  assert.equal(
+    commiteado,
+    json,
+    "kb/build/foods.canonical.json quedó viejo: corré `npm run build` y commiteá la salida",
+  );
+});
+
+/**
+ * La otra mitad de la mordida del candado 3 (la primera está en `dt27.test.ts`,
+ * que verifica que SIN alcohol las seis bebidas rompen). Acá se fija que el
+ * alcohol de verdad llega desde los CSVs: si el pipeline dejara de leer el
+ * nutriente del alcohol, el mapa saldría vacío y las bebidas romperían el build.
+ */
+test("las bebidas alcohólicas traen su alcohol desde los CSVs", { timeout: 600_000 }, async () => {
+  const { catalog, alcohol, stats } = await runPipeline();
+  const esperado: [string, number][] = [
+    ["fdc-168746", 3.9], // cerveza
+    ["fdc-168749", 3.1], // cerveza light
+    ["fdc-171906", 7.7], // cerveza de alta graduación
+    ["fdc-173190", 10.6], // vino tinto
+    ["fdc-174837", 10.3], // vino blanco
+    ["fdc-174815", 33.4], // destilado 80 proof
+  ];
+  for (const [id, gramos] of esperado) {
+    assert.equal(alcohol.get(id), gramos, `${id} perdió su alcohol: el candado 3 lo necesita`);
+  }
+  assert.equal(lockAtwater(catalog, alcohol).passed, true);
+  // Y las porciones de barra que agregó la curación (card 6.2) están contadas.
+  assert.ok(
+    stats.curatedPortionHints >= 25,
+    `la curación agregó ${stats.curatedPortionHints} porciones; se esperaban al menos 25`,
+  );
 });
 
 test("cada caso dorado existe de verdad en la selección", { timeout: 600_000 }, async () => {

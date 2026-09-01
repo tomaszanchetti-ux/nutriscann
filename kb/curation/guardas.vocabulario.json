@@ -19,8 +19,19 @@
   "blinda el catálogo, no el matcher—, pero un catálogo bien curado es el primer",
   "lugar donde el error se puede frenar, y el más barato."
  ],
- "criteria_version": "guardas-v2",
+ "criteria_version": "guardas-v3",
  "generated": "2026-09-01",
+ "$card_6_2_dt27": [
+  "La v3 suma dos guardas, y las dos existen por una razón MEDIDA y escrita en la DT-26: son",
+  "los dos términos que el motor mandó a la ficha equivocada porque el catálogo no tenía la",
+  "ficha correcta. Ahora la tiene (card 6.2), y estas guardas son el candado que impide que",
+  "el término vuelva a la ficha vieja el día que alguien cure un alias de más.",
+  "",
+  "El patrón, que es nuevo y conviene leer antes de escribir la próxima: UN TÉRMINO QUE",
+  "ACABA DE CONSEGUIR SU FICHA SE FIJA EN ELLA CON UNA GUARDA SOBRE LA FICHA DONDE CAÍA",
+  "ANTES. Sin eso, agregar una ficha arregla el síntoma de hoy y deja el error listo para",
+  "volver: nada impide que mañana `Tortilla de maíz` aparezca de alias en la de trigo."
+ ],
  "$card_2_7": [
   "La v2 suma las cuatro guardas de la card 2.7. Las tres primeras fijan los tres alias",
   "que el golden set de 30 midió como la causa de 3 de los 5 errores de ficha del test.",
@@ -61,6 +72,16 @@
    "termino": "croquetas",
    "prohibido_en": ["fdc-2708024"],
    "motivo": "El plural de la guarda anterior, por el mismo motivo y con el mismo número. Va escrito aparte porque una guarda declara UN término y la comparación es por igualdad exacta sobre el término normalizado: sin esta fila, `Croquetas` volvería al buñuelo por la puerta de al lado."
+  },
+  {
+   "termino": "Tortilla de maíz",
+   "prohibido_en": ["fdc-2707822"],
+   "motivo": "fdc-2707822 es `Tortilla, NFS` de USDA y en el catálogo se llama `Tortilla de trigo`: es harina de trigo (262 kcal y 372 mg de sodio por 100 g) y la de maíz es otro alimento (fdc-2707823, 218 kcal y 45 mg de sodio por 100 g: un 17 % menos de energía y ocho veces menos sodio). La DT-26 lo midió como la ÚNICA regresión de la card 2.6: el término `tortilla, corn` resolvía a la de trigo porque la de maíz no existía en el catálogo. Desde la card 6.2 existe, y esta guarda es lo que impide que el término vuelva a la ficha de trigo por la puerta de un alias. Ojo con la comparación: es igualdad exacta sobre el término normalizado, así que `Tortilla de harina` —que SÍ es alias legítimo de la de trigo— no se toca."
+  },
+  {
+   "termino": "Limón",
+   "prohibido_en": ["fdc-2708000", "fdc-2707935"],
+   "motivo": "Un postre de limón no es un limón. La DT-26 lo midió: sin ficha de limón entero, el término `lemon` caía en `Tarta de limón` (fdc-2708000, 280 kcal/100 g) — casi diez veces las 29 kcal del limón (fdc-167746), que entró al catálogo en la card 6.2. Se prohíbe también en `Barrita de limón` (fdc-2707935, 437 kcal/100 g), que es el mismo error por la puerta de al lado y todavía no había mordido a nadie. Los nombres compuestos siguen siendo correctos y no los alcanza la guarda: lo prohibido es que un postre se llame `Limón` a secas o lleve `Limón` de alias, con cualquier confianza."
   }
  ]
 }

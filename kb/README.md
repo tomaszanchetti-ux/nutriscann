@@ -93,9 +93,11 @@ El build **falla** —y por lo tanto no hay seed— si:
    lechuga de 15 kcal el porcentaje se dispara por nada. **Los alimentos manuales
    solo tienen el brazo del 10 %**: el margen absoluto está pensado para las
    verduras de USDA, no para etiquetas curadas a mano.
-4. **Casos dorados.** Seis alimentos conocidos contra su valor de referencia,
+4. **Casos dorados.** Nueve alimentos conocidos contra su valor de referencia,
    ±15 % (`manzana ≈ 52 kcal/100 g`). No prueban que USDA esté bien: prueban que
-   el pipeline leyó la columna correcta.
+   el pipeline leyó la columna correcta. La card 6.2 sumó tres, con la referencia
+   independiente que aportó Tomás en la DT-27: cerveza ≈ 43 kcal/100 ml, limón
+   ≈ 29 kcal/100 g y tortilla de maíz ≈ 218 kcal/100 g.
 5. **Idempotencia.** Dos corridas completas del pipeline tienen que producir el
    mismo archivo byte a byte. Si no, el catálogo no es reproducible.
 
@@ -197,13 +199,36 @@ decisión de producto se pueda borrar sin que nadie se entere.
 { "173944": { "default_portion_g": 118, "label_es": "1 unidad mediana" } }
 ```
 
-Las dos claves del override de porciones son independientes: se puede corregir
-solo los gramos, solo la etiqueta en español, o las dos.
+Las **tres** claves del override de porciones son independientes: se puede
+corregir solo los gramos, solo la etiqueta en español, solo agregar porciones, o
+cualquier combinación.
 
 - `default_portion_g` reemplaza los gramos por defecto que traía la selección.
 - `label_es` va a la **porción por defecto**: si esos gramos ya existen entre
   las porciones de USDA, esa porción recibe su nombre en español; si no existen
   (la curación nombró una medida que USDA no mide), entra como una porción más.
+- `portion_hints` **agrega** porciones enteras a las de USDA (card 6.2):
+
+```jsonc
+{ "168746": { "default_portion_g": 200, "portion_hints": [
+    { "grams": 200, "label_en": "1 small draft glass", "label_es": "1 caña" },
+    { "grams": 500, "label_en": "1 half-litre mug",   "label_es": "1 jarra" }
+]}}
+```
+
+`label_es` alcanza para nombrar UNA porción y eso cubre el caso para el que
+nació: la manzana que USDA mide en tazas y la persona ve por unidades. No cubre
+el de la cerveza, donde lo que falta no es una etiqueta sino un **juego entero de
+medidas** que USDA no mide — la caña, el tubo, el tercio, la jarra, la litrona.
+Es aditivo: las porciones de USDA no se tocan ni se reordenan, las curadas van
+detrás, y se saltea la que ya exista con los mismos gramos y la misma etiqueta en
+inglés. Una porción curada **siempre** declara su `label_es`: nombrar la medida
+en español es su única razón de ser, y sin él el build la rechaza.
+
+En los dos archivos que son un mapa plano por `fdc_id` —`names.es.json` y
+`portions.overrides.json`— una clave que empieza con `$` es un **comentario** y
+se saltea. Cualquier otra clave que no sea un número sigue siendo un error: la
+tolerancia es para el `$comment`, no para un id mal tipeado.
 
 Lo curado queda marcado en `provenance` con la ruta del campo
 (`portion_hints.label_es`, `default_portion_g`, `names.es`, `aliases.es`), así
@@ -211,14 +236,33 @@ que el resto de las porciones sigue declarando su origen USDA.
 
 ## Estado
 
-**Las cuatro capas en pie (card 2.7, 01/09/2026).** El build compila **1.022**
-alimentos (701 FNDDS + 306 SR Legacy + 6 manuales + 9 recetas compuestas) en la
-versión **3.1.0**, con los seis candados en verde, la curación en español
+**Las cuatro capas en pie (card 6.2, 01/09/2026).** El build compila **1.036**
+alimentos (707 FNDDS + 314 SR Legacy + 6 manuales + 9 recetas compuestas) en la
+versión **3.2.0**, con los seis candados en verde, la curación en español
 completa y las transformaciones de cocción medidas de los propios datasets. La
 capa 4 es `seed/` (card 1.5): la publicación idempotente a Firestore, con su
 propio README.
 
-Qué cambió respecto de la 3.0.0 (mismos 1.022 alimentos):
+Qué cambió respecto de la 3.1.0 (1.022 alimentos):
+
+- **Card 6.2 — el lote de fichas de la DT-27.** Catorce alimentos que ya estaban
+  en los datasets declarados y que el golden set de 30 midió como huecos reales:
+  tres cervezas, dos vinos y un destilado (`selection/dt27.v1.json`), limón
+  entero, arepa, tortilla de maíz, tres pechugas de pollo, pan de pita y alubias
+  en salsa de tomate. **Es MENOR porque es puramente aditivo**: no sale ninguna
+  ficha, no cambia ningún id y las 1.022 anteriores salen byte por byte iguales.
+- Los números son de USDA, campo a campo. Lo que aportó Tomás —y que USDA no
+  sabe— son las **porciones de una barra española** (caña, tubo, tercio, doble,
+  jarra, litrona) y el vocabulario que las nombra; el contraste ficha por ficha
+  contra sus insumos está en `selection/dt27.v1.json`, con las tres que **no**
+  cruzan escritas como tales (la arepa, la cerveza negra y la 0,0).
+- De paso cierra la única regresión de la card 2.6 (`tortilla, corn` resolvía a
+  la tortilla de trigo) y el hueco del limón de la DT-26, los dos fijados con su
+  guarda de vocabulario para que el término no pueda volver a la ficha vieja.
+- Entró una extensión aditiva del contrato de curación: `portion_hints` en
+  `portions.overrides.json`, arriba en «El contrato con la curación».
+
+Y antes, respecto de la 3.0.0 (mismos 1.022 alimentos):
 
 - **Card 2.7 — la curación quirúrgica.** El golden set de 30 platos reales midió
   que **3 de los 5 errores de ficha del test no eran del motor sino de tres filas

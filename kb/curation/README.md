@@ -13,8 +13,8 @@ parche puesto ahí se pierde en el próximo seed y el error vuelve.
 
 | Archivo | Qué es | Lo consume |
 |---|---|---|
-| `names.es.json` | **El entregable.** `{fdc_id: {name, aliases}}` para los 1.007 alimentos de USDA del catálogo. | el build |
-| `portions.overrides.json` | Porción por defecto corregida + etiqueta, para las entradas cuya porción USDA es inservible como sugerencia. | el build |
+| `names.es.json` | **El entregable.** `{fdc_id: {name, aliases}}` para los 1.021 alimentos de USDA del catálogo. | el build |
+| `portions.overrides.json` | Porción por defecto corregida + etiqueta, para las entradas cuya porción USDA es inservible como sugerencia. Desde la card 6.2, además `portion_hints`: porciones que la curación **agrega** (la caña, el tercio, la jarra). | el build |
 | `aliases.regional.json` | **Aliases con confianza** (card 1.6): el nombre de un plato típico apuntando a su gemelo nutricional. | el build |
 | `manual.foods.json` | **Alimentos que USDA no tiene**, declarados enteros (6). Precedencia máxima del pipeline. | el build |
 | `cooking.transforms.json` | **Métodos de cocción** declarativos y reutilizables, cada uno con su fuente medida. | el build (y la Fase 2, en runtime) |

@@ -41,7 +41,8 @@ SELECTION = CURATION.parent / "selection/selection.v1.json"
 # resultado, no el primer archivo.
 BLOQUES = [CURATION.parent / "selection/regional.v1.json",
            CURATION.parent / "selection/es.sweep.v1.json",
-           CURATION.parent / "selection/ingredientes.v1.json"]
+           CURATION.parent / "selection/ingredientes.v1.json",
+           CURATION.parent / "selection/dt27.v1.json"]
 EXCLUSIONES = CURATION.parent / "selection/exclusions.dt7.json"
 CONFIANZAS = (1, 0.8, 0.6, 0.5)
 COVERAGE = [CURATION.parent / "selection/regional.coverage.json",
@@ -58,6 +59,16 @@ def strict_load(path: Path):
     return json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=no_dupes)
 
 
+def sin_comentarios(mapa: dict) -> dict:
+    """Los mapas planos por fdc_id admiten claves `$algo` como comentario.
+
+    Es la misma regla que aplica el build (`esComentario` en kb/src/curation.ts):
+    se saltea el prefijo `$` y NADA mas, asi que una clave mal tipeada sigue
+    siendo un error de cobertura.
+    """
+    return {k: v for k, v in mapa.items() if not k.startswith("$")}
+
+
 def main() -> int:
     errors: list[str] = []
     selection = strict_load(SELECTION)["entries"]
@@ -71,9 +82,9 @@ def main() -> int:
         selection = [e for e in selection if e["fdc_id"] not in excluidos]
         for e in fuera:
             heredados.setdefault(str(e["duplicado_de"]), []).extend(e["aliases_heredados"])
-    names = strict_load(CURATION / "names.es.json")
+    names = sin_comentarios(strict_load(CURATION / "names.es.json"))
     strict_load(CURATION / "glossary.es.json")
-    portions = strict_load(CURATION / "portions.overrides.json")
+    portions = sin_comentarios(strict_load(CURATION / "portions.overrides.json"))
     regional_file = CURATION / "aliases.regional.json"
     regionales = strict_load(regional_file)["aliases"] if regional_file.exists() else {}
 
@@ -198,16 +209,50 @@ def main() -> int:
     needs = {str(e["fdc_id"]) for e in selection if e.get("portion_needs_review")}
     if not needs <= set(portions):
         errors.append(f"portion_needs_review sin corregir: {sorted(needs - set(portions))}")
+    def revisar_label(fdc: str, label, contexto: str) -> None:
+        if not isinstance(label, str) or not label:
+            errors.append(f"{fdc}: falta {contexto}")
+            return
+        if label.endswith(".") or not (label[0].isdigit() or label[0].isupper()) or len(label) > 30:
+            errors.append(f"{fdc}: {contexto} '{label}' rompe el estilo (mayuscula o numero, sin punto, <=30)")
+
     for fdc, ov in portions.items():
         if fdc not in {str(e["fdc_id"]) for e in selection}:
             errors.append(f"{fdc}: la porcion corrige un fdc_id que no esta en la seleccion")
         if not isinstance(ov.get("default_portion_g"), (int, float)) or ov["default_portion_g"] <= 0:
             errors.append(f"{fdc}: default_portion_g invalido")
-        label = ov.get("label_es", "")
-        if not label:
-            errors.append(f"{fdc}: falta label_es")
-        elif label.endswith(".") or not (label[0].isdigit() or label[0].isupper()) or len(label) > 30:
-            errors.append(f"{fdc}: label_es '{label}' rompe el estilo (mayuscula o numero, sin punto, <=30)")
+            continue
+        # Las porciones que AGREGA la curacion (card 6.2) traen su propia
+        # etiqueta en espanol, y son obligatorias: una porcion curada existe para
+        # nombrar una medida. Los gramos tienen que ser unicos entre ellas —dos
+        # `1 cana` de 200 g no son dos porciones— y la de por defecto tiene que
+        # estar nombrada por algun lado: por `label_es` o por una de estas.
+        hints = ov.get("portion_hints", [])
+        if not isinstance(hints, list):
+            errors.append(f"{fdc}: portion_hints no es una lista")
+            hints = []
+        gramos_vistos = set()
+        for i, hint in enumerate(hints):
+            if not isinstance(hint, dict):
+                errors.append(f"{fdc}: portion_hints[{i}] no es un objeto")
+                continue
+            g = hint.get("grams")
+            if not isinstance(g, (int, float)) or g <= 0:
+                errors.append(f"{fdc}: portion_hints[{i}] con gramos invalidos")
+            elif g in gramos_vistos:
+                errors.append(f"{fdc}: portion_hints repite los {g} g")
+            else:
+                gramos_vistos.add(g)
+            if not hint.get("label_en"):
+                errors.append(f"{fdc}: portion_hints[{i}] sin label_en")
+            revisar_label(fdc, hint.get("label_es"), f"portion_hints[{i}].label_es")
+
+        nombrada_por_hint = any(
+            isinstance(h, dict) and h.get("grams") == ov["default_portion_g"] and h.get("label_es")
+            for h in hints
+        )
+        if ov.get("label_es") or not nombrada_por_hint:
+            revisar_label(fdc, ov.get("label_es"), "label_es")
 
     print(f"{len(names)}/{len(expected)} alimentos con nombre · "
           f"{len(set(seen))} nombres unicos · "

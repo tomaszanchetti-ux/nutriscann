@@ -5068,5 +5068,97 @@
  "169640": {
   "name": "Miel",
   "aliases": []
+ },
+ "168746": {
+  "name": "Cerveza",
+  "aliases": [
+   "Cerveza rubia",
+   "Caña de cerveza",
+   "Cerveza de barril"
+  ]
+ },
+ "168749": {
+  "name": "Cerveza light",
+  "aliases": [
+   "Cerveza ligera",
+   "Cerveza baja en calorías"
+  ]
+ },
+ "171906": {
+  "name": "Cerveza de alta graduación",
+  "aliases": []
+ },
+ "173190": {
+  "name": "Vino tinto",
+  "aliases": [
+   "Copa de vino tinto"
+  ]
+ },
+ "174837": {
+  "name": "Vino blanco",
+  "aliases": [
+   "Copa de vino blanco"
+  ]
+ },
+ "174815": {
+  "name": "Bebida destilada (ginebra, ron, vodka, whisky)",
+  "aliases": [
+   "Chupito"
+  ]
+ },
+ "167746": {
+  "name": "Limón",
+  "aliases": [
+   "Limón sin cáscara"
+  ]
+ },
+ "168070": {
+  "name": "Arepa",
+  "aliases": [
+   "Arepa de maíz"
+  ]
+ },
+ "2707823": {
+  "name": "Tortilla de maíz",
+  "aliases": [
+   "Tortilla mexicana",
+   "Tortilla de choclo",
+   "Tortilla de elote"
+  ]
+ },
+ "2705954": {
+  "name": "Pechuga de pollo",
+  "aliases": [
+   "Pechuga"
+  ]
+ },
+ "2705956": {
+  "name": "Pechuga de pollo al horno",
+  "aliases": [
+   "Pechuga de pollo asada"
+  ]
+ },
+ "2705968": {
+  "name": "Pechuga de pollo a la plancha",
+  "aliases": [
+   "Pechuga de pollo a la parrilla"
+  ]
+ },
+ "2707616": {
+  "name": "Pan de pita",
+  "aliases": [
+   "Pita",
+   "Pan pita",
+   "Pan árabe"
+  ]
+ },
+ "2707390": {
+  "name": "Alubias en salsa de tomate",
+  "aliases": [
+   "Judías en salsa de tomate",
+   "Alubias con tomate",
+   "Porotos en salsa de tomate",
+   "Frijoles horneados"
+  ]
  }
 }

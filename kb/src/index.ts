@@ -83,6 +83,7 @@ function report(outcome: BuildOutcome): void {
   }
   line("porciones sobrescritas", stats.curatedPortions);
   line("etiquetas de porción en español", stats.curatedPortionLabels);
+  line("porciones agregadas por la curación", stats.curatedPortionHints);
 
   const regla = result.curation.genericRule;
   line("fichas genéricas marcadas (DT-13)", regla === null ? "(sin regla declarada)" : stats.genericFoods);

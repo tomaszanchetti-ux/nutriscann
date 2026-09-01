@@ -49,6 +49,39 @@
   "  cocidas, y el añadido es sal y grasa de cocción, que la regla de aceptación no cuenta",
   "  como ingrediente ajeno), no «esto es». Es el mismo camino del `Bacalao` a 0,8."
  ],
+ "$card_6_2_dt27": [
+  "01/09/2026 — el lote de fichas de la DT-27. Cuatro entradas, todas con la reserva escrita",
+  "donde se puede escribir: en el alias.",
+  "",
+  "`Arepa` (0,8) sobre fdc-168070, que YA SE LLAMA Arepa. Es la convención del gazpacho: un",
+  "  `name` no puede llevar un número al lado y un alias sí, así que cuando la ficha se llama",
+  "  como el plato pero hay algo que declarar, se emite el alias HOMÓNIMO con su confianza.",
+  "  Lo que declara: la ficha es la arepa que USDA midió en restaurantes (5,38 g de grasa,",
+  "  2,90 saturada) y la arepa asada de casa trae 0,6-1 g. Mismo alimento, más grasa.",
+  "",
+  "`IPA` y `Cerveza IPA` (0,8) · `Cerveza artesanal` (0,6) sobre fdc-171906 `Cerveza de alta",
+  "  graduación`. La IPA baja a 0,8 y no a 1,0 porque la ficha mide graduación, no estilo:",
+  "  una IPA ronda el 6-7 % y encaja, pero el lúpulo no aporta calorías y el residual sí, y",
+  "  eso la ficha no lo distingue. `Cerveza artesanal` baja un peldaño más, a 0,6, por un",
+  "  motivo medido y no de gusto: artesanal NO quiere decir fuerte — media artesanía española",
+  "  está en 4,5-5 %, o sea en la ficha de cerveza regular (43 kcal/100 ml), no en esta (58).",
+  "  Es el peldaño del gemelo con reserva: sirve, y hay que decir cuánto.",
+  "",
+  "`Ginebra` · `Ron` · `Vodka` · `Whisky` · `Güisqui` (0,8) sobre fdc-174815, cuyo nombre en",
+  "  USDA es literalmente `distilled, all (gin, rum, vodka, whiskey) 80 proof`. A 40° los",
+  "  cuatro son agua y alcohol y no se distinguen ni en energía ni en macros: por eso no",
+  "  bajan más. Y no llegan a 1,0 porque la ficha fija la GRADUACIÓN: un whisky de 43° o una",
+  "  ginebra de 47° tienen más calorías que las 231/100 g de esta, y el alias no puede decir",
+  "  «esto es» cuando la propia fuente pone el proof en el nombre.",
+  "",
+  "`Pollo a la plancha` (0,8) sobre fdc-2705968 `Pechuga de pollo a la plancha`. Acá la",
+  "  reserva es de CORTE, no de técnica: en España «pollo a la plancha» es pechuga en la",
+  "  enorme mayoría de las cartas, pero puede ser muslo, que tiene más grasa. No cae bajo la",
+  "  guarda de la card 2.7 (`asado`, `filete`) porque no es un término de técnica a secas:",
+  "  nombra la especie Y la técnica, y la ficha es exactamente esa especie cocinada así.",
+  "  `Pollo asado`, en cambio, NO se emite: ahí sí la ficha correcta sería el pollo entero",
+  "  (fdc-2705935) y mandar un pollo asado a una pechuga sería el error de la costilla."
+ ],
  "aliases": {
   "167987": [
    {
@@ -384,6 +417,54 @@
    {
     "alias": "Pesto",
     "confidence": 1
+   }
+  ],
+  "168070": [
+   {
+    "alias": "Arepa",
+    "confidence": 0.8
+   }
+  ],
+  "171906": [
+   {
+    "alias": "IPA",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Cerveza IPA",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Cerveza artesanal",
+    "confidence": 0.6
+   }
+  ],
+  "174815": [
+   {
+    "alias": "Ginebra",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Ron",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Vodka",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Whisky",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Güisqui",
+    "confidence": 0.8
+   }
+  ],
+  "2705968": [
+   {
+    "alias": "Pollo a la plancha",
+    "confidence": 0.8
    }
   ]
  }

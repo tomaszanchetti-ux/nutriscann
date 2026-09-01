@@ -161,6 +161,7 @@ function emptyStats(): BuildStats {
     manualOverrideFoods: 0,
     curatedPortions: 0,
     curatedPortionLabels: 0,
+    curatedPortionHints: 0,
     portionNeedsReview: [],
     genericFoods: 0,
     genericCaveats: 0,

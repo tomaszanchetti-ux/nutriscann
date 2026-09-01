@@ -53,6 +53,23 @@ export interface CuratedPortion {
   default_portion_g: number | null;
   /** Cómo se llama esa porción en español ("1 unidad mediana"). */
   label_es: string | null;
+  /**
+   * Porciones que la curación AGREGA a las de USDA (card 6.2, DT-27).
+   *
+   * `label_es` alcanza para nombrar UNA porción, la de por defecto, y eso cubre
+   * el caso para el que nació: la manzana que USDA mide en tazas y la persona
+   * ve por unidades. No cubre el caso de la cerveza, donde lo que falta no es
+   * una etiqueta sino un JUEGO ENTERO de medidas que USDA no mide: la caña, el
+   * tubo, el tercio, la jarra, la litrona. Ese vocabulario es lo único que
+   * Tomás aportó como fuente en la DT-27, y sin esta clave no tendría por dónde
+   * entrar salvo inventando una ficha manual —que perdería el provenance USDA
+   * de todos los números—.
+   *
+   * Es ADITIVO: las porciones de USDA no se tocan ni se reordenan; estas van
+   * detrás. Una porción curada SIEMPRE declara su `label_es` (es su razón de
+   * ser) y queda marcada en provenance como `curation`.
+   */
+  portion_hints: PortionHint[];
 }
 
 /**
@@ -154,6 +171,21 @@ function readJsonObject(path: string, problems: string[]): Record<string, unknow
   return parsed as Record<string, unknown>;
 }
 
+/**
+ * Una clave `$algo` es un COMENTARIO, no un fdc_id.
+ *
+ * Los archivos de curación con forma de lista (`aliases.regional.json`,
+ * `recipes.foods.json`, `guardas.vocabulario.json`) llevan su `$comment` al lado
+ * del bucket de datos y por eso nunca chocaron con el parser. Los dos que son un
+ * mapa plano por `fdc_id` —`names.es.json` y `portions.overrides.json`— no tenían
+ * dónde ponerlo: cualquier clave que no fuera un número se reportaba como
+ * problema. Se admite el prefijo `$`, que es el que ya usa todo `kb/`, y NADA
+ * más: una clave mal tipeada sigue siendo un error, que es de lo que protege.
+ */
+function esComentario(key: string): boolean {
+  return key.startsWith("$");
+}
+
 /** Un número finito y positivo, o `null` con el problema anotado. */
 function positive(value: unknown, label: string, problems: string[]): number | null {
   const parsed = Number(value);
@@ -182,6 +214,7 @@ export function loadCuration(dir: string = CURATION_DIR): Curation {
     filesFound.push("names.es.json");
     const raw = readJsonObject(namesFile, problems);
     for (const [key, value] of Object.entries(raw ?? {})) {
+      if (esComentario(key)) continue;
       const fdcId = Number(key);
       if (!Number.isInteger(fdcId)) {
         problems.push(`names.es.json: la clave "${key}" no es un fdc_id`);
@@ -213,6 +246,7 @@ export function loadCuration(dir: string = CURATION_DIR): Curation {
     filesFound.push("portions.overrides.json");
     const raw = readJsonObject(portionsFile, problems);
     for (const [key, value] of Object.entries(raw ?? {})) {
+      if (esComentario(key)) continue;
       const fdcId = Number(key);
       if (!Number.isInteger(fdcId)) {
         problems.push(`portions.overrides.json: la clave "${key}" no es un fdc_id`);
@@ -222,7 +256,11 @@ export function loadCuration(dir: string = CURATION_DIR): Curation {
         problems.push(`portions.overrides.json[${key}]: se esperaba un objeto`);
         continue;
       }
-      const entry = value as { default_portion_g?: unknown; label_es?: unknown };
+      const entry = value as {
+        default_portion_g?: unknown;
+        label_es?: unknown;
+        portion_hints?: unknown;
+      };
 
       let grams: number | null = null;
       if (entry.default_portion_g !== undefined && entry.default_portion_g !== null) {
@@ -245,9 +283,40 @@ export function loadCuration(dir: string = CURATION_DIR): Curation {
         }
       }
 
-      // Una entrada que no aporta ni gramos ni etiqueta no es un override.
-      if (grams === null && labelEs === null) continue;
-      portions.set(fdcId, { default_portion_g: grams, label_es: labelEs });
+      // Porciones que la curación agrega (la caña, el tercio, la jarra…).
+      const hints: PortionHint[] = [];
+      if (entry.portion_hints !== undefined) {
+        if (!Array.isArray(entry.portion_hints)) {
+          problems.push(`portions.overrides.json[${key}]: "portion_hints" debe ser una lista`);
+        } else {
+          for (const [index, hint] of (entry.portion_hints as unknown[]).entries()) {
+            const label = `portions.overrides.json[${key}].portion_hints[${index}]`;
+            if (hint === null || typeof hint !== "object" || Array.isArray(hint)) {
+              problems.push(`${label}: se esperaba { grams, label_en, label_es }`);
+              continue;
+            }
+            const h = hint as { grams?: unknown; label_en?: unknown; label_es?: unknown };
+            const hintGrams = positive(h.grams, `${label}: "grams"`, problems);
+            if (hintGrams === null) continue;
+            if (typeof h.label_en !== "string" || h.label_en.trim() === "") {
+              problems.push(`${label}: "label_en" ausente o vacío`);
+              continue;
+            }
+            // El `label_es` NO es opcional acá, a diferencia de una porción de
+            // USDA: una porción que la curación inventa existe justamente para
+            // nombrar una medida en español. Sin el nombre no aporta nada.
+            if (typeof h.label_es !== "string" || h.label_es.trim() === "") {
+              problems.push(`${label}: una porción curada tiene que declarar "label_es"`);
+              continue;
+            }
+            hints.push({ grams: hintGrams, label_en: h.label_en.trim(), label_es: h.label_es.trim() });
+          }
+        }
+      }
+
+      // Una entrada que no aporta ni gramos ni etiqueta ni porciones no es un override.
+      if (grams === null && labelEs === null && hints.length === 0) continue;
+      portions.set(fdcId, { default_portion_g: grams, label_es: labelEs, portion_hints: hints });
     }
   }
 

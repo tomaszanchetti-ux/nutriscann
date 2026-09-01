@@ -100,6 +100,8 @@ export interface BuildStats {
   curatedPortions: number;
   /** Porciones que recibieron su etiqueta en español desde la curación. */
   curatedPortionLabels: number;
+  /** Porciones que la curación AGREGÓ a las de USDA (card 6.2: la barra española). */
+  curatedPortionHints: number;
   /** Porciones que la selección marcó para revisar a mano. */
   portionNeedsReview: number[];
   /** La descripción de la selección no coincide con la de `food.csv`. */
@@ -174,6 +176,7 @@ export function assemble(input: AssembleInput): AssembleResult {
     manualOverrideFoods: 0,
     curatedPortions: 0,
     curatedPortionLabels: 0,
+    curatedPortionHints: 0,
     portionNeedsReview: [],
     descriptionMismatches: [],
     foodsWithoutPortions: [],
@@ -283,6 +286,19 @@ export function assemble(input: AssembleInput): AssembleResult {
     else provenance["portion_hints"] = source;
 
     const curatedPortion = curation.portions.get(entry.fdc_id);
+
+    // Porciones que la curación AGREGA (card 6.2): la caña, el tubo, el tercio.
+    // Van DETRÁS de las de USDA y no pisan ninguna — el orden de las de la
+    // fuente no se toca. Se saltea la que ya exista con los mismos gramos y la
+    // misma etiqueta en inglés: eso no es una porción nueva, es la misma.
+    for (const hint of curatedPortion?.portion_hints ?? []) {
+      if (hints.some((h) => h.grams === hint.grams && h.label_en === hint.label_en)) continue;
+      hints.push({ ...hint });
+      if (provenance["portion_hints"] === undefined) provenance["portion_hints"] = "curation";
+      provenance["portion_hints.label_es"] = "curation";
+      stats.curatedPortionHints += 1;
+    }
+
     const curatedGrams = curatedPortion?.default_portion_g ?? null;
     const defaultPortion = curatedGrams ?? entry.default_portion_g;
     if (curatedGrams !== null) stats.curatedPortions += 1;
@@ -424,7 +440,24 @@ export function assemble(input: AssembleInput): AssembleResult {
   // seed. No es un parche: sube el número porque un catálogo que dice cosas
   // distintas es un catálogo distinto, y el `config/app` de Firestore estampa
   // esta versión para poder decir con qué vocabulario se calculó cada reporte.
-  const kbVersion = `3.1.0+${contentHash({ generated_from: generatedFrom, foods })}`;
+  //
+  // 3.2.0 con la card 6.2 (el lote de fichas de la DT-27).
+  //
+  // Es MENOR y no mayor por la misma razón que la 3.1.0, y por una más: es
+  // puramente ADITIVO. Entran catorce alimentos de USDA que ya estaban en los
+  // datasets declarados —tres cervezas, dos vinos, un destilado, limón, arepa,
+  // tortilla de maíz, tres pechugas de pollo, pan de pita y alubias en salsa de
+  // tomate—, no sale ninguna ficha, no cambia ningún id y ningún consumidor que
+  // haya guardado un `food_id` deja de encontrarlo. La única extensión del
+  // contrato de curación (`portion_hints` en portions.overrides.json) también es
+  // aditiva y no cambia la FORMA del catálogo: produce más entradas en
+  // `portion_hints`, que es una lista que ya existía.
+  //
+  // Sube el número y no se queda en parche por el mismo motivo de siempre: un
+  // catálogo con catorce alimentos más es un catálogo distinto, y el `config/app`
+  // de Firestore estampa esta versión para poder decir contra qué se calculó
+  // cada reporte.
+  const kbVersion = `3.2.0+${contentHash({ generated_from: generatedFrom, foods })}`;
 
   return {
     catalog: { kb_version: kbVersion, generated_from: generatedFrom, foods },

@@ -158,6 +158,42 @@ export const GOLDEN_CHECKS: GoldenCheck[] = [
     reference: "aceite de oliva ≈ 884 kcal/100 g y 100 g de grasa",
     expected: { kcal: 884, fat_g: 100 },
   },
+  {
+    fdc_id: 168746,
+    label: "Cerveza regular (SR Legacy)",
+    reference:
+      "cerveza rubia ≈ 43 kcal/100 ml — 153 kcal por 355 ml en las tablas de " +
+      "consumo españolas que aportó Tomás (DT-27, 01/09/2026) ⇒ 43,1/100 ml",
+    expected: { kcal: 43, carbs_g: 3.55 },
+    note:
+      "Entra con la card 6.2 y es el ÚNICO caso dorado con alcohol: sus 43 kcal no salen " +
+      "de los macros (4×0,46 + 4×3,55 = 16) sino de los 3,9 g de alcohol (×7 = 27). Si el " +
+      "pipeline dejara de leer el nutriente 1018, este caso seguiría en verde y el candado " +
+      "3 se caería solo; están los dos porque miden cosas distintas.",
+  },
+  {
+    fdc_id: 167746,
+    label: "Limón sin cáscara (SR Legacy)",
+    reference: "limón crudo sin cáscara ≈ 29 kcal/100 g y ≈ 9,3 g de carbohidratos",
+    expected: { kcal: 29, carbs_g: 9.32 },
+    note:
+      "Entra con la card 6.2. Es el caso dorado con el peor Atwater del catálogo —29 kcal " +
+      "declaradas contra 44,4 predichas— y no falla el candado 3 porque el desvío absoluto " +
+      "es de 15,4 kcal, por debajo de los 20 del brazo. Está bien que sea así: la fibra y " +
+      "los ácidos orgánicos del limón cuentan como carbohidratos y no dan 4 kcal/g.",
+  },
+  {
+    fdc_id: 2707823,
+    label: "Tortilla de maíz (FNDDS)",
+    reference:
+      "tortilla de maíz ≈ 218 kcal/100 g — 60-65 kcal por pieza de 30 g en el insumo de " +
+      "Tomás (DT-27) ⇒ 200-217/100 g",
+    expected: { kcal: 218 },
+    note:
+      "Entra con la card 6.2 y de paso cierra la única regresión de la card 2.6: hasta hoy " +
+      "`tortilla, corn` resolvía a la de trigo (fdc-2707822, 262 kcal) porque esta ficha no " +
+      "estaba en el catálogo.",
+  },
 ];
 
 const isNumber = (value: unknown): value is number =>

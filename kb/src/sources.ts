@@ -29,6 +29,7 @@ export const SELECTION_BLOCK_FILES = [
   join(SELECTION_DIR, "regional.v1.json"),
   join(SELECTION_DIR, "es.sweep.v1.json"),
   join(SELECTION_DIR, "ingredientes.v1.json"),
+  join(SELECTION_DIR, "dt27.v1.json"),
 ];
 /** Exclusiones de la DT-7: fichas duplicadas que salen de la selección. */
 export const EXCLUSIONS_FILE = join(SELECTION_DIR, "exclusions.dt7.json");
