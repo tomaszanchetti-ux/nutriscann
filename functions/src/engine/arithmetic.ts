@@ -12,7 +12,7 @@
  */
 import { OPTIONAL_KEYS, REQUIRED_KEYS, type OptionalNutrientKey } from "../kb/nutrients";
 import type { Per100g } from "../kb/types";
-import { ATWATER } from "./constants";
+import { ATWATER, CONFIANZA_MINIMA_PARA_UN_TOTAL } from "./constants";
 import { redondear } from "./match";
 import type { EngineItem, EngineTotals, Per100gEscalado, PorcentajesDeMacros, TotalesNutrientes } from "./types";
 
@@ -122,18 +122,42 @@ export function sumarTotales(items: EngineItem[]): EngineTotals | null {
     }
   }
 
-  const macro_pct = porcentajesDeMacros(nutrients);
+  // LA COMPUERTA DEL TOTAL (card 2.8). Ver `CONFIANZA_MINIMA_PARA_UN_TOTAL`.
+  //
+  // Mira EL MEJOR ítem del plato, no el promedio ni la suma: la pregunta es si
+  // hay AL MENOS UN alimento que el motor haya sabido identificar. Cuando no lo
+  // hay, la suma sigue existiendo —los ítems se muestran con su ficha y su
+  // confianza, nada se borra— pero deja de poder llamarse un total completo, y
+  // el reparto de macros se apaga con el motivo escrito.
+  //
+  // NO SE INVENTA UN CAMINO NUEVO PARA EL FRONT: `completo: false` es el aviso de
+  // total parcial que ya existe desde la card 2.3, y `macro_pct: null` con su
+  // `macro_pct_motivo` es el camino que ya se usa cuando no hay nada que
+  // repartir. La compuerta entra por esas dos puertas y no agrega ninguna.
+  const mejorConfianza = conDatos.reduce((mejor, i) => Math.max(mejor, i.confidence), 0);
+  const sinNadieIdentificado = mejorConfianza < CONFIANZA_MINIMA_PARA_UN_TOTAL;
+
+  const macro_pct = sinNadieIdentificado ? null : porcentajesDeMacros(nutrients);
+  const motivoDeLaCompuerta =
+    `Ningún alimento de esta foto se identificó con confianza suficiente: el mejor llegó al ` +
+    `${redondear(mejorConfianza * 100, 1)} % y el mínimo para publicar un total es ` +
+    `${redondear(CONFIANZA_MINIMA_PARA_UN_TOTAL * 100, 1)} %. Los alimentos y sus valores siguen abajo, ` +
+    `uno por uno, pero sumarlos y llamar a eso "el total del plato" sería afirmar algo que el análisis no sostiene.`;
 
   return {
     nutrients,
     opcionales_ausentes: ausentes,
     macro_pct,
     macro_pct_motivo:
-      macro_pct === null ? "El total de calorías es 0: no hay nada que repartir entre los macronutrientes." : null,
+      macro_pct !== null
+        ? null
+        : sinNadieIdentificado
+          ? motivoDeLaCompuerta
+          : "El total de calorías es 0: no hay nada que repartir entre los macronutrientes.",
     grams_total: gramsTotal,
     grams_cuantificados: redondear(conDatos.reduce((s, i) => s + i.grams, 0)),
     items_incluidos: conDatos.length,
     items_sin_datos: items.length - conDatos.length,
-    completo: conDatos.length === items.length,
+    completo: conDatos.length === items.length && !sinNadieIdentificado,
   };
 }

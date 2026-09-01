@@ -527,6 +527,110 @@ describe("card 2.6 — los dos nombres de la visión (causa A)", () => {
   });
 });
 
+/**
+ * CARD 2.8 — EL NOMBRE PARTIDO Y LOS MODIFICADORES DE CORTE.
+ *
+ * Los tests contra el catálogo real miden el caso que abrió la card; los tests
+ * contra fixtures miden LAS REGLAS, que es lo que no se puede buscar en el seed:
+ * las cuatro condiciones de la dirección C existen cada una por un caso, y cada
+ * una tiene acá su escenario construido a mano.
+ */
+describe("card 2.8 — el nombre partido (dirección C)", () => {
+  it("`yellow rice with mushrooms, cooked` alcanza al arroz amarillo cocido", () => {
+    // El único plato del golden set de 30 que no se movió entre dos corridas del
+    // motor: el nombre de la ficha (`Yellow rice, cooked`) está entero adentro de
+    // la frase, pero partido al medio por "with mushrooms".
+    const r = buscarAlimento("yellow rice with mushrooms, cooked", index);
+    assert.ok(r, "sigue en silencio");
+    assert.equal(r.ficha.id, "fdc-2708419");
+    assert.equal(r.nivel, "difuso");
+    assert.match(r.motivo, /separadas/);
+    // Y la confianza dice que los hongos quedaron sin explicar: no es un match
+    // entero, es la mitad del plato.
+    assert.ok(r.confianza_match < 0.4, `confianza ${r.confianza_match}`);
+  });
+
+  it("un corte no cambia el alimento: `apple slices` da la MISMA ficha que `apple, raw`", () => {
+    // El caso que prueba la causa sin discusión: la misma fruta, el mismo motor y
+    // la misma corrida, una matcheando exacto y la otra en `no_catalogado`. Se
+    // compara por EQUIVALENCIA con la consulta que ya andaba, no contra un id
+    // escrito a mano: lo que se afirma es que las dos son la misma manzana.
+    const entera = buscarAlimento("apple, raw", index);
+    const cortada = buscarAlimento("apple slices", index);
+    assert.ok(entera && cortada);
+    assert.equal(cortada.ficha.id, entera.ficha.id);
+  });
+
+  it("los otros cortes del golden set también dejan de ser silencio", () => {
+    for (const [termino, entero] of [
+      ["carrot, shredded", "carrot, raw"],
+      ["lime, halved", "lime, raw"],
+    ] as const) {
+      const cortado = buscarAlimento(termino, index);
+      const referencia = buscarAlimento(entero, index);
+      assert.ok(cortado && referencia, termino);
+      assert.equal(cortado.ficha.id, referencia.ficha.id, termino);
+    }
+  });
+
+  it("C ES EL ÚLTIMO RECURSO: no le gana a un match que ya existía, ni con más confianza", () => {
+    // El escenario se construye: `Rice` entra por la dirección A con una
+    // cobertura floja (0,44) y `Rice, beans` entraría por el nombre partido con
+    // cobertura 1. Si C compitiera, ganaría. No compite: la dirección nueva puede
+    // convertir un silencio en un match, nunca cambiar uno que ya se hacía.
+    const fixture = indiceDeFixture([
+      fichaFalsa({ id: "test-arroz", names: { en: "Rice", es: null } }),
+      fichaFalsa({ id: "test-arroz-porotos", names: { en: "Rice, beans", es: null } }),
+    ]);
+    const r = buscarAlimento("rice fresh beans cooked", fixture);
+    assert.ok(r);
+    assert.equal(r.ficha.id, "test-arroz");
+  });
+
+  it("condición 1 — el núcleo manda: la guarnición no nombra el plato", () => {
+    // `Chicken rice` tiene sus dos palabras en "chicken with rice", pero el arroz
+    // está DETRÁS del conector: es lo que acompaña, no lo que se comió.
+    const fixture = indiceDeFixture([
+      fichaFalsa({ id: "test-arroz-pollo", names: { en: "Chicken rice", es: null } }),
+    ]);
+    assert.equal(buscarAlimento("chicken with rice", fixture), null);
+    // Sin el conector, las dos palabras son del mismo plato y el match entra.
+    assert.ok(buscarAlimento("chicken rice, grilled homemade", fixture));
+  });
+
+  it("condición 3 — freír SÍ cambia la ficha: `fried potato wedges` no llega a la papa hervida", () => {
+    // El falso amigo que el corte no tiene. Una papa cortada sigue siendo una
+    // papa; una papa frita es otra ficha con casi cuatro veces las calorías.
+    const fixture = indiceDeFixture([
+      fichaFalsa({ id: "test-papa-hervida", names: { en: "Potato, boiled", es: null } }),
+    ]);
+    assert.equal(buscarAlimento("fried potato wedges", fixture), null);
+    // Y el mismo corte SIN la preparación de más entra sin problema.
+    assert.ok(buscarAlimento("potato wedges", fixture));
+  });
+
+  it("condición 4 — una ficha que dice CRUDA no contesta una consulta que dijo COCIDA", () => {
+    const fixture = indiceDeFixture([
+      fichaFalsa({ id: "test-repollo-crudo", names: { en: "Cabbage, raw", es: null } }),
+    ]);
+    assert.equal(buscarAlimento("cabbage, cooked", fixture), null);
+    // Callado el estado, el desempate de siempre decide y el match entra.
+    assert.ok(buscarAlimento("cabbage, shredded", fixture));
+  });
+
+  it("la salvaguarda de especificidad de la DT-15 sigue entera", () => {
+    // `carne pastel` no puede empeorar: el núcleo es `carne` y `Pastel de carne`
+    // no arranca ahí, así que el nombre partido ni lo considera.
+    const r = buscarAlimento("carne pastel", index);
+    assert.ok(r);
+    assert.notEqual(r.ficha.names.es, "Pastel de carne");
+    // Y el nombre completo sigue resolviendo al pastel, que es lo que tiene que pasar.
+    const completo = buscarAlimento("pastel de carne casero", index);
+    assert.ok(completo);
+    assert.equal(completo.ficha.names.es, "Pastel de carne");
+  });
+});
+
 describe("fichas retiradas", () => {
   it("una ficha `deprecated` no entra al índice ni matchea", () => {
     // Hoy el catálogo tiene 0 fichas retiradas: el escenario se construye.

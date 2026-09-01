@@ -7,9 +7,9 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { analizarEscaneo } from "./analyze";
-import { FACTOR_COMPOSICION, FACTOR_GENERICO } from "./constants";
+import { CONFIANZA_MINIMA_PARA_UN_TOTAL, FACTOR_COMPOSICION, FACTOR_GENERICO } from "./constants";
 import { redondear } from "./match";
-import { indiceReal } from "./testing";
+import { fichaFalsa, indiceDeFixture, indiceReal } from "./testing";
 import type { VisionResult } from "./types";
 
 const index = indiceReal();
@@ -107,6 +107,63 @@ describe("card 2.6 — el escaneo con los dos nombres", () => {
     assert.equal(item.nutrients, null);
     assert.equal(item.confidence, 0);
     assert.equal(r.curation_candidates[0]?.motivo, "sin_match");
+  });
+});
+
+describe("card 2.8 — el motor entero contra la comida de plástico", () => {
+  /**
+   * EL PLATO 28 DEL GOLDEN SET, DE PUNTA A PUNTA. Dos réplicas de resina en una
+   * vitrina que la visión leyó como comida con un 70 % de confianza, matchearon a
+   * `Miel` por una palabra del nombre del postre, y salieron como **1.550,4 kcal
+   * marcadas `completo: true`**.
+   *
+   * El escenario se CONSTRUYE con un fixture y no con el catálogo real: lo que
+   * este test tiene que medir es la compuerta, y hacerlo depender de que una
+   * ficha del catálogo siga dando un match de 0,088 sería atar el candado a una
+   * curación que se mueve. Lo que se reproduce es la FORMA del plato 28: todos
+   * los ítems cuantificados, todos por debajo del piso.
+   */
+  const fixture = indiceDeFixture([
+    fichaFalsa({
+      id: "test-miel",
+      names: { en: "Honey", es: "Miel" },
+      per_100g: {
+        kcal: 304, protein_g: 0.3, carbs_g: 82.4, fat_g: 0,
+        fiber_g: 0.2, sat_fat_g: 0, sugars_g: 82.12, sodium_mg: 4,
+      },
+    }),
+    fichaFalsa({ id: "test-otro", names: { en: "Zzz alimento de relleno", es: null } }),
+  ]);
+
+  const plastico = (): VisionResult =>
+    escaneo([
+      { food_en: "honey toast with whipped cream and cookie, dessert", grams: 250, confidence: 0.7 },
+      { food_en: "honey toast with whipped cream and banana, dessert", grams: 260, confidence: 0.7 },
+    ]);
+
+  it("los dos ítems matchean, quedan por el piso, y el total deja de ser completo", () => {
+    const r = analizarEscaneo(plastico(), fixture);
+    assert.equal(r.items.length, 2);
+    for (const item of r.items) {
+      assert.equal(item.food_id, "test-miel", "el ítem sigue mostrando su ficha");
+      assert.ok(item.nutrients !== null, "y sigue mostrando sus números");
+      assert.ok(item.confidence < CONFIANZA_MINIMA_PARA_UN_TOTAL, `confianza ${item.confidence}`);
+    }
+    assert.ok(r.totals);
+    assert.equal(r.totals.completo, false);
+    assert.equal(r.totals.items_sin_datos, 0, "no falta ningún ítem: lo que falta es confianza");
+    assert.equal(r.totals.macro_pct, null);
+    assert.match(r.totals.macro_pct_motivo ?? "", /confianza suficiente/);
+  });
+
+  it("el mismo plato con la visión segura de lo que vio SÍ publica su total", () => {
+    // La compuerta no castiga el plato: castiga la duda. Con la misma ficha y los
+    // mismos gramos, una identificación firme pasa.
+    const seguro = escaneo([{ food_en: "Honey", grams: 250, confidence: 0.9 }]);
+    const r = analizarEscaneo(seguro, fixture);
+    assert.ok(r.totals);
+    assert.equal(r.totals.completo, true);
+    assert.ok(r.totals.macro_pct !== null);
   });
 });
 

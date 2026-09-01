@@ -184,14 +184,27 @@ export interface EngineTotals {
   /** Por qué un opcional salió `null`. Solo aparecen los que salieron `null`. */
   opcionales_ausentes: Partial<Record<"fiber_g" | "sat_fat_g" | "sugars_g" | "sodium_mg", string>>;
   macro_pct: PorcentajesDeMacros | null;
-  /** Por qué no hay porcentajes, cuando no los hay. */
+  /**
+   * Por qué no hay porcentajes, cuando no los hay. Dos motivos posibles: el
+   * total de calorías es 0, o ningún alimento llegó al piso de confianza que
+   * hace falta para publicar un total (`CONFIANZA_MINIMA_PARA_UN_TOTAL`).
+   */
   macro_pct_motivo: string | null;
   grams_total: number;
   /** Gramos que SÍ entraron a la suma (los de los items con ficha). */
   grams_cuantificados: number;
   items_incluidos: number;
   items_sin_datos: number;
-  /** `true` solo si todos los items del escaneo aportaron números. */
+  /**
+   * `true` solo si todos los items del escaneo aportaron números Y AL MENOS UNO
+   * se identificó con confianza suficiente (card 2.8, la compuerta del total).
+   *
+   * Son dos preguntas distintas y las dos tienen que dar que sí: "¿está todo el
+   * plato adentro de la suma?" y "¿alguno de esos alimentos se supo identificar?".
+   * Un plato entero de matches basura cumple la primera y falla la segunda, y ahí
+   * el total no es completo: es una suma de dudas. Ver
+   * `CONFIANZA_MINIMA_PARA_UN_TOTAL` en `constants.ts`.
+   */
   completo: boolean;
 }
 

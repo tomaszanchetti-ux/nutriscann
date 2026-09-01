@@ -150,7 +150,10 @@ describe("card 2.6 — describir de más no puede desviar un match, MEDIDO", () 
    * SU PROPIA ficha. No "casi todos": los 1.022. Es la diferencia entre abrir el
    * recall y aflojar el motor.
    */
-  for (const sufijo of [", grilled", " with rice", ", fresh", " a la plancha"]) {
+  // CARD 2.8: los tres últimos son de CORTE, y entran al mismo barrido que los de
+  // cocción porque son la misma clase de palabra —dicen cómo está el alimento, no
+  // cuál es— y tienen que costar lo mismo: nada.
+  for (const sufijo of [", grilled", " with rice", ", fresh", " a la plancha", " slices", ", sliced", " en rodajas"]) {
     it(`"<nombre>${sufijo}" sigue dando la misma ficha, las 1.022 veces`, () => {
       const desviados: string[] = [];
       for (const f of activas) {
@@ -160,6 +163,35 @@ describe("card 2.6 — describir de más no puede desviar un match, MEDIDO", () 
         }
       }
       assert.deepEqual(desviados, []);
+    });
+  }
+});
+
+describe("card 2.8 — partirle el nombre a una ficha no puede llevar a otra ficha", () => {
+  /**
+   * EL BARRIDO QUE CIERRA LA DIRECCIÓN C. A los 1.022 nombres se les mete una
+   * palabra ajena EN EL MEDIO —que es exactamente lo que hizo la visión con
+   * `yellow rice WITH MUSHROOMS cooked`— y se mide qué contesta el motor.
+   *
+   * Lo que se exige no es que los encuentre a todos: un nombre partido es una
+   * consulta peor y callarse sigue siendo una respuesta legítima. Lo que se exige
+   * es que NINGUNO de los que sí contesta se vaya a otra familia de alimento con
+   * una confianza que se pueda leer como un dato. El piso es el mismo que usa el
+   * criterio 3 del golden set: 0,60.
+   */
+  for (const intruso of ["with mushrooms", "and salad"]) {
+    it(`"<primera palabra> ${intruso} <resto>" no manda a otra ficha con confianza alta`, () => {
+      const altos: string[] = [];
+      for (const f of activas) {
+        const partes = f.names.en.split(/[\s,]+/).filter(Boolean);
+        if (partes.length < 2) continue;
+        const consulta = `${partes[0]} ${intruso} ${partes.slice(1).join(" ")}`;
+        const r = buscarAlimento(consulta, index);
+        if (r !== null && r.ficha.id !== f.id && r.confianza_match >= 0.6) {
+          altos.push(`${consulta} -> ${r.ficha.id} (${r.confianza_match})`);
+        }
+      }
+      assert.deepEqual(altos, []);
     });
   }
 });

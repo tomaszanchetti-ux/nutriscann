@@ -87,18 +87,76 @@ export const COBERTURA_DIFUSA_MIN = 0.3;
  * cocción, corte o presentación y NO nombra ningún alimento por sí sola. Una
  * palabra de más acá es una confianza inflada; que falte una es una confianza
  * baja, que es el error barato de los dos.
+ *
+ * CARD 2.8 — LOS MODIFICADORES DE CORTE. El golden set de 30 dejó el caso que no
+ * admite discusión: `apple, raw` matchea EXACTO al 95 % en el plato 01 y
+ * `apple slices` sale `no_catalogado` en el plato 23, la misma fruta, el mismo
+ * motor y la misma corrida. Diez de los once silencios sobre comida catalogada
+ * eran "el ingrediente correcto + un modificador que la ficha no lleva", y la
+ * mitad de esos modificadores eran de CORTE, no de cocción: `slices`, `shredded`,
+ * `halved`. Cortar una manzana no la convierte en otro alimento.
+ *
+ * LO QUE NO ENTRÓ, Y POR QUÉ. `ground` / `minced` (carne picada ES otra ficha,
+ * con otra grasa), `strips` (`Chicken tender or strip` es una ficha propia,
+ * rebozada), `mashed` (el puré lleva leche y manteca) y `peeled` (el catálogo
+ * mide aparte `Apple, raw, without skin`: la piel es fibra). Todas describen un
+ * corte, y en las cuatro el corte CAMBIA la ficha. La prueba de admisión no es
+ * "¿es un corte?" sino "¿el catálogo mide distinto lo cortado?".
  */
 export const DESCRIPTORES_DE_PRESENTACION: readonly string[] = [
   // inglés (el registro en el que USDA y la visión escriben)
   "raw", "fresh", "cooked", "grilled", "fried", "baked", "roasted", "boiled",
   "steamed", "toasted", "sauteed", "seasoned", "sliced", "chopped", "diced",
   "shredded", "melted", "whole", "homemade", "style", "plain", "mixed",
+  // inglés — corte y forma (card 2.8)
+  "slice", "slices", "wedge", "wedges", "halved", "halves", "quartered",
+  "cubed", "cubes", "grated", "chunk", "chunks", "piece", "pieces",
   // español (el registro del usuario y de la curación)
   "crudo", "cruda", "cocido", "cocida", "asado", "asada", "frito", "frita",
   "horneado", "horneada", "hervido", "hervida", "plancha", "salteado", "salteada",
   "tostado", "tostada", "rallado", "rallada", "picado", "picada", "troceado",
   "derretido", "derretida", "casero", "casera", "estilo", "natural", "entero",
   "entera",
+  // español — corte y forma (card 2.8)
+  "rodaja", "rodajas", "gajo", "gajos", "loncha", "lonchas", "lamina", "laminas",
+  "cortado", "cortada", "mitad", "mitades", "cubo", "cubos", "trozo", "trozos",
+];
+
+/**
+ * LAS PREPARACIONES QUE SÍ CAMBIAN LA FICHA.
+ *
+ * Son las palabras de cocción de la lista de arriba (más un par que esa lista
+ * deliberadamente no tiene, como `breaded`: rebozar no es presentación, es pan
+ * rallado y aceite), y existen por el falso amigo que el corte no tiene: una
+ * papa cortada sigue siendo una papa (87 kcal/100 g), pero
+ * una papa FRITA es `Potato, french fries` (312 kcal/100 g) — otra ficha, otro
+ * número, casi cuatro veces. Freír, asar, hornear o rebozar agregan grasa o
+ * sacan agua; rebanar no hace ninguna de las dos.
+ *
+ * DÓNDE MUERDE Y DÓNDE NO. En la cobertura difusa estas palabras se descuentan
+ * igual que cualquier otro descriptor: ahí lo único que se mide es cuánto texto
+ * quedó sin explicar, y "fried" no es comida sin explicar. Donde muerden es en el
+ * MATCH POR NOMBRE PARTIDO (la card 2.8, en `match.ts`): ahí el nombre del
+ * catálogo ya no tiene que estar entero y seguido adentro de la consulta, y sin
+ * este freno "fried potato wedges" alcanzaría a `Potato, boiled` armando el
+ * nombre con las palabras sueltas que le convienen. La regla es simétrica: si una
+ * de las dos partes nombra una preparación y la otra no, no hay nombre partido.
+ *
+ * OJO CON LO QUE NO ESTÁ: `cooked`, `boiled`, `hervido` y `raw` NO son
+ * preparaciones, son ESTADOS, y viven en `PALABRAS_DE_CRUDO` /
+ * `PALABRAS_DE_COCIDO` con su propia regla de desempate. La diferencia es la de
+ * siempre en este motor: un estado dice CÓMO ESTÁ el mismo alimento, una
+ * preparación dice que es OTRO.
+ */
+export const PREPARACIONES_QUE_CAMBIAN_LA_FICHA: readonly string[] = [
+  "grilled", "fried", "baked", "roasted", "steamed", "toasted", "sauteed",
+  "breaded", "smoked", "creamed",
+  "asado", "asada", "frito", "frita", "horneado", "horneada", "plancha",
+  "salteado", "salteada", "tostado", "tostada", "rebozado", "rebozada",
+  "empanado", "ahumado", "ahumada",
+  // OJO: `empanada` NO está y no puede estar — en español es un ALIMENTO, no una
+  // preparación, y meterla acá haría que la palabra que nombra el plato lo
+  // descalifique.
 ];
 
 /**
@@ -158,6 +216,52 @@ export const PALABRAS_DE_CRUDO: readonly string[] = ["raw", "uncooked", "crudo",
 export const PALABRAS_DE_COCIDO: readonly string[] = [
   "cooked", "boiled", "cocido", "cocida", "cocidos", "cocidas", "cocinado", "cocinada", "hervido", "hervida",
 ];
+
+/**
+ * EL PISO DE CONFIANZA QUE NECESITA UN TOTAL PARA LLAMARSE COMPLETO.
+ *
+ * No es un umbral de matching: ningún item se descarta por esto y ninguna ficha
+ * deja de mostrarse. Es una compuerta sobre EL NÚMERO DE PORTADA. La regla es
+ * una sola línea: **si NINGÚN alimento del plato llega a este piso, la suma de
+ * esos alimentos no se publica como un total completo.**
+ *
+ * POR QUÉ EXISTE, con el caso que la abrió: una foto de comida de plástico de
+ * exhibición (réplicas de resina en una vitrina) pasó la visión como comida, sus
+ * DOS ítems resolvieron a `Miel` con confianza final 0,088 cada uno, y el motor
+ * publicó **1.550,4 kcal marcadas `completo: true`, con 510 de 510 g
+ * cuantificados**. Cada paso era correcto por separado —la aritmética, la ficha,
+ * la confianza declarada— y el resultado era una afirmación en firme construida
+ * sobre dos matches que el propio motor consideraba basura. Sumar y no dudar es
+ * la falla; la compuerta la corta donde nace.
+ *
+ * DE DÓNDE SALE EL NÚMERO. Del histograma real del golden set de 30 platos, y
+ * mirando lo que importa: **la confianza del MEJOR ítem de cada plato**, que es
+ * lo que la compuerta compara. Ordenado, ese histograma tiene un hueco:
+ *
+ *   0,088  ← plato 28, la comida de plástico (los dos ítems, `Miel`)
+ *   ────── el hueco: no hay NI UN plato del set acá adentro ──────
+ *   0,152  ← plato 24, espaguetis con albóndigas: las DOS fichas correctas
+ *   0,185  ← plato 03, paella: la ficha correcta
+ *   0,285 · 0,375 · 0,510 · 0,638 · 0,680 · 0,720 · 0,765 · 0,950 · 0,980
+ *
+ * 0,12 cae en el medio de ese hueco: un 36 % por encima del plástico y un 21 %
+ * por debajo del plato correcto más flojo. Es el punto que más margen deja de
+ * los dos lados, y por eso se elige ese y no el borde de ninguno.
+ *
+ * EL TRADE-OFF, DICHO ENTERO. Un piso más alto convertiría en "parcial" platos
+ * que están BIEN: con 0,16 se cae el plato 24 (702,8 kcal, dos fichas correctas)
+ * y con 0,20 se cae además la paella. Un piso más bajo (0,09) dejaría al plástico
+ * a cuatro milésimas de pasar, que no es un margen. El costo de equivocarse para
+ * arriba es barato —un plato correcto se muestra como total parcial, con sus
+ * ítems y sus números a la vista igual— y el de equivocarse para abajo es el
+ * plato 28 otra vez. Ante la duda, el piso se sube.
+ *
+ * LÍMITE DECLARADO: la compuerta mira el MEJOR ítem, no el promedio. Un plato con
+ * un ítem al 0,9 y cinco al 0,05 sigue saliendo completo. Es deliberado: ahí hay
+ * comida bien identificada y la reserva de los otros cinco se lee en cada ítem.
+ * Lo que esta constante impide es un total donde NADA se identificó bien.
+ */
+export const CONFIANZA_MINIMA_PARA_UN_TOTAL = 0.12;
 
 /** Los factores de Atwater, en kcal por gramo. Convención universal. */
 export const ATWATER = { protein: 4, carbs: 4, fat: 9 } as const;

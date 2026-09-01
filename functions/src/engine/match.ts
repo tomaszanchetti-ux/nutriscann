@@ -37,8 +37,10 @@ import {
   estadoDeCoccion,
   empiezaConPalabra,
   inicioDelAcompanamiento,
+  mismasPreparaciones,
   posicionDeSecuencia,
   sinDescriptores,
+  tokens,
 } from "./normalize";
 
 export type NivelDeMatch = "exacto" | "alias" | "difuso";
@@ -137,7 +139,7 @@ interface CandidatoDifuso {
   entrada: TerminoIndexado;
   /** Cuánto del texto largo explica el texto corto, en caracteres. 0..1. */
   cobertura: number;
-  direccion: "nombre_en_consulta" | "consulta_en_nombre";
+  direccion: "nombre_en_consulta" | "consulta_en_nombre" | "nombre_partido";
   /** `0,6 × cobertura × confianza del término`. Es con esto que se compara. */
   confianza: number;
 }
@@ -180,6 +182,21 @@ interface CandidatoDifuso {
  *     acompañamiento y no puede ser el plato;
  *   · entre una ficha que dice CRUDA y su hermana COCIDA, gana la cocida cuando
  *     la cruda es más densa (o sea, cuando está seca).
+ *
+ * Y LA CARD 2.8 AGREGA UNA TERCERA DIRECCIÓN, EL NOMBRE PARTIDO:
+ *
+ *   C. EL NOMBRE DEL CATÁLOGO ESTÁ EN LA CONSULTA PERO PARTIDO EN DOS. La visión
+ *      dijo `yellow rice with mushrooms, cooked` y la ficha se llama
+ *      `Yellow rice, cooked`: el nombre está ENTERO adentro de la frase, pero
+ *      cortado al medio por "with mushrooms", y las direcciones A y B solo saben
+ *      de secuencias contiguas. Es el único plato del golden set de 30 que no se
+ *      movió ni un milímetro entre dos corridas del motor.
+ *
+ *      C ES EL ÚLTIMO RECURSO Y ESO ES UNA GARANTÍA, NO UNA cautela: sus
+ *      candidatos SOLO se miran cuando ni A ni B encontraron nada. La dirección
+ *      del nombre partido puede convertir un silencio en un match; NO PUEDE
+ *      cambiar ningún match que el motor ya hacía. Todo lo que andaba, anda
+ *      igual, y hay un candado que lo mide sobre los 1.022 nombres.
  */
 function difusoEnIndice(
   consulta: string,
@@ -192,6 +209,9 @@ function difusoEnIndice(
   let mejorNucleo: CandidatoDifuso | null = null;
   let mejorOtro: CandidatoDifuso | null = null;
   let mejorB: CandidatoDifuso | null = null;
+  // La dirección C (card 2.8), en su propio cajón: solo se abre si los otros dos
+  // quedaron vacíos.
+  let mejorC: CandidatoDifuso | null = null;
   // Un objeto y no una variable suelta: el análisis de flujo de TypeScript no
   // sigue lo que escribe una función anidada y daría por sentado que sigue en
   // `null`. Nunca se le pelea al chequeador con un cast: se le cambia la forma.
@@ -201,6 +221,14 @@ function difusoEnIndice(
   // no es comida. Se calcula UNA vez, no una por candidato.
   const identidad = sinDescriptores(consulta);
   const acompanamiento = inicioDelAcompanamiento(consulta);
+
+  // Para la dirección C: en qué palabra aparece cada token de la consulta (la
+  // PRIMERA vez) y cuál es el núcleo de lo que dijo la visión.
+  const posicionDelToken = new Map<string, number>();
+  tokens(consulta).forEach((palabra, i) => {
+    if (!posicionDelToken.has(palabra)) posicionDelToken.set(palabra, i);
+  });
+  const nucleoDeLaConsulta = tokens(identidad)[0];
   // Solo hay algo que respetar si lo que dijo la visión pidió CRUDO: ahí nombró
   // la ficha que quería. Si pidió cocido —o no dijo nada— el desempate corre.
   const estadoPedido = estadoDeCoccion(consulta);
@@ -278,6 +306,70 @@ function difusoEnIndice(
       if (cobertura >= COBERTURA_DIFUSA_MIN && (mejorB === null || cobertura > mejorB.cobertura)) {
         mejorB = candidato;
       }
+      continue;
+    }
+
+    // ------------------------------------------------------------------
+    // DIRECCIÓN C — EL NOMBRE PARTIDO (card 2.8)
+    //
+    // El nombre del catálogo no está contiguo en la consulta, pero sus palabras
+    // SÍ están todas. `yellow rice with mushrooms cooked` contra
+    // `Yellow rice, cooked`. Cuatro condiciones, y las cuatro existen por un
+    // caso medido; sin ellas esto deja de ser matching y pasa a ser armar un
+    // nombre con las palabras que convienen.
+    // ------------------------------------------------------------------
+    const palabrasDeLaEntrada = tokens(entrada.clave);
+
+    // 1 — EL NÚCLEO MANDA, que es la regla que estructura todo este archivo. El
+    //     nombre del catálogo tiene que arrancar en la misma palabra en la que
+    //     arranca lo que dijo la visión (su identidad, sin descriptores: en
+    //     "grilled potato slice" el núcleo es `potato`, no `grilled`). Es la
+    //     salvaguarda de especificidad de la DT-15: para `carne pastel` el
+    //     núcleo es `carne`, así que `Pastel de carne` ni se considera.
+    if (palabrasDeLaEntrada[0] !== nucleoDeLaConsulta) continue;
+
+    // 2 — SUBCONJUNTO DE TOKENS, Y TODOS DEL LADO DEL PLATO. Cada palabra del
+    //     nombre que no sea un descriptor tiene que estar en la consulta, y
+    //     tiene que estar ANTES del primer conector: lo que viene después de un
+    //     "with" es la guarnición, y un plato no se nombra con su guarnición.
+    const identidadDeLaEntrada = tokens(sinDescriptores(entrada.clave));
+    const estaEntera = identidadDeLaEntrada.every((palabra) => {
+      const donde = posicionDelToken.get(palabra);
+      return donde !== undefined && (acompanamiento < 0 || donde < acompanamiento);
+    });
+    if (!estaEntera) continue;
+
+    // 3 — LAS PREPARACIONES TIENEN QUE COINCIDIR. Es el falso amigo del corte:
+    //     rebanar una papa la deja papa, freírla la convierte en otra ficha con
+    //     casi cuatro veces las calorías. Si uno de los dos textos nombra una
+    //     preparación y el otro no, no hay nombre partido que valga.
+    if (!mismasPreparaciones(consulta, entrada.clave)) continue;
+
+    // 4 — Y NO PUEDE HABER CONTRADICCIÓN DE ESTADO. Una ficha que dice CRUDA no
+    //     contesta una consulta que dijo COCIDA. Medido: sin esto,
+    //     `cabbage, cooked` resolvía a `Cabbage, raw` (25 kcal contra los 55 del
+    //     repollo cocido con grasa) con más de la mitad de la confianza.
+    const estadoDeLaEntrada = estadoDeCoccion(entrada.clave);
+    if (estadoPedido !== null && estadoDeLaEntrada !== null && estadoPedido !== estadoDeLaEntrada) continue;
+
+    // La cobertura cuenta SOLO lo que el nombre explica de verdad. Para
+    // `yellow rice with mushrooms cooked` el nombre explica `yellow rice` (11
+    // caracteres) de una identidad de `yellow rice mushroom` (20): 0,55. Los
+    // hongos quedan sin explicar y el número lo dice.
+    const cobertura = Math.min(1, identidadDeLaEntrada.join(" ").length / identidad.length);
+    const candidato: CandidatoDifuso = {
+      entrada,
+      cobertura,
+      direccion: "nombre_partido",
+      confianza: confianzaDifusa(entrada, cobertura),
+    };
+    // OJO: los candidatos de C NO se anotan en el rescate del cocido. Ese
+    // rescate mira POR DEBAJO del piso de cobertura y puede cambiar un ganador
+    // de A o de B; dejar entrar a C ahí rompería la garantía de que la dirección
+    // nueva no toca ningún match que ya existía. La contradicción de estado ya
+    // está frenada en la condición 4, que es lo que hacía falta acá.
+    if (cobertura >= COBERTURA_DIFUSA_MIN && (mejorC === null || candidato.confianza > mejorC.confianza)) {
+      mejorC = candidato;
     }
   }
 
@@ -290,7 +382,12 @@ function difusoEnIndice(
   // tenía `Crackers, saltine, reduced sodium` —la ficha que SÍ explica la palabra
   // "saltine"—. Elegir por confianza es elegir al que deja menos sin explicar.
   const mejorA = mejorNucleo ?? mejorOtro;
-  const ganador = mejorA === null ? mejorB : mejorB === null ? mejorA : mejorB.confianza > mejorA.confianza ? mejorB : mejorA;
+  const mejorAB =
+    mejorA === null ? mejorB : mejorB === null ? mejorA : mejorB.confianza > mejorA.confianza ? mejorB : mejorA;
+
+  // Y RECIÉN ACÁ, SI NO HAY NADA, LA DIRECCIÓN C. No compite con A ni con B: las
+  // reemplaza cuando las dos se callaron. Ver el encabezado de la función.
+  const ganador = mejorAB ?? mejorC;
 
   // LA REGLA DEL CRUDO/COCIDO (ver `PALABRAS_DE_CRUDO` en `constants.ts`).
   //
@@ -450,7 +547,10 @@ export function buscarAlimento(termino: string, index: CatalogIndex): MatchResul
     const direccion =
       candidato.direccion === "nombre_en_consulta"
         ? `el nombre del catálogo está dentro de lo que se identificó`
-        : `lo que se identificó es el principio del nombre del catálogo`;
+        : candidato.direccion === "consulta_en_nombre"
+          ? `lo que se identificó es el principio del nombre del catálogo`
+          : `las palabras del nombre del catálogo están todas en lo que se identificó, ` +
+            `pero separadas: lo que quedó en el medio no está explicado por esta ficha`;
     const reserva =
       candidato.entrada.estado === "crudo" && !pidioCrudo
         ? " OJO: la ficha es la del alimento CRUDO y lo que se identificó no dijo que lo estuviera; " +

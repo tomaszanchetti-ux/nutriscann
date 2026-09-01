@@ -11,7 +11,13 @@
  * está adentro como palabra suelta al principio, y esa diferencia es la que
  * impide que un corte vacuno pase por un embutido. Ver `match.ts`.
  */
-import { CONECTORES_DE_ACOMPANAMIENTO, DESCRIPTORES_DE_PRESENTACION, PALABRAS_DE_COCIDO, PALABRAS_DE_CRUDO } from "./constants";
+import {
+  CONECTORES_DE_ACOMPANAMIENTO,
+  DESCRIPTORES_DE_PRESENTACION,
+  PALABRAS_DE_COCIDO,
+  PALABRAS_DE_CRUDO,
+  PREPARACIONES_QUE_CAMBIAN_LA_FICHA,
+} from "./constants";
 
 /**
  * Minúsculas, sin tildes, sin puntuación y con un solo espacio entre palabras.
@@ -246,6 +252,7 @@ const PALABRAS_QUE_NO_SON_COMIDA = new Set(
 );
 const CRUDO = new Set(PALABRAS_DE_CRUDO.map((p) => claveDeMatching(p)));
 const COCIDO = new Set(PALABRAS_DE_COCIDO.map((p) => claveDeMatching(p)));
+const PREPARACIONES = new Set(PREPARACIONES_QUE_CAMBIAN_LA_FICHA.map((p) => claveDeMatching(p)));
 
 /**
  * El estado de cocción que DICE este texto, si es que dice alguno.
@@ -280,6 +287,27 @@ export function estadoDeCoccion(normalizado: string): EstadoDeCoccion {
 export function sinDescriptores(normalizado: string): string {
   const utiles = tokens(normalizado).filter((palabra) => !PALABRAS_QUE_NO_SON_COMIDA.has(palabra));
   return utiles.length === 0 ? normalizado : utiles.join(" ");
+}
+
+/**
+ * Las PREPARACIONES que declara este texto. Ver
+ * `PREPARACIONES_QUE_CAMBIAN_LA_FICHA` en `constants.ts`.
+ *
+ * Se usa de los dos lados —sobre el nombre de la ficha y sobre lo que dijo la
+ * visión— y para lo mismo: si uno nombra una preparación y el otro no, no están
+ * hablando del mismo alimento.
+ */
+export function preparacionesDeclaradas(normalizado: string): Set<string> {
+  return new Set(tokens(normalizado).filter((palabra) => PREPARACIONES.has(palabra)));
+}
+
+/** ¿Los dos textos declaran EXACTAMENTE las mismas preparaciones? */
+export function mismasPreparaciones(a: string, b: string): boolean {
+  const pa = preparacionesDeclaradas(a);
+  const pb = preparacionesDeclaradas(b);
+  if (pa.size !== pb.size) return false;
+  for (const p of pa) if (!pb.has(p)) return false;
+  return true;
 }
 
 /**

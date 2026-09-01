@@ -10,6 +10,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { Per100g } from "../kb/types";
 import { escalar, gramosValidos, porcentajesDeMacros, sumarTotales } from "./arithmetic";
+import { CONFIANZA_MINIMA_PARA_UN_TOTAL } from "./constants";
 import type { EngineItem, TotalesNutrientes } from "./types";
 
 const COMPLETA: Per100g = {
@@ -118,6 +119,102 @@ describe("totales del escaneo", () => {
 
   it("un escaneo sin items no tiene totales", () => {
     assert.equal(sumarTotales([]), null);
+  });
+});
+
+/**
+ * CARD 2.8 — LA COMPUERTA DEL TOTAL.
+ *
+ * El escenario SE CONSTRUYE, no se busca: la miel del plato 28 no está acá, está
+ * la FORMA del plato 28 —todos los ítems cuantificados, todos con la confianza
+ * por el piso— que es lo único que la compuerta mira. Los números de confianza
+ * sí son los reales del golden set de 30, porque son la justificación del piso.
+ */
+describe("card 2.8 — un total donde nadie se identificó no es un total completo", () => {
+  /** El plato 28 reconstruido: dos ítems cuantificados enteros, los dos a 0,088. */
+  const comidaDePlastico = (): EngineItem[] => [
+    item({ termino_en: "honey toast with whipped cream and cookie", grams: 250, confidence: 0.088 }),
+    item({ termino_en: "honey toast with whipped cream and banana", grams: 260, confidence: 0.088 }),
+  ];
+
+  it("dos ítems al 0,088 dejan de publicarse como total completo", () => {
+    const t = sumarTotales(comidaDePlastico());
+    assert.ok(t);
+    assert.equal(t.completo, false);
+    assert.equal(t.macro_pct, null);
+    assert.match(t.macro_pct_motivo ?? "", /confianza suficiente/);
+    // El motivo dice los DOS números, el que se alcanzó y el que hacía falta.
+    assert.match(t.macro_pct_motivo ?? "", /8\.8 %/);
+    assert.match(t.macro_pct_motivo ?? "", /12 %/);
+  });
+
+  it("la compuerta protege el TOTAL, no borra ni un ítem", () => {
+    const items = comidaDePlastico();
+    const t = sumarTotales(items);
+    assert.ok(t);
+    // La suma sigue calculada y a la vista: lo que cambió es cómo se la llama.
+    assert.equal(t.nutrients.kcal, 1020);
+    assert.equal(t.items_incluidos, 2);
+    assert.equal(t.items_sin_datos, 0);
+    assert.equal(t.grams_total, 510);
+    assert.equal(t.grams_cuantificados, 510);
+    // Y los ítems que se le pasaron no se tocaron.
+    assert.equal(items.length, 2);
+    assert.ok(items.every((i) => i.nutrients !== null && i.food_id !== null));
+  });
+
+  it("NO toca un plato correcto de confianza baja: el 24, con sus dos fichas buenas", () => {
+    // Espaguetis con albóndigas del golden set: `Pasta con salsa` a 0,152 y
+    // `Albóndigas con salsa` a 0,150. Las dos fichas son las correctas y el
+    // total (702,8 kcal) cayó en rango. Es el plato que fija el techo del piso.
+    const t = sumarTotales([
+      item({ termino_en: "spaghetti, cooked", grams: 100, confidence: 0.152 }),
+      item({ termino_en: "meatballs with tomato sauce", grams: 100, confidence: 0.15 }),
+    ]);
+    assert.ok(t);
+    assert.equal(t.completo, true);
+    assert.ok(t.macro_pct !== null);
+    assert.equal(t.macro_pct_motivo, null);
+  });
+
+  it("mira EL MEJOR ítem, no el promedio: un alimento bien identificado alcanza", () => {
+    const t = sumarTotales([
+      item({ termino_en: "manzana", grams: 100, confidence: 0.95 }),
+      item({ termino_en: "duda 1", grams: 50, confidence: 0.05 }),
+      item({ termino_en: "duda 2", grams: 50, confidence: 0.02 }),
+    ]);
+    assert.ok(t);
+    assert.equal(t.completo, true);
+    assert.ok(t.macro_pct !== null);
+  });
+
+  it("el borde del piso está declarado: 0,12 pasa y 0,119 no", () => {
+    assert.equal(CONFIANZA_MINIMA_PARA_UN_TOTAL, 0.12);
+    const justo = sumarTotales([item({ termino_en: "justo", confidence: CONFIANZA_MINIMA_PARA_UN_TOTAL })]);
+    const abajo = sumarTotales([item({ termino_en: "abajo", confidence: 0.119 })]);
+    assert.ok(justo && abajo);
+    assert.equal(justo.completo, true);
+    assert.equal(abajo.completo, false);
+  });
+
+  it("un plato que YA era parcial y encima no llega al piso dice las dos cosas", () => {
+    const t = sumarTotales([
+      item({ termino_en: "duda", grams: 100, confidence: 0.05 }),
+      item({ termino_en: "sin ficha", grams: 80, food_id: null, match: "no_catalogado", per_100g: null, nutrients: null }),
+    ]);
+    assert.ok(t);
+    assert.equal(t.completo, false);
+    assert.equal(t.items_sin_datos, 1);
+    assert.equal(t.macro_pct, null);
+    assert.match(t.macro_pct_motivo ?? "", /confianza suficiente/);
+  });
+
+  it("con 0 kcal el motivo sigue siendo el de las calorías, no el de la compuerta", () => {
+    const vacio: Per100g = { ...COMPLETA, kcal: 0, protein_g: 0, carbs_g: 0, fat_g: 0 };
+    const t = sumarTotales([item({ termino_en: "agua", confidence: 0.9, per_100g: vacio, nutrients: escalar(vacio, 100) })]);
+    assert.ok(t);
+    assert.equal(t.completo, true);
+    assert.match(t.macro_pct_motivo ?? "", /El total de calorías es 0/);
   });
 });
 
