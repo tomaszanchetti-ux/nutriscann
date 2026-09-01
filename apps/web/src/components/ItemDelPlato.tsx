@@ -6,7 +6,23 @@
  * muestra números —no los tiene— y muestra su explicación en el mismo lugar
  * donde los otros muestran las calorías, para que el hueco se lea como una
  * decisión y no como una falla de la pantalla.
- */
+ *
+ * ---------------------------------------------------------------------------
+ * QUÉ SACÓ LA CARD 3.1 (pedido de Tomás; del resto, palabras textuales: "golazo")
+ *
+ *   · LA LÍNEA «ficha "Cheese, NFS"». La palabra "ficha" es jerga nuestra: el
+ *     usuario no sabe qué es una ficha, y el nombre en inglés del catálogo no le
+ *     dice nada que ya no diga el nombre en español de arriba. La trazabilidad
+ *     no se pierde: sigue entera en la línea de fuente de la letra chica, que es
+ *     donde vive el dato que sí se puede seguir (USDA #…).
+ *   · LA LÍNEA «visión 92 % × ficha 100 %». Las dos mitades de la confianza son
+ *     una herramienta de auditoría, no información de producto: quien lee el
+ *     reporte necesita saber cuánto creerle al número, y eso ya lo dice la barra
+ *     de confianza con su porcentaje y su color. Los dos factores siguen
+ *     viajando en el payload (`confidence_vision`, `confidence_match`) y siguen
+ *     en el expediente: se sacaron de la PANTALLA, no del contrato.
+ * ------------------------------------------------------------------------- */
+import type { CopyDeLaApp } from "../lib/config";
 import { confianza, gramos, gramosEnteros, kcal, nivelDeConfianza } from "../lib/formato";
 import type { EngineItem } from "../lib/types";
 import { BadgeDeMatch } from "./BadgeDeMatch";
@@ -22,12 +38,23 @@ function enMayuscula(texto: string): string {
   return texto.charAt(0).toUpperCase() + texto.slice(1);
 }
 
-export function ItemDelPlato({ item }: { item: EngineItem }) {
-  // Sin ficha no hay nombre en español: se muestra el término que emitió la
-  // visión, en inglés, con la primera en mayúscula para que no parezca un
-  // pedazo de log. Que un compuesto se lea en inglés es un hueco REAL del
-  // contrato, no de esta pantalla — está declarado en el informe de la card.
-  const nombre = item.name_es ?? enMayuscula(item.termino_en);
+/**
+ * Cómo se llama este alimento en la pantalla, en el mejor español disponible.
+ *
+ * Tres escalones, y el del medio es nuevo (DT-25): el nombre de la ficha, el
+ * término que la visión dijo EN ESPAÑOL, y recién al final el inglés. Hasta que
+ * el motor empezó a guardar `termino_es`, un alimento sin ficha se mostraba
+ * siempre en inglés —"Picos camperos" salía como el modelo lo hubiera escrito en
+ * su idioma de trabajo— porque era lo único que llegaba.
+ */
+function nombreDelItem(item: EngineItem): string {
+  if (item.name_es !== null) return item.name_es;
+  const enEspañol = item.termino_es.trim();
+  return enMayuscula(enEspañol !== "" ? enEspañol : item.termino_en);
+}
+
+export function ItemDelPlato({ copy, item }: { copy: CopyDeLaApp; item: EngineItem }) {
+  const nombre = nombreDelItem(item);
   const nivel = nivelDeConfianza(item.confidence);
   const nutrientes = item.nutrients;
 
@@ -38,17 +65,16 @@ export function ItemDelPlato({ item }: { item: EngineItem }) {
           <h3 className="text-lg leading-tight font-medium text-ink">
             {nombre}
             {item.generic && (
-              <span className="ml-2 align-middle text-xs font-normal text-carbs">genérico</span>
+              <span className="ml-2 align-middle text-xs font-normal text-carbs">
+                {copy.item_generic_badge}
+              </span>
             )}
           </h3>
           <p className="font-mono text-xs text-ink-faint tabular-nums">
             {gramosEnteros(item.grams)} g
           </p>
-          {item.name_es !== null && item.name_en !== null && item.name_en !== item.name_es && (
-            <p className="text-xs text-ink-faint">ficha «{item.name_en}»</p>
-          )}
         </div>
-        <BadgeDeMatch tipo={item.match} />
+        <BadgeDeMatch copy={copy} tipo={item.match} />
       </div>
 
       {nutrientes === null ? (
@@ -61,6 +87,9 @@ export function ItemDelPlato({ item }: { item: EngineItem }) {
             <strong className="text-xl font-semibold">{kcal(nutrientes.kcal)}</strong>
             <span className="ml-1 text-xs text-ink-faint">kcal</span>
           </span>
+          {/* Las tres iniciales quedan en el código a propósito: no son copy,
+              son la abreviatura del color que tienen al lado. El nombre entero
+              de cada macro sale de `config/app`, arriba, en el donut. */}
           <span className="text-protein">P {gramos(nutrientes.protein_g)} g</span>
           <span className="text-carbs">C {gramos(nutrientes.carbs_g)} g</span>
           <span className="text-fat">G {gramos(nutrientes.fat_g)} g</span>
@@ -68,7 +97,7 @@ export function ItemDelPlato({ item }: { item: EngineItem }) {
       )}
 
       <div className="flex flex-wrap items-center gap-x-2 gap-y-2 border-t border-line pt-3">
-        <span className="text-xs text-ink-faint">Confianza</span>
+        <span className="text-xs text-ink-faint">{copy.item_confidence_label}</span>
         <div className="h-1.5 w-20 overflow-hidden rounded-full bg-surface-2">
           <div
             className="h-full rounded-full"
@@ -86,14 +115,9 @@ export function ItemDelPlato({ item }: { item: EngineItem }) {
         <span className={`font-mono text-xs tabular-nums ${COLOR_DE_CONFIANZA[nivel]}`}>
           {confianza(item.confidence)}
         </span>
-        {/* Las dos mitades, en su propia línea: en 375 px no entran al lado de
-            la barra sin partirse el porcentaje en dos renglones. */}
-        <span className="w-full font-mono text-[0.6875rem] text-ink-faint">
-          visión {confianza(item.confidence_vision)} × ficha {confianza(item.confidence_match)}
-        </span>
       </div>
 
-      <LetraChica item={item} />
+      <LetraChica copy={copy} item={item} />
     </li>
   );
 }
@@ -106,7 +130,7 @@ export function ItemDelPlato({ item }: { item: EngineItem }) {
  * tortilla de patatas, cinco líneas— es justamente el que más cambia lo que el
  * número significa.
  */
-function LetraChica({ item }: { item: EngineItem }) {
+function LetraChica({ copy, item }: { copy: CopyDeLaApp; item: EngineItem }) {
   const caveats = item.caveats ?? [];
   const avisos: string[] = [];
 
@@ -116,12 +140,14 @@ function LetraChica({ item }: { item: EngineItem }) {
   // seguidas y la letra chica pierde el poco crédito que tiene.
   const yaLoDice = caveats.some((c) => c.trimStart().toLowerCase().startsWith("ficha genérica"));
   if (item.generic === true && !yaLoDice) {
-    avisos.push(
-      "Ficha genérica: el valor es el promedio de una familia de productos, no la medición de este plato.",
-    );
+    avisos.push(copy.item_generic_note);
   }
   for (const caveat of caveats) avisos.push(caveat);
   if (item.composicion) {
+    // Esta frase se ARMA CON DATOS —enumera los ingredientes y sus gramos— y por
+    // eso se queda en el código: `config/app.copy` es un mapa de texto a texto y
+    // no tiene convención de placeholders. Está declarado en `dt22_note` de
+    // `config/copy.json`.
     const componentes = item.composicion.componentes
       .map((c) => `${c.name_es ?? c.termino_en} ${gramosEnteros(c.grams)} g`)
       .join(" · ");
@@ -150,7 +176,9 @@ function LetraChica({ item }: { item: EngineItem }) {
       {item.source_ref !== null && (
         <li className="flex gap-2 pt-1">
           <span aria-hidden="true">·</span>
-          <span className="font-mono">Fuente: {item.source_ref}</span>
+          <span className="font-mono">
+            {copy.item_source_label}: {item.source_ref}
+          </span>
         </li>
       )}
     </ul>

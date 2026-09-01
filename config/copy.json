@@ -6,6 +6,8 @@
 
   "publishing_note": "OJO, se publica distinto que recommendation_rules.json: de las reglas se publica el documento ENTERO, y de este archivo se publica SOLO el objeto 'copy'. El motivo es el contrato: config/app.copy es un mapa de texto a texto (Record<string,string> en functions/src/config.ts) y el front lee cada clave como stringValue. Un '$schema_version' numérico adentro de ese mapa rompería el tipo. Los metadatos, entonces, viven afuera y se quedan en el repo.",
 
+  "dt22_note": "LAS 29 CLAVES NUEVAS DE LA CARD 3.1 (prefijos nutrient_, donut_, match_, item_ y las cuatro report_ del final) SON LA DT-22: textos que el usuario leía y estaban escritos adentro de los componentes. Cambiar «Coincidencia aproximada» exigía desplegar la PWA — la regla dura n.º 1 rota fuera de 'copy'. NO entró todo lo que se lee en pantalla, y la línea está declarada: viaja acá lo que es una FRASE FIJA; se queda en el código lo que se ARMA CON DATOS (el aviso de total parcial cuenta ítems y gramos, la letra chica de un compuesto enumera sus ingredientes, la nota del donut inyecta el porcentaje sin explicar). config/app.copy es un mapa de texto a texto y no tiene convención de placeholders: partir una frase y pegarle un número al lado se rompe apenas alguien la edita. Cuando haga falta se agrega la convención y se mudan; hoy sería inventar un motor de plantillas para cuatro frases. Los textos de la vitrina premium (apps/web/src/lib/copy.premium.ts) tampoco entraron: su mudanza es de la card 3.5, junto con el seed real.",
+
   "keys_note": "Lista CERRADA de claves válidas, y el seed rechaza el archivo si 'copy' no tiene exactamente estas — ni una de menos ni una de más. No es burocracia: el front lee cada clave POR SU NOMBRE contra la interfaz CopyDeLaApp (apps/web/src/lib/config.ts). Una clave mal tipeada no rompe nada visible — la pantalla cae al arranque en frío y se ve bien —, así que el error se degrada en silencio y hay que cazarlo antes de publicar. Agregar un texto nuevo es un cambio de las dos puntas: la clave acá y el campo en CopyDeLaApp.",
 
   "keys": {
@@ -39,7 +41,8 @@
     },
     "report_macros_title": {
       "since": "card-2.3",
-      "used_in": "PantallaReporte — solo en el caso 'sin totales', cuando ningún alimento se pudo cuantificar y no hay donut que dibujar"
+      "used_in": "PantallaReporte — el título del PRIMER recuadro: el donut y el reparto de macros con sus gramos",
+      "dt23": "DT-23 CERRADA (card 3.1). Hasta acá este texto solo se veía en el caso borde 'sin totales' —o sea, el título de los macros aparecía justamente cuando NO había macros— y el reporte normal tenía el donut sin encabezado. Ahora encabeza el recuadro que sí muestra el reparto, y el caso 'sin totales' tiene su propio título ('report_no_totals_title')."
     },
     "report_items_title": {
       "since": "card-2.3",
@@ -84,10 +87,116 @@
     "disclaimer": {
       "since": "card-2.3",
       "used_in": "PieDeDiagnostico — el pie legal, visible en todas las pantallas"
+    },
+
+    "nutrient_protein": {
+      "since": "card-3.1",
+      "used_in": "DonutMacros (leyenda del anillo interior) y PantallaReporte (primer recuadro)"
+    },
+    "nutrient_carbs": {
+      "since": "card-3.1",
+      "used_in": "DonutMacros (leyenda del anillo interior) y PantallaReporte (primer recuadro)"
+    },
+    "nutrient_fat": {
+      "since": "card-3.1",
+      "used_in": "DonutMacros (leyenda del anillo interior) y PantallaReporte (primer recuadro)"
+    },
+    "nutrient_fiber": {
+      "since": "card-3.1",
+      "used_in": "DonutMacros (anillo exterior, dentro de los hidratos) · PantallaReporte (segundo recuadro) · AvisoParcial"
+    },
+    "nutrient_sat_fat": {
+      "since": "card-3.1",
+      "used_in": "DonutMacros (anillo exterior, dentro de las grasas) · PantallaReporte (segundo recuadro) · AvisoParcial"
+    },
+    "nutrient_sugars": {
+      "since": "card-3.1",
+      "used_in": "DonutMacros (anillo exterior, dentro de los hidratos) · PantallaReporte (segundo recuadro) · AvisoParcial"
+    },
+    "nutrient_sodium": {
+      "since": "card-3.1",
+      "used_in": "PantallaReporte (segundo recuadro) y AvisoParcial. NO está en el donut a propósito: el sodio no aporta calorías y el donut reparte calorías."
+    },
+    "nutrient_no_data": {
+      "since": "card-3.1",
+      "used_in": "PantallaReporte y DonutMacros — lo que se muestra donde iría un número que la fuente no declara. NUNCA un cero: null no es cero."
+    },
+
+    "donut_unexplained": {
+      "since": "card-3.1",
+      "used_in": "DonutMacros — el tramo apagado del anillo interior cuando los tres macros no llegan a 100 % de las calorías"
+    },
+    "donut_detail_title": {
+      "since": "card-3.1",
+      "used_in": "DonutMacros — el encabezado de la leyenda del ANILLO EXTERIOR (la subdivisión de cada macro)"
+    },
+    "donut_rest": {
+      "since": "card-3.1",
+      "used_in": "DonutMacros — dentro de un macro, lo que queda después de sus partes medidas (grasas no saturadas; hidratos que no son azúcares ni fibra)"
+    },
+
+    "match_exacto": { "since": "card-3.1", "used_in": "BadgeDeMatch — el sello del ítem" },
+    "match_exacto_ayuda": {
+      "since": "card-3.1",
+      "used_in": "BadgeDeMatch — la explicación del sello (atributo title)"
+    },
+    "match_alias": { "since": "card-3.1", "used_in": "BadgeDeMatch — el sello del ítem" },
+    "match_alias_ayuda": {
+      "since": "card-3.1",
+      "used_in": "BadgeDeMatch — la explicación del sello (atributo title)"
+    },
+    "match_difuso": { "since": "card-3.1", "used_in": "BadgeDeMatch — el sello del ítem" },
+    "match_difuso_ayuda": {
+      "since": "card-3.1",
+      "used_in": "BadgeDeMatch — la explicación del sello (atributo title)"
+    },
+    "match_compuesto": { "since": "card-3.1", "used_in": "BadgeDeMatch — el sello del ítem" },
+    "match_compuesto_ayuda": {
+      "since": "card-3.1",
+      "used_in": "BadgeDeMatch — la explicación del sello (atributo title)"
+    },
+    "match_no_catalogado": { "since": "card-3.1", "used_in": "BadgeDeMatch — el sello del ítem" },
+    "match_no_catalogado_ayuda": {
+      "since": "card-3.1",
+      "used_in": "BadgeDeMatch — la explicación del sello (atributo title)"
+    },
+
+    "item_confidence_label": {
+      "since": "card-3.1",
+      "used_in": "ItemDelPlato — la etiqueta de la barra de confianza"
+    },
+    "item_generic_badge": {
+      "since": "card-3.1",
+      "used_in": "ItemDelPlato — la marca al lado del nombre cuando la ficha es genérica"
+    },
+    "item_generic_note": {
+      "since": "card-3.1",
+      "used_in": "ItemDelPlato — la letra chica de una ficha genérica, SOLO cuando la propia ficha no lo dice ya en sus caveats"
+    },
+    "item_source_label": {
+      "since": "card-3.1",
+      "used_in": "ItemDelPlato — la etiqueta de la línea de trazabilidad (USDA #…)"
+    },
+
+    "report_no_totals_title": {
+      "since": "card-3.1",
+      "used_in": "PantallaReporte — el título cuando NO hay total que dibujar (ningún alimento se cuantificó, o la compuerta del total cerró)"
+    },
+    "report_no_totals_body": {
+      "since": "card-3.1",
+      "used_in": "PantallaReporte — el cuerpo de ese mismo caso, SOLO cuando el motor no mandó su propio motivo. El del motor gana: es específico de esta foto."
+    },
+    "report_others_title": {
+      "since": "card-3.1",
+      "used_in": "PantallaReporte — el título del SEGUNDO recuadro (fibra, saturadas, azúcares y sodio)"
+    },
+    "report_weight_label": {
+      "since": "card-3.1",
+      "used_in": "PantallaReporte — la etiqueta del peso que entró a la suma, al pie del segundo recuadro"
     }
   },
 
-  "copy_note": "Estos son los textos, y son LO ÚNICO que viaja a Firestore. Siguen espejados byte a byte con el arranque en frío de apps/web/src/lib/config.ts al 01/09/2026: cuando uno cambia, cambia el otro en el mismo commit. Ver DEUDAS: la pasada de estilo a español de España es un trabajo aparte y con dueño (card 3.4) — el ÚNICO texto ya reescrito acá son los tres 'scanning_steps' de la card 3.2, y nacen en español de España, sin voseo.",
+  "copy_note": "Estos son los textos, y son LO ÚNICO que viaja a Firestore. Siguen espejados byte a byte con el arranque en frío de apps/web/src/lib/config.ts al 01/09/2026: cuando uno cambia, cambia el otro en el mismo commit. Ver DEUDAS: la pasada de estilo a español de España es un trabajo aparte y con dueño (card 3.4) — los textos ya escritos en español de España, sin voseo, son los tres 'scanning_steps' de la card 3.2 y las 29 claves nuevas de la card 3.1 (nacen así, no hay que repasarlas). Los 18 originales siguen esperando esa pasada.",
 
   "copy": {
     "capture_prompt": "¿Qué estás comiendo?",
@@ -112,6 +221,40 @@
     "error_unexpected": "Algo salió mal de este lado. Probá de nuevo en un momento.",
     "error_cta": "Probar de nuevo",
 
-    "disclaimer": "Información nutricional orientativa, calculada sobre datos de USDA. No es consejo médico."
+    "disclaimer": "Información nutricional orientativa, calculada sobre datos de USDA. No es consejo médico.",
+
+    "nutrient_protein": "Proteínas",
+    "nutrient_carbs": "Hidratos de carbono",
+    "nutrient_fat": "Grasas",
+    "nutrient_fiber": "Fibra",
+    "nutrient_sat_fat": "Grasas saturadas",
+    "nutrient_sugars": "Azúcares",
+    "nutrient_sodium": "Sodio",
+    "nutrient_no_data": "sin dato",
+
+    "donut_unexplained": "Sin explicar",
+    "donut_detail_title": "Dentro de cada macronutriente",
+    "donut_rest": "El resto",
+
+    "match_exacto": "Coincidencia exacta",
+    "match_exacto_ayuda": "El nombre identificado es, letra por letra, el de una ficha del catálogo.",
+    "match_alias": "Por sinónimo",
+    "match_alias_ayuda": "Se llegó a la ficha por un sinónimo curado a mano, con su propia confianza.",
+    "match_difuso": "Coincidencia aproximada",
+    "match_difuso_ayuda": "No hubo nombre exacto: se usó la ficha más parecida. Es una estimación, no una medición de ESTE plato.",
+    "match_compuesto": "Compuesto en el momento",
+    "match_compuesto_ayuda": "El catálogo no tiene este plato: se sumó a partir de sus ingredientes visibles y del método de cocción.",
+    "match_no_catalogado": "No catalogado",
+    "match_no_catalogado_ayuda": "El catálogo no tiene este alimento. No se muestran números: un valor sin ficha no sería trazable a ninguna fuente.",
+
+    "item_confidence_label": "Confianza",
+    "item_generic_badge": "genérico",
+    "item_generic_note": "Ficha genérica: el valor es el promedio de una familia de productos, no la medición de este plato.",
+    "item_source_label": "Fuente",
+
+    "report_no_totals_title": "Sin números para este plato",
+    "report_no_totals_body": "Ninguno de los alimentos identificados tiene ficha en el catálogo, así que no hay nada que sumar. Abajo está lo que sí se reconoció.",
+    "report_others_title": "Del resto del análisis",
+    "report_weight_label": "Peso identificado"
   }
 }

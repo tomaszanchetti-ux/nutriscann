@@ -37,6 +37,20 @@
  * card 2.3, declarada en su informe: el seeder de `kb/seed` gobierna cuatro
  * campos de `config/app` y `copy` NO es uno de ellos, así que el repo todavía
  * no tiene la fuente de verdad de estos textos.
+ *
+ * (Card 2.5, DT-18: la fuente de verdad ya existe y es `config/copy.json`, que
+ * el seeder publica. Este archivo es su ESPEJO BYTE A BYTE del lado del
+ * arranque en frío: los dos cambian en el mismo commit, y
+ * `kb/seed/src/textos.test.ts` verifica que las dos listas de CLAVES coincidan.
+ * Los textos en sí no se comparan a propósito: editar una palabra en Firestore
+ * no tiene que obligar a tocar la PWA.)
+ *
+ * CARD 3.1 — 29 CLAVES NUEVAS (DT-22). Los sellos de match, los nombres de los
+ * nutrientes, las etiquetas de la card de ítem y los títulos de los dos
+ * recuadros del reporte estaban ESCRITOS ADENTRO DE LOS COMPONENTES: cambiar
+ * "Coincidencia aproximada" exigía desplegar la PWA. La línea de qué se movió y
+ * qué no —frases fijas sí, frases armadas con datos no— está escrita en
+ * `dt22_note` de `config/copy.json`, que es donde la va a leer quien edite.
  * ------------------------------------------------------------------------- */
 import { firestoreDocUrl } from "./firebase";
 
@@ -62,6 +76,46 @@ export interface CopyDeLaApp {
   error_unexpected: string;
   error_cta: string;
   disclaimer: string;
+
+  // — Nuevas de la card 3.1 (DT-22): estaban escritas adentro de los componentes —
+  //
+  // Los nombres de los nutrientes son UNO SOLO para toda la app: el donut, los
+  // dos recuadros y el aviso de total parcial dicen "Grasas saturadas" con las
+  // mismas letras porque leen la misma clave. Antes había tres listas paralelas.
+  nutrient_protein: string;
+  nutrient_carbs: string;
+  nutrient_fat: string;
+  nutrient_fiber: string;
+  nutrient_sat_fat: string;
+  nutrient_sugars: string;
+  nutrient_sodium: string;
+  /** Lo que va donde iría un número que la fuente no declara. NUNCA un cero. */
+  nutrient_no_data: string;
+
+  donut_unexplained: string;
+  donut_detail_title: string;
+  donut_rest: string;
+
+  match_exacto: string;
+  match_exacto_ayuda: string;
+  match_alias: string;
+  match_alias_ayuda: string;
+  match_difuso: string;
+  match_difuso_ayuda: string;
+  match_compuesto: string;
+  match_compuesto_ayuda: string;
+  match_no_catalogado: string;
+  match_no_catalogado_ayuda: string;
+
+  item_confidence_label: string;
+  item_generic_badge: string;
+  item_generic_note: string;
+  item_source_label: string;
+
+  report_no_totals_title: string;
+  report_no_totals_body: string;
+  report_others_title: string;
+  report_weight_label: string;
 }
 
 export type ClaveDeCopy = keyof CopyDeLaApp;
@@ -97,6 +151,45 @@ export const COPY_DE_ARRANQUE: CopyDeLaApp = {
   error_cta: "Probar de nuevo",
   disclaimer:
     "Información nutricional orientativa, calculada sobre datos de USDA. No es consejo médico.",
+
+  nutrient_protein: "Proteínas",
+  nutrient_carbs: "Hidratos de carbono",
+  nutrient_fat: "Grasas",
+  nutrient_fiber: "Fibra",
+  nutrient_sat_fat: "Grasas saturadas",
+  nutrient_sugars: "Azúcares",
+  nutrient_sodium: "Sodio",
+  nutrient_no_data: "sin dato",
+
+  donut_unexplained: "Sin explicar",
+  donut_detail_title: "Dentro de cada macronutriente",
+  donut_rest: "El resto",
+
+  match_exacto: "Coincidencia exacta",
+  match_exacto_ayuda: "El nombre identificado es, letra por letra, el de una ficha del catálogo.",
+  match_alias: "Por sinónimo",
+  match_alias_ayuda: "Se llegó a la ficha por un sinónimo curado a mano, con su propia confianza.",
+  match_difuso: "Coincidencia aproximada",
+  match_difuso_ayuda:
+    "No hubo nombre exacto: se usó la ficha más parecida. Es una estimación, no una medición de ESTE plato.",
+  match_compuesto: "Compuesto en el momento",
+  match_compuesto_ayuda:
+    "El catálogo no tiene este plato: se sumó a partir de sus ingredientes visibles y del método de cocción.",
+  match_no_catalogado: "No catalogado",
+  match_no_catalogado_ayuda:
+    "El catálogo no tiene este alimento. No se muestran números: un valor sin ficha no sería trazable a ninguna fuente.",
+
+  item_confidence_label: "Confianza",
+  item_generic_badge: "genérico",
+  item_generic_note:
+    "Ficha genérica: el valor es el promedio de una familia de productos, no la medición de este plato.",
+  item_source_label: "Fuente",
+
+  report_no_totals_title: "Sin números para este plato",
+  report_no_totals_body:
+    "Ninguno de los alimentos identificados tiene ficha en el catálogo, así que no hay nada que sumar. Abajo está lo que sí se reconoció.",
+  report_others_title: "Del resto del análisis",
+  report_weight_label: "Peso identificado",
 };
 
 /**

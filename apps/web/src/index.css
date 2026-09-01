@@ -54,6 +54,52 @@ body {
 }
 
 /* ===========================================================================
+ * EL DONUT DE DOBLE ANILLO (card 3.1) — los arcos se DIBUJAN al entrar.
+ *
+ * Por qué acá y no en `className`: son keyframes, y Tailwind no los expresa.
+ * Todo lo demás del donut (radios, colores, grosores) sigue siendo SVG con los
+ * tokens de `@theme`.
+ *
+ * Cómo funciona, en una línea: cada gajo es un trozo de circunferencia con
+ * `stroke-dasharray: <su largo> <la vuelta entera>`, y la animación mueve el
+ * `stroke-dashoffset` desde su largo hasta 0 — o sea, el trazo entra por su
+ * propio comienzo y crece hasta su tamaño real. El largo se lo pasa el
+ * componente en `--donut-largo`, en unidades de usuario del SVG.
+ *
+ * Se anima UNA sola propiedad, y es de las que el navegador puede componer sin
+ * recalcular layout. Los arcos del anillo exterior arrancan con un retraso —lo
+ * pone el componente— para que el ojo lea primero el reparto y después su
+ * desglose: el orden del dibujo es el orden de la explicación.
+ * ======================================================================== */
+
+.donut-arco {
+  animation-name: donut-dibuja;
+  animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+  animation-fill-mode: both;
+}
+
+@keyframes donut-dibuja {
+  from {
+    stroke-dashoffset: var(--donut-largo);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* El bloque global de más arriba aplasta toda duración a 0,01 ms, que acá
+     alcanzaría; se apaga igual y de forma explícita, para que el gráfico
+     aparezca ENTERO y quieto en vez de parpadear en su primer cuadro. Lo que se
+     lee —los porcentajes, los gramos, la leyenda— nunca dependió de la
+     animación. */
+  .donut-arco {
+    animation: none !important;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ===========================================================================
  * EL ESCANEO (card 3.2) — la espera ES el show.
  *
  * CSS puro y cero dependencias nuevas: la PWA tiene que seguir liviana, y todo

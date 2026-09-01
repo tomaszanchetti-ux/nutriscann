@@ -33,8 +33,32 @@
  * problema para lo que el fixture existe (mirar la PANTALLA), pero conviene
  * saberlo antes de usarlo como golden set: el golden set de verdad es la card
  * 2.4.
- */
-import type { RespuestaDeAnalisis } from "../types";
+ *
+ * ---------------------------------------------------------------------------
+ * LO QUE LE AGREGÓ LA CARD 3.1 — dos claves del payload y dos platos derivados
+ *
+ * (1) LAS DOS CLAVES QUE EL MOTOR EMPEZÓ A MANDAR y este archivo no tenía:
+ *     `termino_es` (DT-25, siempre presente, `""` cuando la visión no dijo nada
+ *     en español) e `identidad_respaldada` (DT-37, solo cuando vale `true`).
+ *     No se inventaron: se DEDUJERON del `motivo` que cada item ya traía —"un
+ *     match exacto siempre trae identidad respaldada", y la del queso queda
+ *     afuera porque su motivo dice que se llegó por la dirección que la DT-37
+ *     excluye ("lo que se identificó es el PRINCIPIO del nombre del catálogo").
+ *     El `termino_es` del queso es `""` por el mismo motivo: si la visión lo
+ *     hubiera nombrado en español, el motor habría matcheado `Queso` exacto y
+ *     este item no sería difuso.
+ *
+ * (2) DOS PLATOS DERIVADOS, para poder mirar los otros dos estados del donut sin
+ *     backend (`respuestaDeFixtureCompleta()` y `respuestaDeFixtureSinTotal()`).
+ *     Los dos se ARMAN a partir de los items de acá abajo, no se escriben a
+ *     mano: ver el comentario de cada uno.
+ * ------------------------------------------------------------------------- */
+import type {
+  EngineItem,
+  PorcentajesDeMacros,
+  RespuestaDeAnalisis,
+  TotalesNutrientes,
+} from "../types";
 
 export const RESPUESTA_DE_FIXTURE: RespuestaDeAnalisis = {
   "scan_id": "scan_fixture_tortilla_0001",
@@ -42,6 +66,7 @@ export const RESPUESTA_DE_FIXTURE: RespuestaDeAnalisis = {
   "items": [
     {
       "termino_en": "Spanish potato omelette (tortilla de patatas)",
+      "termino_es": "Tortilla de patatas",
       "food_id": "manual-tortilla-de-patatas",
       "name_es": "Tortilla de patatas",
       "name_en": "Spanish potato omelette (tortilla de patatas)",
@@ -51,6 +76,7 @@ export const RESPUESTA_DE_FIXTURE: RespuestaDeAnalisis = {
       "confidence_vision": 0.92,
       "confidence_match": 1,
       "match": "exacto",
+      "identidad_respaldada": true,
       "caveats": [
         "Rangos publicados, no una medición: 126–147 kcal · proteínas 5–7 g · hidratos 9–12 g · grasas 7–9 g · fibra 0,8–1,6 g. El valor es el punto medio.",
         "El número depende mucho de la receta: cuánto aceite absorbe la patata y si lleva cebolla.",
@@ -82,6 +108,7 @@ export const RESPUESTA_DE_FIXTURE: RespuestaDeAnalisis = {
     },
     {
       "termino_en": "cheese",
+      "termino_es": "",
       "food_id": "fdc-2705704",
       "name_es": "Queso",
       "name_en": "Cheese, NFS",
@@ -119,6 +146,7 @@ export const RESPUESTA_DE_FIXTURE: RespuestaDeAnalisis = {
     },
     {
       "termino_en": "chicken and pepper skewer",
+      "termino_es": "brocheta de pollo y pimiento",
       "food_id": null,
       "name_es": null,
       "name_en": null,
@@ -186,6 +214,7 @@ export const RESPUESTA_DE_FIXTURE: RespuestaDeAnalisis = {
     },
     {
       "termino_en": "picos camperos",
+      "termino_es": "picos camperos",
       "food_id": null,
       "name_es": null,
       "name_en": null,
@@ -239,3 +268,129 @@ export const RESPUESTA_DE_FIXTURE: RespuestaDeAnalisis = {
   },
   "persisted": true
 };
+
+// ---------------------------------------------------------------------------
+// LOS OTROS DOS ESTADOS DEL DONUT (card 3.1)
+//
+// El plato de arriba muestra UNO de los tres estados: el total PARCIAL, con dos
+// de las tres subdivisiones sin medir (la tortilla no declara saturadas ni
+// azúcares). Es el estado más común y el más difícil de dibujar bien, pero no es
+// el único, y los otros dos no se pueden mirar a voluntad contra un backend que
+// anda bien — el mismo problema que la card 3.2 resolvió con sus modos.
+//
+// Los dos de acá abajo NO son platos nuevos: se ARMAN con los items de arriba,
+// que salieron del motor real. Nada se escribe a mano.
+// ---------------------------------------------------------------------------
+
+function itemDelFixture(termino_en: string): EngineItem {
+  const encontrado = RESPUESTA_DE_FIXTURE.items.find((item) => item.termino_en === termino_en);
+  if (encontrado === undefined) {
+    throw new Error(`el fixture ya no tiene el item «${termino_en}»`);
+  }
+  return encontrado;
+}
+
+/** El redondeo del motor: 3 decimales (`DECIMALES` en `engine/constants.ts`). */
+function redondear(valor: number, decimales = 3): number {
+  const factor = 10 ** decimales;
+  return Math.round(valor * factor) / factor;
+}
+
+/**
+ * La suma de los ocho valores, con la MISMA regla que `sumarTotales`: si a algún
+ * item le falta un opcional, el total de ese opcional es `null` y no la suma de
+ * los que sí lo tienen. Acá los dos items los declaran los ocho, así que salen
+ * los ocho — pero la regla se escribe igual, porque es la que hace que el número
+ * signifique algo.
+ */
+function sumarLosOcho(items: EngineItem[]): TotalesNutrientes {
+  const claves = [
+    "kcal",
+    "protein_g",
+    "carbs_g",
+    "fat_g",
+    "fiber_g",
+    "sat_fat_g",
+    "sugars_g",
+    "sodium_mg",
+  ] as const;
+  const total = {} as TotalesNutrientes;
+  for (const clave of claves) {
+    const valores = items.map((item) => item.nutrients?.[clave] ?? null);
+    total[clave] = valores.some((valor) => valor === null)
+      ? null
+      : redondear(valores.reduce((suma: number, valor) => suma + (valor ?? 0), 0));
+  }
+  return total;
+}
+
+/** El reparto calórico con Atwater 4/4/9, igual que `porcentajesDeMacros`. */
+function repartoDeMacros(total: TotalesNutrientes): PorcentajesDeMacros {
+  const kcal = total.kcal ?? 0;
+  const pct = (gramos: number | null, factor: number): number =>
+    redondear(((gramos ?? 0) * factor * 100) / kcal, 1);
+  const protein = pct(total.protein_g, 4);
+  const carbs = pct(total.carbs_g, 4);
+  const fat = pct(total.fat_g, 9);
+  return { protein, carbs, fat, sin_explicar: redondear(100 - protein - carbs - fat, 1) };
+}
+
+/**
+ * EL DONUT ENTERO, CON SUS DOS ANILLOS LLENOS (`VITE_ANALYZE_FIXTURE=completo`).
+ *
+ * Los dos items del plato de arriba cuyas fichas declaran LOS OCHO valores: el
+ * queso genérico y la brocheta compuesta. Sin la tortilla —que es la que no
+ * declara saturadas, azúcares ni sodio— el total sale completo, y el anillo
+ * exterior puede dibujar sus tres subdivisiones de verdad: saturadas dentro de
+ * las grasas, y azúcares + fibra dentro de los hidratos.
+ *
+ * No es un plato nuevo: es un SUBCONJUNTO del de arriba, sumado con la regla del
+ * motor. Sigue siendo comida plausible (30 g de queso y una brocheta).
+ *
+ * ES UNA FUNCIÓN Y NO UNA CONSTANTE, y no es un capricho: una constante de
+ * módulo cuyo valor sale de LLAMAR a algo no la puede borrar el empaquetador —la
+ * llamada podría tener efectos—, así que el plato de mentira entero se colaba al
+ * bundle de producción. Se midió, igual que en `api.ts`: con constantes el
+ * bundle pasó de 257,7 a 269,0 kB. Adentro de una función, la llamada vive en la
+ * rama del fixture, que se pliega a `false` en el build y se va con todo lo que
+ * toca.
+ */
+export function respuestaDeFixtureCompleta(): RespuestaDeAnalisis {
+  const items = [itemDelFixture("cheese"), itemDelFixture("chicken and pepper skewer")];
+  const nutrients = sumarLosOcho(items);
+  const gramosDelPlato = redondear(items.reduce((suma, item) => suma + item.grams, 0));
+  return {
+    ...RESPUESTA_DE_FIXTURE,
+    scan_id: "scan_fixture_completo_0002",
+    items,
+    totals: {
+      nutrients,
+      opcionales_ausentes: {},
+      macro_pct: repartoDeMacros(nutrients),
+      macro_pct_motivo: null,
+      grams_total: gramosDelPlato,
+      grams_cuantificados: gramosDelPlato,
+      items_incluidos: items.length,
+      items_sin_datos: 0,
+      completo: true,
+    },
+  };
+}
+
+/**
+ * SIN TOTAL, HONESTAMENTE (`VITE_ANALYZE_FIXTURE=sin_total`).
+ *
+ * Un plato con un solo alimento, y sin ficha. `sumarTotales` devuelve `null`
+ * cuando NINGÚN item se pudo cuantificar —"un plato sin un solo número no tiene
+ * totales, tiene una cola de curación"—, así que esto es exactamente lo que el
+ * motor emite: no hay donut, hay el motivo escrito y el alimento abajo con su
+ * explicación.
+ */
+export function respuestaDeFixtureSinTotal(): RespuestaDeAnalisis {
+  return {
+    ...RESPUESTA_DE_FIXTURE,
+    scan_id: "scan_fixture_sin_total_0003",
+    items: [itemDelFixture("picos camperos")],
+    totals: null,
+  };
+}

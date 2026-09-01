@@ -4,7 +4,11 @@
  * Toda llamada al servidor pasa por acá — la app nunca arma URLs sueltas.
  */
 import { functionUrl } from "./firebase";
-import { RESPUESTA_DE_FIXTURE } from "./fixtures/scan.fixture";
+import {
+  RESPUESTA_DE_FIXTURE,
+  respuestaDeFixtureCompleta,
+  respuestaDeFixtureSinTotal,
+} from "./fixtures/scan.fixture";
 import type { ImagenComprimida } from "./imagen";
 import type { ErrorDelBackend, RespuestaDeAnalisis } from "./types";
 
@@ -60,8 +64,14 @@ export async function fetchHealth(signal?: AbortSignal): Promise<HealthReport> {
  * anda bien. `lento` deja ver el barrido entero y la rotación de los tres pasos;
  * `error` muestra la pantalla de error con su reintento; `no_es_comida` muestra
  * el 200 sin números. Ninguno agrega código al camino real: la misma rama que ya
- * existía, con cuatro valores en vez de uno, apagada salvo que alguien escriba
- * la variable a mano. El pie de la pantalla avisa en amarillo cuál está activo.
+ * existía, con más valores en vez de uno, apagada salvo que alguien escriba la
+ * variable a mano. El pie de la pantalla avisa en amarillo cuál está activo.
+ *
+ * LA CARD 3.1 LE SUMÓ DOS MÁS, por el mismo motivo y para el donut de doble
+ * anillo: `completo` muestra el total con sus tres subdivisiones dibujadas y
+ * `sin_total` muestra el plato que no tiene números. Son los dos estados que el
+ * plato del fixture —un total parcial, con dos subdivisiones sin medir— no puede
+ * mostrar, y contra un backend real dependen de qué salga en la foto.
  *
  * ⚠️ POR QUÉ ESTO SE ESCRIBE CON COMPARACIONES SUELTAS Y NO CON UN MAPA. Vite
  * reemplaza `import.meta.env.VITE_ANALYZE_FIXTURE` por su valor literal en el
@@ -71,8 +81,22 @@ export async function fetchHealth(signal?: AbortSignal): Promise<HealthReport> {
  * Un `MODOS[...]` no se puede plegar, y entonces el plato de mentira (7,6 kB de
  * JSON) viaja a producción. Se midió: con el mapa el bundle pasó de 241,5 a
  * 249,1 kB. Si esta parte se toca, hay que volver a mirar el tamaño.
+ *
+ * ⚠️ Y LOS PLATOS DERIVADOS SON FUNCIONES, NO CONSTANTES, por lo mismo. La card
+ * 3.1 los escribió primero como constantes de módulo (`const X = armarPlato()`)
+ * y el empaquetador no pudo borrarlas —una llamada podría tener efectos—, así
+ * que el fixture entero volvió a producción: el bundle saltó de 257,7 a 269,0
+ * kB. Adentro de una función solo se las llama desde esta rama, que se pliega a
+ * `false`, y el módulo entero se va. Medido después del arreglo: 263,1 kB, sin
+ * una sola cadena del fixture adentro.
  */
-export type ModoDeDemo = "reporte" | "lento" | "no_es_comida" | "error";
+export type ModoDeDemo =
+  | "reporte"
+  | "completo"
+  | "sin_total"
+  | "lento"
+  | "no_es_comida"
+  | "error";
 
 const MODO_PEDIDO = import.meta.env.VITE_ANALYZE_FIXTURE;
 
@@ -82,13 +106,17 @@ export const MODO_DE_DEMO: ModoDeDemo | null =
   // card 2.3 y lo que puede haber en la máquina de cualquiera.
   MODO_PEDIDO === "1" || MODO_PEDIDO === "reporte"
     ? "reporte"
-    : MODO_PEDIDO === "lento"
-      ? "lento"
-      : MODO_PEDIDO === "error"
-        ? "error"
-        : MODO_PEDIDO === "no_es_comida"
-          ? "no_es_comida"
-          : null;
+    : MODO_PEDIDO === "completo"
+      ? "completo"
+      : MODO_PEDIDO === "sin_total"
+        ? "sin_total"
+        : MODO_PEDIDO === "lento"
+          ? "lento"
+          : MODO_PEDIDO === "error"
+            ? "error"
+            : MODO_PEDIDO === "no_es_comida"
+              ? "no_es_comida"
+              : null;
 
 export const USA_FIXTURE_DE_ANALISIS = MODO_DE_DEMO !== null;
 
@@ -174,6 +202,13 @@ export async function analizarFoto(
         persisted: false,
       };
     }
+
+    // Los dos estados del donut que el plato del fixture no muestra (card 3.1):
+    // el total COMPLETO, con las tres subdivisiones del anillo exterior
+    // dibujadas, y el plato SIN TOTAL, donde no hay anillo que dibujar y se
+    // muestra el motivo que escribió el motor.
+    if (MODO_DE_DEMO === "completo") return respuestaDeFixtureCompleta();
+    if (MODO_DE_DEMO === "sin_total") return respuestaDeFixtureSinTotal();
 
     return RESPUESTA_DE_FIXTURE;
   }

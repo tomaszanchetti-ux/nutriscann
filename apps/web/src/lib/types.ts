@@ -10,12 +10,31 @@
  * Los tipos de ENTRADA del motor (`VisionResult`, `VisionItem`) no están acá a
  * propósito: el navegador nunca los ve, manda una foto y recibe un reporte.
  *
- * Si el original cambia, esta copia queda vieja en silencio. Es una deuda
- * conocida (no hay candado de bytes como el de `functions/src/kb/types.ts`) y
- * está declarada en el informe de la card 2.3.
  * ---------------------------------------------------------------------------
- * Origen: functions/src/engine/types.ts + functions/src/kb/types.ts (Per100g)
- * Copiado el 31/08/2026, contra el catálogo 3.0.0+b2b227e1.
+ * AHORA HAY CANDADO (DT-20, card 3.1).
+ *
+ * Hasta la card 3.1 esta copia no tenía nada que la atara al original, y se
+ * separó de verdad y en silencio: la card 6.1 del motor hizo que los ocho
+ * nutrientes del total pudieran viajar en `null` (la compuerta cierra el payload
+ * entero) y acá seguía escrito `kcal: number`. En runtime no se rompía —el
+ * render ya se escondía detrás de `macro_pct !== null`— pero el contrato mentía,
+ * y una pantalla que se dibuja contra un tipo que miente falla el día que el
+ * dato llega.
+ *
+ * El candado vive en `kb/seed/src/contrato-front.test.ts` (`npm --prefix kb/seed
+ * test`) y compara, tipo por tipo y campo por campo, ESTE archivo contra
+ * `functions/src/engine/types.ts` — más `Per100g` contra `kb/src/types.ts`, que
+ * es su origen real. No compara bytes porque esta copia es un SUBCONJUNTO con
+ * sus propios comentarios: compara la lista de campos y el texto de cada tipo,
+ * que es lo que de verdad tiene que coincidir.
+ *
+ * Si ese test falla: se copia el campo del original tal cual está allá. No se
+ * "arregla" acá inventando una forma parecida.
+ * ---------------------------------------------------------------------------
+ * Origen: functions/src/engine/types.ts + kb/src/types.ts (Per100g).
+ * Alineado el 01/09/2026 (card 3.1) contra el motor de la WS07: `termino_es`
+ * siempre presente (DT-25), `identidad_respaldada` (DT-37) y los ocho valores
+ * del total nullables + `total_no_publicable` (card 6.1).
  * ========================================================================== */
 
 /** Valores por 100 g. Origen: `kb/src/types.ts` → `Per100g`. */
@@ -61,6 +80,15 @@ export interface Composicion {
 
 export interface EngineItem {
   termino_en: string;
+  /**
+   * EL MISMO TÉRMINO EN ESPAÑOL, TAL COMO LO EMITIÓ LA VISIÓN (DT-25).
+   *
+   * SIEMPRE PRESENTE, y vale `""` cuando la visión no dijo nada en español. No
+   * es el término que ganó el match —eso lo cuenta `motivo`— pero es lo mejor
+   * que hay para nombrar un alimento SIN ficha: hasta acá esos se mostraban en
+   * inglés porque era lo único que llegaba.
+   */
+  termino_es: string;
   food_id: string | null;
   name_es: string | null;
   name_en: string | null;
@@ -74,12 +102,18 @@ export interface EngineItem {
   /** Solo cuando vale `true`: la ficha mide el promedio de una familia. */
   generic?: true;
   /**
+   * LA FICHA NOMBRA LO QUE LA VISIÓN DESCRIBIÓ (DT-37). Solo cuando vale `true`.
+   *
+   * No es una confianza: es la segunda puerta de la compuerta del total. Un
+   * plato de confianza baja puede publicar total si alguna ficha nombra de
+   * verdad lo que se describió.
+   */
+  identidad_respaldada?: true;
+  /**
    * `true` cuando la visión devolvió gramos inutilizables: la ficha se
    * identificó (`food_id` presente) pero no se cuantificó (`nutrients: null`).
-   * El `motivo` ya lo explica; el badge sigue siendo el del match, no
-   * "no catalogado" — se sabe qué es, no cuánto hay.
    */
-  grams_no_estimados?: boolean;
+  grams_no_estimados?: true;
   caveats?: string[];
   per_100g: Per100g | null;
   nutrients: Per100gEscalado | null;
@@ -87,12 +121,23 @@ export interface EngineItem {
   composicion?: Composicion;
 }
 
-/** Los ocho valores sumados de todo el plato. */
+/**
+ * LOS OCHO VALORES DEL TOTAL, Y LOS OCHO PUEDEN SER `null`.
+ *
+ * En el motor esto es un tipo mapeado sobre `SumaDeNutrientes` (la suma cruda,
+ * que no viaja). Acá se escribe campo por campo porque el front no tiene la
+ * suma cruda — el candado verifica que los ocho nombres sean los mismos y que
+ * los ocho estén en `number | null`.
+ *
+ * Dos ausencias distintas viajan por el mismo `null`, y se distinguen mirando
+ * `EngineTotals`: sin `total_no_publicable`, un `null` significa "la fuente no
+ * declara este valor"; con `total_no_publicable`, significa "no hay total".
+ */
 export interface TotalesNutrientes {
-  kcal: number;
-  protein_g: number;
-  carbs_g: number;
-  fat_g: number;
+  kcal: number | null;
+  protein_g: number | null;
+  carbs_g: number | null;
+  fat_g: number | null;
   fiber_g: number | null;
   sat_fat_g: number | null;
   sugars_g: number | null;
@@ -115,7 +160,13 @@ export type OpcionalAusente = "fiber_g" | "sat_fat_g" | "sugars_g" | "sodium_mg"
 
 export interface EngineTotals {
   nutrients: TotalesNutrientes;
-  opcionales_ausentes: Partial<Record<OpcionalAusente, string>>;
+  /**
+   * `true` cuando los ocho `nutrients` vienen en `null` porque la compuerta del
+   * total cerró: no es que la fuente no los declare, es que el análisis no
+   * sostiene el total. `macro_pct_motivo` trae el porqué, escrito.
+   */
+  total_no_publicable?: true;
+  opcionales_ausentes: Partial<Record<"fiber_g" | "sat_fat_g" | "sugars_g" | "sodium_mg", string>>;
   macro_pct: PorcentajesDeMacros | null;
   macro_pct_motivo: string | null;
   grams_total: number;
@@ -130,7 +181,7 @@ export interface EngineTotals {
 // El sobre del endpoint — contrato fijado por el orquestador de la WS04.
 // Origen: la card 2.2 (`POST analyze`). No está en el archivo de tipos del
 // motor porque el motor no sabe de HTTP: `items` y `totals` son su salida tal
-// cual, y el resto es lo que agrega el endpoint.
+// cual, y el resto es lo que agrega el endpoint. Por eso el candado NO lo mira.
 // ---------------------------------------------------------------------------
 
 export interface MetaDelScan {

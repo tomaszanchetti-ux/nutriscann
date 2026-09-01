@@ -98,7 +98,13 @@ export function PieDeDiagnostico({
         )}
       </p>
 
-      <p className="font-sans">{disclaimer}</p>
+      {/* EL TEXTO LEGAL, ÚLTIMO Y CHICO (card 3.1, pedido de Tomás).
+          Va al final de la pantalla —debajo del reporte, de los botones y del
+          propio diagnóstico— y en el cuerpo más chico de toda la app: es una
+          advertencia que tiene que estar y que nadie tiene que leer para usar
+          NutriScann. Que esté siempre y no solo en el reporte es a propósito: la
+          app dice números en más de una pantalla. */}
+      <p className="mt-1 font-sans text-[0.625rem] leading-relaxed text-ink-faint">{disclaimer}</p>
     </footer>
   );
 }

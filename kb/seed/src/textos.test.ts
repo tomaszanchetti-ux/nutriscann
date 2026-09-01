@@ -119,29 +119,69 @@ test("los pasos se parten y se recortan igual que en el front", () => {
 
 // ── El archivo real del repo: es lo que se publica ───────────────────────────
 
-/** Las 18 claves del contrato, al 01/09/2026 (DT-18). */
+/**
+ * Las 47 claves del contrato, al 01/09/2026.
+ *
+ * Eran 18 (DT-18, card 2.5). La card 3.1 sumó las 29 de la DT-22: los textos
+ * que el usuario leía y estaban escritos adentro de los componentes del front
+ * —los cinco sellos de match con su explicación, los nombres de los
+ * nutrientes, las etiquetas de la card de ítem y los títulos de los dos
+ * recuadros del reporte—. Cambiar cualquiera de esos exigía desplegar la PWA.
+ *
+ * La lista está en orden alfabético porque `cargarTextos` devuelve las claves
+ * ordenadas: es el orden del contrato, no el del archivo.
+ */
 const CLAVES_ESPERADAS = [
   "capture_cta",
   "capture_help",
   "capture_prompt",
   "disclaimer",
+  "donut_detail_title",
+  "donut_rest",
+  "donut_unexplained",
   "error_cta",
   "error_network",
   "error_not_food",
   "error_title",
   "error_unexpected",
   "error_unreadable",
+  "item_confidence_label",
+  "item_generic_badge",
+  "item_generic_note",
+  "item_source_label",
+  "match_alias",
+  "match_alias_ayuda",
+  "match_compuesto",
+  "match_compuesto_ayuda",
+  "match_difuso",
+  "match_difuso_ayuda",
+  "match_exacto",
+  "match_exacto_ayuda",
+  "match_no_catalogado",
+  "match_no_catalogado_ayuda",
   "not_food_title",
+  "nutrient_carbs",
+  "nutrient_fat",
+  "nutrient_fiber",
+  "nutrient_no_data",
+  "nutrient_protein",
+  "nutrient_sat_fat",
+  "nutrient_sodium",
+  "nutrient_sugars",
   "report_cta",
   "report_items_title",
   "report_kcal_label",
   "report_macros_title",
+  "report_no_totals_body",
+  "report_no_totals_title",
+  "report_others_title",
   "report_partial_title",
+  "report_weight_label",
   "scanning_steps",
   "scanning_title",
 ];
 
-test("config/copy.json valida y trae las 18 claves del contrato", () => {
+test("config/copy.json valida y trae las 47 claves del contrato", () => {
   const textos = cargarTextos(TEXTOS_DEL_REPO);
   assert.deepEqual(textos.claves, CLAVES_ESPERADAS);
   assert.equal(textos.pasos.length, 3, "la pantalla de espera muestra tres pasos");
