@@ -16,6 +16,15 @@ export interface PantallaMensajeProps {
   codigo?: string | null;
   cta: string;
   onCta: () => void;
+  /**
+   * La segunda salida, cuando hay dos. Existe por el error: reintentar con la
+   * MISMA foto y volver a la cámara son cosas distintas, y quien acaba de perder
+   * un análisis tiene que poder elegir sin que la app le tire la foto a la
+   * basura. Va como texto y no como botón lleno para que la primera siga siendo
+   * la primera.
+   */
+  ctaSecundaria?: string;
+  onCtaSecundaria?: () => void;
   tono: "error" | "neutro";
 }
 
@@ -25,6 +34,8 @@ export function PantallaMensaje({
   codigo,
   cta,
   onCta,
+  ctaSecundaria,
+  onCtaSecundaria,
   tono,
 }: PantallaMensajeProps) {
   return (
@@ -47,13 +58,25 @@ export function PantallaMensaje({
         )}
       </div>
 
-      <button
-        type="button"
-        onClick={onCta}
-        className="mx-auto w-full max-w-xs rounded-2xl bg-accent px-6 py-4 font-semibold text-ground transition-transform active:scale-[0.98]"
-      >
-        {cta}
-      </button>
+      <div className="flex flex-col items-center gap-3">
+        <button
+          type="button"
+          onClick={onCta}
+          className="mx-auto w-full max-w-xs rounded-2xl bg-accent px-6 py-4 font-semibold text-ground transition-transform active:scale-[0.98]"
+        >
+          {cta}
+        </button>
+
+        {ctaSecundaria != null && onCtaSecundaria !== undefined && (
+          <button
+            type="button"
+            onClick={onCtaSecundaria}
+            className="rounded-xl px-4 py-2 text-sm font-medium text-ink-soft underline underline-offset-4 transition-colors active:text-ink"
+          >
+            {ctaSecundaria}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

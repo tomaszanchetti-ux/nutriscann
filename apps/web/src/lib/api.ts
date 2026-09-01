@@ -54,11 +54,56 @@ export async function fetchHealth(signal?: AbortSignal): Promise<HealthReport> {
  *
  * Es explícita, como la del emulador, y NO depende del modo dev de Vite: correr
  * en local contra el backend de verdad tiene que seguir siendo lo normal.
+ *
+ * LA CARD 3.2 LE SUMÓ TRES MODOS MÁS, y por un motivo concreto: los estados de
+ * la espera y del error no se pueden mirar a voluntad contra un backend que
+ * anda bien. `lento` deja ver el barrido entero y la rotación de los tres pasos;
+ * `error` muestra la pantalla de error con su reintento; `no_es_comida` muestra
+ * el 200 sin números. Ninguno agrega código al camino real: la misma rama que ya
+ * existía, con cuatro valores en vez de uno, apagada salvo que alguien escriba
+ * la variable a mano. El pie de la pantalla avisa en amarillo cuál está activo.
+ *
+ * ⚠️ POR QUÉ ESTO SE ESCRIBE CON COMPARACIONES SUELTAS Y NO CON UN MAPA. Vite
+ * reemplaza `import.meta.env.VITE_ANALYZE_FIXTURE` por su valor literal en el
+ * build (`undefined` cuando nadie la declaró), así que esta cadena se pliega a
+ * `null` en tiempo de compilación, `USA_FIXTURE_DE_ANALISIS` queda en `false`
+ * constante y el empaquetador BORRA la rama entera — con el fixture adentro.
+ * Un `MODOS[...]` no se puede plegar, y entonces el plato de mentira (7,6 kB de
+ * JSON) viaja a producción. Se midió: con el mapa el bundle pasó de 241,5 a
+ * 249,1 kB. Si esta parte se toca, hay que volver a mirar el tamaño.
  */
-export const USA_FIXTURE_DE_ANALISIS = import.meta.env.VITE_ANALYZE_FIXTURE === "1";
+export type ModoDeDemo = "reporte" | "lento" | "no_es_comida" | "error";
+
+const MODO_PEDIDO = import.meta.env.VITE_ANALYZE_FIXTURE;
+
+/** El modo pedido por `VITE_ANALYZE_FIXTURE`, o `null` = hablar con el backend. */
+export const MODO_DE_DEMO: ModoDeDemo | null =
+  // El "1" histórico se conserva: es lo que dice `.env.local.example` desde la
+  // card 2.3 y lo que puede haber en la máquina de cualquiera.
+  MODO_PEDIDO === "1" || MODO_PEDIDO === "reporte"
+    ? "reporte"
+    : MODO_PEDIDO === "lento"
+      ? "lento"
+      : MODO_PEDIDO === "error"
+        ? "error"
+        : MODO_PEDIDO === "no_es_comida"
+          ? "no_es_comida"
+          : null;
+
+export const USA_FIXTURE_DE_ANALISIS = MODO_DE_DEMO !== null;
 
 /** Cuánto simula tardar el fixture, para que la pantalla de espera se vea. */
 const DEMORA_DEL_FIXTURE_MS = 2600;
+
+/** Lo que tarda el modo `lento`: alcanza para ver el barrido y los tres pasos. */
+const DEMORA_LENTA_MS = 14000;
+
+/** La demora del modo activo. `VITE_ANALYZE_FIXTURE_MS` la pisa, si se declara. */
+function demoraDeLaDemo(modo: ModoDeDemo): number {
+  const pedida = Number(import.meta.env.VITE_ANALYZE_FIXTURE_MS);
+  if (Number.isFinite(pedida) && pedida > 0) return pedida;
+  return modo === "lento" ? DEMORA_LENTA_MS : DEMORA_DEL_FIXTURE_MS;
+}
 
 /**
  * Un error del análisis con su código estable.
@@ -101,8 +146,35 @@ export async function analizarFoto(
   imagen: ImagenComprimida,
   opciones: OpcionesDeAnalisis = {},
 ): Promise<RespuestaDeAnalisis> {
-  if (USA_FIXTURE_DE_ANALISIS) {
-    await new Promise((listo) => setTimeout(listo, DEMORA_DEL_FIXTURE_MS));
+  // La guarda es el booleano constante, no `MODO_DE_DEMO !== null`: es lo que
+  // deja que el empaquetador se lleve puesta esta rama cuando nadie la encendió.
+  if (USA_FIXTURE_DE_ANALISIS && MODO_DE_DEMO !== null) {
+    await new Promise((listo) => setTimeout(listo, demoraDeLaDemo(MODO_DE_DEMO)));
+
+    if (MODO_DE_DEMO === "error") {
+      // El texto es EL MISMO que el backend manda para este código (ver
+      // `functions/src/analyze/errores.ts`, `modelo_no_disponible`): una demo de
+      // la pantalla de error que inventa su propio texto no es una demo de nada.
+      throw new ErrorDeAnalisis(
+        "modelo_no_disponible",
+        "El servicio de análisis está ocupado. Probá de nuevo en un momento.",
+      );
+    }
+
+    if (MODO_DE_DEMO === "no_es_comida") {
+      // La forma exacta del 200 sin comida que arma el handler: sin scan_id,
+      // sin items, sin totales y sin persistir.
+      return {
+        ...RESPUESTA_DE_FIXTURE,
+        scan_id: null,
+        is_food: false,
+        items: [],
+        totals: null,
+        message_es: "Eso no parece un plato de comida. Probá con una foto de lo que estás por comer.",
+        persisted: false,
+      };
+    }
+
     return RESPUESTA_DE_FIXTURE;
   }
 

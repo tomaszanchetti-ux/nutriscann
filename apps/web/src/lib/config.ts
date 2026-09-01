@@ -100,14 +100,27 @@ export const COPY_DE_ARRANQUE: CopyDeLaApp = {
 };
 
 /**
- * Los micro-textos de la espera, de arranque en frío. Son VERDAD: mapean a los
- * pasos reales del motor (visión → catálogo → aritmética), no a una animación
- * decorativa. Los publicados dicen casi lo mismo, y ganan ellos.
+ * Los micro-textos de la espera, de arranque en frío. Son VERDAD: cada uno es un
+ * paso REAL del circuito de `functions/src/analyze/handler.ts`, en su orden real
+ * (ver el mapeo completo en la cabecera de `PantallaEscaneo`):
+ *
+ *   1. `pedirVision()`      — la única llamada al modelo: nombres, gramos y
+ *                             confianza. Su schema NO tiene calorías.
+ *   2. `buscarConDosNombres()` — cada alimento contra el catálogo: exacto →
+ *                             alias → difuso, en español y en inglés.
+ *   3. `escalar()` + `sumarTotales()` — gramos × valores por 100 g de la ficha,
+ *                             y la compuerta que decide si hay total.
+ *
+ * SON TRES Y NO CUATRO, y no por gusto: `kb/seed/src/textos.test.ts` fija
+ * `pasos.length === 3`. Sumar "Preparando la foto…" —que sería verdad mientras
+ * el navegador la achica— es un cambio de las dos puntas, con ese candado.
+ *
+ * Espejo byte a byte de `config/copy.json`: los dos cambian en el mismo commit.
  */
 export const PASOS_DE_ESCANEO_DE_ARRANQUE: string[] = [
-  "Identificando ingredientes…",
-  "Consultando la base nutricional…",
-  "Calculando calorías y macros…",
+  "Identificando qué hay en el plato y cuánto…",
+  "Buscando cada alimento en la base nutricional…",
+  "Calculando calorías y macros con esos gramos…",
 ];
 
 export type OrigenDeConfig = "firestore" | "arranque-en-frio";

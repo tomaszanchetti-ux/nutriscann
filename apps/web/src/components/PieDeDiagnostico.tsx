@@ -13,7 +13,7 @@
  */
 import { useEffect, useState } from "react";
 
-import { fetchHealth, USA_FIXTURE_DE_ANALISIS, type HealthReport } from "../lib/api";
+import { fetchHealth, MODO_DE_DEMO, USA_FIXTURE_DE_ANALISIS, type HealthReport } from "../lib/api";
 import type { OrigenDeConfig } from "../lib/config";
 import { PROJECT_ID, USA_EMULADOR_DE_FIRESTORE, USA_EMULADOR_DE_FUNCIONES } from "../lib/firebase";
 
@@ -52,8 +52,9 @@ export function PieDeDiagnostico({
     <footer className="flex flex-col gap-2 border-t border-line pt-4 pb-8 font-mono text-[0.6875rem] leading-relaxed text-ink-faint">
       {USA_FIXTURE_DE_ANALISIS && (
         <p className="rounded-lg bg-carbs/10 px-2.5 py-1.5 font-sans text-xs text-carbs">
-          Modo fixture: el reporte que ves NO viene del backend, es una respuesta guardada. Se apaga
-          quitando <span className="font-mono">VITE_ANALYZE_FIXTURE</span> de{" "}
+          Modo fixture (<span className="font-mono">{MODO_DE_DEMO}</span>): lo que ves NO viene del
+          backend, es una respuesta guardada. Se apaga quitando{" "}
+          <span className="font-mono">VITE_ANALYZE_FIXTURE</span> de{" "}
           <span className="font-mono">apps/web/.env.local</span>.
         </p>
       )}

@@ -25,7 +25,9 @@
       "since": "fase-0",
       "used_in": "PantallaEscaneo — los pasos que rotan durante la espera",
       "format": "UN SOLO STRING con los pasos separados por '|'. No es una lista porque 'copy' es un mapa de textos y una lista no entra ahí; el front lo parte. La forma la fijó lo que la Fase 0 dejó publicado, no una decisión nueva.",
-      "warning": "Los pasos son VERDAD, no decoración: describen lo que el motor está haciendo de verdad (visión → catálogo → aritmética). Cambiar el orden o inventar un paso que no existe convierte la pantalla de espera en una animación que miente."
+      "warning": "Los pasos son VERDAD, no decoración: describen lo que el motor está haciendo de verdad (visión → catálogo → aritmética). Cambiar el orden o inventar un paso que no existe convierte la pantalla de espera en una animación que miente.",
+      "mapping": "Uno por paso del circuito de functions/src/analyze/handler.ts, en su orden real. (1) 'Identificando qué hay en el plato y cuánto…' = pedirVision(): la ÚNICA llamada al modelo, que devuelve nombres, gramos y confianza — su schema no tiene calorías. (2) 'Buscando cada alimento en la base nutricional…' = analizarEscaneo() → buscarConDosNombres(): exacto → alias → difuso, en español y en inglés, contra el catálogo. (3) 'Calculando calorías y macros con esos gramos…' = escalar() + sumarTotales(): gramos × valores por 100 g de la ficha, más la compuerta de confianza que decide si hay total. La card 3.2 los reescribió: los tres decían algo parecido pero ninguno nombraba el reparto del trabajo — el modelo identifica y la base cuantifica, que es la regla dura n.º 2 del proyecto contada en tres renglones.",
+      "count_lock": "SON TRES, y el número está atado: kb/seed/src/textos.test.ts fija pasos.length === 3. Un cuarto paso (por ejemplo 'Preparando la foto…', que sería verdad mientras el navegador la achica) exige tocar ese test."
     },
     "scanning_title": {
       "since": "card-2.3",
@@ -85,14 +87,14 @@
     }
   },
 
-  "copy_note": "Estos son los textos, y son LO ÚNICO que viaja a Firestore. Están tal cual el arranque en frío de apps/web/src/lib/config.ts al 01/09/2026, sin reescribir: publicar un texto distinto del que ya se probó visualmente sería meter un cambio de producto adentro de una card de infraestructura. Ver DEUDAS: la pasada de estilo a español de España es un trabajo aparte y con dueño.",
+  "copy_note": "Estos son los textos, y son LO ÚNICO que viaja a Firestore. Siguen espejados byte a byte con el arranque en frío de apps/web/src/lib/config.ts al 01/09/2026: cuando uno cambia, cambia el otro en el mismo commit. Ver DEUDAS: la pasada de estilo a español de España es un trabajo aparte y con dueño (card 3.4) — el ÚNICO texto ya reescrito acá son los tres 'scanning_steps' de la card 3.2, y nacen en español de España, sin voseo.",
 
   "copy": {
     "capture_prompt": "¿Qué estás comiendo?",
     "capture_cta": "Sacar foto del plato",
     "capture_help": "Sacá la foto desde arriba, con el plato entero y buena luz.",
 
-    "scanning_steps": "Identificando ingredientes…|Consultando la base nutricional…|Calculando calorías y macros…",
+    "scanning_steps": "Identificando qué hay en el plato y cuánto…|Buscando cada alimento en la base nutricional…|Calculando calorías y macros con esos gramos…",
     "scanning_title": "Mirando tu plato",
 
     "report_kcal_label": "calorías del plato",
