@@ -235,6 +235,35 @@
   "    RETIRÓ al escribir la receta compuesta: el ajillo es aceite, y una receta que lo",
   "    declara vale más que un alias que avisa que falta. La ficha es `receta-conejo-al-ajillo`."
  ],
+ "$card_ws07_dt39_jamon_iberico": [
+  "01/09/2026 — UNA sola línea, y sale de una medición del golden set, no de una intuición.",
+  "",
+  "`Jamón ibérico` (0,6) -> fdc-2705879 `Jamón crudo` (`Ham, prosciutto`, 195 kcal/100 g).",
+  "",
+  "QUÉ SE MIDIÓ (corrida v3 del golden set, plato 16, evidencia en golden/set-30/evaluacion-v3.md):",
+  "la visión escribió `jamón ibérico` EN ESPAÑOL —sin la palabra «serrano»— sobre un plato de",
+  "jamón curado, y el motor lo mandó por difuso a fdc-2705878 `Jamón`, que es jamón COCIDO",
+  "(117 kcal/100 g), con 0,208. Publicó 93,6 kcal para 80 g contra un rango escrito de",
+  "100–220: el plato se cayó del criterio 2 por un término que el catálogo no tenía.",
+  "`ibérico` daba CERO coincidencias en las 1.114 fichas.",
+  "",
+  "ESTO CORRIGE UN DIAGNÓSTICO YA ESCRITO: la DT-28 (punto 2) le atribuía este plato a la",
+  "barra `/`. La barra funciona y está medido — `jamón serrano/ibérico` resuelve a fdc-2705879",
+  "con 0,8. Lo que faltaba era el alias, y nada más.",
+  "",
+  "POR QUÉ 0,6 Y NO 0,8, que es lo que ya lleva `Jamón serrano` sobre esta misma ficha: el",
+  "peldaño 0,8 dice «mismos ingredientes dominantes, ninguno ajeno»; el 0,6 dice «cambia el",
+  "corte» o «falta algo que mueve un macro». El serrano y el prosciutto son el mismo producto",
+  "—cerdo blanco curado en seco— y por eso aquel es 0,8. El ibérico es otra RAZA de cerdo y",
+  "otro engorde, y la diferencia se la lleva la grasa, que es justo el macro que esta ficha",
+  "mide (8,32 g/100 g). NO se escribe acá cuánta grasa de más: ningún dataset del repo mide el",
+  "ibérico —USDA no lo tiene y BEDCA sigue sin abrirse (DT-35 g)—, así que la reserva se",
+  "declara en el peldaño y no en un número inventado. Con el alias, el término deja de caer en",
+  "el jamón COCIDO, que es un error de producto (York por ibérico) además de un −40 % de kcal.",
+  "",
+  "LO QUE ESTA LÍNEA NO HACE: no le da ficha propia al ibérico. El día que haya una fuente que",
+  "lo mida, eso es una ficha y no un alias."
+ ],
  "aliases": {
   "167987": [
    {
@@ -308,6 +337,10 @@
    {
     "alias": "Jamón serrano",
     "confidence": 0.8
+   },
+   {
+    "alias": "Jamón ibérico",
+    "confidence": 0.6
    }
   ],
   "2705882": [

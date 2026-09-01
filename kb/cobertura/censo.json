@@ -11,7 +11,7 @@
   "functions/src/engine/cobertura.test.ts y corre en cada `npm test`."
  ],
  "medido": "2026-09-01",
- "kb_version": "3.6.0+9f169d3d",
+ "kb_version": "3.7.0+2c416a9c",
  "fichas_en_el_catalogo": 1115,
  "clases": [
   "ok",
@@ -795,9 +795,9 @@
     "confianza_visible": 1,
     "termino_matcheado": "Torrezno de Soria",
     "generic": false,
-    "kcal_100g": 580
+    "kcal_100g": 627
    },
-   "nota": "RESUELTO en la card 6.4c POR OTRA PUERTA: `manual-torrezno-de-soria` (580 kcal/100 g) entra desde UNA etiqueta comercial verificada campo a campo —Hacendado 8480000334169, leída de OpenFoodFacts, Atwater al 0,69 %—, que es la misma vía por la que entró la salsa de calçots en la 6.4b. NO SE DESTRABÓ EL MODELO: la DT-36 sigue abierta tal cual, `transforms.ts` sigue sin saber restar la grasa que sale de la pieza y el rendimiento medido 0,403 sigue FUERA de la tabla de transformaciones, vigilado por `card64b.test.ts`. Lo que la card 6.4c SÍ corrigió es el diagnóstico de la 6.4b: allí se descartó el extremo seco del modelo (542 kcal) por «quedar por encima del bacon frito de USDA (468)», y las 26 etiquetas de mercado que se contrastaron dicen que el torrezno frito real está entre 552 y 665 kcal, con la mediana en 627. 542 era un PISO, no un techo — el modelo no se pasaba de alto, se quedaba corto. La ficha declara además que su etiqueta es de CARETA y no de panceta, que es lo que explica sus 60 g de proteína contra los 49 de la mediana del mercado."
+   "nota": "RESUELTO en la card 6.4c POR OTRA PUERTA, y con la ETIQUETA CAMBIADA en la WS07: `manual-torrezno-de-soria` (627 kcal/100 g) entra desde UNA etiqueta comercial verificada campo a campo —Carrefour 8431876311617, leída de OpenFoodFacts, Atwater al 0,16 %—, que es la misma vía por la que entró la salsa de calçots en la 6.4b. NO SE DESTRABÓ EL MODELO: la DT-36 sigue abierta tal cual, `transforms.ts` sigue sin saber restar la grasa que sale de la pieza y el rendimiento medido 0,403 sigue FUERA de la tabla de transformaciones, vigilado por `card64b.test.ts`. Lo que la card 6.4c SÍ corrigió es el diagnóstico de la 6.4b: allí se descartó el extremo seco del modelo (542 kcal) por «quedar por encima del bacon frito de USDA (468)», y las 26 etiquetas de mercado que se contrastaron dicen que el torrezno frito real está entre 552 y 665 kcal, con la mediana en 627. 542 era un PISO, no un techo — el modelo no se pasaba de alto, se quedaba corto. La etiqueta de la 6.4c era de CARETA (Hacendado, 580 kcal, el extremo MAGRO de las 26) y Tomás decidió el 01/09/2026 que la ficha tiene que ser el torrezno que más se consume, que es el de PANCETA: la etiqueta nueva cae en la mediana del mercado en cuatro campos exactos (627 kcal · 48 g de grasa · 15 de saturadas · 49 de proteína) y sus ingredientes son «corteza de cerdo con tocino veteado». La careta no estaba mal medida: medía otro corte, y queda nombrada en los caveats de la ficha para que la decisión se pueda revertir."
   },
   {
    "lista": "directoalpaladar",

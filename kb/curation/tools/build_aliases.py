@@ -23,6 +23,18 @@ Reglas del generador:
 Los aliases que NO salen de una variante regional (un nombre comercial, un plato
 que en un país se llama entero distinto) van en '$extra' de variants.es.json, por
 fdc_id. Lo escrito a mano en names.es.json también sobrevive: esto solo AGREGA.
+
+EL CANDADO DE LOS RETIRADOS (DT-30). 'Esto solo AGREGA' tenía un agujero medido:
+un alias que una card sacó a propósito volvía en la corrida siguiente, porque el
+generador no distingue un alias retirado de uno que todavía no existe. Pasó con
+'Filete' (fdc-2705824, lo resucitaba la regla `bife` -> `filete`) y con 'Tira de
+asado' (fdc-169510, lo resucitaba su propia línea de `$extra`), y dejó
+`--check` en rojo antes de la WS06. La lista de retirados es DECLARATIVA y vive
+en `$retirados` de variants.es.json, con el motivo de cada uno; acá solo se
+aplica, en las dos direcciones: no se emite, y se saca si alguien lo escribió a
+mano. El generador honra además `guardas.vocabulario.json`, que es la otra lista
+de curación que dice qué término no puede nombrar a qué ficha: emitir uno de esos
+no es un alias de más, es un build roto.
 """
 from __future__ import annotations
 
@@ -30,11 +42,13 @@ import argparse
 import json
 import re
 import sys
+import unicodedata
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 NAMES = HERE.parent / "names.es.json"
 VARIANTS = HERE / "variants.es.json"
+GUARDAS = HERE.parent / "guardas.vocabulario.json"
 MAX_ALIASES = 6
 
 PREPS = {"de", "del", "con", "en", "sin", "a", "al", "para", "tipo", "y", "o", "la", "el"}
@@ -47,6 +61,38 @@ WORD = r"(?<![\wáéíóúñü]){}(?![\wáéíóúñü])"
 
 def load(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def normalizar(texto: str) -> str:
+    """Minúsculas y sin tildes: la misma comparación que hace la guarda en el build."""
+    descompuesto = unicodedata.normalize("NFD", texto.strip().lower())
+    return "".join(c for c in descompuesto if unicodedata.category(c) != "Mn")
+
+
+def prohibidos(raw: dict) -> dict[str, dict[str, str]]:
+    """Por fdc_id, los alias que este generador NO puede emitir, con su motivo.
+
+    Dos fuentes DECLARADAS en curación, que no se pisan:
+      · `$retirados` de variants.es.json — el alias existió y una card lo sacó;
+      · `guardas.vocabulario.json` — el término no puede nombrar a esa ficha,
+        lo haya escrito alguien o no. Si se emite, el build rompe.
+    La clave es el alias NORMALIZADO, para que `Filete` y `filete` sean el mismo.
+    """
+    fuera: dict[str, dict[str, str]] = {}
+    for fdc, filas in raw.get("$retirados", {}).items():
+        if fdc.startswith("$"):
+            continue
+        for fila in filas:
+            alias = fila["alias"] if isinstance(fila, dict) else fila
+            porque = fila.get("retirado_por", "retirado") if isinstance(fila, dict) else "retirado"
+            fuera.setdefault(fdc, {})[normalizar(alias)] = f"retirado por {porque}"
+    if GUARDAS.exists():
+        for guarda in load(GUARDAS)["guardas"]:
+            for ficha in guarda["prohibido_en"]:
+                fdc = ficha[4:] if ficha.startswith("fdc-") else ficha
+                fuera.setdefault(fdc, {}).setdefault(
+                    normalizar(guarda["termino"]), "prohibido por guardas.vocabulario.json")
+    return fuera
 
 
 def adjective_stems() -> set[str]:
@@ -144,21 +190,36 @@ def main() -> int:
         else:
             skip.add((item[0], item[1]))
     stems = adjective_stems()
+    fuera = prohibidos(raw)
 
     changed = 0
+    retirados_frenados = 0
     for fdc, entry in names.items():
         name = entry["name"]
+        vetados = fuera.get(fdc, {})
         generated = [] if name in skip_all else aliases_for(name, variants, stems, skip)
         generated = [a for a in extra.get(fdc, []) if a not in generated] + generated
         previous = [] if args.rebuild else entry.get("aliases", [])
         manual = [a for a in previous if a not in generated]
         merged = manual + [a for a in generated if a not in manual]
+        # EL CANDADO (DT-30), en las dos direcciones y con el motivo a la vista:
+        # ni se emite un alias retirado o prohibido, ni sobrevive si alguien lo
+        # escribió a mano. Un alias que vuelve solo no está retirado.
+        if vetados:
+            limpio = [a for a in merged if normalizar(a) not in vetados]
+            for a in merged:
+                if normalizar(a) in vetados:
+                    retirados_frenados += 1
+                    print(f"  ALIAS RETIRADO: '{a}' no vuelve a {fdc} ({vetados[normalizar(a)]})",
+                          file=sys.stderr)
+            merged = limpio
         if merged != entry.get("aliases", []):
             changed += 1
             entry["aliases"] = merged
 
     total = sum(len(e["aliases"]) for e in names.values())
-    print(f"{len(names)} nombres · {total} aliases · {changed} entradas actualizadas", file=sys.stderr)
+    print(f"{len(names)} nombres · {total} aliases · {changed} entradas actualizadas "
+          f"· {retirados_frenados} alias retirados frenados", file=sys.stderr)
     if args.check:
         return 1 if changed else 0
     NAMES.write_text(json.dumps(names, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")

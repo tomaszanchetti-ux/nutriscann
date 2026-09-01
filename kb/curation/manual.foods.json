@@ -258,7 +258,7 @@
   {
    "id": "manual-torrezno-de-soria",
    "origen": "etiqueta-comercial",
-   "source_ref": "Etiqueta comercial «Torreznos» de Hacendado (Mercadona), código de barras 8480000334169, leída de OpenFoodFacts el 01/09/2026",
+   "source_ref": "Etiqueta comercial «Torreznos» de Carrefour, código de barras 8431876311617, leída de OpenFoodFacts (API v2) el 01/09/2026",
    "name_en": "Torrezno de Soria, Spanish fried crispy pork",
    "name_es": "Torrezno de Soria",
    "aliases": [
@@ -268,14 +268,14 @@
    ],
    "category": "Bacon",
    "per_100g": {
-    "kcal": 580,
-    "protein_g": 60,
-    "carbs_g": 0.5,
-    "fat_g": 38,
+    "kcal": 627,
+    "protein_g": 49,
+    "carbs_g": 0,
+    "fat_g": 48,
     "fiber_g": 0,
-    "sat_fat_g": 12,
-    "sugars_g": 0.5,
-    "sodium_mg": 1600
+    "sat_fat_g": 15,
+    "sugars_g": 0,
+    "sodium_mg": 1120
    },
    "portion_hints": [
     {
@@ -291,15 +291,16 @@
    ],
    "default_portion_g": 50,
    "caveats": [
-    "Es UNA etiqueta concreta, no un promedio: los ocho campos salen del mismo producto (Hacendado 8480000334169) y no se mezclan con ninguna otra fuente. Mezclar etiquetas campo a campo produce un alimento que no existe.",
-    "Atwater cierra al 0,69 % (584 kcal predichas contra 580 declaradas). Fue el criterio de aceptación: una etiqueta que no cierre no entra. Con 0,5 g de hidratos la cuenta es casi entera proteína y grasa, así que el cierre es una prueba fuerte de que los tres números son del MISMO producto.",
-    "SE DECLARA QUE ESTÁ EN EL EXTREMO MAGRO DEL MERCADO, y es el extremo contrario al que declaró la salsa de calçots. Se contrastaron 26 etiquetas de torrezno frito listo para comer (OpenFoodFacts, recogidas el 01/09/2026, más patatespique.com): 552-665 kcal (mediana 627) · grasas 33-64,8 g (mediana 48) · saturadas 6-26,7 (mediana 15) · proteínas 19,8-62 g (mediana 49) · hidratos 0-1,3 · azúcares 0-1 · sal 2-4 g (mediana 3). Las 26 cierran Atwater por debajo del 1,1 %, así que la banda es de etiquetas consistentes y no de ruido. Esta etiqueta es la SEGUNDA MÁS BAJA en calorías de las 26 y la de MENOS grasa de todas (38 g), y a cambio la segunda más alta en proteína: quien lea 580 kcal tiene que saber que la mediana del mercado es 627 y que hay marcas en 665. Se eligió esta y no la mediana porque es la única que se pudo verificar campo a campo contra la fuente, y porque la mediana de 26 etiquetas no es ningún producto.",
-    "LA ETIQUETA ES DE CARETA, NO DE PANCETA, y eso explica el párrafo anterior. Sus ingredientes son «careta de cerdo, grasa de cerdo, sal»: la careta es piel y carrillo, casi todo colágeno, mientras que el torrezno de Soria canónico se corta de la PANCETA y conserva su veta de carne magra bajo la corteza. Por eso esta ficha tiene más proteína (60 g) y menos grasa (38 g) que la mediana del mercado, que está hecha sobre todo de tocino. La familia y el orden de magnitud son los del plato; el reparto entre proteína y grasa, no necesariamente.",
-    "Los macros suman 98,5 g y con la sal declarada llegan a 102,5 g dentro de 100 g de alimento. No es un error de la ficha: es el redondeo de la etiqueta comiéndose el margen, y dice algo verdadero — el torrezno frito industrial es un producto prácticamente ANHIDRO, sin sitio para el agua que sí tiene el torrezno recién hecho.",
-    "El sodio (1.600 mg) está calculado desde la sal declarada (4,0 g), no medido, y es MUCHO: la tapa de 50 g aporta 800 mg, que es más de un tercio de la ingesta diaria recomendada por la OMS. La sal es además el campo donde esta etiqueta está en el TOPE de la banda del mercado (2-4 g).",
-    "La fibra se publica en 0 y no en null, que es la única vez que esta curación lo hace: la etiqueta declara «< 1 g», que es una COTA y no un valor, y el producto no tiene un solo ingrediente vegetal. Los hidratos y los azúcares también vienen declarados como cotas («< 0,5 g») y esos SÍ se publican en su cota, que es lo conservador para el que suma.",
-    "Es un producto INDUSTRIAL, frito y listo para comer, y el casero varía mucho más: cuánto se dora la corteza, cuánta grasa suelta la pieza y cuánta se queda son la diferencia entre 550 y 665 kcal dentro de la misma banda de arriba. Esta ficha NO es el torrezno crudo adobado que se vende refrigerado para freír en casa: ese es otro alimento y otra banda (272-390 kcal, proteínas 22-28), y por eso el nombre y los aliases dicen siempre el producto terminado.",
-    "Las porciones son criterio de curación, no de la etiqueta, que solo declara el envase de 120 g: 50 g es el formato de tapa que vende el mercado (patatespique.com publica su bolsa individual en 50 g) y 30 g es una pieza, que es la ración declarada de tres etiquetas del segmento (El Corte Inglés 30 g, Sun Snacks 30 g, Carrefour Aperitivos Tapa 27,5 g).",
+    "Es UNA etiqueta concreta, no un promedio: los ocho campos salen del mismo producto (Carrefour 8431876311617) y no se mezclan con ninguna otra fuente. Mezclar etiquetas campo a campo produce un alimento que no existe.",
+    "Atwater cierra al 0,16 % (628 kcal predichas contra 627 declaradas). Fue el criterio de aceptación: una etiqueta que no cierre no entra. Con 0 g de hidratos la cuenta es entera proteína y grasa (4×49 + 9×48 = 628), así que el cierre es una prueba fuerte de que los tres números son del MISMO producto.",
+    "ESTA ETIQUETA ES LA MEDIANA DEL MERCADO, y por eso reemplazó a la anterior. La banda medida en la card 6.4c —26 etiquetas de torrezno frito listo para comer (OpenFoodFacts, 01/09/2026, más patatespique.com)— es 552-665 kcal (mediana 627) · grasas 33-64,8 (mediana 48) · saturadas 6-26,7 (mediana 15) · proteínas 19,8-62 (mediana 49) · hidratos 0-1,3 · azúcares 0-1 · sal 2-4 (mediana 3). Esta etiqueta cae EN la mediana en cuatro campos exactos (627 · 48 · 15 · 49) y a 0,2 g de ella en la sal (2,8). No se eligió por eso: se eligió por el corte y porque se pudo verificar campo a campo contra la fuente. Que además sea la mediana es la confirmación, no el criterio.",
+    "LA ETIQUETA ES DE PANCETA, que es el corte canónico del torrezno de Soria. Sus ingredientes son «corteza de cerdo con tocino veteado, grasa de cerdo, sal, pimentón y antioxidante: extracto rico en tocoferoles»: corteza MÁS tocino veteado es exactamente la panceta con su veta de magro bajo la corteza. El reparto de macros lo confirma sin que haya que creerle al texto — 48 g de grasa contra 49 de proteína, que es el perfil del tocino y no el del colágeno.",
+    "DECISIÓN DE PRODUCTO, DECLARADA CON SU FECHA: el extremo magro del mercado existe, está medido y quedó DESCARTADO. Hasta el 01/09/2026 esta ficha salía de la etiqueta Hacendado 8480000334169 (Mercadona), que es CARETA de cerdo —piel y carrillo, casi todo colágeno—: 580 kcal, 60 g de proteína y 38 g de grasa, Atwater al 0,69 %, la segunda más baja en calorías de las 26 y la de MENOS grasa de todas. No estaba mal medida: medía OTRO CORTE, el extremo magro. Tomás decidió que la ficha tiene que ser el torrezno que más se consume, que es el de panceta, y esta es la que ocupa su lugar. La careta queda escrita acá para que la decisión se pueda releer y revertir, nunca para promediarla con esta.",
+    "Los macros suman 97 g y con la sal declarada llegan a 99,8 g dentro de 100 g de alimento. Que casi no quede sitio para el agua no es un error: el torrezno frito industrial es un producto prácticamente ANHIDRO. (La etiqueta anterior llegaba a 102,5 g por el redondeo; esta cierra sin pasarse, que es una señal más de consistencia.)",
+    "El sodio (1.120 mg) está CALCULADO desde la sal declarada (2,8 g), no medido. Sigue siendo mucho: la tapa de 50 g aporta 560 mg, más de la cuarta parte de la ingesta diaria que recomienda la OMS. En este campo la etiqueta está por DEBAJO de la mediana de la banda (3 g), al revés que la anterior, que estaba en el tope (4 g).",
+    "Fibra, hidratos y azúcares se publican en 0 y esta vez es un CERO DECLARADO, no una cota: la etiqueta anterior traía «< 1 g» y «< 0,5 g» y había que explicar qué se publicaba; esta declara los tres en 0 sin modificador (verificado en los campos `fiber_value`, `carbohydrates_value` y `sugars_value` de OpenFoodFacts, ninguno con `_modifier`). El único ingrediente vegetal del producto es el pimentón, en cantidad de condimento.",
+    "Es un producto INDUSTRIAL, frito y listo para comer, y el casero varía mucho más: cuánto se dora la corteza, cuánta grasa suelta la pieza y cuánta se queda son la diferencia entre 552 y 665 kcal dentro de la misma banda de arriba. Esta ficha NO es el torrezno crudo adobado que se vende refrigerado para freír en casa: ese es otro alimento y otra banda (272-390 kcal, proteínas 22-28), y por eso el nombre y los aliases dicen siempre el producto terminado.",
+    "Las porciones son criterio de curación, no de la etiqueta, que solo declara el envase de 100 g: 50 g es el formato de tapa que vende el mercado (patatespique.com publica su bolsa individual en 50 g) y 30 g es una pieza, que es la ración declarada de tres etiquetas del segmento (El Corte Inglés 30 g, Sun Snacks 30 g, Carrefour Aperitivos Tapa 27,5 g). El cambio de etiqueta no las toca: la nueva tampoco declara ración.",
     "ESTA FICHA ENTRA POR ETIQUETA, NO POR DERIVACIÓN, y la DT-36 sigue abierta tal cual: el modelo de recetas sigue sin saber restar la grasa que sale de la pieza. Lo que las 26 etiquetas SÍ corrigen es el diagnóstico de la card 6.4b: allí se descartó el extremo seco del modelo (542 kcal) por «quedar por encima del bacon frito de USDA (468)», y el mercado dice que 542 era un PISO y no un techo — el torrezno frito real está entre 552 y 665, muy por encima del bacon. El modelo no se pasaba de alto: se quedaba corto."
    ]
   }

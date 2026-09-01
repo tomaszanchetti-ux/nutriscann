@@ -2719,7 +2719,10 @@
  },
  "2709719": {
   "name": "Tomate crudo",
-  "aliases": ["Tomate pera", "Tomates pera"]
+  "aliases": [
+   "Tomate pera",
+   "Tomates pera"
+  ]
  },
  "2707105": {
   "name": "Plato congelado de pollo",
@@ -3139,7 +3142,9 @@
  },
  "2709789": {
   "name": "Lechuga cruda",
-  "aliases": ["Lechuga romana"]
+  "aliases": [
+   "Lechuga romana"
+  ]
  },
  "2709949": {
   "name": "Lechuga cocida",
@@ -3582,7 +3587,12 @@
  },
  "169230": {
   "name": "Ajo crudo",
-  "aliases": ["Ajo", "Ajos", "Diente de ajo", "Dientes de ajo"]
+  "aliases": [
+   "Ajo",
+   "Ajos",
+   "Diente de ajo",
+   "Dientes de ajo"
+  ]
  },
  "169988": {
   "name": "Apio crudo",
@@ -5161,7 +5171,6 @@
    "Frijoles horneados"
   ]
  },
-
  "2706285": {
   "name": "Salmón",
   "aliases": [
@@ -5292,21 +5301,27 @@
   "name": "Maíz fresco cocido sin grasa",
   "aliases": [
    "Maíz dulce cocido",
-   "Maíz tierno cocido"
+   "Maíz tierno cocido",
+   "Choclo fresco cocido sin grasa",
+   "Elote fresco cocido sin grasa"
   ]
  },
  "2709889": {
   "name": "Repollo verde cocido sin grasa",
   "aliases": [
-   "Col verde cocida sin grasa",
    "Repollo cocido sin grasa",
-   "Col cocida sin grasa"
+   "Col cocida sin grasa",
+   "Col verde cocida sin grasa"
   ]
  },
  "2709852": {
   "name": "Judías verdes frescas cocidas sin grasa",
   "aliases": [
-   "Judías verdes cocidas sin grasa"
+   "Judías verdes cocidas sin grasa",
+   "Chauchas frescas cocidas sin grasa",
+   "Ejotes frescos cocidos sin grasa",
+   "Porotos verdes frescos cocidos sin grasa",
+   "Vainitas frescas cocidas sin grasa"
   ]
  },
  "2709766": {

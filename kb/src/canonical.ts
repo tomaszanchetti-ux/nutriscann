@@ -525,7 +525,40 @@ export function assemble(input: AssembleInput): AssembleResult {
   //
   // Sigue siendo ADITIVO en el sentido fuerte: NO sale ninguna ficha, NO cambia
   // ningún id y NO cambia ni un número de las 1.114 que ya estaban.
-  const kbVersion = `3.6.0+${contentHash({ generated_from: generatedFrom, foods })}`;
+  //
+  // 3.7.0 con la WS07 (la decisión del corte del torrezno, el alias que faltaba
+  // y el candado del generador de aliases).
+  //
+  // Es MENOR y ESTA VEZ NO ES ADITIVA, y conviene decirlo primero porque las
+  // tres anteriores sí lo eran: `manual-torrezno-de-soria` CAMBIA SUS OCHO
+  // NÚMEROS. La 6.4c lo publicó desde una etiqueta de CARETA (Hacendado
+  // 8480000334169, 580 kcal), que es el extremo magro de las 26 etiquetas
+  // contrastadas, y Tomás decidió el 01/09/2026 que la ficha tiene que ser el
+  // torrezno que MÁS se consume, que es el de PANCETA. La etiqueta nueva es
+  // Carrefour 8431876311617 (627 kcal, Atwater al 0,16 %), que cae en la mediana
+  // del mercado en cuatro campos exactos. El método no cambió —una sola
+  // etiqueta, ocho campos del mismo producto, Atwater como criterio de
+  // aceptación—; cambió QUÉ PRODUCTO representa la ficha, y eso es una decisión
+  // de producto, no una corrección de un error: la careta estaba bien medida y
+  // medía otro corte. El caveat guarda la etiqueta descartada con su código de
+  // barras para que la decisión se pueda revertir.
+  //
+  // El conteo NO se mueve: siguen siendo 1.115 fichas. Lo que se mueve es el
+  // VOCABULARIO, en tres frentes, y ninguno cambia un id: entra `Jamón ibérico`
+  // (0,6) sobre `fdc-2705879` —el término que la corrida v3 del golden set midió
+  // cayendo en el jamón COCIDO, con su evidencia en aliases.regional.json—;
+  // entran cuatro variantes regionales que el generador ya derivaba de sus
+  // propias reglas y que ninguna corrida había escrito (choclo/elote sobre el
+  // maíz sin grasa, chauchas/ejotes/porotos verdes/vainitas sobre las judías
+  // verdes); y sale `Nata de berenjena`, un falso positivo del par crema/nata
+  // sobre el baba ganoush, por `$skip`.
+  //
+  // Y entra un CANDADO que no toca el catálogo pero sí lo protege (DT-30): la
+  // lista `$retirados` de tools/variants.es.json, que impide que el generador de
+  // aliases resucite un alias que una card retiró a propósito. `Filete` sobre
+  // `fdc-2705824` y `Tira de asado` sobre `fdc-169510` volvían en cada corrida
+  // del generador, y el primero además rompe el build por su guarda.
+  const kbVersion = `3.7.0+${contentHash({ generated_from: generatedFrom, foods })}`;
 
   return {
     catalog: { kb_version: kbVersion, generated_from: generatedFrom, foods },
