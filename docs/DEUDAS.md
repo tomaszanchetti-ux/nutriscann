@@ -127,3 +127,9 @@ limón" (la rodaja del agua o la ensalada pesa ~5-10 g: el impacto calórico es 
 **⚠️ Nota de marca:** una de las fuentes citadas por Tomás es `nutriscan.app` — la
 marca "NutriScan App" ya detectada en la WS03. Existe y publica contenido nutricional
 en español: tenerlo presente para la decisión de naming antes del lanzamiento.
+
+**🌽 Tortilla de maíz** — datos aportados (por pieza de 30 g): 60-65 kcal ·
+12-13,5 g carbohidratos · 1,4-1,7 proteína · 0,5-1 grasa · 1-1,5 fibra · sodio <5 mg.
+**Contraste: coincide con USDA ("Tortillas, corn" ~218 kcal/100 g × 30 g ≈ 65).**
+Ficha directa de USDA + porción "1 pieza (30 g)"; de paso resuelve la única regresión
+de la card 2.6 (`tortilla, corn` → Tortilla de trigo, DT-26).
