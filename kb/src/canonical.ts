@@ -503,7 +503,29 @@ export function assemble(input: AssembleInput): AssembleResult {
   // motivo medido está en recipes.foods.json: el rendimiento existe (0,403) y
   // precisamente por eso no se puede usar, porque lo que sale de un torrezno no
   // es solo agua sino grasa, y un `factor_peso` no sabe restarla.
-  const kbVersion = `3.5.0+${contentHash({ generated_from: generatedFrom, foods })}`;
+  //
+  // 3.6.0 con la card 6.4c (el torrezno, que la 6.4b dejó bloqueado, entra por
+  // OTRA PUERTA).
+  //
+  // Es MENOR y no PARCHE aunque entre UNA sola ficha, y otra vez el motivo no es
+  // el conteo: `manual-torrezno-de-soria` cierra el ÚLTIMO bloqueo del censo que
+  // no era de especie. De los cinco platos que la card 6.4 dejó sin ficha quedan
+  // TRES, y los tres son el mismo caso —besugo, perdiz y halloumi, alimentos que
+  // USDA no mide y que esperan la pasada de BEDCA—, así que el catálogo pasa de
+  // tener huecos de dos naturalezas a tener una sola. Un catálogo cuya lista de
+  // pendientes cambió de forma no es el mismo catálogo, y `config/app` estampa
+  // esta versión para poder decir contra qué se calculó cada reporte.
+  //
+  // NO cambia el modelo: la DT-36 sigue abierta y `transforms.ts` sigue sin
+  // saber restar la grasa que sale de la pieza. El torrezno entra por una
+  // ETIQUETA COMERCIAL verificada campo a campo (Hacendado 8480000334169,
+  // Atwater al 0,69 %), que es la misma puerta por la que entró la salsa de
+  // calçots en la 6.4b. El rendimiento medido 0,403 sigue FUERA de la tabla de
+  // transformaciones y `card64b.test.ts` lo sigue vigilando.
+  //
+  // Sigue siendo ADITIVO en el sentido fuerte: NO sale ninguna ficha, NO cambia
+  // ningún id y NO cambia ni un número de las 1.114 que ya estaban.
+  const kbVersion = `3.6.0+${contentHash({ generated_from: generatedFrom, foods })}`;
 
   return {
     catalog: { kb_version: kbVersion, generated_from: generatedFrom, foods },

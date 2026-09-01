@@ -125,8 +125,11 @@ test("el censo se midió contra el catálogo que hay hoy", () => {
 test("ningún plato conquistado pierde su ficha ni baja de confianza", () => {
   const cubiertos = censo.platos.filter((f) => f.clasificacion === "ok");
   // El piso SUBE con cada card que conquista cobertura, y nunca baja: 38 con la
-  // card 6.3, 85 con la 6.4 (33 fichas nuevas de USDA y 43 recetas compuestas).
-  assert.ok(cubiertos.length >= 85, `el censo tenía 85 platos cubiertos y ahora declara ${cubiertos.length}`);
+  // card 6.3, 85 con la 6.4 (33 fichas nuevas de USDA y 43 recetas compuestas),
+  // 86 con la 6.4b (los `Calçots`) y 87 con la 6.4c (el `Torrezno de Soria`).
+  // La 6.4b conquistó su plato y no subió el piso; la 6.4c sube los dos escalones
+  // de una, porque un piso que se queda atrás deja de ser un piso.
+  assert.ok(cubiertos.length >= 87, `el censo tenía 87 platos cubiertos y ahora declara ${cubiertos.length}`);
 
   const perdidos: string[] = [];
   const bajaron: string[] = [];

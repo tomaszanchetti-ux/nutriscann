@@ -14,12 +14,15 @@
  *      El factor tiene que ser 0,850 y venir de la tabla, no de la receta.
  *   2. Que la SALSA entró desde UNA etiqueta comercial, con su provenance y con
  *      Atwater cerrado. Fue el criterio de aceptación de la etiqueta.
- *   3. Que el TORREZNO DE SORIA sigue AFUERA, y que el rendimiento de fritura de
- *      panceta que se midió (0,403) NO está en la tabla de transformaciones.
- *      Está medido y publicado en `$transformaciones_que_NO_estan_y_por_que`
- *      justamente para que nadie lo vuelva a buscar y para que nadie lo use: el
- *      modelo de `transforms.ts` no sabe restar la grasa que sale de la pieza, y
- *      un factor suelto en la tabla es una invitación a derivar 1.285 kcal/100 g.
+ *   3. Que el TORREZNO DE SORIA sigue sin DERIVARSE, y que el rendimiento de
+ *      fritura de panceta que se midió (0,403) NO está en la tabla de
+ *      transformaciones. Está medido y publicado en
+ *      `$transformaciones_que_NO_estan_y_por_que` justamente para que nadie lo
+ *      vuelva a buscar y para que nadie lo use: el modelo de `transforms.ts` no
+ *      sabe restar la grasa que sale de la pieza, y un factor suelto en la tabla
+ *      es una invitación a derivar 1.285 kcal/100 g. La card 6.4c publicó el
+ *      torrezno desde una ETIQUETA, que es otra puerta y no toca este candado —
+ *      ver `card64c.test.ts`.
  */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -112,11 +115,25 @@ test("la salsa de calçots entró desde UNA etiqueta, con provenance y con Atwat
   assert.ok(romesco && typeof romesco !== "string" && romesco.confidence === 0.6);
 });
 
-test("el Torrezno de Soria sigue AFUERA, y su rendimiento medido no está en la tabla", () => {
-  // Ninguna ficha se llama torrezno: el bloqueo es de verdad, no un alias suelto.
+test("el Torrezno de Soria sigue sin DERIVARSE, y su rendimiento medido no está en la tabla", () => {
+  // ACTUALIZADO POR LA CARD 6.4c, y el invariante que este test protegía NO
+  // cambió. La 6.4b escribía «ninguna ficha se llama torrezno» porque en aquel
+  // momento la única vía posible era la derivación, y derivarlo estaba mal. La
+  // 6.4c publicó el torrezno por OTRA PUERTA —una etiqueta comercial, igual que
+  // la salsa de acá arriba— y eso no destraba la DT-36: el modelo sigue sin
+  // saber restar la grasa que sale de la pieza. Lo que el test fija ahora es
+  // exactamente eso: si hay un torrezno en el catálogo, tiene que ser `manual`.
+  // Un torrezno de `source: "receta"` sería el modelo roto entrando por la
+  // ventana, y es lo único que este test nunca puede dejar pasar.
   for (const food of catalog.foods) {
     const es = (food.names.es ?? "").toLowerCase();
-    assert.ok(!es.includes("torrezno"), `${food.id} publica un torrezno: ${food.names.es}`);
+    if (!es.includes("torrezno")) continue;
+    assert.equal(
+      food.source,
+      "manual",
+      `${food.id} publica un torrezno DERIVADO: el modelo de la DT-36 sigue roto`,
+    );
+    assert.equal(food.receta, undefined, `${food.id} trae un bloque receta y es un torrezno`);
   }
   // Y el factor 0,403 NO puede estar en la tabla: usarlo daría 1.285 kcal/100 g.
   assert.equal(transformsFile.transforms["fritura_de_panceta"], undefined);

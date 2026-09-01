@@ -1,5 +1,6 @@
 /**
- * EL CENSO DE COBERTURA MEDITERRÁNEA — card 6.3, actualizado por la card 6.4.
+ * EL CENSO DE COBERTURA MEDITERRÁNEA — card 6.3, actualizado por las cards 6.4,
+ * 6.4b y 6.4c.
  *
  *   cd functions && npm run build      # el censo mide con el motor COMPILADO
  *   node kb/cobertura/censar.js        # reescribe censo.json
@@ -176,7 +177,8 @@ const NOTAS = {
   "Tocinillo de cielo": "RESUELTO en la card 6.4 (`receta-tocinillo-de-cielo`, 303 kcal/100 g: partes iguales de yema y azúcar más el agua del almíbar). El `Flan` (178) seguía sin servir de gemelo, y por eso se derivó la receta en vez de emitir un alias.",
   "Quesada pasiega": "RESUELTO en la card 6.4 (`receta-quesada-pasiega`, 277 kcal/100 g). `Tarta de queso` (399) sigue sin ser gemelo: la quesada es cuajada y harina, sin base de queso crema.",
   "Calçots": "RESUELTO en la card 6.4b (`receta-calcots`, 37,6 kcal/100 g). Lo que faltaba era el rendimiento y ahora está medido: `cocido_cebolla` (0,850) es el que la propia FNDDS le asigna a la cebolla, recuperado de su `input_food` —n=2 pares concordantes, dispersión entre trazadores 0,003— y NO es el 1,000 que habría devuelto la cebolleta cruda con otro nombre. La vía de cocción declarada es el HORNO a 200 °C, que es la otra preparación documentada del plato; para la brasa sigue sin haber factor. La ficha es un SUELO y lo dice en sus caveats: la cocción genérica de FNDDS pierde menos agua que un asado.",
-  "Torrezno de Soria": "SIGUE SIN FICHA, y la card 6.4b corrigió el motivo, que era FALSO. El par crudo/frito de panceta SÍ existe —`Pork, cured, bacon, unprepared` (fdc-168277) contra `Pork, cured, bacon, pre-sliced, cooked, pan-fried` (fdc-168322)— y da un rendimiento de 0,403, validado porque es la única de las tres cocciones cuyo balance de masa cierra (sodio retenido 90 %, ceniza 88 %). Lo que bloquea es el MODELO, no el dato: de un torrezno no sale solo agua, sale GRASA (retención medida 38 %), y un `factor_peso` no sabe restarla — aplicarlo daría 131,5 g de grasa y 1.285 kcal por 100 g. Extenderlo con la retención del bacon da 542 kcal, que es el bacon crocante con otro nombre y por encima del bacon frito de USDA (468) cuando el torrezno tiene que quedar por debajo. Hace falta un modelo con retención POR NUTRIENTE. Ver `cooking.transforms.json` → `fritura_de_panceta`.",
+  "Torrezno de Soria":
+    "RESUELTO en la card 6.4c POR OTRA PUERTA: `manual-torrezno-de-soria` (580 kcal/100 g) entra desde UNA etiqueta comercial verificada campo a campo —Hacendado 8480000334169, leída de OpenFoodFacts, Atwater al 0,69 %—, que es la misma vía por la que entró la salsa de calçots en la 6.4b. NO SE DESTRABÓ EL MODELO: la DT-36 sigue abierta tal cual, `transforms.ts` sigue sin saber restar la grasa que sale de la pieza y el rendimiento medido 0,403 sigue FUERA de la tabla de transformaciones, vigilado por `card64b.test.ts`. Lo que la card 6.4c SÍ corrigió es el diagnóstico de la 6.4b: allí se descartó el extremo seco del modelo (542 kcal) por «quedar por encima del bacon frito de USDA (468)», y las 26 etiquetas de mercado que se contrastaron dicen que el torrezno frito real está entre 552 y 665 kcal, con la mediana en 627. 542 era un PISO, no un techo — el modelo no se pasaba de alto, se quedaba corto. La ficha declara además que su etiqueta es de CARETA y no de panceta, que es lo que explica sus 60 g de proteína contra los 49 de la mediana del mercado.",
   "Perdices estofadas": "SIGUE SIN FICHA. Medido sobre los datasets crudos: `partridge` da CERO coincidencias en los tres. Lo que sí hay —y entró en la card 6.4— es codorniz (fdc-2706149, 226) y faisán (fdc-2706150, 238); colgar `perdiz` de cualquiera de las dos sería cambiar de especie sobre una comparación que nadie hizo.",
   "Besugo a la espalda": "SIGUE SIN FICHA. Medido sobre los datasets crudos: `porgy`, `sea bream` y `bream` dan CERO coincidencias en los tres. USDA no mide ningún espárido. La `Lubina` del catálogo (161 kcal) es otra familia, y emitirle un alias sería vocabulario sobre una ficha preexistente, que esta card no tocó por regla.",
   "Ensalada Halloumi": "SIGUE SIN FICHA. Medido: `halloumi` da CERO coincidencias en los tres datasets. El `Queso feta` (265) no sirve de gemelo —el halloumi ronda las 321 y es de pasta prensada, no de salmuera fresca—, así que la ensalada no se puede derivar sin inventar su ingrediente principal.",
@@ -228,14 +230,25 @@ const NOTAS_INGREDIENTES = {
  *
  * LA CARD 6.4 ABRIÓ LOS DATASETS, y por eso la tabla cambió de naturaleza: ya no
  * son pistas, son BLOQUEOS con el motivo medido. De los 48 platos que la 6.3
- * dejó sin ficha quedan CUATRO tras la card 6.4b (los calçots se destrabaron), y cada uno dice qué se buscó y qué se encontró.
+ * dejó sin ficha quedan TRES tras la card 6.4c (los calçots se destrabaron en la
+ * 6.4b, el torrezno en la 6.4c), y cada uno dice qué se buscó y qué se encontró.
  * "Cero coincidencias en los tres datasets" ahora sí se puede afirmar: se buscó.
+ *
+ * LOS TRES QUE QUEDAN SON EL MISMO CASO, y eso es lo que cambió con la 6.4c: los
+ * tres —besugo, perdiz y halloumi— están bloqueados por ESPECIE o INGREDIENTE, es
+ * decir por un alimento que USDA no mide y ninguna otra puerta del proyecto
+ * abrió. Los dos que se destrabaron estaban bloqueados por otra cosa (un
+ * rendimiento de cocción que faltaba, un modelo que no alcanzaba), y ninguno de
+ * los dos se resolvió con el dataset: uno con un rendimiento medido, el otro con
+ * una etiqueta comercial. La lista de pendientes dejó de tener dos naturalezas y
+ * tiene una sola, y su salida está escrita: la pasada de BEDCA (DT-35 g).
  */
 const CANDIDATOS = {
-  // `Calçots` salió de esta tabla en la card 6.4b: dejó de estar bloqueado. Ver
-  // `receta-calcots` y el transform `cocido_cebolla`.
-  "Torrezno de Soria":
-    "BLOQUEADO POR EL MODELO, no por el dato — y la card 6.4b corrigió el motivo anterior, que afirmaba que el par crudo/frito de panceta no existía. Existe: `Pork, cured, bacon, unprepared` (fdc-168277) contra `Pork, cured, bacon, pre-sliced, cooked, pan-fried` (fdc-168322) da 0,403 con la proteína como trazador, y es el par correcto porque el proceso es el mismo (panceta curada frita en su propia grasa) y porque es la única cocción cuyo balance de masa cierra (sodio 90 %, ceniza 88 %). Lo que no se puede es USARLO: el modelo de recetas supone que solo se va agua, y de un torrezno se va sobre todo grasa (retención medida 38 %). Aplicar 0,403 a `Panceta cruda` daría 1.285 kcal/100 g y 131,5 g de grasa, y los candados lo frenan. Hace falta retención POR NUTRIENTE, no un factor más.",
+  // `Calçots` salió de esta tabla en la card 6.4b y `Torrezno de Soria` en la
+  // 6.4c: dejaron de estar bloqueados. Ver `receta-calcots` con el transform
+  // `cocido_cebolla`, y `manual-torrezno-de-soria` con su etiqueta comercial.
+  // Ojo con el torrezno: salió del bloqueo SIN que se cerrara la DT-36, porque
+  // entró por una puerta que no es el modelo. La deuda del modelo sigue viva.
   "Perdices estofadas":
     "BLOQUEADO POR LA ESPECIE. Medido en los tres datasets: `partridge` da CERO coincidencias. Codorniz y faisán SÍ existen y entraron en la card 6.4 (fdc-2706149, 226 · fdc-2706150, 238), pero nadie midió la perdiz contra ninguna de las dos: un alias a 0,5 diría «se parece» donde lo cierto es «no lo sabemos».",
   "Besugo a la espalda":

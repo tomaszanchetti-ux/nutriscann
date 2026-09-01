@@ -156,11 +156,20 @@ FNDDS, match exacto. Como `names.en` lo escribe el CSV y la curación no lo toca
 (DT-26), elegir la ficha ES elegir el vocabulario inglés — y eso hay que pesarlo
 en la selección, no descubrirlo después.
 
-**8. Los cinco bloqueos que quedan son de dos tipos, y ninguno es "no lo
+**8. Los cinco bloqueos que quedaban eran de dos tipos, y ninguno era "no lo
 buscamos".** Dos por RENDIMIENTO (calçots y torrezno: el ingrediente está y el
 factor de cocción no existe medido) y tres por ESPECIE o INGREDIENTE (perdiz,
 besugo y halloumi: cero coincidencias en los tres datasets). El motivo de cada
 uno vive en la tabla `CANDIDATOS` de `censar.js`.
+
+**QUEDAN TRES, y ahora son todos del MISMO tipo.** Los dos de rendimiento se
+destrabaron por vías distintas y ninguna de las dos fue el dataset: los
+`Calçots` con un rendimiento de cocción medido (card 6.4b) y el `Torrezno de
+Soria` con una **etiqueta comercial** (card 6.4c) — que es lo que se hace cuando
+el bloqueo no es de dato sino de modelo. Los tres que siguen —perdiz, besugo y
+halloumi— son alimentos que USDA no mide, y los tres esperan la misma llave: la
+pasada de BEDCA (DT-35 g). Que la lista de pendientes tenga una sola naturaleza
+es información: ya no hay nada que destrabar con ingenio propio.
 
 ## Los límites, declarados
 

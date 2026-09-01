@@ -250,7 +250,26 @@ completa y las transformaciones de cocción medidas de los propios datasets. La
 capa 4 es `seed/` (card 1.5): la publicación idempotente a Firestore, con su
 propio README.
 
-Qué cambió respecto de la 3.4.0 (1.112 alimentos):
+Qué cambió respecto de la 3.5.0 (1.114 alimentos):
+
+- **Card 6.4c — el torrezno entra por la otra puerta.** Una ficha nueva,
+  **`manual-torrezno-de-soria`** (580 kcal/100 g), desde **una etiqueta comercial
+  verificada campo a campo**: Torreznos de Hacendado, código 8480000334169, leída
+  de OpenFoodFacts, con Atwater al 0,69 %. Es la misma vía por la que entró la
+  salsa de calçots, y es la vía que quedaba: el plato estaba bloqueado por el
+  MODELO y una etiqueta no necesita al modelo. **La DT-36 sigue abierta tal
+  cual** — `transforms.ts` no cambió una línea y el rendimiento medido 0,403
+  sigue fuera de la tabla, vigilado por `card64b.test.ts`. La ficha declara dos
+  límites en sus caveats: su etiqueta es de **careta** (piel y carrillo) y el
+  torrezno canónico es de **panceta**, lo que explica sus 60 g de proteína contra
+  los 49 de la mediana del mercado; y es la **más magra de las 26 etiquetas
+  contrastadas** (552-665 kcal, mediana 627). Ese contraste corrige de paso el
+  diagnóstico de la 6.4b: los 542 kcal del modelo extendido, que allí se
+  descartaron por «altos», eran un PISO. Aditivo en el sentido fuerte: 0 fichas
+  retiradas, 0 preexistentes cambiadas. Censo: platos `ok` 86 → 87, bloqueados
+  4 → 3.
+
+Qué había cambiado respecto de la 3.4.0 (1.112 alimentos):
 
 - **Card 6.4b — los dos platos que la 6.4 dejó bloqueados por rendimiento
   (DT-35 a).** Entra `cocido_cebolla` (0,850), **el primer rendimiento de
@@ -261,8 +280,8 @@ Qué cambió respecto de la 3.4.0 (1.112 alimentos):
   es 1,000— así que el 0,850 es de la cebolla y no de «la verdura». Con él entra
   **`Calçots`** (37,6 kcal/100 g, por la vía declarada del horno) y con una
   etiqueta comercial verificada entra **`Salsa de calçots`** (456 kcal/100 g,
-  Atwater al 0,02 %). El **`Torrezno de Soria` NO entra**, y su motivo cambió de
-  raíz: el rendimiento de fritura de panceta SÍ existe (0,403, medido y validado
+  Atwater al 0,02 %). El **`Torrezno de Soria` NO entra en ESTA card** (lo hace
+  en la 6.4c, por etiqueta), y su motivo cambió de raíz: el rendimiento de fritura de panceta SÍ existe (0,403, medido y validado
   por balance de masa) y precisamente por eso no se puede usar — lo que sale de
   un torrezno no es solo agua sino grasa, y un `factor_peso` no sabe restarla
   (DT-36). Aditivo en el sentido fuerte: 0 fichas retiradas, 0 preexistentes

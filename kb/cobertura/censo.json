@@ -11,8 +11,8 @@
   "functions/src/engine/cobertura.test.ts y corre en cada `npm test`."
  ],
  "medido": "2026-09-01",
- "kb_version": "3.5.0+fff1b63b",
- "fichas_en_el_catalogo": 1114,
+ "kb_version": "3.6.0+9f169d3d",
+ "fichas_en_el_catalogo": 1115,
  "clases": [
   "ok",
   "confianza_injusta",
@@ -23,10 +23,10 @@
  "resumen": {
   "platos": {
    "total": 141,
-   "ok": 86,
+   "ok": 87,
    "confianza_injusta": 22,
    "ficha_equivocada": 0,
-   "ausente_ficha": 4,
+   "ausente_ficha": 3,
    "descomponible": 29
   },
   "ingredientes": {
@@ -40,10 +40,10 @@
   "por_lista": {
    "directoalpaladar": {
     "total": 101,
-    "ok": 74,
+    "ok": 75,
     "confianza_injusta": 19,
     "ficha_equivocada": 0,
-    "ausente_ficha": 3,
+    "ausente_ficha": 2,
     "descomponible": 5
    },
    "nuevoestilo": {
@@ -785,10 +785,19 @@
   {
    "lista": "directoalpaladar",
    "plato": "Torrezno de Soria",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "nota": "SIGUE SIN FICHA, y la card 6.4b corrigió el motivo, que era FALSO. El par crudo/frito de panceta SÍ existe —`Pork, cured, bacon, unprepared` (fdc-168277) contra `Pork, cured, bacon, pre-sliced, cooked, pan-fried` (fdc-168322)— y da un rendimiento de 0,403, validado porque es la única de las tres cocciones cuyo balance de masa cierra (sodio retenido 90 %, ceniza 88 %). Lo que bloquea es el MODELO, no el dato: de un torrezno no sale solo agua, sale GRASA (retención medida 38 %), y un `factor_peso` no sabe restarla — aplicarlo daría 131,5 g de grasa y 1.285 kcal por 100 g. Extenderlo con la retención del bacon da 542 kcal, que es el bacon crocante con otro nombre y por encima del bacon frito de USDA (468) cuando el torrezno tiene que quedar por debajo. Hace falta un modelo con retención POR NUTRIENTE. Ver `cooking.transforms.json` → `fritura_de_panceta`.",
-   "candidato_en_el_catalogo": "BLOQUEADO POR EL MODELO, no por el dato — y la card 6.4b corrigió el motivo anterior, que afirmaba que el par crudo/frito de panceta no existía. Existe: `Pork, cured, bacon, unprepared` (fdc-168277) contra `Pork, cured, bacon, pre-sliced, cooked, pan-fried` (fdc-168322) da 0,403 con la proteína como trazador, y es el par correcto porque el proceso es el mismo (panceta curada frita en su propia grasa) y porque es la única cocción cuyo balance de masa cierra (sodio 90 %, ceniza 88 %). Lo que no se puede es USARLO: el modelo de recetas supone que solo se va agua, y de un torrezno se va sobre todo grasa (retención medida 38 %). Aplicar 0,403 a `Panceta cruda` daría 1.285 kcal/100 g y 131,5 g de grasa, y los candados lo frenan. Hace falta retención POR NUTRIENTE, no un factor más."
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "manual-torrezno-de-soria",
+    "ficha_es": "Torrezno de Soria",
+    "ficha_en": "Torrezno de Soria, Spanish fried crispy pork",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Torrezno de Soria",
+    "generic": false,
+    "kcal_100g": 580
+   },
+   "nota": "RESUELTO en la card 6.4c POR OTRA PUERTA: `manual-torrezno-de-soria` (580 kcal/100 g) entra desde UNA etiqueta comercial verificada campo a campo —Hacendado 8480000334169, leída de OpenFoodFacts, Atwater al 0,69 %—, que es la misma vía por la que entró la salsa de calçots en la 6.4b. NO SE DESTRABÓ EL MODELO: la DT-36 sigue abierta tal cual, `transforms.ts` sigue sin saber restar la grasa que sale de la pieza y el rendimiento medido 0,403 sigue FUERA de la tabla de transformaciones, vigilado por `card64b.test.ts`. Lo que la card 6.4c SÍ corrigió es el diagnóstico de la 6.4b: allí se descartó el extremo seco del modelo (542 kcal) por «quedar por encima del bacon frito de USDA (468)», y las 26 etiquetas de mercado que se contrastaron dicen que el torrezno frito real está entre 552 y 665 kcal, con la mediana en 627. 542 era un PISO, no un techo — el modelo no se pasaba de alto, se quedaba corto. La ficha declara además que su etiqueta es de CARETA y no de panceta, que es lo que explica sus 60 g de proteína contra los 49 de la mediana del mercado."
   },
   {
    "lista": "directoalpaladar",
