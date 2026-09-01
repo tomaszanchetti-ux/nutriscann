@@ -49,6 +49,103 @@
   "  cocidas, y el añadido es sal y grasa de cocción, que la regla de aceptación no cuenta",
   "  como ingrediente ajeno), no «esto es». Es el mismo camino del `Bacalao` a 0,8."
  ],
+ "$card_6_3_cobertura_mediterranea": [
+  "01/09/2026 — el censo de cobertura mediterránea (kb/cobertura/) midió los 141 platos de las dos",
+  "fuentes de referencia del mercado español contra el motor real, y encontró un patrón que se repite",
+  "veinte veces y que NO es un problema de composición sino de VOCABULARIO:",
+  "",
+  "  EL PLATO YA TIENE SU ALIAS VALIDADO, PERO CON EL NOMBRE CORTO. El nombre completo —el que",
+  "  usa el comensal y el que escribe la visión— no lo dispara, porque el nivel de alias es",
+  "  igualdad exacta sobre la consulta entera y no busca alias ADENTRO del término (es el hueco",
+  "  que la DT-26 midió con «spaghetti carbonara»). `Pisto` está a 0,8 desde la card 1.6 y",
+  "  `Pisto manchego` caía al difuso a 0,17: MISMA ficha, MISMO plato, la confianza que ve el",
+  "  usuario dividida por cinco.",
+  "",
+  "LA REGLA QUE SE APLICÓ, y que conviene leer antes de escribir la próxima:",
+  "",
+  "  EL NOMBRE REGIONAL LARGO HEREDA LA CONFIANZA DEL ALIAS CORTO YA VALIDADO. No se juzga",
+  "  la composición de nuevo: ya se juzgó cuando entró el alias corto, y `Fabada asturiana` ES",
+  "  `Fabada`. Emitir el largo con OTRA confianza sería inventar una reserva que nadie midió.",
+  "",
+  "Los siete que heredan: `Pisto manchego` (0,8 de `Pisto`) · `Fabada asturiana` (0,6 de `Fabada`) ·",
+  "`Gazpacho andaluz` (0,8 de `Gazpacho`) · `Callos a la madrileña` (0,5 de `Callos`) · `Cochinillo",
+  "asado` y `Cochinillo asado castellano` (0,5 de `Cochinillo`) · `Pulpo á feira` (0,6 de `Pulpo a la",
+  "gallega`) · `Rabo de toro a la cordobesa` (0,6 de `Rabo de toro`).",
+  "",
+  "Y DOS QUE NO HEREDAN NADA porque la ficha no tenía alias — acá sí hubo juicio nuevo y la reserva",
+  "está escrita:",
+  "",
+  "  `Empanada gallega` -> fdc-2708709 `Empanada, NFS`, 0,8. Los componentes son los mismos (masa",
+  "  + relleno) y ninguno es ajeno; la reserva es el FORMATO: la NFS de USDA es la empanadilla",
+  "  individual y la gallega es una empanada de bandeja, con más proporción de masa por bocado.",
+  "  Es un gemelo fuerte, no una identidad, y por eso 0,8 y no texto plano.",
+  "",
+  "  `Paella valenciana` y `Paella de marisco` -> fdc-2706723 `Paella, NFS`, 0,8. El README fija",
+  "  `Paella` -> `Paella, NFS` en 1,0 como ejemplo del peldaño de arriba, y eso sigue valiendo:",
+  "  el alimento SE LLAMA paella. Pero `NFS` quiere decir «sin especificar más», o sea el promedio",
+  "  de todas las paellas, y el catálogo NO distingue la valenciana (pollo y conejo) de la de",
+  "  marisco. Nombrar la variante destapa esa reserva en vez de taparla, y el único lugar donde se",
+  "  puede decir es el alias. Ojo con la lectura fácil: que el término más específico devuelva",
+  "  MENOS confianza que el genérico no es una inversión, es la verdad — decir «valenciana» revela",
+  "  que la ficha no la tiene.",
+  "",
+  "TRES ARREGLOS DE FICHA EQUIVOCADA que no son de plato sino de INGREDIENTE, y que fueron a",
+  "names.es.json en texto plano porque son variedades de un alimento cuya ficha ya declara que no",
+  "especifica la variedad (`Tomatoes, raw`, `Lettuce, raw`, `Garlic, raw`). El criterio, nuevo y",
+  "escrito para que la próxima curación no lo re-discuta:",
+  "",
+  "  UNA VARIEDAD SOBRE UNA FICHA QUE NO ESPECIFICA VARIEDAD ES UN ALIAS DE TEXTO PLANO. La ficha",
+  "  dice «raw tomatoes» sin decir cuál, y un tomate pera es un tomate crudo. No hay reserva que",
+  "  declarar: la que había ya está en el nombre de la ficha.",
+  "",
+  "  `Ajo` / `Ajos` / `Diente de ajo` / `Dientes de ajo` -> fdc-169230 `Ajo crudo`. MEDIDO: sin",
+  "  estos aliases, `ajo` resolvía por difuso a fdc-2709935 `Puerro cocido con sal y grasa` con",
+  "  0,11 — porque el puerro lleva de alias `Ajo porro cocido con sal y grasa`, que es su nombre",
+  "  en Colombia y Venezuela y contiene la palabra `ajo`. Un puerro no es un ajo (61-88 kcal",
+  "  contra 143), y `ajo` es el ingrediente más frecuente de las dos fuentes del censo. La guarda",
+  "  hermana está en guardas.vocabulario.json.",
+  "",
+  "  `Tomate pera` / `Tomates pera` -> fdc-2709719 `Tomate crudo`. MEDIDO: caía en fdc-169118",
+  "  `Pera cruda` a 0,22. Una fruta por una hortaliza, y con casi el triple de calorías (57",
+  "  contra 20). Es el error de vocabulario más barato de arreglar del censo entero.",
+  "",
+  "  `Lechuga romana` -> fdc-2709789 `Lechuga cruda`. MEDIDO: caía en fdc-2709949 `Lechuga",
+  "  cocida` a 0,30. La especie está bien y la PREPARACIÓN no: 49 kcal contra 20, un +145 %,",
+  "  sobre el ingrediente base de las ensaladas mediterráneas.",
+  "",
+  "Y DOS ARREGLOS MÁS de ficha equivocada, éstos sí de plato, que salieron del mismo censo:",
+  "",
+  "  `Pechuga de pavo` -> fdc-2706104 `Pavo` (`Turkey, NFS`), 0,8. MEDIDO: caía en fdc-2705954",
+  "  `Pechuga de pollo` a 0,30, arrastrada por la palabra `pechuga`. Las calorías casi no se",
+  "  mueven (139 contra 144) y la ESPECIE sí, que es lo que la card 2.7 dejó fijado como",
+  "  inaceptable con `Filete` sobre un salmón. La reserva del 0,8: la ficha es pavo sin",
+  "  especificar la parte, y la pechuga es la más magra del animal.",
+  "",
+  "  `Pimientos de piquillo rellenos` -> fdc-2709073 `Pimiento relleno de arroz y carne`, 0,6.",
+  "  MEDIDO: caía en fdc-2709799 `Pimientos crudos` a 0,24 — 27 kcal/100 g contra las 178 del",
+  "  plato, 6,6 veces menos. No es un error de especie sino de ALTURA: la ficha era el",
+  "  ingrediente y el plato es el plato. La ficha correcta ya llevaba `Pimientos rellenos` a",
+  "  0,8 desde la card 1.6 y el nombre largo no la disparaba; se emite a 0,6 y no a 0,8 porque",
+  "  el relleno de USDA lleva arroz y el piquillo español lleva bacalao o carne sin arroz —",
+  "  falta/sobra un ingrediente que mueve un macro, que es la definición del peldaño.",
+  "",
+  "TRES PLATOS QUE ESTABAN EN SILENCIO Y AHORA TIENEN VOZ, por la misma regla de herencia o con",
+  "su reserva escrita:",
+  "",
+  "  `Pa amb tomàquet` -> fdc-2707652 `Bruschetta`, 0,8, heredado de `Pan con tomate` (0,8):",
+  "  es el mismo plato con el nombre en catalán, y el catálogo ya lo tenía juzgado.",
+  "",
+  "  `Filloas` / `Filloa` -> fdc-2708341 `Crepe`, 0,8. La filloa gallega es harina, leche y",
+  "  huevo en sartén: un crepe. Ninguno de los dos declara relleno, así que el gemelo es",
+  "  fuerte y la única reserva es que la filloa de matanza lleva sangre o caldo, que es una",
+  "  variante y no la forma corriente.",
+  "",
+  "  `Papas arrugadas` -> fdc-2709393 `Papa hervida con cáscara`, 0,8, y `Papas arrugadas con",
+  "  mojo picón` a 0,6 sobre la misma ficha. Las dos filas no son un capricho: las papas",
+  "  arrugadas SON papa hervida con piel en agua muy salada, y el mojo es aceite —o sea el",
+  "  ingrediente que mueve la grasa. Nombrar el mojo baja el peldaño porque la ficha no lo",
+  "  tiene, exactamente como nombrar `valenciana` lo baja en la paella."
+ ],
  "$card_6_2_dt27": [
   "01/09/2026 — el lote de fichas de la DT-27. Cuatro entradas, todas con la reserva escrita",
   "donde se puede escribir: en el alias.",
@@ -111,6 +208,10 @@
    {
     "alias": "Pulpo a la gallega",
     "confidence": 0.6
+   },
+   {
+    "alias": "Pulpo á feira",
+    "confidence": 0.6
    }
   ],
   "2705683": [
@@ -141,6 +242,10 @@
    {
     "alias": "Rabo de toro",
     "confidence": 0.6
+   },
+   {
+    "alias": "Rabo de toro a la cordobesa",
+    "confidence": 0.6
    }
   ],
   "2705879": [
@@ -152,6 +257,14 @@
   "2705882": [
    {
     "alias": "Cochinillo",
+    "confidence": 0.5
+   },
+   {
+    "alias": "Cochinillo asado",
+    "confidence": 0.5
+   },
+   {
+    "alias": "Cochinillo asado castellano",
     "confidence": 0.5
    }
   ],
@@ -167,9 +280,19 @@
     "confidence": 0.5
    }
   ],
+  "2706104": [
+   {
+    "alias": "Pechuga de pavo",
+    "confidence": 0.8
+   }
+  ],
   "2706162": [
    {
     "alias": "Callos",
+    "confidence": 0.5
+   },
+   {
+    "alias": "Callos a la madrileña",
     "confidence": 0.5
    }
   ],
@@ -239,6 +362,16 @@
     "confidence": 0.8
    }
   ],
+  "2706723": [
+   {
+    "alias": "Paella valenciana",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Paella de marisco",
+    "confidence": 0.8
+   }
+  ],
   "2706964": [
    {
     "alias": "Bocadillo de jamón",
@@ -267,6 +400,10 @@
    {
     "alias": "Fabada",
     "confidence": 0.6
+   },
+   {
+    "alias": "Fabada asturiana",
+    "confidence": 0.6
    }
   ],
   "2707414": [
@@ -293,6 +430,10 @@
    {
     "alias": "Pan con tomate",
     "confidence": 0.8
+   },
+   {
+    "alias": "Pa amb tomàquet",
+    "confidence": 0.8
    }
   ],
   "2707963": [
@@ -305,6 +446,16 @@
    {
     "alias": "Torrijas",
     "confidence": 0.6
+   }
+  ],
+  "2708341": [
+   {
+    "alias": "Filloas",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Filloa",
+    "confidence": 0.8
    }
   ],
   "2708405": [
@@ -323,6 +474,10 @@
    {
     "alias": "Pastel brasileño",
     "confidence": 0.6
+   },
+   {
+    "alias": "Empanada gallega",
+    "confidence": 0.8
    }
   ],
   "2708722": [
@@ -371,6 +526,20 @@
    {
     "alias": "Pimientos rellenos",
     "confidence": 0.8
+   },
+   {
+    "alias": "Pimientos de piquillo rellenos",
+    "confidence": 0.6
+   }
+  ],
+  "2709393": [
+   {
+    "alias": "Papas arrugadas",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Papas arrugadas con mojo picón",
+    "confidence": 0.6
    }
   ],
   "2709456": [
@@ -399,11 +568,19 @@
    {
     "alias": "Pisto",
     "confidence": 0.8
+   },
+   {
+    "alias": "Pisto manchego",
+    "confidence": 0.8
    }
   ],
   "2710106": [
    {
     "alias": "Gazpacho",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Gazpacho andaluz",
     "confidence": 0.8
    }
   ],

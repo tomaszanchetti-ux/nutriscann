@@ -1,5 +1,5 @@
 {
-  "kb_version": "3.2.0+e19bb31f",
+  "kb_version": "3.3.0+e905338b",
   "generated_from": {
     "selection": "1.1-v2 + 1.6-regional-v1 + 1.6-es-sweep-v1 + 1.7-ingredientes-v1 + dt27-fichas-v1 − dt7-v2",
     "sources": [
@@ -5057,7 +5057,12 @@
         "es": "Ajo crudo"
       },
       "aliases": {
-        "es": []
+        "es": [
+          "Ajo",
+          "Ajos",
+          "Diente de ajo",
+          "Dientes de ajo"
+        ]
       },
       "category": "Vegetables and Vegetable Products",
       "per_100g": {
@@ -5094,6 +5099,7 @@
       ],
       "default_portion_g": 136,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_sr_legacy",
         "default_portion_g": "usda_sr_legacy",
         "names.en": "usda_sr_legacy",
@@ -17058,6 +17064,10 @@
           {
             "alias": "Pulpo a la gallega",
             "confidence": 0.6
+          },
+          {
+            "alias": "Pulpo á feira",
+            "confidence": 0.6
           }
         ]
       },
@@ -22943,6 +22953,10 @@
           {
             "alias": "Rabo de toro",
             "confidence": 0.6
+          },
+          {
+            "alias": "Rabo de toro a la cordobesa",
+            "confidence": 0.6
           }
         ]
       },
@@ -23476,6 +23490,14 @@
           "Puerco asado",
           {
             "alias": "Cochinillo",
+            "confidence": 0.5
+          },
+          {
+            "alias": "Cochinillo asado",
+            "confidence": 0.5
+          },
+          {
+            "alias": "Cochinillo asado castellano",
             "confidence": 0.5
           }
         ]
@@ -25258,7 +25280,11 @@
       },
       "aliases": {
         "es": [
-          "Guajolote"
+          "Guajolote",
+          {
+            "alias": "Pechuga de pavo",
+            "confidence": 0.8
+          }
         ]
       },
       "category": "Turkey, duck, other poultry",
@@ -25701,6 +25727,10 @@
           "Guatitas",
           {
             "alias": "Callos",
+            "confidence": 0.5
+          },
+          {
+            "alias": "Callos a la madrileña",
             "confidence": 0.5
           }
         ]
@@ -30088,7 +30118,16 @@
         "es": "Paella"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Paella valenciana",
+            "confidence": 0.8
+          },
+          {
+            "alias": "Paella de marisco",
+            "confidence": 0.8
+          }
+        ]
       },
       "category": "Rice mixed dishes",
       "per_100g": {
@@ -30115,6 +30154,7 @@
       ],
       "default_portion_g": 300,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "caveats": "curation",
         "default_portion_g": "usda_fndds",
@@ -34596,6 +34636,10 @@
           {
             "alias": "Fabada",
             "confidence": 0.6
+          },
+          {
+            "alias": "Fabada asturiana",
+            "confidence": 0.6
           }
         ]
       },
@@ -37341,6 +37385,10 @@
         "es": [
           {
             "alias": "Pan con tomate",
+            "confidence": 0.8
+          },
+          {
+            "alias": "Pa amb tomàquet",
             "confidence": 0.8
           }
         ]
@@ -43435,7 +43483,16 @@
         "es": "Crepe"
       },
       "aliases": {
-        "es": []
+        "es": [
+          {
+            "alias": "Filloas",
+            "confidence": 0.8
+          },
+          {
+            "alias": "Filloa",
+            "confidence": 0.8
+          }
+        ]
       },
       "category": "Pancakes, waffles, French toast",
       "per_100g": {
@@ -43467,6 +43524,7 @@
       ],
       "default_portion_g": 80,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "generic": "curation",
@@ -46817,6 +46875,10 @@
           {
             "alias": "Pastel brasileño",
             "confidence": 0.6
+          },
+          {
+            "alias": "Empanada gallega",
+            "confidence": 0.8
           }
         ]
       },
@@ -48699,6 +48761,10 @@
           {
             "alias": "Pimientos rellenos",
             "confidence": 0.8
+          },
+          {
+            "alias": "Pimientos de piquillo rellenos",
+            "confidence": 0.6
           }
         ]
       },
@@ -52357,7 +52423,15 @@
       },
       "aliases": {
         "es": [
-          "Patata hervida con cáscara"
+          "Patata hervida con cáscara",
+          {
+            "alias": "Papas arrugadas",
+            "confidence": 0.8
+          },
+          {
+            "alias": "Papas arrugadas con mojo picón",
+            "confidence": 0.6
+          }
         ]
       },
       "category": "White potatoes, baked or boiled",
@@ -55614,7 +55688,10 @@
         "es": "Tomate crudo"
       },
       "aliases": {
-        "es": []
+        "es": [
+          "Tomate pera",
+          "Tomates pera"
+        ]
       },
       "category": "Tomatoes",
       "per_100g": {
@@ -55671,6 +55748,7 @@
       ],
       "default_portion_g": 90,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -55962,7 +56040,9 @@
         "es": "Lechuga cruda"
       },
       "aliases": {
-        "es": []
+        "es": [
+          "Lechuga romana"
+        ]
       },
       "category": "Lettuce and lettuce salads",
       "per_100g": {
@@ -56004,6 +56084,7 @@
       ],
       "default_portion_g": 18,
       "provenance": {
+        "aliases.es": "curation",
         "category": "usda_fndds",
         "default_portion_g": "usda_fndds",
         "names.en": "usda_fndds",
@@ -57911,6 +57992,10 @@
           {
             "alias": "Pisto",
             "confidence": 0.8
+          },
+          {
+            "alias": "Pisto manchego",
+            "confidence": 0.8
           }
         ]
       },
@@ -58195,6 +58280,10 @@
         "es": [
           {
             "alias": "Gazpacho",
+            "confidence": 0.8
+          },
+          {
+            "alias": "Gazpacho andaluz",
             "confidence": 0.8
           }
         ]
@@ -65730,7 +65819,8 @@
       "aliases": {
         "es": [
           "Migas extremeñas",
-          "Migas de pastor"
+          "Migas de pastor",
+          "Migas manchegas"
         ]
       },
       "category": "Yeast breads",

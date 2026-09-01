@@ -43,6 +43,13 @@ Un catálogo correcto **por construcción**, no por disciplina.
                         nunca se borra.
 ```
 
+Y colgando de la capa 3, una carpeta que no produce catálogo pero decide qué se
+cura: **`cobertura/`** (card 6.3). Es el censo de los 141 platos de referencia
+del mercado español, medido con el motor real, con un veredicto por plato y su
+candado en `functions/src/engine/cobertura.test.ts`. La curación de `curation/`
+dice *qué* sabe decir el catálogo; el censo dice *cuánto de lo que importa* sabe
+decir, y cuándo lo deja de saber. Tiene su propio README.
+
 ## Cómo se corre
 
 ```bash

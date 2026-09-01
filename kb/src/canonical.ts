@@ -457,7 +457,19 @@ export function assemble(input: AssembleInput): AssembleResult {
   // catálogo con catorce alimentos más es un catálogo distinto, y el `config/app`
   // de Firestore estampa esta versión para poder decir contra qué se calculó
   // cada reporte.
-  const kbVersion = `3.2.0+${contentHash({ generated_from: generatedFrom, foods })}`;
+  //
+  // 3.3.0 con la card 6.3 (el censo de cobertura mediterránea y su curación).
+  //
+  // Es MENOR por el precedente exacto de la 3.1.0, que es la otra versión de
+  // vocabulario puro: no entra ni sale ninguna ficha, no cambia ningún id, las
+  // 1.036 siguen. Lo que cambia son DIECIOCHO aliases con confianza, OCHO en texto
+  // plano y DIEZ guardas nuevas, todos salidos de medir los 141 platos de las
+  // dos fuentes de referencia del mercado español contra el motor real
+  // (`kb/cobertura/`). Sube el número —y no se queda en parche— por el mismo
+  // motivo que la 3.1.0: un catálogo que dice cosas distintas es un catálogo
+  // distinto, y `config/app` estampa esta versión para poder decir con qué
+  // vocabulario se calculó cada reporte.
+  const kbVersion = `3.3.0+${contentHash({ generated_from: generatedFrom, foods })}`;
 
   return {
     catalog: { kb_version: kbVersion, generated_from: generatedFrom, foods },

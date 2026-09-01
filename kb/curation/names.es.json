@@ -2719,7 +2719,7 @@
  },
  "2709719": {
   "name": "Tomate crudo",
-  "aliases": []
+  "aliases": ["Tomate pera", "Tomates pera"]
  },
  "2707105": {
   "name": "Plato congelado de pollo",
@@ -3139,7 +3139,7 @@
  },
  "2709789": {
   "name": "Lechuga cruda",
-  "aliases": []
+  "aliases": ["Lechuga romana"]
  },
  "2709949": {
   "name": "Lechuga cocida",
@@ -3582,7 +3582,7 @@
  },
  "169230": {
   "name": "Ajo crudo",
-  "aliases": []
+  "aliases": ["Ajo", "Ajos", "Diente de ajo", "Dientes de ajo"]
  },
  "169988": {
   "name": "Apio crudo",

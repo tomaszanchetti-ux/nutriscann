@@ -1,0 +1,1040 @@
+{
+ "$comment": [
+  "LOS PLATOS QUE TIENEN QUE ESTAR. Es la lista de entrada del censo de cobertura,",
+  "y está acá —versionada, en el repo— por la misma razón por la que el catálogo",
+  "está en kb/ y no en Firestore: una medición contra una lista que vive en una",
+  "pestaña del navegador no se puede repetir mañana.",
+  "",
+  "Las dos fuentes NO son intercambiables y por eso van separadas:",
+  "",
+  "  · directoalpaladar — los 101 platos representativos de la cocina española,",
+  "    votados por 60 gastrónomos. Son PLATOS CON NOMBRE PROPIO: la fabada, el",
+  "    pisto, los callos. Es la lista contra la que se mide si el catálogo sabe",
+  "    de cocina española. El puesto 100 quedó empatado y por eso son 101.",
+  "",
+  "  · nuevoestilo — las 40 recetas de dieta mediterránea de un artículo de",
+  "    revista. La mitad NO son platos con nombre sino COMPOSICIONES («pez espada",
+  "    con tomates rellenos»), y eso no es un defecto de la fuente: es cómo se",
+  "    come de verdad, y es lo que la visión va a desarmar en ingredientes. Se",
+  "    juzgan por la cobertura de sus ingredientes y no por su nombre.",
+  "",
+  "Los `ingredientes_clave` salen de la receta publicada por la fuente, no de",
+  "nuestra cabeza. Ojo al leerlos: son ingredientes de RECETA («aceite de oliva",
+  "virgen extra», «sal gorda», «huesos»), no lo que una foto muestra ni lo que la",
+  "visión escribe. Sirven para preguntarle al catálogo si tiene el material del",
+  "plato; no son una simulación del pipeline real."
+ ],
+ "extraido": "2026-09-01",
+ "listas": [
+  {
+   "id": "directoalpaladar",
+   "url": "https://www.directoalpaladar.com/actualidad-1/100-platos-representativos-cocina-espanola-60-reconocidos-gastronomos-sus-recetas",
+   "descripcion": "Ranking de 100 platos representativos de la cocina española votado por 60 gastrónomos (puesto 100 empatado → 101 platos). Extraído 01/09/2026.",
+   "cobertura_completa": true,
+   "platos": [
+    {
+     "nombre": "Tortilla de patatas",
+     "votos": "100%",
+     "ingredientes_clave": [
+      "patatas",
+      "cebolla",
+      "huevos",
+      "sal",
+      "aceite de oliva"
+     ]
+    },
+    {
+     "nombre": "Gazpacho andaluz",
+     "votos": "100%",
+     "ingredientes_clave": [
+      "tomate pera",
+      "pimiento verde italiano",
+      "pepino",
+      "ajo",
+      "aceite de oliva virgen extra",
+      "pan duro",
+      "agua fría",
+      "sal",
+      "vinagre de Jerez"
+     ]
+    },
+    {
+     "nombre": "Cocido madrileño",
+     "votos": "100%",
+     "ingredientes_clave": [
+      "garbanzos",
+      "morcillo de ternera",
+      "tocino",
+      "huesos",
+      "chorizo fresco",
+      "fideos finos",
+      "gallina",
+      "patatas",
+      "zanahorias"
+     ]
+    },
+    {
+     "nombre": "Paella valenciana",
+     "votos": "100%",
+     "ingredientes_clave": [
+      "arroz bomba",
+      "pollo",
+      "conejo",
+      "judías verdes planas",
+      "garrofón",
+      "alcachofas",
+      "aceite de oliva",
+      "pimentón",
+      "tomate triturado",
+      "azafrán",
+      "romero"
+     ]
+    },
+    {
+     "nombre": "Fabada asturiana",
+     "votos": "100%",
+     "ingredientes_clave": [
+      "fabes",
+      "cebolla",
+      "ajo",
+      "chorizo asturiano",
+      "morcilla asturiana",
+      "lacón",
+      "tocino",
+      "laurel",
+      "aceite de oliva virgen extra",
+      "pimentón dulce"
+     ]
+    },
+    {
+     "nombre": "Ajoblanco",
+     "votos": "98%"
+    },
+    {
+     "nombre": "Bacalao al pilpil",
+     "votos": "98%"
+    },
+    {
+     "nombre": "Callos a la madrileña",
+     "votos": "98%"
+    },
+    {
+     "nombre": "Empanada gallega",
+     "votos": "98%"
+    },
+    {
+     "nombre": "Pulpo á feira",
+     "votos": "98%"
+    },
+    {
+     "nombre": "Salmorejo",
+     "votos": "97%"
+    },
+    {
+     "nombre": "Cochinillo asado castellano",
+     "votos": "95%"
+    },
+    {
+     "nombre": "Fritura andaluza",
+     "votos": "95%"
+    },
+    {
+     "nombre": "Papas arrugadas con mojo picón",
+     "votos": "95%"
+    },
+    {
+     "nombre": "Pisto manchego",
+     "votos": "95%"
+    },
+    {
+     "nombre": "Arroz a banda",
+     "votos": "93%"
+    },
+    {
+     "nombre": "Marmitako",
+     "votos": "93%"
+    },
+    {
+     "nombre": "Migas manchegas",
+     "votos": "92%"
+    },
+    {
+     "nombre": "Tortilla de camarones",
+     "votos": "92%"
+    },
+    {
+     "nombre": "Paletilla de cordero lechal al horno o lechazo",
+     "votos": "88%"
+    },
+    {
+     "nombre": "Gallina en pepitoria",
+     "votos": "88%"
+    },
+    {
+     "nombre": "Rabo de toro a la cordobesa",
+     "votos": "88%"
+    },
+    {
+     "nombre": "Sopa de ajo",
+     "votos": "88%"
+    },
+    {
+     "nombre": "Calçots",
+     "votos": "87%"
+    },
+    {
+     "nombre": "Menestra de verduras de Tudela",
+     "votos": "87%"
+    },
+    {
+     "nombre": "Torrijas",
+     "votos": "87%"
+    },
+    {
+     "nombre": "Croquetas",
+     "votos": "85%"
+    },
+    {
+     "nombre": "Ensaimada mallorquina",
+     "votos": "85%"
+    },
+    {
+     "nombre": "Pote gallego",
+     "votos": "85%"
+    },
+    {
+     "nombre": "Arroz con leche",
+     "votos": "83%"
+    },
+    {
+     "nombre": "Escalivada",
+     "votos": "83%"
+    },
+    {
+     "nombre": "Merluza en salsa verde",
+     "votos": "83%"
+    },
+    {
+     "nombre": "Morteruelo",
+     "votos": "83%"
+    },
+    {
+     "nombre": "Riñones al Jerez",
+     "votos": "83%"
+    },
+    {
+     "nombre": "Suquet de pescado",
+     "votos": "83%"
+    },
+    {
+     "nombre": "Txangurro a la donostiarra",
+     "votos": "82%"
+    },
+    {
+     "nombre": "Fideuá",
+     "votos": "82%"
+    },
+    {
+     "nombre": "Pa amb tomàquet",
+     "votos": "82%"
+    },
+    {
+     "nombre": "Patatas bravas",
+     "votos": "82%"
+    },
+    {
+     "nombre": "Pollo al chilindrón",
+     "votos": "82%"
+    },
+    {
+     "nombre": "Tocinillo de cielo",
+     "votos": "82%"
+    },
+    {
+     "nombre": "Caracoles a la llauna",
+     "votos": "80%"
+    },
+    {
+     "nombre": "Coca",
+     "votos": "80%"
+    },
+    {
+     "nombre": "Crema catalana",
+     "votos": "80%"
+    },
+    {
+     "nombre": "Filloas",
+     "votos": "80%"
+    },
+    {
+     "nombre": "Tarta de Santiago",
+     "votos": "80%"
+    },
+    {
+     "nombre": "Torrezno de Soria",
+     "votos": "80%"
+    },
+    {
+     "nombre": "Calamares en su tinta",
+     "votos": "78%"
+    },
+    {
+     "nombre": "Escudella y carn d'olla",
+     "votos": "78%"
+    },
+    {
+     "nombre": "Patatas a la riojana",
+     "votos": "78%"
+    },
+    {
+     "nombre": "Bacalao ajoarriero",
+     "votos": "75%"
+    },
+    {
+     "nombre": "Huevos fritos",
+     "votos": "75%"
+    },
+    {
+     "nombre": "All i pebre de anguila",
+     "votos": "73%"
+    },
+    {
+     "nombre": "Ensaladilla rusa",
+     "votos": "73%"
+    },
+    {
+     "nombre": "Escabechados",
+     "votos": "73%"
+    },
+    {
+     "nombre": "Conejo al ajillo",
+     "votos": "72%"
+    },
+    {
+     "nombre": "Gazpachos manchegos o galianos",
+     "votos": "72%"
+    },
+    {
+     "nombre": "Porrusalda",
+     "votos": "72%"
+    },
+    {
+     "nombre": "Albóndigas",
+     "votos": "70%"
+    },
+    {
+     "nombre": "Arroz al caldero",
+     "votos": "70%"
+    },
+    {
+     "nombre": "Cocochas en salsa",
+     "votos": "70%"
+    },
+    {
+     "nombre": "Merluza a la gallega",
+     "votos": "70%"
+    },
+    {
+     "nombre": "Perdices estofadas",
+     "votos": "70%"
+    },
+    {
+     "nombre": "Potaje de vigilia",
+     "votos": "70%"
+    },
+    {
+     "nombre": "Soldaditos de Pavía o bacalao rebozado",
+     "votos": "70%"
+    },
+    {
+     "nombre": "Almejas a la marinera",
+     "votos": "68%"
+    },
+    {
+     "nombre": "Bacalao a la vizcaína",
+     "votos": "68%"
+    },
+    {
+     "nombre": "Butifarra con alubias",
+     "votos": "68%"
+    },
+    {
+     "nombre": "Pestiños",
+     "votos": "68%"
+    },
+    {
+     "nombre": "Pimientos de piquillo rellenos",
+     "votos": "68%"
+    },
+    {
+     "nombre": "Sardinas asadas",
+     "votos": "68%"
+    },
+    {
+     "nombre": "Buñuelos de viento",
+     "votos": "67%"
+    },
+    {
+     "nombre": "Cocido montañés",
+     "votos": "67%"
+    },
+    {
+     "nombre": "Cardos a la navarra",
+     "votos": "65%"
+    },
+    {
+     "nombre": "Boquerones y anchoas",
+     "votos": "65%"
+    },
+    {
+     "nombre": "Gambas al ajillo",
+     "votos": "65%"
+    },
+    {
+     "nombre": "Quesada pasiega",
+     "votos": "65%"
+    },
+    {
+     "nombre": "Rabas/calamares",
+     "votos": "65%"
+    },
+    {
+     "nombre": "Arroz negro",
+     "votos": "63%"
+    },
+    {
+     "nombre": "Besugo a la espalda",
+     "votos": "63%"
+    },
+    {
+     "nombre": "Caldereta de cordero u oveja",
+     "votos": "63%"
+    },
+    {
+     "nombre": "Manitas de cordero",
+     "votos": "63%"
+    },
+    {
+     "nombre": "Caldereta de langosta",
+     "votos": "60%"
+    },
+    {
+     "nombre": "Canelones",
+     "votos": "60%"
+    },
+    {
+     "nombre": "Pipirrana",
+     "votos": "60%"
+    },
+    {
+     "nombre": "Brasas, chuletón...",
+     "votos": "58%"
+    },
+    {
+     "nombre": "Leche frita",
+     "votos": "58%"
+    },
+    {
+     "nombre": "Bonito con tomate",
+     "votos": "57%"
+    },
+    {
+     "nombre": "Mollejas",
+     "votos": "57%"
+    },
+    {
+     "nombre": "Pastel de cabracho",
+     "votos": "57%"
+    },
+    {
+     "nombre": "Patatas a la importancia",
+     "votos": "57%"
+    },
+    {
+     "nombre": "Patatas revolconas",
+     "votos": "57%"
+    },
+    {
+     "nombre": "Pies de cerdo",
+     "votos": "57%"
+    },
+    {
+     "nombre": "Tumbet",
+     "votos": "57%"
+    },
+    {
+     "nombre": "Alubias con perdiz",
+     "votos": "57%"
+    },
+    {
+     "nombre": "Arroz con costra",
+     "votos": "57%"
+    },
+    {
+     "nombre": "Habas a la catalana",
+     "votos": "57%"
+    },
+    {
+     "nombre": "Lubina a la sal",
+     "votos": "57%"
+    },
+    {
+     "nombre": "Morcillas",
+     "votos": "57%"
+    },
+    {
+     "nombre": "Alcachofas con jamón",
+     "votos": "53%"
+    },
+    {
+     "nombre": "Gachas manchegas",
+     "votos": "53%"
+    }
+   ]
+  },
+  {
+   "id": "nuevoestilo",
+   "url": "https://www.nuevoestilo.es/recetas-trucos-cocina/g61354287/dieta-mediterranea-tomates/",
+   "descripcion": "Las 40 recetas de la dieta mediterránea más ricas (Nuevo Estilo, act. 14/11/2025). Extraído 01/09/2026 del JSON-LD completo de la página.",
+   "cobertura_completa": true,
+   "platos": [
+    {
+     "nombre": "Ensalada de pollo mediterránea",
+     "ingredientes_clave": [
+      "pechugas de pollo",
+      "lechuga romana",
+      "pepino",
+      "tomates cherry",
+      "aguacate",
+      "queso feta",
+      "aceitunas negras",
+      "aceite de oliva virgen extra"
+     ]
+    },
+    {
+     "nombre": "Arancini",
+     "ingredientes_clave": [
+      "risotto cocido",
+      "pan rallado",
+      "harina",
+      "huevos",
+      "parmesano",
+      "mozzarella",
+      "salsa marinara"
+     ]
+    },
+    {
+     "nombre": "Tajine de cordero",
+     "ingredientes_clave": [
+      "cordero deshuesado",
+      "orejones",
+      "caldo de pollo",
+      "cebolla",
+      "ajo",
+      "jengibre",
+      "pasta de tomate",
+      "canela",
+      "azafrán",
+      "cúrcuma"
+     ]
+    },
+    {
+     "nombre": "Ensalada Niçoise",
+     "nota": "errata del artículo: 'Enlsalada Niçoise'",
+     "ingredientes_clave": [
+      "atún en aceite de oliva",
+      "huevos",
+      "judías verdes",
+      "patatas pequeñas",
+      "pepino",
+      "aceitunas negras",
+      "anchoas",
+      "alcaparras",
+      "mostaza de Dijon"
+     ]
+    },
+    {
+     "nombre": "Risotto",
+     "ingredientes_clave": [
+      "arroz Arborio",
+      "caldo de pollo",
+      "mantequilla",
+      "cebolla",
+      "ajo",
+      "vino blanco seco",
+      "parmesano",
+      "zumo de limón",
+      "albahaca"
+     ]
+    },
+    {
+     "nombre": "Shawarma de pollo",
+     "ingredientes_clave": [
+      "muslos de pollo deshuesados",
+      "aceite de oliva virgen extra",
+      "limón",
+      "ajo",
+      "comino",
+      "cúrcuma",
+      "canela",
+      "cayena",
+      "yogur griego"
+     ]
+    },
+    {
+     "nombre": "Ensalada Halloumi",
+     "ingredientes_clave": [
+      "queso halloumi",
+      "garbanzos",
+      "hinojo",
+      "aceitunas verdes",
+      "pita",
+      "rúcula",
+      "naranja",
+      "aguacate",
+      "eneldo",
+      "menta"
+     ]
+    },
+    {
+     "nombre": "Hummus",
+     "ingredientes_clave": [
+      "garbanzos",
+      "ajo",
+      "tahini",
+      "zumo de limón",
+      "sal",
+      "agua helada"
+     ]
+    },
+    {
+     "nombre": "Pasta Alla Norma",
+     "ingredientes_clave": [
+      "rigatoni",
+      "berenjena",
+      "tomates triturados",
+      "cebolla",
+      "ajo",
+      "orégano",
+      "ricotta salata",
+      "albahaca",
+      "aceite de oliva virgen extra"
+     ]
+    },
+    {
+     "nombre": "Shakshuka",
+     "ingredientes_clave": [
+      "huevos",
+      "tomates",
+      "cebolla",
+      "ajo",
+      "comino",
+      "espinacas tiernas",
+      "aceite de oliva"
+     ]
+    },
+    {
+     "nombre": "Falafel",
+     "ingredientes_clave": [
+      "garbanzos",
+      "cebolla",
+      "perejil",
+      "cilantro",
+      "ajo",
+      "comino",
+      "pan rallado",
+      "semillas de sésamo",
+      "cayena"
+     ]
+    },
+    {
+     "nombre": "Ensalada griega",
+     "ingredientes_clave": [
+      "pepino",
+      "cebolla roja",
+      "tomates cherry",
+      "aceitunas Kalamata",
+      "queso feta",
+      "vinagre de vino tinto",
+      "orégano",
+      "aceite de oliva virgen extra"
+     ]
+    },
+    {
+     "nombre": "Baklava de nueces y pistachos",
+     "ingredientes_clave": [
+      "pistachos",
+      "nueces",
+      "masa filo",
+      "azúcar",
+      "miel",
+      "aroma de azahar",
+      "canela",
+      "clavo",
+      "mantequilla",
+      "limón"
+     ]
+    },
+    {
+     "nombre": "Ensalada Fattoush",
+     "ingredientes_clave": [
+      "lechuga romana",
+      "pepino",
+      "tomates cherry",
+      "menta",
+      "perejil",
+      "cebolla roja",
+      "rábanos",
+      "pan de pita",
+      "zumo de limón",
+      "vinagre balsámico"
+     ]
+    },
+    {
+     "nombre": "Alcachofas a la parrilla con mayonesa de ajo",
+     "ingredientes_clave": [
+      "alcachofas",
+      "mayonesa",
+      "mostaza de Dijon",
+      "ajo",
+      "salsa Worcester",
+      "cilantro",
+      "aceite de oliva virgen extra"
+     ]
+    },
+    {
+     "nombre": "Baba Ghanoush",
+     "ingredientes_clave": [
+      "berenjenas",
+      "ajo",
+      "tahini",
+      "zumo de limón",
+      "aceite de oliva virgen extra",
+      "perejil",
+      "pan de pita"
+     ]
+    },
+    {
+     "nombre": "Gazpacho",
+     "ingredientes_clave": [
+      "tomates maduros",
+      "pimiento verde",
+      "pepino",
+      "ajo",
+      "cebolla",
+      "pan duro",
+      "aceite de oliva virgen extra",
+      "vinagre de Jerez",
+      "comino"
+     ]
+    },
+    {
+     "nombre": "Pepino con helado de mascarpone",
+     "ingredientes_clave": [
+      "pepinos",
+      "semillas de mostaza blanca",
+      "leche",
+      "nata líquida",
+      "mascarpone",
+      "vinagre de vino blanco",
+      "limón",
+      "hierbabuena",
+      "eneldo"
+     ]
+    },
+    {
+     "nombre": "Cazuela de gambas con aceitunas",
+     "ingredientes_clave": [
+      "gambas",
+      "aceitunas verdes",
+      "tomates",
+      "tomates cherry",
+      "cebolla",
+      "cilantro",
+      "ajo",
+      "guindilla verde",
+      "laurel",
+      "romero",
+      "jengibre"
+     ]
+    },
+    {
+     "nombre": "Taramasalata con berros y rabanitos",
+     "ingredientes_clave": [
+      "huevas de salmón",
+      "rabanitos",
+      "berros",
+      "cebolla",
+      "limón",
+      "pan",
+      "pan de centeno",
+      "aceite de oliva virgen extra",
+      "vinagre"
+     ]
+    },
+    {
+     "nombre": "Ensalada de judías verdes y alubias rojas",
+     "ingredientes_clave": [
+      "judías verdes",
+      "alubia roja cocida",
+      "maíz tierno",
+      "limón",
+      "cebolla morada",
+      "perejil o cilantro",
+      "aceite de oliva virgen extra"
+     ]
+    },
+    {
+     "nombre": "Pez espada con tomates rellenos",
+     "ingredientes_clave": [
+      "pez espada",
+      "tomates",
+      "ajo",
+      "limón",
+      "perejil",
+      "cebollino",
+      "leche",
+      "puré instantáneo",
+      "mantequilla",
+      "cebolla morada"
+     ]
+    },
+    {
+     "nombre": "Pepinos rellenos de langostinos",
+     "ingredientes_clave": [
+      "pepinos",
+      "langostinos",
+      "cebolla roja",
+      "limones",
+      "chile verde",
+      "cilantro"
+     ]
+    },
+    {
+     "nombre": "Pechuga de pavo al cava con uvas y verduras",
+     "ingredientes_clave": [
+      "pechuga de pavo",
+      "salsa de soja",
+      "mantequilla",
+      "cava",
+      "uvas",
+      "coles de Bruselas",
+      "nabo",
+      "zanahorias baby"
+     ]
+    },
+    {
+     "nombre": "Canelones de espinacas y aceitunas negras",
+     "ingredientes_clave": [
+      "láminas de canelones",
+      "espinacas",
+      "cebolla",
+      "ajo",
+      "queso crema",
+      "aceitunas negras",
+      "bechamel",
+      "aceite de oliva"
+     ]
+    },
+    {
+     "nombre": "Salmón marinado con cítricos y tomates a la plancha",
+     "ingredientes_clave": [
+      "lomos de salmón",
+      "limón",
+      "naranja",
+      "salsa de soja",
+      "tomates",
+      "perejil",
+      "orégano",
+      "aceite de oliva"
+     ]
+    },
+    {
+     "nombre": "Pastel griego de calabaza y berenjena",
+     "ingredientes_clave": [
+      "pasta filo",
+      "calabaza",
+      "berenjena",
+      "cebolla",
+      "arroz blanco",
+      "fideos finos",
+      "pasas",
+      "piñones",
+      "caldo de verduras",
+      "canela",
+      "tomate frito"
+     ]
+    },
+    {
+     "nombre": "Chopitos con habitas y ajos tiernos",
+     "ingredientes_clave": [
+      "chopitos",
+      "habas tiernas",
+      "cebolla",
+      "ajos tiernos",
+      "ajo",
+      "vino blanco",
+      "caldo de verduras",
+      "aceite de oliva",
+      "perejil"
+     ]
+    },
+    {
+     "nombre": "Sardinas al horno con kale",
+     "ingredientes_clave": [
+      "sardinas",
+      "kale",
+      "limones",
+      "panko",
+      "aceite de oliva"
+     ]
+    },
+    {
+     "nombre": "Paella de marisco con espárragos",
+     "ingredientes_clave": [
+      "arroz",
+      "almejas",
+      "gambones",
+      "espárragos",
+      "pimiento rojo",
+      "cebolla",
+      "ajo",
+      "tomates cherry",
+      "azafrán",
+      "caldo de pescado"
+     ]
+    },
+    {
+     "nombre": "Frittata italiana de berenjenas",
+     "ingredientes_clave": [
+      "berenjenas",
+      "pimientos rojos",
+      "huevos",
+      "queso parmesano",
+      "queso semicurado",
+      "cebollino",
+      "aceite de oliva virgen extra"
+     ]
+    },
+    {
+     "nombre": "Pasta de limón con sardinas escabechadas",
+     "ingredientes_clave": [
+      "sardinas",
+      "espaguetis",
+      "vinagre",
+      "vino blanco",
+      "yemas de huevo",
+      "laurel",
+      "zanahoria",
+      "limones",
+      "mantequilla"
+     ]
+    },
+    {
+     "nombre": "Pechuga de pavo con naranjas",
+     "ingredientes_clave": [
+      "pavo",
+      "naranjas",
+      "pomelo",
+      "pimiento verde",
+      "chalota",
+      "cilantro",
+      "limón",
+      "ajo",
+      "salsa de soja"
+     ]
+    },
+    {
+     "nombre": "Calamares en su tinta",
+     "ingredientes_clave": [
+      "chipirones",
+      "tinta de calamar",
+      "cebollas",
+      "ajos",
+      "tomates",
+      "pimiento rojo",
+      "perejil",
+      "arroz blanco redondo",
+      "caldo de pescado"
+     ]
+    },
+    {
+     "nombre": "Sardinas con tomates a la parrilla",
+     "ingredientes_clave": [
+      "sardinas",
+      "tomates cherry",
+      "sal gorda",
+      "huesos de aceituna",
+      "aceite de oliva virgen extra"
+     ]
+    },
+    {
+     "nombre": "Pollo a la Toscana",
+     "ingredientes_clave": [
+      "pechuga de pollo",
+      "cebolla",
+      "tomate",
+      "espinacas",
+      "nata de cocina",
+      "queso parmesano",
+      "ajo",
+      "aceite de oliva virgen extra"
+     ]
+    },
+    {
+     "nombre": "Pimientos asados con queso feta",
+     "ingredientes_clave": [
+      "pimientos rojos",
+      "tomates cherry",
+      "queso feta",
+      "albahaca fresca",
+      "aceite de oliva virgen extra"
+     ]
+    },
+    {
+     "nombre": "Salmón griego",
+     "ingredientes_clave": [
+      "lomos de salmón",
+      "queso feta",
+      "tomates",
+      "aceitunas kalamata",
+      "pepinos persas",
+      "cebolla roja",
+      "eneldo",
+      "limón",
+      "orégano",
+      "aceite de oliva virgen extra"
+     ]
+    },
+    {
+     "nombre": "Mejillones con tomate y ajo",
+     "ingredientes_clave": [
+      "mejillones",
+      "mantequilla",
+      "cebolla",
+      "ajo",
+      "tomates en lata",
+      "vino blanco seco",
+      "perejil",
+      "pan tostado"
+     ]
+    },
+    {
+     "nombre": "Potaje de garbanzos de bacalao",
+     "ingredientes_clave": [
+      "garbanzos",
+      "bacalao salado",
+      "arroz",
+      "cebolla",
+      "pimiento rojo",
+      "apio",
+      "cebolleta",
+      "ajo",
+      "pimentón dulce",
+      "aceite de oliva"
+     ]
+    }
+   ]
+  }
+ ]
+}

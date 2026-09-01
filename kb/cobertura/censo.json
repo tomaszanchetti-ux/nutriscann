@@ -1,0 +1,4311 @@
+{
+ "$comment": [
+  "GENERADO por kb/cobertura/censar.js. No se edita a mano: se edita el script",
+  "—donde viven los veredictos escritos por una persona— y se vuelve a correr.",
+  "",
+  "La medición sale del motor real. El veredicto de `ficha correcta` contra",
+  "`ficha equivocada` NO sale del motor: lo puso alguien mirando la ficha, y el",
+  "motivo de cada uno está en la nota de su fila o en la tabla del script.",
+  "",
+  "El candado que impide perder lo conquistado vive en",
+  "functions/src/engine/cobertura.test.ts y corre en cada `npm test`."
+ ],
+ "medido": "2026-09-01",
+ "kb_version": "3.3.0+e905338b",
+ "fichas_en_el_catalogo": 1036,
+ "clases": [
+  "ok",
+  "confianza_injusta",
+  "ficha_equivocada",
+  "ausente_ficha",
+  "descomponible"
+ ],
+ "resumen": {
+  "platos": {
+   "total": 141,
+   "ok": 38,
+   "confianza_injusta": 21,
+   "ficha_equivocada": 5,
+   "ausente_ficha": 48,
+   "descomponible": 29
+  },
+  "ingredientes": {
+   "total": 196,
+   "ok": 37,
+   "confianza_injusta": 91,
+   "ficha_equivocada": 9,
+   "ausente_ficha": 59,
+   "descomponible": 0
+  },
+  "por_lista": {
+   "directoalpaladar": {
+    "total": 101,
+    "ok": 34,
+    "confianza_injusta": 18,
+    "ficha_equivocada": 5,
+    "ausente_ficha": 39,
+    "descomponible": 5
+   },
+   "nuevoestilo": {
+    "total": 40,
+    "ok": 4,
+    "confianza_injusta": 3,
+    "ficha_equivocada": 0,
+    "ausente_ficha": 9,
+    "descomponible": 24
+   }
+  }
+ },
+ "platos": [
+  {
+   "lista": "directoalpaladar",
+   "plato": "Tortilla de patatas",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "manual-tortilla-de-patatas",
+    "ficha_es": "Tortilla de patatas",
+    "ficha_en": "Spanish potato omelette (tortilla de patatas)",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Tortilla de patatas",
+    "generic": false,
+    "kcal_100g": 136
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Gazpacho andaluz",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2710106",
+    "ficha_es": "Gazpacho",
+    "ficha_en": "Soup, gazpacho",
+    "nivel": "alias",
+    "confianza_match": 0.8,
+    "confianza_visible": 0.8,
+    "termino_matcheado": "Gazpacho andaluz",
+    "generic": false,
+    "kcal_100g": 26
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Cocido madrileño",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2707414",
+    "ficha_es": "Garbanzos cocidos con sal y grasa",
+    "ficha_en": "Chickpeas, NFS",
+    "nivel": "alias",
+    "confianza_match": 0.5,
+    "confianza_visible": 0.43,
+    "termino_matcheado": "Cocido madrileño",
+    "generic": true,
+    "kcal_100g": 211
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Paella valenciana",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2706723",
+    "ficha_es": "Paella",
+    "ficha_en": "Paella, NFS",
+    "nivel": "alias",
+    "confianza_match": 0.8,
+    "confianza_visible": 0.68,
+    "termino_matcheado": "Paella valenciana",
+    "generic": true,
+    "kcal_100g": 169
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Fabada asturiana",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2707407",
+    "ficha_es": "Frijoles con carne",
+    "ficha_en": "Beans with meat, NS as to type",
+    "nivel": "alias",
+    "confianza_match": 0.6,
+    "confianza_visible": 0.51,
+    "termino_matcheado": "Fabada asturiana",
+    "generic": true,
+    "kcal_100g": 184
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Ajoblanco",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-ajoblanco",
+    "ficha_es": "Ajoblanco",
+    "ficha_en": "Ajoblanco, Andalusian chilled almond and garlic soup",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Ajoblanco",
+    "generic": false,
+    "kcal_100g": 127.059
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Bacalao al pilpil",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2706245",
+    "ficha_es": "Bacalao al vapor",
+    "ficha_en": "Fish, cod, steamed",
+    "nivel": "difuso",
+    "confianza_match": 0.24,
+    "confianza_visible": 0.24,
+    "termino_matcheado": "Bacalao",
+    "generic": false,
+    "kcal_100g": 87
+   },
+   "nota": "Cae en `Bacalao al vapor` (87 kcal) por el alias `Bacalao` (0,8), que es correcto para el pescado. NO se emite alias del plato: el pilpil es una emulsión de aceite (~200 kcal/100 g) y heredar el 0,8 diría que el aceite no está. Candidato de la card 6.4."
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Callos a la madrileña",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2706162",
+    "ficha_es": "Mondongo",
+    "ficha_en": "Tripe",
+    "nivel": "alias",
+    "confianza_match": 0.5,
+    "confianza_visible": 0.5,
+    "termino_matcheado": "Callos a la madrileña",
+    "generic": false,
+    "kcal_100g": 89
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Empanada gallega",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2708709",
+    "ficha_es": "Empanada",
+    "ficha_en": "Empanada, NFS",
+    "nivel": "alias",
+    "confianza_match": 0.8,
+    "confianza_visible": 0.68,
+    "termino_matcheado": "Empanada gallega",
+    "generic": true,
+    "kcal_100g": 291
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Pulpo á feira",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-174249",
+    "ficha_es": "Pulpo cocido",
+    "ficha_en": "Mollusks, octopus, common, cooked, moist heat",
+    "nivel": "alias",
+    "confianza_match": 0.6,
+    "confianza_visible": 0.6,
+    "termino_matcheado": "Pulpo á feira",
+    "generic": false,
+    "kcal_100g": 164
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Salmorejo",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "manual-salmorejo",
+    "ficha_es": "Salmorejo",
+    "ficha_en": "Salmorejo, Spanish chilled tomato and bread soup",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Salmorejo",
+    "generic": false,
+    "kcal_100g": 83
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Cochinillo asado castellano",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2705882",
+    "ficha_es": "Cerdo asado",
+    "ficha_en": "Pork, roast",
+    "nivel": "alias",
+    "confianza_match": 0.5,
+    "confianza_visible": 0.5,
+    "termino_matcheado": "Cochinillo asado castellano",
+    "generic": false,
+    "kcal_100g": 181
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Fritura andaluza",
+   "clasificacion": "descomponible",
+   "match": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Papas arrugadas con mojo picón",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2709393",
+    "ficha_es": "Papa hervida con cáscara",
+    "ficha_en": "Potato, boiled, from fresh, peel eaten, NS as to fat",
+    "nivel": "alias",
+    "confianza_match": 0.6,
+    "confianza_visible": 0.51,
+    "termino_matcheado": "Papas arrugadas con mojo picón",
+    "generic": true,
+    "kcal_100g": 126
+   },
+   "nota": "RESCATADO en esta card: son papa hervida con piel en agua muy salada, que es exactamente fdc-2709393. Se emitió a 0,6 con el mojo nombrado y a 0,8 sin él, porque el mojo es aceite y la ficha no lo tiene."
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Pisto manchego",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2710028",
+    "ficha_es": "Ratatouille",
+    "ficha_en": "Ratatouille",
+    "nivel": "alias",
+    "confianza_match": 0.8,
+    "confianza_visible": 0.8,
+    "termino_matcheado": "Pisto manchego",
+    "generic": false,
+    "kcal_100g": 67
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Arroz a banda",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Marmitako",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Migas manchegas",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-migas",
+    "ficha_es": "Migas",
+    "ficha_en": "Migas, Spanish fried breadcrumbs with garlic and pork belly",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Migas manchegas",
+    "generic": false,
+    "kcal_100g": 391.884
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Tortilla de camarones",
+   "clasificacion": "ficha_equivocada",
+   "match": {
+    "ficha_id": "fdc-2707822",
+    "ficha_es": "Tortilla de trigo",
+    "ficha_en": "Tortilla, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.282,
+    "confianza_visible": 0.24,
+    "termino_matcheado": "Tortilla, NFS",
+    "generic": true,
+    "kcal_100g": 262
+   },
+   "nota": "La tortillita de camarones de Cádiz es una fritura de harina de garbanzo con camarones enteros (~350 kcal/100 g). Cae en `Tortilla de trigo` (`Tortilla, NFS`, 262 kcal) por la palabra `tortilla`, que en América nombra el pan plano. Guarda puesta por adelantado; la ficha la tiene que traer la card 6.4."
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Paletilla de cordero lechal al horno o lechazo",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "hay `Cordero` genérico y `Cordero asado` (0,6): candidato razonable a alias, no a ficha"
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Gallina en pepitoria",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Rabo de toro a la cordobesa",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2705843",
+    "ficha_es": "Rabo de res",
+    "ficha_en": "Beef, oxtails",
+    "nivel": "alias",
+    "confianza_match": 0.6,
+    "confianza_visible": 0.6,
+    "termino_matcheado": "Rabo de toro a la cordobesa",
+    "generic": false,
+    "kcal_100g": 257
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Sopa de ajo",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709144",
+    "ficha_es": "Sopa",
+    "ficha_en": "Soup, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.26,
+    "termino_matcheado": "Sopa",
+    "generic": true,
+    "kcal_100g": 49
+   },
+   "nota": "La ficha `Sopa` (`Soup, NFS`, 49 kcal) es de la familia correcta y subestima ~2× (la sopa castellana lleva pan, aceite y huevo). No se emite alias: colgar un plato concreto de la sopa genérica congelaría el error. Candidato de la card 6.4."
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Calçots",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "nota": "Sin ficha. El catálogo tiene cebolla de verdeo cruda, que no es un calçot asado a la brasa; el gemelo habría que medirlo, no suponerlo.",
+   "candidato_en_el_catalogo": "hay `Cebolla de verdeo cruda`; el calçot va a la brasa y el gemelo habría que medirlo, no suponerlo"
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Menestra de verduras de Tudela",
+   "clasificacion": "descomponible",
+   "match": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Torrijas",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2708331",
+    "ficha_es": "Tostada francesa",
+    "ficha_en": "French toast, NFS",
+    "nivel": "alias",
+    "confianza_match": 0.6,
+    "confianza_visible": 0.51,
+    "termino_matcheado": "Torrijas",
+    "generic": true,
+    "kcal_100g": 273
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Croquetas",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2709511",
+    "ficha_es": "Croquetas de papa",
+    "ficha_en": "Potato tots, NFS",
+    "nivel": "alias",
+    "confianza_match": 0.5,
+    "confianza_visible": 0.43,
+    "termino_matcheado": "Croqueta",
+    "generic": true,
+    "kcal_100g": 237
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Ensaimada mallorquina",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Pote gallego",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Arroz con leche",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-168063",
+    "ficha_es": "Arroz con leche",
+    "ficha_en": "Restaurant, Latino, arroz con leche (rice pudding)",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Arroz con leche",
+    "generic": false,
+    "kcal_100g": 146
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Escalivada",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-escalivada",
+    "ficha_es": "Escalivada",
+    "ficha_en": "Escalivada, Catalan roasted eggplant and pepper",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Escalivada",
+    "generic": false,
+    "kcal_100g": 63.757
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Merluza en salsa verde",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-merluza-en-salsa-verde",
+    "ficha_es": "Merluza en salsa verde",
+    "ficha_en": "Hake in green sauce (merluza en salsa verde)",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Merluza en salsa verde",
+    "generic": false,
+    "kcal_100g": 151.902
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Morteruelo",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Riñones al Jerez",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "NO hay ninguna ficha de riñón en el catálogo"
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Suquet de pescado",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2706224",
+    "ficha_es": "Pescado",
+    "ficha_en": "Fish, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.26,
+    "termino_matcheado": "Pescado",
+    "generic": true,
+    "kcal_100g": 238
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Txangurro a la donostiarra",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Fideuá",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "nota": "Sin ficha y sin gemelo: el catálogo no tiene ningún fideo corto cocido. Ver el hueco de `espaguetis` en el censo de ingredientes — es el mismo agujero.",
+   "candidato_en_el_catalogo": "no hay base: el catálogo no tiene ningún fideo corto cocido (ver el hueco de `espaguetis`)"
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Pa amb tomàquet",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2707652",
+    "ficha_es": "Bruschetta",
+    "ficha_en": "Bruschetta",
+    "nivel": "alias",
+    "confianza_match": 0.8,
+    "confianza_visible": 0.8,
+    "termino_matcheado": "Pa amb tomàquet",
+    "generic": false,
+    "kcal_100g": 171
+   },
+   "nota": "RESCATADO en esta card: estaba en silencio y el catálogo ya tenía el plato bajo `Pan con tomate` (0,8) sobre `Bruschetta`. Es el mismo plato con el nombre en catalán."
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Patatas bravas",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2709456",
+    "ficha_es": "Papas fritas",
+    "ficha_en": "Potato, french fries, NFS",
+    "nivel": "alias",
+    "confianza_match": 0.5,
+    "confianza_visible": 0.43,
+    "termino_matcheado": "Patatas bravas",
+    "generic": true,
+    "kcal_100g": 225
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Pollo al chilindrón",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2705930",
+    "ficha_es": "Pollo con piel",
+    "ficha_en": "Chicken, NS as to part and cooking method, skin eaten",
+    "nivel": "difuso",
+    "confianza_match": 0.188,
+    "confianza_visible": 0.16,
+    "termino_matcheado": "Pollo con piel",
+    "generic": true,
+    "kcal_100g": 196
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Tocinillo de cielo",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "nota": "Sin ficha. El `Flan` del catálogo (178 kcal) NO sirve de gemelo: el tocinillo es yema y almíbar, ~300 kcal, sin leche.",
+   "candidato_en_el_catalogo": "hay `Flan` (178 kcal) y NO sirve: el tocinillo es yema y almíbar, ~300 kcal, sin leche"
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Caracoles a la llauna",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "NO hay ninguna ficha de caracol en el catálogo"
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Coca",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Crema catalana",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2705683",
+    "ficha_es": "Flan",
+    "ficha_en": "Flan",
+    "nivel": "alias",
+    "confianza_match": 0.6,
+    "confianza_visible": 0.6,
+    "termino_matcheado": "Crema catalana",
+    "generic": false,
+    "kcal_100g": 178
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Filloas",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2708341",
+    "ficha_es": "Crepe",
+    "ficha_en": "Crepe, NFS",
+    "nivel": "alias",
+    "confianza_match": 0.8,
+    "confianza_visible": 0.68,
+    "termino_matcheado": "Filloas",
+    "generic": true,
+    "kcal_100g": 224
+   },
+   "nota": "RESCATADO en esta card: la filloa gallega es un crepe (harina, leche, huevo) y el catálogo tiene `Crepe`. 0,8."
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Tarta de Santiago",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-tarta-de-santiago",
+    "ficha_es": "Tarta de Santiago",
+    "ficha_en": "Tarta de Santiago, Galician almond cake",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Tarta de Santiago",
+    "generic": false,
+    "kcal_100g": 438.672
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Torrezno de Soria",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "hay `Tocino cocido` (484 kcal); el torrezno es panceta con corteza, candidato a medir"
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Calamares en su tinta",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "hay `Arroz con calamares` y `Calamares rebozados`; ninguno es calamar guisado en su tinta"
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Escudella y carn d'olla",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Patatas a la riojana",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709393",
+    "ficha_es": "Papa hervida con cáscara",
+    "ficha_en": "Potato, boiled, from fresh, peel eaten, NS as to fat",
+    "nivel": "difuso",
+    "confianza_match": 0.257,
+    "confianza_visible": 0.22,
+    "termino_matcheado": "Patata hervida con cáscara",
+    "generic": true,
+    "kcal_100g": 126
+   },
+   "nota": "La ficha es la papa hervida sola; el plato lleva chorizo, que mueve la grasa. Sin alias: el nombre `Papa hervida con cáscara` sobre un guiso es defendible en el número y no en la pantalla."
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Bacalao ajoarriero",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2706245",
+    "ficha_es": "Bacalao al vapor",
+    "ficha_en": "Fish, cod, steamed",
+    "nivel": "difuso",
+    "confianza_match": 0.187,
+    "confianza_visible": 0.19,
+    "termino_matcheado": "Bacalao",
+    "generic": false,
+    "kcal_100g": 87
+   },
+   "nota": "Mismo caso que el pilpil. Sin alias, a propósito."
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Huevos fritos",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2707155",
+    "ficha_es": "Huevo frito",
+    "ficha_en": "Egg, whole, fried, NS as to fat",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 0.85,
+    "termino_matcheado": "Huevo frito",
+    "generic": true,
+    "kcal_100g": 185
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "All i pebre de anguila",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "hay `Roll de sushi de anguila`, que no sirve; anguila suelta no hay"
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Ensaladilla rusa",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2709532",
+    "ficha_es": "Ensalada de papa con huevo y mayonesa",
+    "ficha_en": "Potato salad with egg, made with mayonnaise",
+    "nivel": "alias",
+    "confianza_match": 0.6,
+    "confianza_visible": 0.6,
+    "termino_matcheado": "Ensaladilla rusa",
+    "generic": false,
+    "kcal_100g": 157
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Escabechados",
+   "clasificacion": "descomponible",
+   "match": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Conejo al ajillo",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "NO hay ninguna ficha de conejo en el catálogo"
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Gazpachos manchegos o galianos",
+   "clasificacion": "ficha_equivocada",
+   "match": {
+    "ficha_id": "fdc-2710106",
+    "ficha_es": "Gazpacho",
+    "ficha_en": "Soup, gazpacho",
+    "nivel": "difuso",
+    "confianza_match": 0.178,
+    "confianza_visible": 0.18,
+    "termino_matcheado": "Gazpacho",
+    "generic": false,
+    "kcal_100g": 26
+   },
+   "nota": "El nombre que más miente del censo: es un GUISO CALIENTE de caza sobre torta de pan ácimo (~200 kcal/100 g) y cae en la sopa fría andaluza de 26 kcal — casi ocho veces menos. El plural manchego y el singular andaluz son dos platos distintos."
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Porrusalda",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Albóndigas",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2706467",
+    "ficha_es": "Albóndigas con salsa",
+    "ficha_en": "Meatballs, NS as to type of meat, with sauce",
+    "nivel": "alias",
+    "confianza_match": 0.8,
+    "confianza_visible": 0.68,
+    "termino_matcheado": "Albóndigas",
+    "generic": true,
+    "kcal_100g": 186
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Arroz al caldero",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Cocochas en salsa",
+   "clasificacion": "ficha_equivocada",
+   "match": {
+    "ficha_id": "fdc-2709736",
+    "ficha_es": "Salsa mexicana",
+    "ficha_en": "Salsa, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.231,
+    "confianza_visible": 0.2,
+    "termino_matcheado": "Salsa, NFS",
+    "generic": true,
+    "kcal_100g": 34
+   },
+   "nota": "Papada de merluza o bacalao en emulsión de aceite y ajo. Cae en `Salsa mexicana` (`Salsa, NFS`, 34 kcal) arrastrada por la palabra `salsa`. Guarda puesta por adelantado sobre `cocochas`."
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Merluza a la gallega",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "hay `receta-merluza-en-salsa-verde` (152 kcal) y `Pescado` genérico; la gallega es con patata y pimentón"
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Perdices estofadas",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "NO hay ninguna ficha de perdiz ni de codorniz en el catálogo"
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Potaje de vigilia",
+   "clasificacion": "descomponible",
+   "match": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Soldaditos de Pavía o bacalao rebozado",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2706240",
+    "ficha_es": "Bacalao rebozado",
+    "ficha_en": "Fish, cod, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.282,
+    "confianza_visible": 0.24,
+    "termino_matcheado": "Bacalao rebozado",
+    "generic": true,
+    "kcal_100g": 217
+   },
+   "nota": "Llega a `Bacalao rebozado` (fdc-2706240), que es el plato. La confianza es del difuso. No se emitió alias porque esa ficha es `Fish, cod, NFS` renombrada como si fuera rebozada, y apoyar vocabulario nuevo sobre esa decisión de curación sería construir sobre arena. Anotado como pendiente, no como hueco."
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Almejas a la marinera",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2706339",
+    "ficha_es": "Almejas",
+    "ficha_en": "Clams, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.24,
+    "confianza_visible": 0.2,
+    "termino_matcheado": "Almejas",
+    "generic": true,
+    "kcal_100g": 143
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Bacalao a la vizcaína",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2706245",
+    "ficha_es": "Bacalao al vapor",
+    "ficha_en": "Fish, cod, steamed",
+    "nivel": "difuso",
+    "confianza_match": 0.21,
+    "confianza_visible": 0.21,
+    "termino_matcheado": "Bacalao",
+    "generic": false,
+    "kcal_100g": 87
+   },
+   "nota": "Mismo caso que el pilpil: la ficha es el pescado al vapor y el plato lleva una salsa de pimiento choricero y aceite que la ficha no tiene. Sin alias, a propósito."
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Butifarra con alubias",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Pestiños",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Pimientos de piquillo rellenos",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2709073",
+    "ficha_es": "Pimiento relleno de arroz y carne",
+    "ficha_en": "Stuffed pepper, with rice and meat",
+    "nivel": "alias",
+    "confianza_match": 0.6,
+    "confianza_visible": 0.6,
+    "termino_matcheado": "Pimientos de piquillo rellenos",
+    "generic": false,
+    "kcal_100g": 178
+   },
+   "nota": "CORREGIDO en esta card: caía en `Pimientos crudos` (27 kcal, 6,6 veces menos que el plato) y ahora resuelve a `Pimiento relleno de arroz y carne` a 0,6. La reserva es el arroz del relleno de USDA."
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Sardinas asadas",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2706293",
+    "ficha_es": "Sardinas en lata",
+    "ficha_en": "Fish, sardines, canned",
+    "nivel": "difuso",
+    "confianza_match": 0.36,
+    "confianza_visible": 0.36,
+    "termino_matcheado": "Sardinas",
+    "generic": false,
+    "kcal_100g": 208
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Buñuelos de viento",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2708024",
+    "ficha_es": "Buñuelo",
+    "ficha_en": "Fritter, plain",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.3,
+    "termino_matcheado": "Buñuelo",
+    "generic": false,
+    "kcal_100g": 378
+   },
+   "nota": "`Buñuelo` (`Fritter, plain`, 378 kcal) es la ficha correcta y la familia exacta. Queda en confianza injusta porque el nombre largo no dispara el alias corto; es candidato limpio a la regla de herencia en una próxima curación."
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Cocido montañés",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Cardos a la navarra",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Boquerones y anchoas",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2706232",
+    "ficha_es": "Anchoas en aceite",
+    "ficha_en": "Fish, anchovy",
+    "nivel": "difuso",
+    "confianza_match": 0.202,
+    "confianza_visible": 0.2,
+    "termino_matcheado": "Boquerones",
+    "generic": false,
+    "kcal_100g": 210
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Gambas al ajillo",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2706362",
+    "ficha_es": "Camarones a la plancha",
+    "ficha_en": "Shrimp, grilled",
+    "nivel": "alias",
+    "confianza_match": 0.6,
+    "confianza_visible": 0.6,
+    "termino_matcheado": "Gambas al ajillo",
+    "generic": false,
+    "kcal_100g": 110
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Quesada pasiega",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "nota": "Sin ficha. `Tarta de queso` (399 kcal) no es gemelo: la quesada es cuajada y harina, sin base de queso crema.",
+   "candidato_en_el_catalogo": "hay `Tarta de queso` (399 kcal) y NO sirve: la quesada es cuajada y harina, sin queso crema"
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Rabas/calamares",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2706334",
+    "ficha_es": "Calamares rebozados",
+    "ficha_en": "Calamari, fried",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Rabas",
+    "generic": false,
+    "kcal_100g": 234
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Arroz negro",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2708977",
+    "ficha_es": "Arroz con calamares",
+    "ficha_en": "Rice with squid, Puerto Rican style",
+    "nivel": "alias",
+    "confianza_match": 0.6,
+    "confianza_visible": 0.6,
+    "termino_matcheado": "Arroz negro",
+    "generic": false,
+    "kcal_100g": 264
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Besugo a la espalda",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "hay `Lubina` (`Fish, bass, NFS`, 161 kcal) como base de pescado blanco al horno"
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Caldereta de cordero u oveja",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "hay `Cordero` genérico (292 kcal) y `Cordero asado` (0,6); la caldereta es guiso con patata"
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Manitas de cordero",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2705905",
+    "ficha_es": "Cordero",
+    "ficha_en": "Lamb, NS as to cut",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.26,
+    "termino_matcheado": "Cordero",
+    "generic": true,
+    "kcal_100g": 292
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Caldereta de langosta",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "NO hay ninguna ficha de langosta en el catálogo"
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Canelones",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2708795",
+    "ficha_es": "Canelones de queso y espinaca",
+    "ficha_en": "Cannelloni, cheese- and spinach-filled, no sauce",
+    "nivel": "alias",
+    "confianza_match": 0.8,
+    "confianza_visible": 0.8,
+    "termino_matcheado": "Canelones",
+    "generic": false,
+    "kcal_100g": 157
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Pipirrana",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Brasas, chuletón...",
+   "clasificacion": "descomponible",
+   "match": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Leche frita",
+   "clasificacion": "ficha_equivocada",
+   "match": {
+    "ficha_id": "fdc-2705384",
+    "ficha_es": "Leche",
+    "ficha_en": "Milk, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.6,
+    "confianza_visible": 0.51,
+    "termino_matcheado": "Leche",
+    "generic": true,
+    "kcal_100g": 52
+   },
+   "nota": "Postre de crema cuajada rebozada y frita (~250 kcal/100 g). Cae en `Leche` (52 kcal), que además de equivocarse por cinco es un LÍQUIDO: la porción también saldría mal."
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Bonito con tomate",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "hay `Atún` (85) y `Atún cocido` (176); el guiso con tomate no está"
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Mollejas",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "NO hay ninguna ficha de molleja en el catálogo"
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Pastel de cabracho",
+   "clasificacion": "ficha_equivocada",
+   "match": {
+    "ficha_id": "fdc-2707993",
+    "ficha_es": "Tarta",
+    "ficha_en": "Pie, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.24,
+    "confianza_visible": 0.2,
+    "termino_matcheado": "Pastel",
+    "generic": true,
+    "kcal_100g": 296
+   },
+   "nota": "Pudín frío de pescado, huevo, nata y tomate (~180 kcal/100 g). Cae en `Tarta` (`Pie, NFS`, 296 kcal): acá `pastel` no quiere decir postre. La guarda es sobre el término completo — `Pastel` a secas sigue siendo alias legítimo de la tarta."
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Patatas a la importancia",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709393",
+    "ficha_es": "Papa hervida con cáscara",
+    "ficha_en": "Potato, boiled, from fresh, peel eaten, NS as to fat",
+    "nivel": "difuso",
+    "confianza_match": 0.2,
+    "confianza_visible": 0.17,
+    "termino_matcheado": "Patata hervida con cáscara",
+    "generic": true,
+    "kcal_100g": 126
+   },
+   "nota": "Mismo caso: la ficha es la papa hervida y el plato lleva rebozado y salsa."
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Patatas revolconas",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709393",
+    "ficha_es": "Papa hervida con cáscara",
+    "ficha_en": "Potato, boiled, from fresh, peel eaten, NS as to fat",
+    "nivel": "difuso",
+    "confianza_match": 0.225,
+    "confianza_visible": 0.19,
+    "termino_matcheado": "Patata hervida con cáscara",
+    "generic": true,
+    "kcal_100g": 126
+   },
+   "nota": "Mismo caso: la ficha es la papa hervida y el plato lleva pimentón y torreznos."
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Pies de cerdo",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2705862",
+    "ficha_es": "Cerdo",
+    "ficha_en": "Pork, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.333,
+    "confianza_visible": 0.28,
+    "termino_matcheado": "Cerdo",
+    "generic": true,
+    "kcal_100g": 192
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Tumbet",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Alubias con perdiz",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2707347",
+    "ficha_es": "Frijoles cocidos con sal y grasa",
+    "ficha_en": "Beans, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.277,
+    "confianza_visible": 0.24,
+    "termino_matcheado": "Alubias cocidas con sal y grasa",
+    "generic": true,
+    "kcal_100g": 189
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Arroz con costra",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Habas a la catalana",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Lubina a la sal",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2706294",
+    "ficha_es": "Lubina",
+    "ficha_en": "Fish, bass, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.36,
+    "confianza_visible": 0.31,
+    "termino_matcheado": "Lubina",
+    "generic": true,
+    "kcal_100g": 161
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Morcillas",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2706173",
+    "ficha_es": "Morcilla",
+    "ficha_en": "Blood sausage",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Morcilla",
+    "generic": false,
+    "kcal_100g": 379
+   }
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Alcachofas con jamón",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "directoalpaladar",
+   "plato": "Gachas manchegas",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": null
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Ensalada de pollo mediterránea",
+   "clasificacion": "descomponible",
+   "match": null
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Arancini",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "hay `Arroz blanco cocido con mantequilla` (`Risotto`, 147) como base; el arancini es rebozado y frito"
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Tajine de cordero",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2705905",
+    "ficha_es": "Cordero",
+    "ficha_en": "Lamb, NS as to cut",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.26,
+    "termino_matcheado": "Cordero",
+    "generic": true,
+    "kcal_100g": 292
+   }
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Ensalada Niçoise",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "hay las partes (atún, huevo, judías, patata, aceitunas) pero ninguna ficha de la ensalada"
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Risotto",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2708405",
+    "ficha_es": "Arroz blanco cocido con mantequilla",
+    "ficha_en": "Rice, white, cooked, made with butter",
+    "nivel": "alias",
+    "confianza_match": 0.5,
+    "confianza_visible": 0.5,
+    "termino_matcheado": "Risotto",
+    "generic": false,
+    "kcal_100g": 147
+   }
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Shawarma de pollo",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2705930",
+    "ficha_es": "Pollo con piel",
+    "ficha_en": "Chicken, NS as to part and cooking method, skin eaten",
+    "nivel": "difuso",
+    "confianza_match": 0.214,
+    "confianza_visible": 0.18,
+    "termino_matcheado": "Pollo con piel",
+    "generic": true,
+    "kcal_100g": 196
+   }
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Ensalada Halloumi",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "NO hay ficha de halloumi (el `queso halloumi` cae en `Queso` genérico)"
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Hummus",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-174289",
+    "ficha_es": "Hummus",
+    "ficha_en": "Hummus, commercial",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Hummus",
+    "generic": false,
+    "kcal_100g": 229
+   }
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Pasta Alla Norma",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "hay `Pasta con salsa` (125) como base de familia"
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Shakshuka",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "hay `Huevo cocido` y `Tomate cocido`; el plato armado no está"
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Falafel",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2707408",
+    "ficha_es": "Falafel",
+    "ficha_en": "Falafel",
+    "nivel": "exacto",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Falafel",
+    "generic": false,
+    "kcal_100g": 514
+   }
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Ensalada griega",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "hay `Queso feta` (265) y las hortalizas; la ensalada armada no está"
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Baklava de nueces y pistachos",
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2708044",
+    "ficha_es": "Baklava",
+    "ficha_en": "Baklava",
+    "nivel": "difuso",
+    "confianza_match": 0.191,
+    "confianza_visible": 0.19,
+    "termino_matcheado": "Baklava",
+    "generic": false,
+    "kcal_100g": 440
+   }
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Ensalada Fattoush",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "hay las hortalizas y `Pita` (card 6.2); la ensalada armada no está"
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Alcachofas a la parrilla con mayonesa de ajo",
+   "clasificacion": "descomponible",
+   "match": null
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Baba Ghanoush",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "hay `Berenjena cruda` y no hay tahini: las dos piezas del plato faltan o están crudas"
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Gazpacho",
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2710106",
+    "ficha_es": "Gazpacho",
+    "ficha_en": "Soup, gazpacho",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Gazpacho",
+    "generic": false,
+    "kcal_100g": 26
+   }
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Pepino con helado de mascarpone",
+   "clasificacion": "descomponible",
+   "match": null
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Cazuela de gambas con aceitunas",
+   "clasificacion": "descomponible",
+   "match": null
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Taramasalata con berros y rabanitos",
+   "clasificacion": "descomponible",
+   "match": null
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Ensalada de judías verdes y alubias rojas",
+   "clasificacion": "descomponible",
+   "match": null
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Pez espada con tomates rellenos",
+   "clasificacion": "descomponible",
+   "match": null,
+   "nota": "No hay ficha de pez espada en el catálogo (`pez espada` y `swordfish` dan silencio)."
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Pepinos rellenos de langostinos",
+   "clasificacion": "descomponible",
+   "match": {
+    "ficha_id": "fdc-168409",
+    "ficha_es": "Pepino crudo con cáscara",
+    "ficha_en": "Cucumber, with peel, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.212,
+    "confianza_visible": 0.21,
+    "termino_matcheado": "Pepino crudo con cáscara",
+    "generic": false,
+    "kcal_100g": 15.9075
+   }
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Pechuga de pavo al cava con uvas y verduras",
+   "clasificacion": "descomponible",
+   "match": {
+    "ficha_id": "fdc-2706104",
+    "ficha_es": "Pavo",
+    "ficha_en": "Turkey, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.248,
+    "confianza_visible": 0.21,
+    "termino_matcheado": "Pechuga de pavo",
+    "generic": true,
+    "kcal_100g": 139
+   },
+   "nota": "CORREGIDO en parte: el pavo dejó de ser pollo (alias `Pechuga de pavo` 0,8 sobre `Pavo`). Sigue siendo una composición: la visión va a ver pavo, uvas y verduras por separado."
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Canelones de espinacas y aceitunas negras",
+   "clasificacion": "descomponible",
+   "match": {
+    "ficha_id": "fdc-2708795",
+    "ficha_es": "Canelones de queso y espinaca",
+    "ficha_en": "Cannelloni, cheese- and spinach-filled, no sauce",
+    "nivel": "difuso",
+    "confianza_match": 0.12,
+    "confianza_visible": 0.12,
+    "termino_matcheado": "Canelones",
+    "generic": false,
+    "kcal_100g": 157
+   }
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Salmón marinado con cítricos y tomates a la plancha",
+   "clasificacion": "descomponible",
+   "match": null,
+   "nota": "Mismo hueco: no hay salmón en el catálogo."
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Pastel griego de calabaza y berenjena",
+   "clasificacion": "descomponible",
+   "match": {
+    "ficha_id": "fdc-2707993",
+    "ficha_es": "Tarta",
+    "ficha_en": "Pie, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.112,
+    "confianza_visible": 0.1,
+    "termino_matcheado": "Pastel",
+    "generic": true,
+    "kcal_100g": 296
+   }
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Chopitos con habitas y ajos tiernos",
+   "clasificacion": "descomponible",
+   "match": null
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Sardinas al horno con kale",
+   "clasificacion": "descomponible",
+   "match": {
+    "ficha_id": "fdc-2706293",
+    "ficha_es": "Sardinas en lata",
+    "ficha_en": "Fish, sardines, canned",
+    "nivel": "difuso",
+    "confianza_match": 0.14,
+    "confianza_visible": 0.14,
+    "termino_matcheado": "Sardinas",
+    "generic": false,
+    "kcal_100g": 208
+   }
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Paella de marisco con espárragos",
+   "clasificacion": "descomponible",
+   "match": {
+    "ficha_id": "fdc-2706723",
+    "ficha_es": "Paella",
+    "ficha_en": "Paella, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.34,
+    "confianza_visible": 0.29,
+    "termino_matcheado": "Paella de marisco",
+    "generic": true,
+    "kcal_100g": 169
+   },
+   "nota": "La paella ya llega por el alias nuevo `Paella de marisco` (0,8); lo que baja la confianza es el espárrago del título, que la visión iba a ver aparte de todos modos."
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Frittata italiana de berenjenas",
+   "clasificacion": "descomponible",
+   "match": null
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Pasta de limón con sardinas escabechadas",
+   "clasificacion": "descomponible",
+   "match": null
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Pechuga de pavo con naranjas",
+   "clasificacion": "descomponible",
+   "match": {
+    "ficha_id": "fdc-2706104",
+    "ficha_es": "Pavo",
+    "ficha_en": "Turkey, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.36,
+    "confianza_visible": 0.31,
+    "termino_matcheado": "Pechuga de pavo",
+    "generic": true,
+    "kcal_100g": 139
+   },
+   "nota": "Mismo caso: el pavo ya no es pollo, y el plato lo desarma la visión."
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Calamares en su tinta",
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "candidato_en_el_catalogo": "hay `Arroz con calamares` y `Calamares rebozados`; ninguno es calamar guisado en su tinta"
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Sardinas con tomates a la parrilla",
+   "clasificacion": "descomponible",
+   "match": {
+    "ficha_id": "fdc-2706293",
+    "ficha_es": "Sardinas en lata",
+    "ficha_en": "Fish, sardines, canned",
+    "nivel": "difuso",
+    "confianza_match": 0.11,
+    "confianza_visible": 0.11,
+    "termino_matcheado": "Sardinas",
+    "generic": false,
+    "kcal_100g": 208
+   }
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Pollo a la Toscana",
+   "clasificacion": "descomponible",
+   "match": {
+    "ficha_id": "fdc-2705930",
+    "ficha_es": "Pollo con piel",
+    "ficha_en": "Chicken, NS as to part and cooking method, skin eaten",
+    "nivel": "difuso",
+    "confianza_match": 0.231,
+    "confianza_visible": 0.2,
+    "termino_matcheado": "Pollo con piel",
+    "generic": true,
+    "kcal_100g": 196
+   }
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Pimientos asados con queso feta",
+   "clasificacion": "descomponible",
+   "match": null
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Salmón griego",
+   "clasificacion": "descomponible",
+   "match": null,
+   "nota": "NO HAY NINGUNA FICHA DE SALMÓN en el catálogo (medido: cero coincidencias en 1.036 fichas). Es el hueco de proteína más caro del censo."
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Mejillones con tomate y ajo",
+   "clasificacion": "descomponible",
+   "match": null,
+   "nota": "No hay ficha de mejillón en el catálogo (`mejillones` y `mussels` dan silencio). El tomate y el ajo sí están."
+  },
+  {
+   "lista": "nuevoestilo",
+   "plato": "Potaje de garbanzos de bacalao",
+   "clasificacion": "descomponible",
+   "match": {
+    "ficha_id": "fdc-2706245",
+    "ficha_es": "Bacalao al vapor",
+    "ficha_en": "Fish, cod, steamed",
+    "nivel": "difuso",
+    "confianza_match": 0.146,
+    "confianza_visible": 0.15,
+    "termino_matcheado": "Bacalao",
+    "generic": false,
+    "kcal_100g": 87
+   }
+  }
+ ],
+ "ingredientes": [
+  {
+   "ingrediente": "aceite de oliva",
+   "platos_que_lo_usan": 8,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2710186",
+    "ficha_es": "Aceite de oliva",
+    "ficha_en": "Olive oil",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Aceite de oliva",
+    "generic": false,
+    "kcal_100g": 900
+   }
+  },
+  {
+   "ingrediente": "aceite de oliva virgen extra",
+   "platos_que_lo_usan": 16,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2710186",
+    "ficha_es": "Aceite de oliva",
+    "ficha_en": "Olive oil",
+    "nivel": "difuso",
+    "confianza_match": 0.36,
+    "confianza_visible": 0.36,
+    "termino_matcheado": "Aceite de oliva",
+    "generic": false,
+    "kcal_100g": 900
+   }
+  },
+  {
+   "ingrediente": "aceitunas kalamata",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2710088",
+    "ficha_es": "Aceitunas",
+    "ficha_en": "Olives, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.282,
+    "confianza_visible": 0.24,
+    "termino_matcheado": "Aceitunas",
+    "generic": true,
+    "kcal_100g": 116
+   }
+  },
+  {
+   "ingrediente": "aceitunas Kalamata",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2710088",
+    "ficha_es": "Aceitunas",
+    "ficha_en": "Olives, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.282,
+    "confianza_visible": 0.24,
+    "termino_matcheado": "Aceitunas",
+    "generic": true,
+    "kcal_100g": 116
+   }
+  },
+  {
+   "ingrediente": "aceitunas negras",
+   "platos_que_lo_usan": 3,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-169094",
+    "ficha_es": "Aceitunas negras en lata",
+    "ficha_en": "Olives, ripe, canned (small-extra large)",
+    "nivel": "difuso",
+    "confianza_match": 0.382,
+    "confianza_visible": 0.38,
+    "termino_matcheado": "Aceitunas negras en lata",
+    "generic": false,
+    "kcal_100g": 116
+   }
+  },
+  {
+   "ingrediente": "aceitunas verdes",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2710088",
+    "ficha_es": "Aceitunas",
+    "ficha_en": "Olives, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.343,
+    "confianza_visible": 0.29,
+    "termino_matcheado": "Aceitunas",
+    "generic": true,
+    "kcal_100g": 116
+   }
+  },
+  {
+   "ingrediente": "agua fría",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2710707",
+    "ficha_es": "Agua",
+    "ficha_en": "Water, tap",
+    "nivel": "difuso",
+    "confianza_match": 0.267,
+    "confianza_visible": 0.27,
+    "termino_matcheado": "Agua",
+    "generic": false,
+    "kcal_100g": 0
+   }
+  },
+  {
+   "ingrediente": "agua helada",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2710707",
+    "ficha_es": "Agua",
+    "ficha_en": "Water, tap",
+    "nivel": "difuso",
+    "confianza_match": 0.218,
+    "confianza_visible": 0.22,
+    "termino_matcheado": "Agua",
+    "generic": false,
+    "kcal_100g": 0
+   }
+  },
+  {
+   "ingrediente": "aguacate",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-171705",
+    "ficha_es": "Aguacate crudo",
+    "ficha_en": "Avocados, raw, all commercial varieties",
+    "nivel": "difuso",
+    "confianza_match": 0.343,
+    "confianza_visible": 0.34,
+    "termino_matcheado": "Aguacate crudo",
+    "generic": false,
+    "kcal_100g": 160
+   }
+  },
+  {
+   "ingrediente": "ajo",
+   "platos_que_lo_usan": 21,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-169230",
+    "ficha_es": "Ajo crudo",
+    "ficha_en": "Garlic, raw",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Ajo",
+    "generic": false,
+    "kcal_100g": 143
+   },
+   "nota": "CORREGIDO en esta card: caía en `Puerro cocido con sal y grasa` (0,11) porque el puerro lleva de alias `Ajo porro`. Es el ingrediente más frecuente de las dos fuentes."
+  },
+  {
+   "ingrediente": "ajos",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-169230",
+    "ficha_es": "Ajo crudo",
+    "ficha_en": "Garlic, raw",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Ajo",
+    "generic": false,
+    "kcal_100g": 143
+   },
+   "nota": "CORREGIDO en esta card, con el mismo motivo que el singular."
+  },
+  {
+   "ingrediente": "ajos tiernos",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-169230",
+    "ficha_es": "Ajo crudo",
+    "ficha_en": "Garlic, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.18,
+    "confianza_visible": 0.18,
+    "termino_matcheado": "Ajo",
+    "generic": false,
+    "kcal_100g": 143
+   }
+  },
+  {
+   "ingrediente": "albahaca",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "albahaca fresca",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "alcachofas",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "alcaparras",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "almejas",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2706339",
+    "ficha_es": "Almejas",
+    "ficha_en": "Clams, NFS",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 0.85,
+    "termino_matcheado": "Almejas",
+    "generic": true,
+    "kcal_100g": 143
+   }
+  },
+  {
+   "ingrediente": "alubia roja cocida",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2707347",
+    "ficha_es": "Frijoles cocidos con sal y grasa",
+    "ficha_en": "Beans, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.327,
+    "confianza_visible": 0.28,
+    "termino_matcheado": "Alubias cocidas con sal y grasa",
+    "generic": true,
+    "kcal_100g": 189
+   }
+  },
+  {
+   "ingrediente": "anchoas",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2706232",
+    "ficha_es": "Anchoas en aceite",
+    "ficha_en": "Fish, anchovy",
+    "nivel": "difuso",
+    "confianza_match": 0.257,
+    "confianza_visible": 0.26,
+    "termino_matcheado": "Anchoas de lata",
+    "generic": false,
+    "kcal_100g": 210
+   }
+  },
+  {
+   "ingrediente": "apio",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-169988",
+    "ficha_es": "Apio crudo",
+    "ficha_en": "Celery, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.24,
+    "confianza_visible": 0.24,
+    "termino_matcheado": "Apio crudo",
+    "generic": false,
+    "kcal_100g": 16.6973
+   }
+  },
+  {
+   "ingrediente": "aroma de azahar",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "arroz",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709087",
+    "ficha_es": "Arroz rojo",
+    "ficha_en": "Spanish rice, NS as to fat",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.26,
+    "termino_matcheado": "Arroz rojo",
+    "generic": true,
+    "kcal_100g": 115
+   }
+  },
+  {
+   "ingrediente": "arroz Arborio",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "arroz blanco",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2708403",
+    "ficha_es": "Arroz blanco cocido",
+    "ficha_en": "Rice, white, cooked, NS as to fat",
+    "nivel": "difuso",
+    "confianza_match": 0.379,
+    "confianza_visible": 0.32,
+    "termino_matcheado": "Arroz blanco cocido",
+    "generic": true,
+    "kcal_100g": 129
+   }
+  },
+  {
+   "ingrediente": "arroz blanco redondo",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2708403",
+    "ficha_es": "Arroz blanco cocido",
+    "ficha_en": "Rice, white, cooked, NS as to fat",
+    "nivel": "difuso",
+    "confianza_match": 0.36,
+    "confianza_visible": 0.31,
+    "termino_matcheado": "Arroz blanco cocido",
+    "generic": true,
+    "kcal_100g": 129
+   }
+  },
+  {
+   "ingrediente": "arroz bomba",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "atún en aceite de oliva",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2706309",
+    "ficha_es": "Atún",
+    "ficha_en": "Fish, tuna, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.141,
+    "confianza_visible": 0.12,
+    "termino_matcheado": "Atún",
+    "generic": true,
+    "kcal_100g": 85
+   }
+  },
+  {
+   "ingrediente": "azafrán",
+   "platos_que_lo_usan": 3,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "azúcar",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2710257",
+    "ficha_es": "Azúcar",
+    "ficha_en": "Sugar, NFS",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 0.85,
+    "termino_matcheado": "Azúcar",
+    "generic": true,
+    "kcal_100g": 401
+   }
+  },
+  {
+   "ingrediente": "bacalao salado",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2706245",
+    "ficha_es": "Bacalao al vapor",
+    "ficha_en": "Fish, cod, steamed",
+    "nivel": "difuso",
+    "confianza_match": 0.24,
+    "confianza_visible": 0.24,
+    "termino_matcheado": "Bacalao",
+    "generic": false,
+    "kcal_100g": 87
+   }
+  },
+  {
+   "ingrediente": "bechamel",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "berenjena",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-169228",
+    "ficha_es": "Berenjena cruda",
+    "ficha_en": "Eggplant, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.36,
+    "confianza_visible": 0.36,
+    "termino_matcheado": "Berenjena cruda",
+    "generic": false,
+    "kcal_100g": 26.0848
+   }
+  },
+  {
+   "ingrediente": "berenjenas",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-169228",
+    "ficha_es": "Berenjena cruda",
+    "ficha_en": "Eggplant, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.36,
+    "confianza_visible": 0.36,
+    "termino_matcheado": "Berenjena cruda",
+    "generic": false,
+    "kcal_100g": 26.0848
+   }
+  },
+  {
+   "ingrediente": "berros",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-170068",
+    "ficha_es": "Berro crudo",
+    "ficha_en": "Watercress, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.273,
+    "confianza_visible": 0.27,
+    "termino_matcheado": "Berro crudo",
+    "generic": false,
+    "kcal_100g": 11
+   }
+  },
+  {
+   "ingrediente": "calabaza",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-168448",
+    "ficha_es": "Calabaza cruda",
+    "ficha_en": "Pumpkin, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.343,
+    "confianza_visible": 0.34,
+    "termino_matcheado": "Calabaza cruda",
+    "generic": false,
+    "kcal_100g": 26
+   }
+  },
+  {
+   "ingrediente": "caldo de pescado",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2707132",
+    "ficha_es": "Caldo",
+    "ficha_en": "Soup, broth",
+    "nivel": "difuso",
+    "confianza_match": 0.231,
+    "confianza_visible": 0.23,
+    "termino_matcheado": "Caldo",
+    "generic": false,
+    "kcal_100g": 6
+   }
+  },
+  {
+   "ingrediente": "caldo de pollo",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2707132",
+    "ficha_es": "Caldo",
+    "ficha_en": "Soup, broth",
+    "nivel": "difuso",
+    "confianza_match": 0.273,
+    "confianza_visible": 0.27,
+    "termino_matcheado": "Caldo",
+    "generic": false,
+    "kcal_100g": 6
+   }
+  },
+  {
+   "ingrediente": "caldo de verduras",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2707132",
+    "ficha_es": "Caldo",
+    "ficha_en": "Soup, broth",
+    "nivel": "difuso",
+    "confianza_match": 0.231,
+    "confianza_visible": 0.23,
+    "termino_matcheado": "Caldo",
+    "generic": false,
+    "kcal_100g": 6
+   }
+  },
+  {
+   "ingrediente": "canela",
+   "platos_que_lo_usan": 4,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "cava",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "cayena",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "cebolla",
+   "platos_que_lo_usan": 17,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709795",
+    "ficha_es": "Cebolla cruda",
+    "ficha_en": "Onions, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.323,
+    "confianza_visible": 0.32,
+    "termino_matcheado": "Cebolla cruda",
+    "generic": false,
+    "kcal_100g": 38
+   }
+  },
+  {
+   "ingrediente": "cebolla morada",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709795",
+    "ficha_es": "Cebolla cruda",
+    "ficha_en": "Onions, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.3,
+    "termino_matcheado": "Cebolla cruda",
+    "generic": false,
+    "kcal_100g": 38
+   }
+  },
+  {
+   "ingrediente": "cebolla roja",
+   "platos_que_lo_usan": 4,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709795",
+    "ficha_es": "Cebolla cruda",
+    "ficha_en": "Onions, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.35,
+    "confianza_visible": 0.35,
+    "termino_matcheado": "Cebolla cruda",
+    "generic": false,
+    "kcal_100g": 38
+   }
+  },
+  {
+   "ingrediente": "cebollas",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709795",
+    "ficha_es": "Cebolla cruda",
+    "ficha_en": "Onions, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.323,
+    "confianza_visible": 0.32,
+    "termino_matcheado": "Cebolla cruda",
+    "generic": false,
+    "kcal_100g": 38
+   }
+  },
+  {
+   "ingrediente": "cebolleta",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-170005",
+    "ficha_es": "Cebolla de verdeo cruda",
+    "ficha_en": "Onions, spring or scallions (includes tops and bulb), raw",
+    "nivel": "difuso",
+    "confianza_match": 0.36,
+    "confianza_visible": 0.36,
+    "termino_matcheado": "Cebolleta cruda",
+    "generic": false,
+    "kcal_100g": 32
+   }
+  },
+  {
+   "ingrediente": "cebollino",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-169994",
+    "ficha_es": "Cebollín crudo",
+    "ficha_en": "Chives, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.36,
+    "confianza_visible": 0.36,
+    "termino_matcheado": "Cebollino crudo",
+    "generic": false,
+    "kcal_100g": 30
+   }
+  },
+  {
+   "ingrediente": "chalota",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "chile verde",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "chipirones",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "chopitos",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "chorizo asturiano",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2706179",
+    "ficha_es": "Chorizo fresco",
+    "ficha_en": "Chorizo",
+    "nivel": "difuso",
+    "confianza_match": 0.247,
+    "confianza_visible": 0.25,
+    "termino_matcheado": "Chorizo",
+    "generic": false,
+    "kcal_100g": 341
+   }
+  },
+  {
+   "ingrediente": "chorizo fresco",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2706179",
+    "ficha_es": "Chorizo fresco",
+    "ficha_en": "Chorizo",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Chorizo fresco",
+    "generic": false,
+    "kcal_100g": 341
+   }
+  },
+  {
+   "ingrediente": "cilantro",
+   "platos_que_lo_usan": 5,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-169997",
+    "ficha_es": "Cilantro crudo",
+    "ficha_en": "Coriander (cilantro) leaves, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.343,
+    "confianza_visible": 0.34,
+    "termino_matcheado": "Cilantro crudo",
+    "generic": false,
+    "kcal_100g": 23
+   }
+  },
+  {
+   "ingrediente": "clavo",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "coles de Bruselas",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-170383",
+    "ficha_es": "Coles de Bruselas crudas",
+    "ficha_en": "Brussels sprouts, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.429,
+    "confianza_visible": 0.43,
+    "termino_matcheado": "Coles de Bruselas crudas",
+    "generic": false,
+    "kcal_100g": 59.485
+   }
+  },
+  {
+   "ingrediente": "comino",
+   "platos_que_lo_usan": 4,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "conejo",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "cordero deshuesado",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2705905",
+    "ficha_es": "Cordero",
+    "ficha_en": "Lamb, NS as to cut",
+    "nivel": "difuso",
+    "confianza_match": 0.233,
+    "confianza_visible": 0.2,
+    "termino_matcheado": "Cordero",
+    "generic": true,
+    "kcal_100g": 292
+   }
+  },
+  {
+   "ingrediente": "cúrcuma",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "eneldo",
+   "platos_que_lo_usan": 3,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "espaguetis",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ficha_equivocada",
+   "match": {
+    "ficha_id": "fdc-2708828",
+    "ficha_es": "Pasta con salsa",
+    "ficha_en": "Pasta with sauce, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.188,
+    "confianza_visible": 0.16,
+    "termino_matcheado": "Espaguetis a la boloñesa",
+    "generic": true,
+    "kcal_100g": 125
+   },
+   "nota": "Cae en `Pasta con salsa` por el alias `Espaguetis a la boloñesa`; en inglés `spaghetti` cae en `Spaghetti sauce with meat`, o sea la SALSA. El catálogo no tiene pasta cocida simple: solo `Pasta seca enriquecida` (371 kcal, cruda). El golden set ya lo había medido — `spaghetti, cooked` da silencio. Hueco de la card 6.4."
+  },
+  {
+   "ingrediente": "espárragos",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-168389",
+    "ficha_es": "Espárragos crudos",
+    "ficha_en": "Asparagus, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.36,
+    "confianza_visible": 0.36,
+    "termino_matcheado": "Espárragos crudos",
+    "generic": false,
+    "kcal_100g": 20
+   }
+  },
+  {
+   "ingrediente": "espinacas",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-168462",
+    "ficha_es": "Espinaca cruda",
+    "ficha_en": "Spinach, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.343,
+    "confianza_visible": 0.34,
+    "termino_matcheado": "Espinaca cruda",
+    "generic": false,
+    "kcal_100g": 23
+   }
+  },
+  {
+   "ingrediente": "espinacas tiernas",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-168462",
+    "ficha_es": "Espinaca cruda",
+    "ficha_en": "Spinach, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.32,
+    "confianza_visible": 0.32,
+    "termino_matcheado": "Espinaca cruda",
+    "generic": false,
+    "kcal_100g": 23
+   }
+  },
+  {
+   "ingrediente": "fabes",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "fideos finos",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ficha_equivocada",
+   "match": {
+    "ficha_id": "fdc-169884",
+    "ficha_es": "Fideos finos de soja",
+    "ficha_en": "Vermicelli, made from soy",
+    "nivel": "difuso",
+    "confianza_match": 0.333,
+    "confianza_visible": 0.33,
+    "termino_matcheado": "Fideos finos de soja",
+    "generic": false,
+    "kcal_100g": 331
+   },
+   "nota": "Cae en `Fideos finos de soja` (331 kcal) siendo fideo de trigo del cocido. Mismo agujero que `espaguetis`."
+  },
+  {
+   "ingrediente": "gallina",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "gambas",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2706360",
+    "ficha_es": "Camarón",
+    "ficha_en": "Shrimp, NFS",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 0.85,
+    "termino_matcheado": "Gamba",
+    "generic": true,
+    "kcal_100g": 146
+   }
+  },
+  {
+   "ingrediente": "gambones",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "garbanzos",
+   "platos_que_lo_usan": 5,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2707414",
+    "ficha_es": "Garbanzos cocidos con sal y grasa",
+    "ficha_en": "Chickpeas, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.32,
+    "confianza_visible": 0.27,
+    "termino_matcheado": "Garbanzos cocidos con sal y grasa",
+    "generic": true,
+    "kcal_100g": 211
+   }
+  },
+  {
+   "ingrediente": "garrofón",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2707368",
+    "ficha_es": "Frijoles de Lima",
+    "ficha_en": "Lima beans, NFS",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 0.85,
+    "termino_matcheado": "Garrofón",
+    "generic": true,
+    "kcal_100g": 165
+   }
+  },
+  {
+   "ingrediente": "guindilla verde",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "habas tiernas",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "harina",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ficha_equivocada",
+   "match": {
+    "ficha_id": "fdc-168446",
+    "ficha_es": "Harina de papa",
+    "ficha_en": "Potato flour",
+    "nivel": "difuso",
+    "confianza_match": 0.257,
+    "confianza_visible": 0.26,
+    "termino_matcheado": "Harina de papa",
+    "generic": false,
+    "kcal_100g": 357
+   },
+   "nota": "El catálogo NO tiene harina de trigo (sí de papa, arroz, soja, garbanzo, mijo, arrurruz, malta y trigo sarraceno). `harina` cae en `Harina de papa`. Hueco real, aunque la harina casi nunca se fotografía suelta."
+  },
+  {
+   "ingrediente": "hierbabuena",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "hinojo",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-169385",
+    "ficha_es": "Hinojo crudo",
+    "ficha_en": "Fennel, bulb, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.3,
+    "termino_matcheado": "Hinojo crudo",
+    "generic": false,
+    "kcal_100g": 26.8924
+   }
+  },
+  {
+   "ingrediente": "huesos",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "huesos de aceituna",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ficha_equivocada",
+   "match": {
+    "ficha_id": "fdc-2710088",
+    "ficha_es": "Aceitunas",
+    "ficha_en": "Olives, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.343,
+    "confianza_visible": 0.29,
+    "termino_matcheado": "Aceitunas",
+    "generic": true,
+    "kcal_100g": 116
+   },
+   "nota": "Cae en `Aceitunas`. No es comida: es un residuo de la receta. Se deja documentado, no se cura."
+  },
+  {
+   "ingrediente": "huevas de salmón",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "nota": "No hay ninguna ficha de salmón en el catálogo."
+  },
+  {
+   "ingrediente": "huevos",
+   "platos_que_lo_usan": 5,
+   "clasificacion": "ficha_equivocada",
+   "match": {
+    "ficha_id": "receta-huevos-rotos",
+    "ficha_es": "Huevos rotos",
+    "ficha_en": "Broken eggs over fried potatoes (huevos rotos)",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.3,
+    "termino_matcheado": "Huevos rotos",
+    "generic": false,
+    "kcal_100g": 212.778
+   },
+   "nota": "Cae en `Huevos rotos` (receta-huevos-rotos, 213 kcal), que es un PLATO entero, no el ingrediente. El catálogo tiene `Huevo crudo` y `Huevo cocido`. No se emitió alias porque `huevos` a secas no dice la preparación y elegirla por decreto sería inventar: es el hueco de plurales de la DT-26."
+  },
+  {
+   "ingrediente": "jengibre",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-169231",
+    "ficha_es": "Jengibre crudo",
+    "ficha_en": "Ginger root, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.343,
+    "confianza_visible": 0.34,
+    "termino_matcheado": "Jengibre crudo",
+    "generic": false,
+    "kcal_100g": 80
+   }
+  },
+  {
+   "ingrediente": "judías verdes",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709855",
+    "ficha_es": "Judías verdes cocidas con sal y grasa",
+    "ficha_en": "Green beans, NS as to form, cooked",
+    "nivel": "difuso",
+    "confianza_match": 0.367,
+    "confianza_visible": 0.31,
+    "termino_matcheado": "Judías verdes cocidas con sal y grasa",
+    "generic": true,
+    "kcal_100g": 55
+   }
+  },
+  {
+   "ingrediente": "judías verdes planas",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709855",
+    "ficha_es": "Judías verdes cocidas con sal y grasa",
+    "ficha_en": "Green beans, NS as to form, cooked",
+    "nivel": "difuso",
+    "confianza_match": 0.388,
+    "confianza_visible": 0.33,
+    "termino_matcheado": "Judías verdes cocidas con sal y grasa",
+    "generic": true,
+    "kcal_100g": 55
+   }
+  },
+  {
+   "ingrediente": "kale",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-168421",
+    "ficha_es": "Col rizada cruda",
+    "ficha_en": "Kale, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.3,
+    "termino_matcheado": "Kale, raw",
+    "generic": false,
+    "kcal_100g": 35
+   }
+  },
+  {
+   "ingrediente": "lacón",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "láminas de canelones",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2708795",
+    "ficha_es": "Canelones de queso y espinaca",
+    "ficha_en": "Cannelloni, cheese- and spinach-filled, no sauce",
+    "nivel": "difuso",
+    "confianza_match": 0.48,
+    "confianza_visible": 0.48,
+    "termino_matcheado": "Canelones",
+    "generic": false,
+    "kcal_100g": 157
+   }
+  },
+  {
+   "ingrediente": "langostinos",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2706360",
+    "ficha_es": "Camarón",
+    "ficha_en": "Shrimp, NFS",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 0.85,
+    "termino_matcheado": "Langostino",
+    "generic": true,
+    "kcal_100g": 146
+   }
+  },
+  {
+   "ingrediente": "laurel",
+   "platos_que_lo_usan": 3,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "leche",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2705384",
+    "ficha_es": "Leche",
+    "ficha_en": "Milk, NFS",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 0.85,
+    "termino_matcheado": "Leche",
+    "generic": true,
+    "kcal_100g": 52
+   }
+  },
+  {
+   "ingrediente": "lechuga romana",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2709789",
+    "ficha_es": "Lechuga cruda",
+    "ficha_en": "Lettuce, raw",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Lechuga romana",
+    "generic": false,
+    "kcal_100g": 20
+   },
+   "nota": "CORREGIDO en esta card: caía en `Lechuga cocida` (49 kcal contra 20). Especie correcta, preparación equivocada."
+  },
+  {
+   "ingrediente": "limón",
+   "platos_que_lo_usan": 9,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-167746",
+    "ficha_es": "Limón",
+    "ficha_en": "Lemons, raw, without peel",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Limón",
+    "generic": false,
+    "kcal_100g": 29
+   }
+  },
+  {
+   "ingrediente": "limones",
+   "platos_que_lo_usan": 3,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "lomos de salmón",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "nota": "No hay ninguna ficha de salmón en el catálogo."
+  },
+  {
+   "ingrediente": "maíz tierno",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "mantequilla",
+   "platos_que_lo_usan": 6,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2710154",
+    "ficha_es": "Mantequilla",
+    "ficha_en": "Butter, NFS",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 0.85,
+    "termino_matcheado": "Mantequilla",
+    "generic": true,
+    "kcal_100g": 743
+   }
+  },
+  {
+   "ingrediente": "masa filo",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "mascarpone",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "mayonesa",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-171009",
+    "ficha_es": "Mayonesa",
+    "ficha_en": "Salad dressing, mayonnaise, regular",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Mayonesa",
+    "generic": false,
+    "kcal_100g": 680
+   }
+  },
+  {
+   "ingrediente": "mejillones",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "nota": "No hay ficha de mejillón en el catálogo."
+  },
+  {
+   "ingrediente": "menta",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "miel",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-169640",
+    "ficha_es": "Miel",
+    "ficha_en": "Honey",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Miel",
+    "generic": false,
+    "kcal_100g": 304
+   }
+  },
+  {
+   "ingrediente": "morcilla asturiana",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2706173",
+    "ficha_es": "Morcilla",
+    "ficha_en": "Blood sausage",
+    "nivel": "difuso",
+    "confianza_match": 0.267,
+    "confianza_visible": 0.27,
+    "termino_matcheado": "Morcilla",
+    "generic": false,
+    "kcal_100g": 379
+   }
+  },
+  {
+   "ingrediente": "morcillo de ternera",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "mostaza de Dijon",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "mozzarella",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2705722",
+    "ficha_es": "Queso mozzarella",
+    "ficha_en": "Cheese, Mozzarella, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.353,
+    "confianza_visible": 0.3,
+    "termino_matcheado": "Cheese, Mozzarella, NFS",
+    "generic": true,
+    "kcal_100g": 296
+   }
+  },
+  {
+   "ingrediente": "muslos de pollo deshuesados",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "nabo",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-170465",
+    "ficha_es": "Nabo crudo",
+    "ficha_en": "Turnips, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.24,
+    "confianza_visible": 0.24,
+    "termino_matcheado": "Nabo crudo",
+    "generic": false,
+    "kcal_100g": 33.9816
+   }
+  },
+  {
+   "ingrediente": "naranja",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-169097",
+    "ficha_es": "Naranja cruda",
+    "ficha_en": "Oranges, raw, all commercial varieties",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Naranja",
+    "generic": false,
+    "kcal_100g": 47
+   }
+  },
+  {
+   "ingrediente": "naranjas",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-169097",
+    "ficha_es": "Naranja cruda",
+    "ficha_en": "Oranges, raw, all commercial varieties",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Naranja",
+    "generic": false,
+    "kcal_100g": 47
+   }
+  },
+  {
+   "ingrediente": "nata de cocina",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2705592",
+    "ficha_es": "Crema",
+    "ficha_en": "Cream, NS as to light, heavy, or half and half",
+    "nivel": "difuso",
+    "confianza_match": 0.218,
+    "confianza_visible": 0.19,
+    "termino_matcheado": "Nata",
+    "generic": true,
+    "kcal_100g": 131
+   }
+  },
+  {
+   "ingrediente": "nata líquida",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2705592",
+    "ficha_es": "Crema",
+    "ficha_en": "Cream, NS as to light, heavy, or half and half",
+    "nivel": "difuso",
+    "confianza_match": 0.2,
+    "confianza_visible": 0.17,
+    "termino_matcheado": "Nata",
+    "generic": true,
+    "kcal_100g": 131
+   }
+  },
+  {
+   "ingrediente": "nueces",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-170187",
+    "ficha_es": "Nueces",
+    "ficha_en": "Nuts, walnuts, english",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Nueces",
+    "generic": false,
+    "kcal_100g": 654
+   }
+  },
+  {
+   "ingrediente": "orégano",
+   "platos_que_lo_usan": 4,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "orejones",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "pan",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2707591",
+    "ficha_es": "Pan",
+    "ficha_en": "Bread, NS as to major flour",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 0.85,
+    "termino_matcheado": "Pan",
+    "generic": true,
+    "kcal_100g": 267
+   }
+  },
+  {
+   "ingrediente": "pan de centeno",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2707591",
+    "ficha_es": "Pan",
+    "ficha_en": "Bread, NS as to major flour",
+    "nivel": "difuso",
+    "confianza_match": 0.164,
+    "confianza_visible": 0.14,
+    "termino_matcheado": "Pan",
+    "generic": true,
+    "kcal_100g": 267
+   }
+  },
+  {
+   "ingrediente": "pan de pita",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2707616",
+    "ficha_es": "Pan de pita",
+    "ficha_en": "Bread, pita",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Pan de pita",
+    "generic": false,
+    "kcal_100g": 275
+   }
+  },
+  {
+   "ingrediente": "pan duro",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2707591",
+    "ficha_es": "Pan",
+    "ficha_en": "Bread, NS as to major flour",
+    "nivel": "difuso",
+    "confianza_match": 0.225,
+    "confianza_visible": 0.19,
+    "termino_matcheado": "Pan",
+    "generic": true,
+    "kcal_100g": 267
+   }
+  },
+  {
+   "ingrediente": "pan rallado",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2707591",
+    "ficha_es": "Pan",
+    "ficha_en": "Bread, NS as to major flour",
+    "nivel": "difuso",
+    "confianza_match": 0.6,
+    "confianza_visible": 0.51,
+    "termino_matcheado": "Pan",
+    "generic": true,
+    "kcal_100g": 267
+   }
+  },
+  {
+   "ingrediente": "pan tostado",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2707592",
+    "ficha_es": "Pan tostado",
+    "ficha_en": "Bread, NS as to major flour, toasted",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 0.85,
+    "termino_matcheado": "Pan tostado",
+    "generic": true,
+    "kcal_100g": 293
+   }
+  },
+  {
+   "ingrediente": "panko",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "parmesano",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "pasas",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "pasta de tomate",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "pasta filo",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "patatas",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ficha_equivocada",
+   "match": {
+    "ficha_id": "fdc-2709456",
+    "ficha_es": "Papas fritas",
+    "ficha_en": "Potato, french fries, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.26,
+    "termino_matcheado": "Patatas fritas",
+    "generic": true,
+    "kcal_100g": 225
+   },
+   "nota": "Cae en `Papas fritas` (225 kcal) teniendo `Papas crudas con cáscara` (77) y `Papa hervida con cáscara` (126). No se emitió alias: `patatas` sin preparación es genuinamente ambiguo, y en el pipeline real la visión SIEMPRE escribe la preparación. Es un artefacto de medir una lista de receta."
+  },
+  {
+   "ingrediente": "patatas pequeñas",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709393",
+    "ficha_es": "Papa hervida con cáscara",
+    "ficha_en": "Potato, boiled, from fresh, peel eaten, NS as to fat",
+    "nivel": "difuso",
+    "confianza_match": 0.257,
+    "confianza_visible": 0.22,
+    "termino_matcheado": "Patata hervida con cáscara",
+    "generic": true,
+    "kcal_100g": 126
+   }
+  },
+  {
+   "ingrediente": "pavo",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2706104",
+    "ficha_es": "Pavo",
+    "ficha_en": "Turkey, NFS",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 0.85,
+    "termino_matcheado": "Pavo",
+    "generic": true,
+    "kcal_100g": 139
+   }
+  },
+  {
+   "ingrediente": "pechuga de pavo",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2706104",
+    "ficha_es": "Pavo",
+    "ficha_en": "Turkey, NFS",
+    "nivel": "alias",
+    "confianza_match": 0.8,
+    "confianza_visible": 0.68,
+    "termino_matcheado": "Pechuga de pavo",
+    "generic": true,
+    "kcal_100g": 139
+   },
+   "nota": "CORREGIDO en esta card: caía en `Pechuga de pollo`. Otra especie."
+  },
+  {
+   "ingrediente": "pechuga de pollo",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2705954",
+    "ficha_es": "Pechuga de pollo",
+    "ficha_en": "Chicken breast, NS as to cooking method, skin not eaten",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 0.85,
+    "termino_matcheado": "Pechuga de pollo",
+    "generic": true,
+    "kcal_100g": 144
+   }
+  },
+  {
+   "ingrediente": "pechugas de pollo",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2705954",
+    "ficha_es": "Pechuga de pollo",
+    "ficha_en": "Chicken breast, NS as to cooking method, skin not eaten",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 0.85,
+    "termino_matcheado": "Pechuga de pollo",
+    "generic": true,
+    "kcal_100g": 144
+   }
+  },
+  {
+   "ingrediente": "pepino",
+   "platos_que_lo_usan": 6,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-168409",
+    "ficha_es": "Pepino crudo con cáscara",
+    "ficha_en": "Cucumber, with peel, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.3,
+    "termino_matcheado": "Pepino crudo con cáscara",
+    "generic": false,
+    "kcal_100g": 15.9075
+   }
+  },
+  {
+   "ingrediente": "pepinos",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-168409",
+    "ficha_es": "Pepino crudo con cáscara",
+    "ficha_en": "Cucumber, with peel, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.3,
+    "termino_matcheado": "Pepino crudo con cáscara",
+    "generic": false,
+    "kcal_100g": 15.9075
+   }
+  },
+  {
+   "ingrediente": "pepinos persas",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-168409",
+    "ficha_es": "Pepino crudo con cáscara",
+    "ficha_en": "Cucumber, with peel, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.3,
+    "termino_matcheado": "Pepino crudo con cáscara",
+    "generic": false,
+    "kcal_100g": 15.9075
+   }
+  },
+  {
+   "ingrediente": "perejil",
+   "platos_que_lo_usan": 8,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-170416",
+    "ficha_es": "Perejil fresco",
+    "ficha_en": "Parsley, fresh",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.3,
+    "termino_matcheado": "Perejil fresco",
+    "generic": false,
+    "kcal_100g": 36
+   }
+  },
+  {
+   "ingrediente": "perejil o cilantro",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "pez espada",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "nota": "No hay ficha de pez espada en el catálogo."
+  },
+  {
+   "ingrediente": "pimentón",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ficha_equivocada",
+   "match": {
+    "ficha_id": "fdc-2709801",
+    "ficha_es": "Pimiento rojo crudo",
+    "ficha_en": "Peppers, sweet, red, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.253,
+    "confianza_visible": 0.25,
+    "termino_matcheado": "Pimentón rojo crudo",
+    "generic": false,
+    "kcal_100g": 31
+   },
+   "nota": "Cae en `Pimiento rojo crudo` por el alias `Pimentón rojo crudo`, que es el nombre del morrón en varios países de América. En España `pimentón` es la especia. NO se tocó: desambiguar a favor de España rompería el vocabulario americano, y las especias están diferidas a v2 por la DT-29."
+  },
+  {
+   "ingrediente": "pimentón dulce",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "pimiento rojo",
+   "platos_que_lo_usan": 3,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709801",
+    "ficha_es": "Pimiento rojo crudo",
+    "ficha_en": "Peppers, sweet, red, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.411,
+    "confianza_visible": 0.41,
+    "termino_matcheado": "Pimiento rojo crudo",
+    "generic": false,
+    "kcal_100g": 31
+   }
+  },
+  {
+   "ingrediente": "pimiento verde",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709799",
+    "ficha_es": "Pimientos crudos",
+    "ficha_en": "Peppers, raw, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.343,
+    "confianza_visible": 0.29,
+    "termino_matcheado": "Pimientos crudos",
+    "generic": true,
+    "kcal_100g": 27
+   }
+  },
+  {
+   "ingrediente": "pimiento verde italiano",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709799",
+    "ficha_es": "Pimientos crudos",
+    "ficha_en": "Peppers, raw, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.209,
+    "confianza_visible": 0.18,
+    "termino_matcheado": "Pimientos crudos",
+    "generic": true,
+    "kcal_100g": 27
+   }
+  },
+  {
+   "ingrediente": "pimientos rojos",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709801",
+    "ficha_es": "Pimiento rojo crudo",
+    "ficha_en": "Peppers, sweet, red, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.411,
+    "confianza_visible": 0.41,
+    "termino_matcheado": "Pimiento rojo crudo",
+    "generic": false,
+    "kcal_100g": 31
+   }
+  },
+  {
+   "ingrediente": "piñones",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-170591",
+    "ficha_es": "Piñones secos",
+    "ficha_en": "Nuts, pine nuts, dried",
+    "nivel": "difuso",
+    "confianza_match": 0.327,
+    "confianza_visible": 0.33,
+    "termino_matcheado": "Piñones secos",
+    "generic": false,
+    "kcal_100g": 673
+   }
+  },
+  {
+   "ingrediente": "pistachos",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2707527",
+    "ficha_es": "Pistachos",
+    "ficha_en": "Pistachio nuts, NFS",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 0.85,
+    "termino_matcheado": "Pistachos",
+    "generic": true,
+    "kcal_100g": 572
+   }
+  },
+  {
+   "ingrediente": "pita",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2707616",
+    "ficha_es": "Pan de pita",
+    "ficha_en": "Bread, pita",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Pita",
+    "generic": false,
+    "kcal_100g": 275
+   }
+  },
+  {
+   "ingrediente": "pollo",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2705930",
+    "ficha_es": "Pollo con piel",
+    "ficha_en": "Chicken, NS as to part and cooking method, skin eaten",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 0.85,
+    "termino_matcheado": "Pollo con piel",
+    "generic": true,
+    "kcal_100g": 196
+   }
+  },
+  {
+   "ingrediente": "pomelo",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "puré instantáneo",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "nota": "Silencio, teniendo `Puré de papa instantáneo` (fdc-2709503) en el catálogo. Hueco de vocabulario, no de ficha."
+  },
+  {
+   "ingrediente": "queso crema",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-173418",
+    "ficha_es": "Queso crema",
+    "ficha_en": "Cheese, cream",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Queso crema",
+    "generic": false,
+    "kcal_100g": 350
+   }
+  },
+  {
+   "ingrediente": "queso feta",
+   "platos_que_lo_usan": 4,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-173420",
+    "ficha_es": "Queso feta",
+    "ficha_en": "Cheese, feta",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Queso feta",
+    "generic": false,
+    "kcal_100g": 265
+   }
+  },
+  {
+   "ingrediente": "queso halloumi",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2705704",
+    "ficha_es": "Queso",
+    "ficha_en": "Cheese, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.214,
+    "confianza_visible": 0.18,
+    "termino_matcheado": "Queso",
+    "generic": true,
+    "kcal_100g": 381
+   },
+   "nota": "Cae en `Queso` genérico (381 kcal contra ~321 del halloumi). Familia correcta, sin ficha propia. Candidato de la card 6.4."
+  },
+  {
+   "ingrediente": "queso parmesano",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-171247",
+    "ficha_es": "Queso parmesano rallado",
+    "ficha_en": "Cheese, parmesan, grated",
+    "nivel": "difuso",
+    "confianza_match": 0.391,
+    "confianza_visible": 0.39,
+    "termino_matcheado": "Queso parmesano rallado",
+    "generic": false,
+    "kcal_100g": 421
+   }
+  },
+  {
+   "ingrediente": "queso semicurado",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2705704",
+    "ficha_es": "Queso",
+    "ficha_en": "Cheese, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.188,
+    "confianza_visible": 0.16,
+    "termino_matcheado": "Queso",
+    "generic": true,
+    "kcal_100g": 381
+   }
+  },
+  {
+   "ingrediente": "rabanitos",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-169276",
+    "ficha_es": "Rábanos crudos",
+    "ficha_en": "Radishes, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.343,
+    "confianza_visible": 0.34,
+    "termino_matcheado": "Rabanitos crudos",
+    "generic": false,
+    "kcal_100g": 16
+   }
+  },
+  {
+   "ingrediente": "rábanos",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-169276",
+    "ficha_es": "Rábanos crudos",
+    "ficha_en": "Radishes, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.3,
+    "termino_matcheado": "Rábanos crudos",
+    "generic": false,
+    "kcal_100g": 16
+   }
+  },
+  {
+   "ingrediente": "ricotta salata",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2705750",
+    "ficha_es": "Ricota",
+    "ficha_en": "Cheese, Ricotta",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.3,
+    "termino_matcheado": "Ricotta",
+    "generic": false,
+    "kcal_100g": 148
+   }
+  },
+  {
+   "ingrediente": "rigatoni",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "risotto cocido",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2708405",
+    "ficha_es": "Arroz blanco cocido con mantequilla",
+    "ficha_en": "Rice, white, cooked, made with butter",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.3,
+    "termino_matcheado": "Risotto",
+    "generic": false,
+    "kcal_100g": 147
+   }
+  },
+  {
+   "ingrediente": "romero",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "rúcula",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-169387",
+    "ficha_es": "Rúcula cruda",
+    "ficha_en": "Arugula, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.3,
+    "confianza_visible": 0.3,
+    "termino_matcheado": "Rúcula cruda",
+    "generic": false,
+    "kcal_100g": 25
+   }
+  },
+  {
+   "ingrediente": "sal",
+   "platos_que_lo_usan": 3,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-173468",
+    "ficha_es": "Sal",
+    "ficha_en": "Salt, table",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Sal",
+    "generic": false,
+    "kcal_100g": 0
+   }
+  },
+  {
+   "ingrediente": "sal gorda",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-173468",
+    "ficha_es": "Sal",
+    "ficha_en": "Salt, table",
+    "nivel": "difuso",
+    "confianza_match": 0.2,
+    "confianza_visible": 0.2,
+    "termino_matcheado": "Sal",
+    "generic": false,
+    "kcal_100g": 0
+   }
+  },
+  {
+   "ingrediente": "salsa de soja",
+   "platos_que_lo_usan": 3,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-174277",
+    "ficha_es": "Salsa de soja",
+    "ficha_en": "Soy sauce made from soy and wheat (shoyu)",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Salsa de soja",
+    "generic": false,
+    "kcal_100g": 53
+   }
+  },
+  {
+   "ingrediente": "salsa marinara",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ficha_equivocada",
+   "match": {
+    "ficha_id": "fdc-2709736",
+    "ficha_es": "Salsa mexicana",
+    "ficha_en": "Salsa, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.214,
+    "confianza_visible": 0.18,
+    "termino_matcheado": "Salsa, NFS",
+    "generic": true,
+    "kcal_100g": 34
+   },
+   "nota": "Cae en `Salsa mexicana` (`Salsa, NFS`). No se emitió alias: la `Salsa de tomate en lata` del catálogo no lleva el aceite ni el ajo de una marinara, y el término no es del mercado español."
+  },
+  {
+   "ingrediente": "salsa Worcester",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ficha_equivocada",
+   "match": {
+    "ficha_id": "fdc-2709736",
+    "ficha_es": "Salsa mexicana",
+    "ficha_en": "Salsa, NFS",
+    "nivel": "difuso",
+    "confianza_match": 0.2,
+    "confianza_visible": 0.17,
+    "termino_matcheado": "Salsa, NFS",
+    "generic": true,
+    "kcal_100g": 34
+   },
+   "nota": "Cae en `Salsa mexicana` por la palabra `salsa`. Sin ficha propia."
+  },
+  {
+   "ingrediente": "sardinas",
+   "platos_que_lo_usan": 3,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2706293",
+    "ficha_es": "Sardinas en lata",
+    "ficha_en": "Fish, sardines, canned",
+    "nivel": "alias",
+    "confianza_match": 0.6,
+    "confianza_visible": 0.6,
+    "termino_matcheado": "Sardinas",
+    "generic": false,
+    "kcal_100g": 208
+   }
+  },
+  {
+   "ingrediente": "semillas de mostaza blanca",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null,
+   "dt29_especia": true
+  },
+  {
+   "ingrediente": "semillas de sésamo",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-169412",
+    "ficha_es": "Semillas de sésamo",
+    "ficha_en": "Seeds, sesame seed kernels, dried (decorticated)",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Semillas de sésamo",
+    "generic": false,
+    "kcal_100g": 631
+   }
+  },
+  {
+   "ingrediente": "tahini",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "tinta de calamar",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "tocino",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2705885",
+    "ficha_es": "Tocino cocido",
+    "ficha_en": "Bacon, NS as to type of meat, cooked",
+    "nivel": "difuso",
+    "confianza_match": 0.277,
+    "confianza_visible": 0.24,
+    "termino_matcheado": "Tocino cocido",
+    "generic": true,
+    "kcal_100g": 484
+   }
+  },
+  {
+   "ingrediente": "tomate",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709719",
+    "ficha_es": "Tomate crudo",
+    "ficha_en": "Tomatoes, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.327,
+    "confianza_visible": 0.33,
+    "termino_matcheado": "Tomate pera",
+    "generic": false,
+    "kcal_100g": 20
+   }
+  },
+  {
+   "ingrediente": "tomate frito",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ausente_ficha",
+   "match": null
+  },
+  {
+   "ingrediente": "tomate pera",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2709719",
+    "ficha_es": "Tomate crudo",
+    "ficha_en": "Tomatoes, raw",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Tomate pera",
+    "generic": false,
+    "kcal_100g": 20
+   },
+   "nota": "CORREGIDO en esta card: caía en `Pera cruda` (57 kcal) — una fruta por una hortaliza, casi el triple de energía."
+  },
+  {
+   "ingrediente": "tomate triturado",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709720",
+    "ficha_es": "Tomate cocido",
+    "ficha_en": "Tomatoes, NS as to form, cooked",
+    "nivel": "difuso",
+    "confianza_match": 0.225,
+    "confianza_visible": 0.19,
+    "termino_matcheado": "Tomate cocido",
+    "generic": true,
+    "kcal_100g": 50
+   }
+  },
+  {
+   "ingrediente": "tomates",
+   "platos_que_lo_usan": 6,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709719",
+    "ficha_es": "Tomate crudo",
+    "ficha_en": "Tomatoes, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.327,
+    "confianza_visible": 0.33,
+    "termino_matcheado": "Tomate pera",
+    "generic": false,
+    "kcal_100g": 20
+   }
+  },
+  {
+   "ingrediente": "tomates cherry",
+   "platos_que_lo_usan": 7,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709720",
+    "ficha_es": "Tomate cocido",
+    "ficha_en": "Tomatoes, NS as to form, cooked",
+    "nivel": "difuso",
+    "confianza_match": 0.277,
+    "confianza_visible": 0.24,
+    "termino_matcheado": "Tomate cocido",
+    "generic": true,
+    "kcal_100g": 50
+   }
+  },
+  {
+   "ingrediente": "tomates en lata",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709720",
+    "ficha_es": "Tomate cocido",
+    "ficha_en": "Tomatoes, NS as to form, cooked",
+    "nivel": "difuso",
+    "confianza_match": 0.327,
+    "confianza_visible": 0.28,
+    "termino_matcheado": "Tomate cocido",
+    "generic": true,
+    "kcal_100g": 50
+   }
+  },
+  {
+   "ingrediente": "tomates maduros",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709720",
+    "ficha_es": "Tomate cocido",
+    "ficha_en": "Tomatoes, NS as to form, cooked",
+    "nivel": "difuso",
+    "confianza_match": 0.277,
+    "confianza_visible": 0.24,
+    "termino_matcheado": "Tomate cocido",
+    "generic": true,
+    "kcal_100g": 50
+   }
+  },
+  {
+   "ingrediente": "tomates triturados",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709720",
+    "ficha_es": "Tomate cocido",
+    "ficha_en": "Tomatoes, NS as to form, cooked",
+    "nivel": "difuso",
+    "confianza_match": 0.225,
+    "confianza_visible": 0.19,
+    "termino_matcheado": "Tomate cocido",
+    "generic": true,
+    "kcal_100g": 50
+   }
+  },
+  {
+   "ingrediente": "uvas",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709237",
+    "ficha_es": "Uvas crudas",
+    "ficha_en": "Grapes, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.2,
+    "confianza_visible": 0.2,
+    "termino_matcheado": "Uvas crudas",
+    "generic": false,
+    "kcal_100g": 83
+   }
+  },
+  {
+   "ingrediente": "vinagre",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-2709351",
+    "ficha_es": "Vinagre",
+    "ficha_en": "Vinegar",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Vinagre",
+    "generic": false,
+    "kcal_100g": 21
+   }
+  },
+  {
+   "ingrediente": "vinagre balsámico",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709351",
+    "ficha_es": "Vinagre",
+    "ficha_en": "Vinegar",
+    "nivel": "difuso",
+    "confianza_match": 0.247,
+    "confianza_visible": 0.25,
+    "termino_matcheado": "Vinagre",
+    "generic": false,
+    "kcal_100g": 21
+   }
+  },
+  {
+   "ingrediente": "vinagre de Jerez",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709351",
+    "ficha_es": "Vinagre",
+    "ficha_en": "Vinegar",
+    "nivel": "difuso",
+    "confianza_match": 0.323,
+    "confianza_visible": 0.32,
+    "termino_matcheado": "Vinagre",
+    "generic": false,
+    "kcal_100g": 21
+   }
+  },
+  {
+   "ingrediente": "vinagre de vino blanco",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709351",
+    "ficha_es": "Vinagre",
+    "ficha_en": "Vinegar",
+    "nivel": "difuso",
+    "confianza_match": 0.221,
+    "confianza_visible": 0.22,
+    "termino_matcheado": "Vinagre",
+    "generic": false,
+    "kcal_100g": 21
+   }
+  },
+  {
+   "ingrediente": "vinagre de vino tinto",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709351",
+    "ficha_es": "Vinagre",
+    "ficha_en": "Vinegar",
+    "nivel": "difuso",
+    "confianza_match": 0.233,
+    "confianza_visible": 0.23,
+    "termino_matcheado": "Vinagre",
+    "generic": false,
+    "kcal_100g": 21
+   }
+  },
+  {
+   "ingrediente": "vino blanco",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "fdc-174837",
+    "ficha_es": "Vino blanco",
+    "ficha_en": "Alcoholic beverage, wine, table, white",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Vino blanco",
+    "generic": false,
+    "kcal_100g": 82
+   }
+  },
+  {
+   "ingrediente": "vino blanco seco",
+   "platos_que_lo_usan": 2,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-174837",
+    "ficha_es": "Vino blanco",
+    "ficha_en": "Alcoholic beverage, wine, table, white",
+    "nivel": "difuso",
+    "confianza_match": 0.413,
+    "confianza_visible": 0.41,
+    "termino_matcheado": "Vino blanco",
+    "generic": false,
+    "kcal_100g": 82
+   }
+  },
+  {
+   "ingrediente": "yemas de huevo",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2707173",
+    "ficha_es": "Yema de huevo cocida",
+    "ficha_en": "Egg, yolk only, cooked, NS as to fat",
+    "nivel": "difuso",
+    "confianza_match": 0.39,
+    "confianza_visible": 0.33,
+    "termino_matcheado": "Yema de huevo cocida",
+    "generic": true,
+    "kcal_100g": 357
+   }
+  },
+  {
+   "ingrediente": "yogur griego",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2705421",
+    "ficha_es": "Yogur griego natural",
+    "ficha_en": "Yogurt, Greek, NS as to type of milk, plain",
+    "nivel": "difuso",
+    "confianza_match": 0.36,
+    "confianza_visible": 0.31,
+    "termino_matcheado": "Yogur griego natural",
+    "generic": true,
+    "kcal_100g": 67
+   }
+  },
+  {
+   "ingrediente": "zanahoria",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-170393",
+    "ficha_es": "Zanahorias crudas",
+    "ficha_en": "Carrots, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.36,
+    "confianza_visible": 0.36,
+    "termino_matcheado": "Zanahorias crudas",
+    "generic": false,
+    "kcal_100g": 41
+   }
+  },
+  {
+   "ingrediente": "zanahorias",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-170393",
+    "ficha_es": "Zanahorias crudas",
+    "ficha_en": "Carrots, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.36,
+    "confianza_visible": 0.36,
+    "termino_matcheado": "Zanahorias crudas",
+    "generic": false,
+    "kcal_100g": 41
+   }
+  },
+  {
+   "ingrediente": "zanahorias baby",
+   "platos_que_lo_usan": 1,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-170393",
+    "ficha_es": "Zanahorias crudas",
+    "ficha_en": "Carrots, raw",
+    "nivel": "difuso",
+    "confianza_match": 0.386,
+    "confianza_visible": 0.39,
+    "termino_matcheado": "Zanahorias crudas",
+    "generic": false,
+    "kcal_100g": 41
+   }
+  },
+  {
+   "ingrediente": "zumo de limón",
+   "platos_que_lo_usan": 4,
+   "clasificacion": "confianza_injusta",
+   "match": {
+    "ficha_id": "fdc-2709180",
+    "ficha_es": "Jugo de limón natural",
+    "ficha_en": "Lemon juice, 100%, NS as to form",
+    "nivel": "difuso",
+    "confianza_match": 0.371,
+    "confianza_visible": 0.32,
+    "termino_matcheado": "Zumo de limón natural",
+    "generic": true,
+    "kcal_100g": 22
+   }
+  }
+ ]
+}

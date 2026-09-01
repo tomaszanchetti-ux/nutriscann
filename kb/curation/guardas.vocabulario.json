@@ -19,8 +19,36 @@
   "blinda el catálogo, no el matcher—, pero un catálogo bien curado es el primer",
   "lugar donde el error se puede frenar, y el más barato."
  ],
- "criteria_version": "guardas-v3",
+ "criteria_version": "guardas-v4",
  "generated": "2026-09-01",
+ "$card_6_3_cobertura_mediterranea": [
+  "La v4 suma diez guardas y TODAS salen del censo de cobertura mediterránea (kb/cobertura/):",
+  "son los diez pares término/ficha donde el motor real, medido el 01/09/2026 contra el catálogo",
+  "3.2.0, mandó un plato o un ingrediente de las dos fuentes de referencia del mercado español a",
+  "una ficha que nombra OTRO alimento. Ninguna es preventiva: cada una lleva el número que la",
+  "provocó.",
+  "",
+  "Se dividen en dos familias y conviene no confundirlas, porque no hacen lo mismo:",
+  "",
+  "  A · LAS SEIS QUE CIERRAN UN ARREGLO. `ajo`, `ajos`, `tomate pera`, `lechuga romana`, `pechuga",
+  "  de pavo` y `pimientos de piquillo rellenos` acaban de conseguir su alias correcto en la card",
+  "  6.3 (ver aliases.regional.json). La guarda es el",
+  "  candado que impide que el término vuelva a la ficha vieja el día que alguien cure un alias",
+  "  de más. Es exactamente el patrón que estrenó la card 6.2 con `Tortilla de maíz`.",
+  "",
+  "  B · LAS CUATRO QUE SE ADELANTAN. `tortilla de camarones`, `pastel de cabracho`, `cocochas` y",
+  "  `gazpachos manchegos` son platos que HOY NO TIENEN FICHA: son la lista de entrada de la card",
+  "  6.4. Su guarda no los arregla —nada los arregla hasta que exista la ficha— y se escribe igual,",
+  "  por adelantado, para que el día que la ficha entre nadie pueda curar el atajo cómodo de",
+  "  colgarlos de la ficha equivocada donde caen hoy. La guarda es barata; el error, no.",
+  "",
+  "EL LÍMITE, DECLARADO PARA QUE NADIE LO LEA DE MÁS: estas guardas blindan el CATÁLOGO — rompen el",
+  "build si el término aparece como nombre o alias de la ficha prohibida. NO blindan el matcher: las",
+  "guardas de runtime son otra lista, `GUARDAS_DE_VOCABULARIO` en functions/src/engine/catalog.ts, y",
+  "hoy tiene dos entradas contra las diecisiete de acá. Lo que de verdad saca un término del difuso es",
+  "DARLE SU ALIAS CORRECTO, que es lo que hace la familia A; la familia B seguirá cayendo donde cae",
+  "hasta que la card 6.4 le dé ficha. La divergencia entre las dos listas quedó anotada como deuda."
+ ],
  "$card_6_2_dt27": [
   "La v3 suma dos guardas, y las dos existen por una razón MEDIDA y escrita en la DT-26: son",
   "los dos términos que el motor mandó a la ficha equivocada porque el catálogo no tenía la",
@@ -82,6 +110,56 @@
    "termino": "Limón",
    "prohibido_en": ["fdc-2708000", "fdc-2707935"],
    "motivo": "Un postre de limón no es un limón. La DT-26 lo midió: sin ficha de limón entero, el término `lemon` caía en `Tarta de limón` (fdc-2708000, 280 kcal/100 g) — casi diez veces las 29 kcal del limón (fdc-167746), que entró al catálogo en la card 6.2. Se prohíbe también en `Barrita de limón` (fdc-2707935, 437 kcal/100 g), que es el mismo error por la puerta de al lado y todavía no había mordido a nadie. Los nombres compuestos siguen siendo correctos y no los alcanza la guarda: lo prohibido es que un postre se llame `Limón` a secas o lleve `Limón` de alias, con cualquier confianza."
+  },
+  {
+   "termino": "ajo",
+   "prohibido_en": ["fdc-2709935", "fdc-169246"],
+   "motivo": "El puerro se llama `ajo porro` en Colombia y Venezuela, y el catálogo lo escribe: fdc-2709935 lleva de alias `Ajo porro cocido con sal y grasa` y fdc-169246 `Ajo porro crudo`. Los dos son alias CORRECTOS y no se tocan — lo que la palabra `ajo` a secas no puede hacer es llegar a ellos. MEDIDO en el censo de cobertura mediterránea (01/09/2026): `ajo` y `ajos` resolvían por difuso a `Puerro cocido con sal y grasa` con 0,11, porque la consulta corta está contenida en ese alias largo. Un puerro no es un ajo: 88 kcal/100 g contra 143, y sobre todo son dos hortalizas distintas — la palabra «puerro» encima de un ajo es indefendible por la misma razón que «Bife» encima de un salmón. El ajo es el ingrediente que más veces aparece en las dos fuentes del censo. Desde la card 6.3 vive en fdc-169230 `Ajo crudo` en texto plano, que es lo que de verdad lo saca del difuso."
+  },
+  {
+   "termino": "ajos",
+   "prohibido_en": ["fdc-2709935", "fdc-169246"],
+   "motivo": "El plural de la guarda anterior, por el mismo motivo y con el mismo número. Va escrito aparte porque una guarda declara UN término y la comparación es por igualdad exacta sobre el término normalizado — el mismo motivo por el que `croqueta` y `croquetas` son dos filas."
+  },
+  {
+   "termino": "Tomate pera",
+   "prohibido_en": ["fdc-169118"],
+   "motivo": "fdc-169118 es `Pears, raw` y en el catálogo se llama `Pera cruda`: es una FRUTA de 57 kcal/100 g. El tomate pera es una variedad de tomate de 20 kcal/100 g — casi el triple de diferencia, y de familia entera. MEDIDO en el censo de cobertura mediterránea (01/09/2026): `tomate pera` —el tomate que las dos fuentes piden para el gazpacho— resolvía por difuso a `Pera cruda` con 0,22, porque la consulta contiene la palabra `pera`. Desde la card 6.3 el término vive en fdc-2709719 `Tomate crudo` en texto plano. La guarda no toca los nombres compuestos legítimos de la pera: es igualdad exacta sobre `tomate pera`."
+  },
+  {
+   "termino": "Lechuga romana",
+   "prohibido_en": ["fdc-2709949"],
+   "motivo": "fdc-2709949 es `Lettuce, cooked` — lechuga COCIDA, 49 kcal/100 g. La lechuga romana de una ensalada mediterránea es lechuga cruda: fdc-2709789, 20 kcal/100 g. La especie es la misma y la preparación no, y la preparación es la que mueve el número (+145 %). MEDIDO en el censo de cobertura mediterránea (01/09/2026): `lechuga romana` resolvía por difuso a la cocida con 0,30. Es el error de preparación de la card 2.7 (`asado` sobre un corte) por el otro lado: acá no sobra un alias, faltaba el correcto. Desde la card 6.3 el término vive en fdc-2709789 en texto plano."
+  },
+  {
+   "termino": "Pechuga de pavo",
+   "prohibido_en": ["fdc-2705954"],
+   "motivo": "fdc-2705954 es `Chicken breast` — POLLO. El pavo es otra especie y el catálogo la tiene: fdc-2706104 `Turkey, NFS`, que en español se llama `Pavo`. MEDIDO en el censo de cobertura mediterránea (01/09/2026): `Pechuga de pavo` resolvía por difuso a `Pechuga de pollo` con 0,30, arrastrado por la palabra `pechuga`. El daño calórico es chico (139 contra 144 kcal) y el del nombre no: «pollo» sobre un pavo es del mismo tipo que «Bife» sobre un salmón — la card 2.7 ya fijó que un error de especie no lo salva la confianza. Desde la card 6.3 el término vive en fdc-2706104 a 0,8, con la reserva de que la ficha es pavo sin especificar la parte."
+  },
+  {
+   "termino": "Pimientos de piquillo rellenos",
+   "prohibido_en": ["fdc-2709799"],
+   "motivo": "fdc-2709799 es `Peppers, raw, NFS` — pimiento CRUDO, 27 kcal/100 g. Un piquillo relleno es un plato cocinado con relleno de carne o bacalao, y el catálogo tiene la ficha del pimiento relleno: fdc-2709073, 178 kcal/100 g. MEDIDO en el censo de cobertura mediterránea (01/09/2026): `Pimientos de piquillo rellenos` resolvía al pimiento crudo con 0,24, o sea 6,6 veces menos energía que el plato. El caso es hermano del `Lechuga romana` de esta misma card: la especie está bien y lo que está mal es que la ficha es el INGREDIENTE y no el PLATO. Desde la card 6.3 el término vive en fdc-2709073 a 0,6 — la reserva es que la ficha de USDA lleva arroz en el relleno y el piquillo español no."
+  },
+  {
+   "termino": "Tortilla de camarones",
+   "prohibido_en": ["fdc-2707822", "fdc-2707823"],
+   "motivo": "GUARDA QUE SE ADELANTA: el plato NO tiene ficha todavía y esta guarda no lo arregla — es la card 6.4 la que tiene que darle una. La tortillita de camarones de Cádiz es una fritura de harina de garbanzo con camarones enteros, ~350 kcal/100 g; no es un pan plano. MEDIDO (01/09/2026): resolvía a fdc-2707822 `Tortilla de trigo` (`Tortilla, NFS`, 262 kcal) con 0,24, por la palabra `tortilla`, que en América nombra el pan plano y en España la fritura o el huevo batido. Se prohíbe también en fdc-2707823 `Tortilla de maíz`, que es el mismo error por la puerta de al lado. Cuando la ficha exista, este par no puede volver por un alias."
+  },
+  {
+   "termino": "Pastel de cabracho",
+   "prohibido_en": ["fdc-2707993"],
+   "motivo": "GUARDA QUE SE ADELANTA: el plato NO tiene ficha todavía. El pastel de cabracho es un pudín frío de pescado, huevo, nata y tomate, ~180 kcal/100 g; `pastel` acá no quiere decir postre. MEDIDO (01/09/2026): resolvía a fdc-2707993 `Pie, NFS` —que en el catálogo se llama `Tarta` y lleva `Pastel` de alias, los dos correctos— con 0,20 y 296 kcal, o sea una tarta dulce encima de una terrina de pescado. La guarda es sobre el término COMPLETO y no sobre `pastel`: `Pastel` a secas es un alias legítimo de la tarta y no se toca."
+  },
+  {
+   "termino": "Cocochas",
+   "prohibido_en": ["fdc-2709736"],
+   "motivo": "GUARDA QUE SE ADELANTA: el plato NO tiene ficha todavía. Las cocochas son la papada de la merluza o del bacalao, guisadas en una emulsión de aceite y ajo. MEDIDO (01/09/2026): `Cocochas en salsa` resolvía a fdc-2709736 `Salsa, NFS` —que en el catálogo se llama `Salsa mexicana`, 34 kcal/100 g— con 0,20: pescado en emulsión convertido en pico de gallo, con el nombre de otra cocina encima. La palabra que lo arrastra es `salsa`, y por eso la guarda se escribe sobre `cocochas`, que es el sustantivo del plato: cualquier consulta que empiece por ahí queda fuera de la salsa mexicana para siempre."
+  },
+  {
+   "termino": "Gazpachos manchegos",
+   "prohibido_en": ["fdc-2710106"],
+   "motivo": "GUARDA QUE SE ADELANTA: el plato NO tiene ficha todavía, y este es el caso donde el nombre miente más de todo el censo. Los gazpachos manchegos —o galianos— son un GUISO CALIENTE de caza sobre torta de pan ácimo, ~200 kcal/100 g. El gazpacho andaluz es una sopa fría de hortalizas, 26 kcal/100 g: casi ocho veces menos. Comparten la palabra y nada más. MEDIDO (01/09/2026): `Gazpachos manchegos o galianos` resolvía a fdc-2710106 `Soup, gazpacho` con 0,18. Es el ejemplo que conviene tener a mano cuando alguien proponga un alias «porque se llaman parecido»: el plural manchego y el singular andaluz son dos platos distintos, y en la card 6.3 el singular ACABA de recibir su alias `Gazpacho andaluz` a 0,8 — lo que hace de esta guarda su hermana necesaria, no un adorno."
   }
  ]
 }

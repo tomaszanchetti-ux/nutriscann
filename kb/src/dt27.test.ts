@@ -117,8 +117,12 @@ test("las catorce fichas de la DT-27 están, con su nombre y su número", () => 
   }
 });
 
-test("el lote es ADITIVO: nada se retira y la versión es 3.2.0", () => {
-  assert.match(catalog.kb_version, /^3\.2\.0\+[0-9a-f]{8}$/);
+test("el lote es ADITIVO: nada se retira y la versión es 3.3.0", () => {
+  // La card 6.3 movió el menor a 3.3.0 SIN tocar este lote: es curación de
+  // vocabulario pura (aliases y guardas), cero fichas de por medio. Por eso el
+  // pin de versión sube y el conteo de abajo no se mueve ni un alimento — que es
+  // exactamente lo que este test tiene que seguir vigilando.
+  assert.match(catalog.kb_version, /^3\.3\.0\+[0-9a-f]{8}$/);
   // 1.022 de la 3.1.0 + las 14 del lote. El número está escrito y no calculado a
   // propósito: si alguien suma una ficha sin pasar por una card, este test lo dice.
   assert.equal(catalog.foods.length, 1036);
