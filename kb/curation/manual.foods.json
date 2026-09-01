@@ -201,6 +201,59 @@
     "La fibra que publican las fuentes va de 10 a 35 g según el producto: un rango de 3,5× no es un dato, así que el campo queda en null.",
     "Atwater cierra al 8,4 % (226,3 kcal predichas contra 247 declaradas). Es el más flojo del catálogo manual y pasa raspando el 10 % — consistente con que la fibra, que no está declarada, es parte de esos hidratos."
    ]
+  },
+  {
+   "id": "manual-salsa-de-calcots",
+   "origen": "etiqueta-comercial",
+   "source_ref": "Etiqueta comercial «Salsa Calçots» de Hacendado (Mercadona), código de barras 8480000173515, leída de OpenFoodFacts el 01/09/2026",
+   "name_en": "Calçots sauce (salvitxada), Catalan romesco-style almond and tomato sauce",
+   "name_es": "Salsa de calçots",
+   "aliases": [
+    "Salvitxada",
+    "Salsa calçots",
+    "Salsa para calçots",
+    {
+     "alias": "Salsa romesco",
+     "confidence": 0.6
+    },
+    {
+     "alias": "Romesco",
+     "confidence": 0.6
+    }
+   ],
+   "category": "Dips, gravies, other sauces",
+   "per_100g": {
+    "kcal": 456,
+    "protein_g": 2.9,
+    "carbs_g": 7.4,
+    "fat_g": 46.1,
+    "fiber_g": 1.26,
+    "sat_fat_g": 5.6,
+    "sugars_g": 1.5,
+    "sodium_mg": 480
+   },
+   "portion_hints": [
+    {
+     "grams": 30,
+     "label_en": "1 serving for dipping",
+     "label_es": "1 ración para mojar"
+    },
+    {
+     "grams": 15,
+     "label_en": "1 tablespoon",
+     "label_es": "1 cucharada"
+    }
+   ],
+   "default_portion_g": 30,
+   "caveats": [
+    "Es UNA etiqueta concreta, no un promedio: los ocho campos salen del mismo producto (Hacendado 8480000173515) y no se mezclan con ninguna otra fuente. Mezclar etiquetas campo a campo produce un alimento que no existe.",
+    "SE DECLARA QUE ESTÁ EN EL EXTREMO ALTO DEL MERCADO. El rango de las salsas de calçots comerciales que se contrastaron es 350-456 kcal · grasas 35-57 g · saturadas 5-6 g · hidratos 4-8 g · azúcares 1,5-3,5 g · proteínas 2,5-4,2 g · sal 1,0-1,2 g (fuentes aportadas el 01/09/2026: OpenFoodFacts, c-ferrer.com, calfruitos.com). Esta etiqueta cae DENTRO de todas las bandas y en el tope de la de calorías: quien lea 456 kcal tiene que saber que otra marca puede estar cerca de 350. Se eligió esta y no el punto medio porque es la única que se pudo verificar campo a campo contra la fuente, y porque el punto medio de siete rangos no es ningún producto.",
+    "Atwater cierra al 0,02 % (456,1 kcal predichas contra 456 declaradas), que es lo que se espera de una etiqueta consistente. Fue el criterio de aceptación: una etiqueta que no cierre no entra.",
+    "El sodio (480 mg) está calculado desde la sal declarada (1,2 g), no medido.",
+    "Es un producto INDUSTRIAL: sus ingredientes son tomate, aceite de girasol, agua, almendra, vinagre de vino, especias, ajo, sal y goma xantana. La salvitxada casera se hace con aceite de oliva, almendra y avellana tostadas, tomate y ajo asados y ñora, y sale bastante más cara de grasa buena que de girasol. La composición gruesa es la misma; el perfil de la grasa, no.",
+    "Los aliases `Romesco` y `Salsa romesco` entran a 0,6 y no a 1,0 a propósito: el romesco es una salsa emparentada pero distinta —lleva ñora y pan frito y acompaña otros platos—, y el mercado español las vende casi indistintamente. La confianza baja dice exactamente eso: es un buen candidato, no el mismo alimento.",
+    "Las porciones son criterio de curación, no de la etiqueta: 30 g es lo que se moja en una calçotada y 15 g una cucharada."
+   ]
   }
  ]
 }

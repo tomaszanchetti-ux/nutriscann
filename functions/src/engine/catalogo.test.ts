@@ -328,11 +328,11 @@ describe("las fichas genéricas están marcadas y se descuentan", () => {
   });
 });
 
-describe("las 52 recetas del catálogo se encuentran por su nombre", () => {
+describe("las 53 recetas del catálogo se encuentran por su nombre", () => {
   it("cada receta matchea a su propia ficha, no a un ingrediente", () => {
     const recetas = activas.filter((f) => f.receta !== undefined);
-    // 9 con la card 1.7, 52 con la card 6.4 (43 platos españoles y mediterráneos).
-    assert.equal(recetas.length, 52);
+    // 9 con la card 1.7, 52 con la card 6.4, 53 con los calçots de la 6.4b. 53 con los calçots de la 6.4b.
+    assert.equal(recetas.length, 53);
     for (const f of recetas) {
       const porEn = buscarAlimento(f.names.en, index);
       assert.equal(porEn?.ficha.id, f.id, f.names.en);

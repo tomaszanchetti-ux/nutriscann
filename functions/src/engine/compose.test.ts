@@ -1,7 +1,7 @@
 /**
  * Los candados de la composición on-demand.
  *
- * EL TEST QUE VALE ES EL PRIMERO: las 52 recetas del catálogo se vuelven a
+ * EL TEST QUE VALE ES EL PRIMERO: las 53 recetas del catálogo se vuelven a
  * componer EN RUNTIME, con los mismos ingredientes y el mismo método, y tienen
  * que dar el mismo `per_100g` que el build escribió en la ficha. Es la única
  * forma de demostrar que la matemática del motor y la del catálogo son LA MISMA
@@ -28,9 +28,9 @@ const index = indiceReal();
 describe("recomponer las recetas del catálogo", () => {
   const recetas = catalogoReal().foods.filter((f) => f.receta !== undefined);
 
-  it("el catálogo trae las 52 recetas compuestas", () => {
-    // 9 con la card 1.7, 52 con la card 6.4.
-    assert.equal(recetas.length, 52);
+  it("el catálogo trae las 53 recetas compuestas", () => {
+    // 9 con la card 1.7, 52 con la card 6.4, 53 con los calçots de la 6.4b.
+    assert.equal(recetas.length, 53);
   });
 
   for (const ficha of recetas) {

@@ -1,5 +1,5 @@
 {
-  "kb_version": "3.4.0+1c2270c1",
+  "kb_version": "3.5.0+fff1b63b",
   "generated_from": {
     "selection": "1.1-v2 + 1.6-regional-v1 + 1.6-es-sweep-v1 + 1.7-ingredientes-v1 + dt27-fichas-v1 + dt33-fichas-v1 − dt7-v2",
     "sources": [
@@ -67351,6 +67351,80 @@
       ]
     },
     {
+      "id": "manual-salsa-de-calcots",
+      "source": "manual",
+      "source_ref": "Etiqueta comercial «Salsa Calçots» de Hacendado (Mercadona), código de barras 8480000173515, leída de OpenFoodFacts el 01/09/2026",
+      "names": {
+        "en": "Calçots sauce (salvitxada), Catalan romesco-style almond and tomato sauce",
+        "es": "Salsa de calçots"
+      },
+      "aliases": {
+        "es": [
+          "Salvitxada",
+          "Salsa calçots",
+          "Salsa para calçots",
+          {
+            "alias": "Salsa romesco",
+            "confidence": 0.6
+          },
+          {
+            "alias": "Romesco",
+            "confidence": 0.6
+          }
+        ]
+      },
+      "category": "Dips, gravies, other sauces",
+      "per_100g": {
+        "kcal": 456,
+        "protein_g": 2.9,
+        "carbs_g": 7.4,
+        "fat_g": 46.1,
+        "fiber_g": 1.26,
+        "sat_fat_g": 5.6,
+        "sugars_g": 1.5,
+        "sodium_mg": 480
+      },
+      "portion_hints": [
+        {
+          "grams": 30,
+          "label_en": "1 serving for dipping",
+          "label_es": "1 ración para mojar"
+        },
+        {
+          "grams": 15,
+          "label_en": "1 tablespoon",
+          "label_es": "1 cucharada"
+        }
+      ],
+      "default_portion_g": 30,
+      "provenance": {
+        "aliases.es": "manual/etiqueta-comercial",
+        "category": "manual/etiqueta-comercial",
+        "default_portion_g": "manual/etiqueta-comercial",
+        "names.en": "manual/etiqueta-comercial",
+        "names.es": "manual/etiqueta-comercial",
+        "per_100g.carbs_g": "manual/etiqueta-comercial",
+        "per_100g.fat_g": "manual/etiqueta-comercial",
+        "per_100g.fiber_g": "manual/etiqueta-comercial",
+        "per_100g.kcal": "manual/etiqueta-comercial",
+        "per_100g.protein_g": "manual/etiqueta-comercial",
+        "per_100g.sat_fat_g": "manual/etiqueta-comercial",
+        "per_100g.sodium_mg": "manual/etiqueta-comercial",
+        "per_100g.sugars_g": "manual/etiqueta-comercial",
+        "portion_hints": "manual/etiqueta-comercial"
+      },
+      "deprecated": false,
+      "caveats": [
+        "Es UNA etiqueta concreta, no un promedio: los ocho campos salen del mismo producto (Hacendado 8480000173515) y no se mezclan con ninguna otra fuente. Mezclar etiquetas campo a campo produce un alimento que no existe.",
+        "SE DECLARA QUE ESTÁ EN EL EXTREMO ALTO DEL MERCADO. El rango de las salsas de calçots comerciales que se contrastaron es 350-456 kcal · grasas 35-57 g · saturadas 5-6 g · hidratos 4-8 g · azúcares 1,5-3,5 g · proteínas 2,5-4,2 g · sal 1,0-1,2 g (fuentes aportadas el 01/09/2026: OpenFoodFacts, c-ferrer.com, calfruitos.com). Esta etiqueta cae DENTRO de todas las bandas y en el tope de la de calorías: quien lea 456 kcal tiene que saber que otra marca puede estar cerca de 350. Se eligió esta y no el punto medio porque es la única que se pudo verificar campo a campo contra la fuente, y porque el punto medio de siete rangos no es ningún producto.",
+        "Atwater cierra al 0,02 % (456,1 kcal predichas contra 456 declaradas), que es lo que se espera de una etiqueta consistente. Fue el criterio de aceptación: una etiqueta que no cierre no entra.",
+        "El sodio (480 mg) está calculado desde la sal declarada (1,2 g), no medido.",
+        "Es un producto INDUSTRIAL: sus ingredientes son tomate, aceite de girasol, agua, almendra, vinagre de vino, especias, ajo, sal y goma xantana. La salvitxada casera se hace con aceite de oliva, almendra y avellana tostadas, tomate y ajo asados y ñora, y sale bastante más cara de grasa buena que de girasol. La composición gruesa es la misma; el perfil de la grasa, no.",
+        "Los aliases `Romesco` y `Salsa romesco` entran a 0,6 y no a 1,0 a propósito: el romesco es una salsa emparentada pero distinta —lleva ñora y pan frito y acompaña otros platos—, y el mercado español las vende casi indistintamente. La confianza baja dice exactamente eso: es un buen candidato, no el mismo alimento.",
+        "Las porciones son criterio de curación, no de la etiqueta: 30 g es lo que se moja en una calçotada y 15 g una cucharada."
+      ]
+    },
+    {
       "id": "manual-tortilla-de-patatas",
       "source": "manual",
       "source_ref": "Agregadores nutricionales (FatSecret, Fitia y similares), recogidos el 30/08/2026 — punto medio del rango publicado",
@@ -68433,6 +68507,85 @@
         "peso_entrada_g": 1346,
         "aceite_absorbido_g": 0,
         "peso_final_g": 1346,
+        "rendimiento_de": "transformacion"
+      }
+    },
+    {
+      "id": "receta-calcots",
+      "source": "receta",
+      "source_ref": "Receta compuesta — 1 ingredientes, método cocido_cebolla",
+      "names": {
+        "en": "Calçots, Catalan roasted spring onions",
+        "es": "Calçots"
+      },
+      "aliases": {
+        "es": [
+          "Calçot",
+          "Calsots",
+          "Calçots al horno"
+        ]
+      },
+      "category": "Other vegetables and combinations",
+      "per_100g": {
+        "kcal": 37.647,
+        "protein_g": 2.153,
+        "carbs_g": 8.635,
+        "fat_g": 0.224,
+        "fiber_g": 3.059,
+        "sat_fat_g": 0.038,
+        "sugars_g": 2.741,
+        "sodium_mg": 18.824
+      },
+      "portion_hints": [
+        {
+          "grams": 170,
+          "label_en": "1 serving (about 6 calçots)",
+          "label_es": "1 ración (unos 6 calçots)"
+        },
+        {
+          "grams": 28,
+          "label_en": "1 calçot",
+          "label_es": "1 calçot"
+        }
+      ],
+      "default_portion_g": 170,
+      "provenance": {
+        "aliases.es": "curation",
+        "category": "curation",
+        "default_portion_g": "curation",
+        "names.en": "curation",
+        "names.es": "curation",
+        "per_100g.carbs_g": "receta",
+        "per_100g.fat_g": "receta",
+        "per_100g.fiber_g": "receta",
+        "per_100g.kcal": "receta",
+        "per_100g.protein_g": "receta",
+        "per_100g.sat_fat_g": "receta",
+        "per_100g.sodium_mg": "receta",
+        "per_100g.sugars_g": "receta",
+        "portion_hints": "curation"
+      },
+      "deprecated": false,
+      "caveats": [
+        "Receta estándar declarada, no medición de laboratorio: 200 g de cebolleta y nada más. El calçot se asa DESNUDO: no lleva aceite ni sal, y por eso la receta tiene un solo ingrediente. El aceite y la almendra del plato están en la salsa, que es otra ficha (`manual-salsa-de-calcots`) porque se sirve aparte y cada quien moja lo que quiere.",
+        "LA VÍA DE COCCIÓN ES EL HORNO, declarado: el calçot de la calçotada se hace A LA BRASA, y para la brasa no hay ningún rendimiento medido (DT-10). El horno a 200 °C durante 15-20 minutos es la otra preparación documentada del plato y es la que se cuantifica acá. El reposo envuelto en papel de periódico que sigue al asado no cambia la masa de forma medible: solo termina de ablandar.",
+        "RESERVA DEL RENDIMIENTO, y es la que más pesa: se aplica `cocido_cebolla` (0,850), que es el rendimiento que la propia FNDDS le asigna a la cebolla —n=2 pares concordantes, dispersión entre trazadores 0,003, ver `cooking.transforms.json`—. Ese 0,850 es la cocción GENÉRICA de FNDDS, no un horno a 200 °C: un asado pierde más agua. La ficha da 37,6 kcal/100 g y por eso es un SUELO, no un valor central; el calçot asado real está por encima. Se prefiere el suelo medido a un factor elegido hasta que el número quede bonito, que es el defecto por el que se descartaron la arepa (card 6.2) y el açaí (DT-11).",
+        "RESERVA DE INGREDIENTE: la ficha base es `Cebolla de verdeo cruda` (fdc-170005, `Onions, spring or scallions, includes tops and bulb`), que incluye las hojas verdes, mientras que del calçot se come sobre todo el tallo blanco. La reserva está ACOTADA por las cuatro cebollas tiernas que sí mide USDA: hojas solas 27 kcal, cebolleta entera 32, cebolla galesa 34 y cebolla de bulbo 40. El error posible por elegir la cebolleta entera vive dentro de esa horquilla de 27-40.",
+        "LO QUE SE COME ES EL INTERIOR: las capas exteriores quedan quemadas y se pelan. Eso no cambia el per_100g —lo que se descarta es la misma materia, carbonizada— pero sí quiere decir que un calçot de 40 g crudo rinde bastante menos de 40 g de comida.",
+        "Se descartó promover `Onions, green, cooked` de FNDDS (fdc-2709953, 63 kcal), que a primera vista es exactamente esto: su `input_food` declara 3 g de aceite y 0,3 g de sal por cada 100 g de cebolleta, y de ahí salen sus 3,21 g de grasa. El calçot se asa seco. Habría publicado la grasa de un salteado con el nombre de un asado.",
+        "Cierra el `ausente_ficha` de `Calçots` del censo de la card 6.3, cuyo motivo escrito era que una receta de un solo ingrediente con factor 1,000 «devolvería la cebolleta cruda con otro nombre». Ya no: el factor es 0,850 y es de la familia."
+      ],
+      "receta": {
+        "metodo": "cocido_cebolla",
+        "ingredientes": [
+          {
+            "ref": "fdc-170005",
+            "grams": 200
+          }
+        ],
+        "peso_entrada_g": 200,
+        "aceite_absorbido_g": 0,
+        "peso_final_g": 170,
         "rendimiento_de": "transformacion"
       }
     },

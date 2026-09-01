@@ -484,7 +484,26 @@ export function assemble(input: AssembleInput): AssembleResult {
   // —y con salmón, mejillón, pasta cocida y cuarenta y tres platos españoles que
   // antes no existían— es un catálogo distinto, y `config/app` estampa esta
   // versión para poder decir contra qué se calculó cada reporte.
-  const kbVersion = `3.4.0+${contentHash({ generated_from: generatedFrom, foods })}`;
+  //
+  // 3.5.0 con la card 6.4b (los dos platos que la 6.4 dejó bloqueados por
+  // rendimiento).
+  //
+  // Es MENOR y no PARCHE aunque entren solo DOS fichas, y el motivo no es el
+  // conteo: cambia la TABLA DE TRANSFORMACIONES, que es la que deriva todas las
+  // recetas. Entra `cocido_cebolla` (0,850), el primer rendimiento de hortaliza
+  // medido del proyecto, y con él la ficha `receta-calcots`; entra también
+  // `manual-salsa-de-calcots` desde una etiqueta comercial verificada. Un
+  // catálogo que sabe cocinar una cebolla —y que por lo tanto puede recalcular
+  // recetas futuras con ese factor— no es el mismo catálogo, y `config/app`
+  // estampa esta versión para poder decir contra qué se calculó cada reporte.
+  //
+  // Sigue siendo ADITIVO en el sentido fuerte: NO sale ninguna ficha, NO cambia
+  // ningún id y NO cambia ni un número de las 1.112 que ya estaban — ninguna
+  // receta preexistente usa el método nuevo. El torrezno de Soria NO entra, y su
+  // motivo medido está en recipes.foods.json: el rendimiento existe (0,403) y
+  // precisamente por eso no se puede usar, porque lo que sale de un torrezno no
+  // es solo agua sino grasa, y un `factor_peso` no sabe restarla.
+  const kbVersion = `3.5.0+${contentHash({ generated_from: generatedFrom, foods })}`;
 
   return {
     catalog: { kb_version: kbVersion, generated_from: generatedFrom, foods },

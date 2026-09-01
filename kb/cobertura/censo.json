@@ -11,8 +11,8 @@
   "functions/src/engine/cobertura.test.ts y corre en cada `npm test`."
  ],
  "medido": "2026-09-01",
- "kb_version": "3.4.0+1c2270c1",
- "fichas_en_el_catalogo": 1112,
+ "kb_version": "3.5.0+fff1b63b",
+ "fichas_en_el_catalogo": 1114,
  "clases": [
   "ok",
   "confianza_injusta",
@@ -23,10 +23,10 @@
  "resumen": {
   "platos": {
    "total": 141,
-   "ok": 85,
+   "ok": 86,
    "confianza_injusta": 22,
    "ficha_equivocada": 0,
-   "ausente_ficha": 5,
+   "ausente_ficha": 4,
    "descomponible": 29
   },
   "ingredientes": {
@@ -40,10 +40,10 @@
   "por_lista": {
    "directoalpaladar": {
     "total": 101,
-    "ok": 73,
+    "ok": 74,
     "confianza_injusta": 19,
     "ficha_equivocada": 0,
-    "ausente_ficha": 4,
+    "ausente_ficha": 3,
     "descomponible": 5
    },
    "nuevoestilo": {
@@ -422,10 +422,19 @@
   {
    "lista": "directoalpaladar",
    "plato": "Calçots",
-   "clasificacion": "ausente_ficha",
-   "match": null,
-   "nota": "SIGUE SIN FICHA, y el motivo está medido: el calçot es una cebolleta ASADA A LA BRASA y no existe factor de rendimiento para verdura asada (DT-10: cinco pares en dos familias que se contradicen, de 0,714 a 1,111). Una receta de un solo ingrediente con factor 1,000 devolvería la cebolleta cruda con otro nombre, que es peor que el silencio.",
-   "candidato_en_el_catalogo": "BLOQUEADO POR EL RENDIMIENTO. El ingrediente está (`Cebolla de verdeo cruda`, fdc-170005, 32 kcal) y el calçot es esa cebolleta ASADA A LA BRASA. No hay factor medido para verdura asada (DT-10: cinco pares en dos familias que se contradicen, 0,714 a 1,111), y una receta de un solo ingrediente con factor 1,000 devolvería la cebolleta cruda con otro nombre."
+   "clasificacion": "ok",
+   "match": {
+    "ficha_id": "receta-calcots",
+    "ficha_es": "Calçots",
+    "ficha_en": "Calçots, Catalan roasted spring onions",
+    "nivel": "alias",
+    "confianza_match": 1,
+    "confianza_visible": 1,
+    "termino_matcheado": "Calçots",
+    "generic": false,
+    "kcal_100g": 37.647
+   },
+   "nota": "RESUELTO en la card 6.4b (`receta-calcots`, 37,6 kcal/100 g). Lo que faltaba era el rendimiento y ahora está medido: `cocido_cebolla` (0,850) es el que la propia FNDDS le asigna a la cebolla, recuperado de su `input_food` —n=2 pares concordantes, dispersión entre trazadores 0,003— y NO es el 1,000 que habría devuelto la cebolleta cruda con otro nombre. La vía de cocción declarada es el HORNO a 200 °C, que es la otra preparación documentada del plato; para la brasa sigue sin haber factor. La ficha es un SUELO y lo dice en sus caveats: la cocción genérica de FNDDS pierde menos agua que un asado."
   },
   {
    "lista": "directoalpaladar",
@@ -778,8 +787,8 @@
    "plato": "Torrezno de Soria",
    "clasificacion": "ausente_ficha",
    "match": null,
-   "nota": "SIGUE SIN FICHA, con el motivo afinado por la card 6.4, que sí abrió los datasets: el INGREDIENTE existe y entró al catálogo (`Panceta cruda`, fdc-167812, 518 kcal). Lo que no existe es el RENDIMIENTO: el torrezno pierde muchísima agua y suelta grasa al freírse, y no hay ningún par crudo/frito de panceta en los tres datasets con el que medirlo. Elegir el factor hasta llegar a las ~600 kcal que se le suponen es el defecto de la arepa y del açaí.",
-   "candidato_en_el_catalogo": "BLOQUEADO POR EL RENDIMIENTO, no por falta de ingrediente. La card 6.4 promovió `Panceta cruda` (fdc-167812, 518 kcal), que es el corte exacto. Lo que no existe es el par crudo/frito de panceta con el que medir cuánta agua pierde y cuánta grasa suelta el torrezno: elegir ese factor hasta llegar a las ~600 kcal que se le suponen es el defecto de la arepa (card 6.2) y del açaí (DT-11)."
+   "nota": "SIGUE SIN FICHA, y la card 6.4b corrigió el motivo, que era FALSO. El par crudo/frito de panceta SÍ existe —`Pork, cured, bacon, unprepared` (fdc-168277) contra `Pork, cured, bacon, pre-sliced, cooked, pan-fried` (fdc-168322)— y da un rendimiento de 0,403, validado porque es la única de las tres cocciones cuyo balance de masa cierra (sodio retenido 90 %, ceniza 88 %). Lo que bloquea es el MODELO, no el dato: de un torrezno no sale solo agua, sale GRASA (retención medida 38 %), y un `factor_peso` no sabe restarla — aplicarlo daría 131,5 g de grasa y 1.285 kcal por 100 g. Extenderlo con la retención del bacon da 542 kcal, que es el bacon crocante con otro nombre y por encima del bacon frito de USDA (468) cuando el torrezno tiene que quedar por debajo. Hace falta un modelo con retención POR NUTRIENTE. Ver `cooking.transforms.json` → `fritura_de_panceta`.",
+   "candidato_en_el_catalogo": "BLOQUEADO POR EL MODELO, no por el dato — y la card 6.4b corrigió el motivo anterior, que afirmaba que el par crudo/frito de panceta no existía. Existe: `Pork, cured, bacon, unprepared` (fdc-168277) contra `Pork, cured, bacon, pre-sliced, cooked, pan-fried` (fdc-168322) da 0,403 con la proteína como trazador, y es el par correcto porque el proceso es el mismo (panceta curada frita en su propia grasa) y porque es la única cocción cuyo balance de masa cierra (sodio 90 %, ceniza 88 %). Lo que no se puede es USARLO: el modelo de recetas supone que solo se va agua, y de un torrezno se va sobre todo grasa (retención medida 38 %). Aplicar 0,403 a `Panceta cruda` daría 1.285 kcal/100 g y 131,5 g de grasa, y los candados lo frenan. Hace falta retención POR NUTRIENTE, no un factor más."
   },
   {
    "lista": "directoalpaladar",

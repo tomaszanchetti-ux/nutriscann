@@ -117,16 +117,18 @@ test("las catorce fichas de la DT-27 están, con su nombre y su número", () => 
   }
 });
 
-test("el lote es ADITIVO: nada se retira y la versión es 3.4.0", () => {
+test("el lote es ADITIVO: nada se retira y la versión es 3.5.0", () => {
   // La card 6.3 movió el menor a 3.3.0 SIN tocar este lote (curación de
-  // vocabulario pura) y la 6.4 lo movió a 3.4.0 SUMANDO fichas: 33 de USDA por
-  // kb/selection/dt33.v1.json y 43 derivadas por receta. Las 14 de la DT-27 no se
-  // tocaron —eso lo vigilan los tests de arriba, uno por ficha— y el conteo total
-  // se actualiza acá para que sumar una ficha sin pasar por una card siga siendo
-  // imposible en silencio.
-  assert.match(catalog.kb_version, /^3\.4\.0\+[0-9a-f]{8}$/);
-  // 1.022 de la 3.1.0 + 14 de la DT-27 (card 6.2) + 76 de la DT-33 (card 6.4).
-  assert.equal(catalog.foods.length, 1112);
+  // vocabulario pura), la 6.4 lo movió a 3.4.0 SUMANDO fichas (33 de USDA por
+  // kb/selection/dt33.v1.json y 43 derivadas por receta) y la 6.4b lo movió a
+  // 3.5.0 con dos más: `receta-calcots` y `manual-salsa-de-calcots`. Las 14 de
+  // la DT-27 no se tocaron —eso lo vigilan los tests de arriba, uno por ficha— y
+  // el conteo total se actualiza acá para que sumar una ficha sin pasar por una
+  // card siga siendo imposible en silencio.
+  assert.match(catalog.kb_version, /^3\.5\.0\+[0-9a-f]{8}$/);
+  // 1.022 de la 3.1.0 + 14 de la DT-27 (card 6.2) + 76 de la DT-33 (card 6.4)
+  // + 2 de la card 6.4b.
+  assert.equal(catalog.foods.length, 1114);
 });
 
 test("las bebidas no se duplicaron: entra la de SR, no la gemela de FNDDS", () => {

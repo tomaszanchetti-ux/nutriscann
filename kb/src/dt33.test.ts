@@ -20,7 +20,8 @@
  *      los falsos amigos que se descartaron siguen fuera. Un lote que dice venir
  *      a tapar huecos no puede meter seis duplicados por la puerta de atrás.
  *   4. La aditividad, del lado que un test puede ver: las 1.036 fichas de la
- *      3.3.0 siguen ahí y el total es exactamente 1.112.
+ *      3.3.0 siguen ahí y el total es exactamente 1.114 (1.112 de la 3.4.0 más
+ *      las 2 que sumó la card 6.4b, que son de otro lote).
  */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -191,8 +192,10 @@ test("los cinco descartados del lote siguen fuera del catálogo", () => {
 });
 
 test("el lote es ADITIVO: 1.036 + 76, ninguna retirada", () => {
-  // 1.022 de la 3.1.0 + 14 de la DT-27 (card 6.2) + 33 promovidas + 43 recetas.
-  assert.equal(catalog.foods.length, 1112);
+  // 1.022 de la 3.1.0 + 14 de la DT-27 (card 6.2) + 33 promovidas + 43 recetas,
+  // más las 2 que sumó la card 6.4b (`receta-calcots` y `manual-salsa-de-calcots`),
+  // que no pertenecen a ESTE lote y por eso no entran en el conteo de abajo.
+  assert.equal(catalog.foods.length, 1114);
   const promovidas = new Set(PROMOVIDAS.map((p) => p.id));
   const recetas = new Set(RECETAS.map((r) => r.id));
   const nuevas = catalog.foods.filter((f) => promovidas.has(f.id) || recetas.has(f.id));

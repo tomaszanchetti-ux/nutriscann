@@ -21,7 +21,7 @@
 import type { CookingTransform } from "./transforms";
 
 /**
- * Los siete métodos declarados. `mezclado` es el de por defecto y su factor
+ * Los ocho métodos declarados. `mezclado` es el de por defecto y su factor
  * 1,000 no es un supuesto: es la convención MEDIDA de FNDDS para composiciones
  * (290 recetas resueltas al 100 %, rendimiento implícito mediana 1,000).
  */
@@ -33,4 +33,5 @@ export const COOKING_TRANSFORMS: Record<string, CookingTransform> = {
   plancha: { id: "plancha", factor_peso: 0.757, aceite_absorbido_pct: 0, aceite_ref: null },
   hervido: { id: "hervido", factor_peso: 1.113, aceite_absorbido_pct: 0, aceite_ref: null },
   horneado_masa: { id: "horneado_masa", factor_peso: 0.891, aceite_absorbido_pct: 0, aceite_ref: null },
+  cocido_cebolla: { id: "cocido_cebolla", factor_peso: 0.85, aceite_absorbido_pct: 0, aceite_ref: null },
 };

@@ -243,14 +243,32 @@ que el resto de las porciones sigue declarando su origen USDA.
 
 ## Estado
 
-**Las cuatro capas en pie (card 6.4, 01/09/2026).** El build compila **1.112**
-alimentos (730 FNDDS + 324 SR Legacy + 6 manuales + 52 recetas compuestas) en la
-versión **3.4.0**, con los seis candados en verde, la curación en español
+**Las cuatro capas en pie (card 6.4b, 01/09/2026).** El build compila **1.114**
+alimentos (730 FNDDS + 324 SR Legacy + 7 manuales + 53 recetas compuestas) en la
+versión **3.5.0**, con los seis candados en verde, la curación en español
 completa y las transformaciones de cocción medidas de los propios datasets. La
 capa 4 es `seed/` (card 1.5): la publicación idempotente a Firestore, con su
 propio README.
 
-Qué cambió respecto de la 3.3.0 (1.036 alimentos):
+Qué cambió respecto de la 3.4.0 (1.112 alimentos):
+
+- **Card 6.4b — los dos platos que la 6.4 dejó bloqueados por rendimiento
+  (DT-35 a).** Entra `cocido_cebolla` (0,850), **el primer rendimiento de
+  hortaliza medido del proyecto**: es el que la propia FNDDS le asigna a la
+  cebolla, recuperado de su `input_food` (que declara los gramos) con dos pares
+  concordantes y una dispersión entre trazadores de 0,003. Se verificó que NO es
+  una convención plana —el mismo barrido resuelve 156 pares y su mediana global
+  es 1,000— así que el 0,850 es de la cebolla y no de «la verdura». Con él entra
+  **`Calçots`** (37,6 kcal/100 g, por la vía declarada del horno) y con una
+  etiqueta comercial verificada entra **`Salsa de calçots`** (456 kcal/100 g,
+  Atwater al 0,02 %). El **`Torrezno de Soria` NO entra**, y su motivo cambió de
+  raíz: el rendimiento de fritura de panceta SÍ existe (0,403, medido y validado
+  por balance de masa) y precisamente por eso no se puede usar — lo que sale de
+  un torrezno no es solo agua sino grasa, y un `factor_peso` no sabe restarla
+  (DT-36). Aditivo en el sentido fuerte: 0 fichas retiradas, 0 preexistentes
+  cambiadas.
+
+Qué había cambiado respecto de la 3.3.0 (1.036 alimentos):
 
 - **Card 6.4 — las fichas que faltaban del censo mediterráneo (DT-33).** Setenta
   y seis alimentos nuevos: **33 promovidos de USDA** (`selection/dt33.v1.json`)

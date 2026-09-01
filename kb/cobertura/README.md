@@ -65,22 +65,28 @@ confianza dos veces y la corrección ni una. Está escrito a mano en las tablas 
 
 Los 141 platos, con el motor real y el catálogo real:
 
-| Clase | 3.2.0 (antes de la 6.3) | 3.3.0 (card 6.3) | 3.4.0 (card 6.4) |
-|---|---:|---:|---:|
-| `ok` | 24 | 38 | **85** |
-| `confianza_injusta` | 31 | 21 | 22 |
-| `ficha_equivocada` | 6 | 5 | **0** |
-| `ausente_ficha` | 51 | 48 | **5** |
-| `descomponible` | 29 | 29 | 29 |
+| Clase | 3.2.0 (antes de la 6.3) | 3.3.0 (card 6.3) | 3.4.0 (card 6.4) | 3.5.0 (card 6.4b) |
+|---|---:|---:|---:|---:|
+| `ok` | 24 | 38 | 85 | **86** |
+| `confianza_injusta` | 31 | 21 | 22 | 22 |
+| `ficha_equivocada` | 6 | 5 | **0** | 0 |
+| `ausente_ficha` | 51 | 48 | 5 | **4** |
+| `descomponible` | 29 | 29 | 29 | 29 |
 
 Los 196 ingredientes clave:
 
-| Clase | 3.2.0 | 3.3.0 | 3.4.0 |
-|---|---:|---:|---:|
-| `ok` | 32 | 37 | **45** |
-| `confianza_injusta` | 91 | 91 | 96 |
-| `ficha_equivocada` | 14 | 9 | 11 |
-| `ausente_ficha` | 59 | 59 | **44** |
+| Clase | 3.2.0 | 3.3.0 | 3.4.0 | 3.5.0 |
+|---|---:|---:|---:|---:|
+| `ok` | 32 | 37 | **45** | 45 |
+| `confianza_injusta` | 91 | 91 | 96 | 96 |
+| `ficha_equivocada` | 14 | 9 | 11 | 11 |
+| `ausente_ficha` | 59 | 59 | **44** | 44 |
+
+**La card 6.4b movió UNA fila y ninguna más**: `Calçots` pasó de `ausente_ficha`
+a `ok` con `receta-calcots` a confianza 1,0. Verificado por diff del censo entre
+la 3.4.0 y la 3.5.0: ningún otro plato ni ingrediente cambió de ficha ni de
+confianza, incluidos los dos que rozaban el vocabulario nuevo (`salsa marinara` y
+`salsa Worcester`, que siguen donde estaban).
 
 **La card 6.3 no movió ninguna ficha**: sus 136 cambios eran de vocabulario y
 trazan uno a uno a sus nueve curaciones (barrido de 31.097 consultas, 0 perdidos).
