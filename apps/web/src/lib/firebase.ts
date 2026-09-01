@@ -88,3 +88,26 @@ export function firestoreDocUrl(coleccion: string, documento: string): string {
   }
   return `https://firestore.googleapis.com/${ruta}?key=${encodeURIComponent(options.apiKey ?? "")}`;
 }
+
+/**
+ * La URL REST de una COLECCIÓN, para CREAR un documento con id automático
+ * (`POST` con `{ fields: … }`).
+ *
+ * Mismo criterio que su hermana de arriba, y por el mismo motivo medido: traer
+ * `firebase/firestore` solo para escribir un documento de cinco textos costaría
+ * ~110 kB gzip en una PWA que se abre desde un teléfono. Un `fetch` hace lo
+ * mismo con cero bytes de dependencia.
+ *
+ * La escritura va SIN credenciales, igual que la lectura de `config/app`: quien
+ * decide si entra o no es `firestore.rules`, que para `waitlist/{id}` permite
+ * solo `create` y valida la forma del documento. La API key no es un permiso —
+ * identifica al proyecto—, así que esto no abre ninguna puerta que las reglas no
+ * hayan abierto antes.
+ */
+export function firestoreColeccionUrl(coleccion: string): string {
+  const ruta = `v1/projects/${PROJECT_ID}/databases/(default)/documents/${coleccion}`;
+  if (USA_EMULADOR_DE_FIRESTORE) {
+    return `http://127.0.0.1:${PUERTO_FIRESTORE}/${ruta}`;
+  }
+  return `https://firestore.googleapis.com/${ruta}?key=${encodeURIComponent(options.apiKey ?? "")}`;
+}

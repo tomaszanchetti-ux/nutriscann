@@ -6,20 +6,27 @@
  * queda dormido hasta la v2. Acá no hay ni un consejo: hay calorías, macros y la
  * lista de lo que se identificó, cada número con su ficha y su confianza.
  *
- * ORDEN VISUAL (card 3.1 — el doble recuadro, criterio de Tomás del 01/09):
- *   1. PRIMER RECUADRO — lo PRINCIPAL: el donut de doble anillo con las calorías
- *      grandes en el centro y el reparto de macros con sus gramos. Lo encabeza
- *      `report_macros_title`, que hasta esta card era un título huérfano que
- *      solo aparecía cuando NO había macros (DT-23).
+ * ORDEN VISUAL (Q/A de Tomás, WS08 — la pantalla se acortó):
+ *   1. EL RECUADRO PRINCIPAL: el donut de doble anillo con las calorías grandes
+ *      en el centro y el reparto de macros. Lo encabeza `report_macros_title`.
  *   2. el aviso de total parcial, si el total es parcial
- *   3. SEGUNDO RECUADRO — los MENORES: fibra, saturadas, azúcares y sodio, con
- *      el peso identificado al pie. Son los que se miden y no aportan calorías
- *      (o no reparten el anillo), y por eso no están arriba.
- *   4. la lista de items con confianza, sello de match y letra chica
- *   5. el doble CTA (card 3.3): escanear otro plato, y pasarse a premium
+ *   3. la lista de items con confianza, sello de match y letra chica
+ *   4. el doble CTA (card 3.3): escanear otro plato, y pasarse a Premium
  *
- * EL TEXTO LEGAL NO ESTÁ ACÁ y no es un olvido: vive en `PieDeDiagnostico`, al
- * final de la pantalla y en letra chica, debajo de todo lo demás (pedido de
+ * QUÉ SACÓ LA WS08, y por qué no se perdió nada:
+ *
+ *   · EL SEGUNDO RECUADRO, «Del resto del análisis» (fibra, saturadas, azúcares
+ *     y sodio, con el peso identificado al pie). Decisión de Tomás: pocas cosas
+ *     en pantalla y muy útiles. Los cuatro valores SIGUEN VIAJANDO en el payload
+ *     del motor y siguen en el expediente — salieron de la pantalla, no del
+ *     contrato. Sus claves de copy (`report_others_title`, `report_weight_label`)
+ *     quedan huérfanas y declaradas en `config/copy.json`.
+ *   · LA LÍNEA DE META del pie (catálogo, modelo, latencia, tokens, scan id).
+ *     Es diagnóstico técnico, igual que el pie de la app: se muestra SOLO en
+ *     desarrollo, con la misma regla y por el mismo motivo.
+ *
+ * EL TEXTO LEGAL NO ESTÁ ACÁ y no es un olvido: vive en `PieLegal`, al final de
+ * la pantalla y en letra chica, debajo de la barra de navegación (pedido de
  * Tomás). Es el mismo pie en todas las pantallas, así que decirlo dos veces en
  * esta sería repetirlo, no reforzarlo.
  */
@@ -28,7 +35,7 @@ import { DonutMacros } from "./DonutMacros";
 import { ItemDelPlato } from "./ItemDelPlato";
 import type { CopyDeLaApp } from "../lib/config";
 import { COPY_CTA_PREMIUM } from "../lib/copy.premium";
-import { gramos, gramosEnteros, kcal } from "../lib/formato";
+import { kcal } from "../lib/formato";
 import type { EngineTotals, RespuestaDeAnalisis } from "../lib/types";
 
 export interface PantallaReporteProps {
@@ -101,10 +108,7 @@ export function PantallaReporte({
       )}
 
       {conTotal && (
-        <>
-          <AvisoParcial copy={copy} totals={totals} titulo={copy.report_partial_title} />
-          <OtrosNutrientes copy={copy} totals={totals} />
-        </>
+        <AvisoParcial copy={copy} totals={totals} titulo={copy.report_partial_title} />
       )}
 
       <section className="flex flex-col gap-4">
@@ -143,22 +147,24 @@ export function PantallaReporte({
         >
           {COPY_CTA_PREMIUM.etiqueta}
         </button>
-
-        <p className="text-center text-xs leading-relaxed text-ink-faint">
-          {COPY_CTA_PREMIUM.pie}
-        </p>
       </div>
 
-      <p className="font-mono text-[0.6875rem] leading-relaxed text-ink-faint">
-        catálogo {reporte.meta.kb_version} · {reporte.meta.model} · {reporte.meta.latency_ms} ms (
-        {reporte.meta.model_latency_ms} del modelo) · {reporte.meta.tokens_in}/
-        {reporte.meta.tokens_out} tokens · scan {reporte.scan_id ?? "sin id"}
-        {!reporte.persisted && (
-          // El análisis ya se pagó y se muestra igual, pero que se haya guardado
-          // o no es un hecho distinto: se dice, no se supone.
-          <span className="text-carbs"> · el expediente NO se guardó</span>
-        )}
-      </p>
+      {/* LA LÍNEA DE META, SOLO EN DESARROLLO (Q/A de Tomás, WS08). Es el mismo
+          criterio que el pie de diagnóstico de la app: catálogo, modelo, tokens
+          y scan id son para quien depura, no para quien come. Vite la elimina
+          del bundle de producción. */}
+      {import.meta.env.DEV && (
+        <p className="font-mono text-[0.6875rem] leading-relaxed text-ink-faint">
+          catálogo {reporte.meta.kb_version} · {reporte.meta.model} · {reporte.meta.latency_ms} ms (
+          {reporte.meta.model_latency_ms} del modelo) · {reporte.meta.tokens_in}/
+          {reporte.meta.tokens_out} tokens · scan {reporte.scan_id ?? "sin id"}
+          {!reporte.persisted && (
+            // El análisis ya se pagó y se muestra igual, pero que se haya
+            // guardado o no es un hecho distinto: se dice, no se supone.
+            <span className="text-carbs"> · el expediente NO se guardó</span>
+          )}
+        </p>
+      )}
     </div>
   );
 }
@@ -179,51 +185,5 @@ function SinTotales({ copy, motivo }: { copy: CopyDeLaApp; motivo: string | null
       <p className="font-display text-2xl font-semibold text-ink">{copy.report_no_totals_title}</p>
       <p className="text-sm leading-relaxed text-ink-soft">{motivo ?? copy.report_no_totals_body}</p>
     </div>
-  );
-}
-
-/**
- * EL SEGUNDO RECUADRO — los menores. Se muestran los que hay; los que faltan
- * dicen "sin dato" y tienen su explicación en el aviso de arriba. Ninguno se
- * rellena con un cero: `null` no es cero, y esa es la regla del proyecto.
- *
- * El sodio está acá y no en el donut porque no aporta calorías: el anillo
- * reparte kcal, y meterlo ahí obligaría a inventar una base que no existe.
- */
-function OtrosNutrientes({ copy, totals }: { copy: CopyDeLaApp; totals: EngineTotals }) {
-  const filas: { etiqueta: string; valor: number | null; unidad: string }[] = [
-    { etiqueta: copy.nutrient_fiber, valor: totals.nutrients.fiber_g, unidad: "g" },
-    { etiqueta: copy.nutrient_sat_fat, valor: totals.nutrients.sat_fat_g, unidad: "g" },
-    { etiqueta: copy.nutrient_sugars, valor: totals.nutrients.sugars_g, unidad: "g" },
-    { etiqueta: copy.nutrient_sodium, valor: totals.nutrients.sodium_mg, unidad: "mg" },
-  ];
-
-  return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-4">
-      <h2 className="text-sm tracking-[0.14em] text-ink-faint uppercase">
-        {copy.report_others_title}
-      </h2>
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
-        {filas.map((fila) => (
-          <div key={fila.etiqueta} className="flex flex-col gap-0.5">
-            <dt className="text-xs text-ink-faint">{fila.etiqueta}</dt>
-            <dd className="font-mono text-ink tabular-nums">
-              {fila.valor === null ? (
-                <span className="text-ink-faint">{copy.nutrient_no_data}</span>
-              ) : (
-                `${fila.unidad === "mg" ? gramosEnteros(fila.valor) : gramos(fila.valor)} ${fila.unidad}`
-              )}
-            </dd>
-          </div>
-        ))}
-        <div className="col-span-2 flex justify-between border-t border-line pt-3 text-xs">
-          <dt className="text-ink-faint">{copy.report_weight_label}</dt>
-          <dd className="font-mono text-ink-soft tabular-nums">
-            {gramosEnteros(totals.grams_cuantificados)} g de{" "}
-            {gramosEnteros(totals.grams_total)} g
-          </dd>
-        </div>
-      </dl>
-    </section>
   );
 }

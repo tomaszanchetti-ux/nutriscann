@@ -17,6 +17,7 @@
  */
 import { useState } from "react";
 
+import { ModalListaDeEspera } from "./ModalListaDeEspera";
 import { IconoCandado, ModalPremium } from "./ModalPremium";
 import {
   COPY_PERFIL,
@@ -32,18 +33,22 @@ export interface PantallaPerfilProps {
 
 export function PantallaPerfil({ onVolver, onIrAPremium }: PantallaPerfilProps) {
   const [abierta, setAbierta] = useState<FuncionalidadBloqueada | null>(null);
+  const [listaAbierta, setListaAbierta] = useState(false);
 
   return (
     <div className="flex flex-col gap-6 py-6">
       <BotonVolver onVolver={onVolver} />
 
+      {/* EL AVISO, DESTACADO (Q/A de la WS08). El párrafo de entrada se fue —lo
+          que decía se ve en las cuatro tarjetas de abajo— y el aviso dejó de ser
+          letra gris: es la información que la pantalla existe para dar, así que
+          se dibuja como un cartel con el color del sistema y no como una nota. */}
       <header className="flex flex-col gap-3">
         <h1 className="font-display text-3xl leading-tight font-bold text-balance text-ink">
           {COPY_PERFIL.titulo}
         </h1>
-        <p className="leading-relaxed text-pretty text-ink-soft">{COPY_PERFIL.entrada}</p>
-        <p className="flex items-center gap-2 text-sm text-ink-faint">
-          <IconoCandado className="size-3.5 shrink-0" />
+        <p className="flex items-center gap-2 rounded-xl border border-accent/40 bg-accent-soft/50 px-3 py-2.5 text-sm font-semibold text-pretty text-accent">
+          <IconoCandado className="size-4 shrink-0" />
           {COPY_PERFIL.aviso}
         </p>
       </header>
@@ -61,13 +66,29 @@ export function PantallaPerfil({ onVolver, onIrAPremium }: PantallaPerfilProps) 
 
       <p className="text-center text-xs text-ink-faint">{COPY_PERFIL.pieDeSeccion}</p>
 
-      <button
-        type="button"
-        onClick={onIrAPremium}
-        className="w-full rounded-2xl border border-accent/45 bg-accent-soft px-6 py-4 text-base font-semibold text-accent transition-transform active:scale-[0.98]"
-      >
-        {COPY_PERFIL.cta}
-      </button>
+      {/* DOS SALIDAS, del mismo tamaño: ver qué cuesta, o apuntarse sin ir a
+          mirar (Q/A de la WS08). Desde acá la lista de espera no elige plan —se
+          guarda como "perfil"— porque quien pulsa todavía no eligió. */}
+      <div className="flex flex-col gap-3">
+        <button
+          type="button"
+          onClick={onIrAPremium}
+          className="w-full rounded-2xl border border-accent/45 bg-accent-soft px-6 py-4 text-base font-semibold text-accent transition-transform active:scale-[0.98]"
+        >
+          {COPY_PERFIL.cta}
+        </button>
+        <button
+          type="button"
+          onClick={() => setListaAbierta(true)}
+          className="w-full rounded-2xl bg-accent px-6 py-4 text-base font-semibold text-ground transition-transform active:scale-[0.98]"
+        >
+          {COPY_PERFIL.ctaListaDeEspera}
+        </button>
+      </div>
+
+      {listaAbierta && (
+        <ModalListaDeEspera plan="perfil" onCerrar={() => setListaAbierta(false)} />
+      )}
 
       {abierta !== null && (
         <ModalPremium

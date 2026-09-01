@@ -1,8 +1,8 @@
 /**
  * Un alimento del plato, con todo lo que hace falta para creerle al número.
  *
- * El orden no es decorativo: primero QUÉ es y CUÁNTO pesa, después CUÁNTAS
- * calorías, y recién ahí la letra chica de por qué. Un item `no_catalogado` no
+ * El orden no es decorativo: primero QUÉ es, después CUÁNTAS calorías y sus
+ * macros, y recién ahí la letra chica de por qué. Un item `no_catalogado` no
  * muestra números —no los tiene— y muestra su explicación en el mismo lugar
  * donde los otros muestran las calorías, para que el hueco se lea como una
  * decisión y no como una falla de la pantalla.
@@ -21,6 +21,16 @@
  *     de confianza con su porcentaje y su color. Los dos factores siguen
  *     viajando en el payload (`confidence_vision`, `confidence_match`) y siguen
  *     en el expediente: se sacaron de la PANTALLA, no del contrato.
+ *
+ * QUÉ SACÓ EL Q/A DE LA WS08 (Tomás, 01/09/2026)
+ *
+ *   · LOS GRAMOS DEL ÍTEM («380 g» debajo del nombre). El peso lo estima el
+ *     modelo mirando una foto: es la entrada de la cuenta, no una medición, y
+ *     escrito con esa precisión se leía como si alguien hubiera puesto el plato
+ *     en una balanza. Tomás lo consideró arriesgado afirmarlo, y tiene razón.
+ *     El número sigue en `item.grams`, sigue siendo lo que multiplica los
+ *     valores por 100 g de la ficha y sigue en el expediente — no se muestra.
+ *     Las kcal y el P/C/G del ítem se quedan.
  * ------------------------------------------------------------------------- */
 import type { CopyDeLaApp } from "../lib/config";
 import { confianza, gramos, gramosEnteros, kcal, nivelDeConfianza } from "../lib/formato";
@@ -32,6 +42,29 @@ const COLOR_DE_CONFIANZA = {
   media: "text-carbs",
   baja: "text-protein",
 } as const;
+
+/**
+ * DESDE QUÉ SODIO UN ALIMENTO ES "SALADO": 400 mg por 100 g.
+ *
+ * NO ES UN NÚMERO NUEVO. Es el `umbral_sodio_mg` de la DT-13
+ * (`kb/curation/genericos.dt13.json`), el mismo con el que la curación decide a
+ * qué ficha genérica le escribe su caveat de sodio. Se usa el mismo para que la
+ * app no tenga dos ideas distintas de qué es mucha sal: si el catálogo avisa por
+ * un alimento, la pantalla lo pinta, y al revés.
+ *
+ * ⚠️ ESTÁ COPIADO, NO IMPORTADO, y eso es una deuda declarada: `apps/web` no
+ * compila contra `kb/`, así que subir el umbral a 500 en la curación NO cambia
+ * esta constante. Si ese archivo cambia, este número cambia a mano. La alternativa
+ * —publicarlo en `config/app`— es la misma mudanza de la DT-22.
+ *
+ * ⚠️ Y SE MIDE SOBRE `per_100g`, NUNCA SOBRE EL VALOR ESCALADO. Es la diferencia
+ * entre "este alimento es salado" y "de este alimento hay mucho en el plato", y
+ * el propio fixture tiene el caso que lo demuestra: la brocheta aporta 448 mg al
+ * plato y el queso solo 289, pero el salado es el queso (964 mg/100 g contra
+ * 312). Juzgar por el valor escalado premiaría a las porciones grandes y dejaría
+ * pasar la cucharada de algo muy salado.
+ */
+const SODIO_ALTO_MG_POR_100G = 400;
 
 /** Primera letra en mayúscula, sin tocar el resto (los nombres traen siglas). */
 function enMayuscula(texto: string): string {
@@ -70,9 +103,6 @@ export function ItemDelPlato({ copy, item }: { copy: CopyDeLaApp; item: EngineIt
               </span>
             )}
           </h3>
-          <p className="font-mono text-xs text-ink-faint tabular-nums">
-            {gramosEnteros(item.grams)} g
-          </p>
         </div>
         <BadgeDeMatch copy={copy} tipo={item.match} />
       </div>
@@ -82,17 +112,23 @@ export function ItemDelPlato({ copy, item }: { copy: CopyDeLaApp; item: EngineIt
           {item.motivo}
         </p>
       ) : (
-        <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 font-mono text-sm tabular-nums">
-          <span className="text-ink">
+        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 font-mono text-sm tabular-nums">
+          <span className="whitespace-nowrap text-ink">
             <strong className="text-xl font-semibold">{kcal(nutrientes.kcal)}</strong>
             <span className="ml-1 text-xs text-ink-faint">kcal</span>
           </span>
-          {/* Las tres iniciales quedan en el código a propósito: no son copy,
-              son la abreviatura del color que tienen al lado. El nombre entero
-              de cada macro sale de `config/app`, arriba, en el donut. */}
-          <span className="text-protein">P {gramos(nutrientes.protein_g)} g</span>
-          <span className="text-carbs">C {gramos(nutrientes.carbs_g)} g</span>
-          <span className="text-fat">G {gramos(nutrientes.fat_g)} g</span>
+          {/* Las iniciales quedan en el código a propósito: no son copy, son la
+              abreviatura del color que tienen al lado. El nombre entero de cada
+              macro sale de `config/app`, arriba, en el donut.
+
+              `whitespace-nowrap` en cada uno: la línea entra de un renglón en un
+              móvil normal, y cuando no entra baja ENTERO el valor que sobra. Lo
+              que nunca puede pasar es que "812" quede en un renglón y "mg" en el
+              siguiente. */}
+          <span className="whitespace-nowrap text-protein">P {gramos(nutrientes.protein_g)} g</span>
+          <span className="whitespace-nowrap text-carbs">C {gramos(nutrientes.carbs_g)} g</span>
+          <span className="whitespace-nowrap text-fat">G {gramos(nutrientes.fat_g)} g</span>
+          <Sodio escalado={nutrientes.sodium_mg} por100g={item.per_100g?.sodium_mg ?? null} />
         </div>
       )}
 
@@ -119,6 +155,43 @@ export function ItemDelPlato({ copy, item }: { copy: CopyDeLaApp; item: EngineIt
 
       <LetraChica copy={copy} item={item} />
     </li>
+  );
+}
+
+/** El aviso del ámbar, local al componente. Español de España. */
+const AYUDA_SODIO_ALTO = `Alto en sodio: más de ${SODIO_ALTO_MG_POR_100G} mg por cada 100 g de este alimento.`;
+
+/**
+ * EL SODIO DEL ÍTEM, al final de la misma línea de nutrientes.
+ *
+ * DOS NÚMEROS DISTINTOS, y por eso son dos props:
+ *   · `escalado`  — lo que ESTE plato aporta. Es lo que se muestra, y sale del
+ *     mismo sitio que las kcal y el P/C/G de al lado.
+ *   · `por100g`   — lo que el alimento ES. Es lo único que decide el color.
+ *
+ * UN `null` NO ES UN CERO, la regla de siempre: si la ficha no declara sodio, no
+ * se dibuja nada. No hay "0 mg" ni "sin dato" — en una línea de cinco valores,
+ * un hueco explicado es más ruido que hueco, y la ausencia ya se cuenta en el
+ * aviso de total parcial del reporte.
+ *
+ * EL ÁMBAR NO ES UNA ALARMA. Es `--color-carbs`, un tono del sistema, y aparece
+ * solo cuando el alimento cruza el umbral: el estado normal es tinta apagada, así
+ * que el color se lee como una señal y no como la identidad del valor (la
+ * identidad la da el "Na", que está siempre). Sin recuadro, sin ícono y sin
+ * leyenda: quien quiera el porqué lo tiene en el `title`.
+ */
+function Sodio({ escalado, por100g }: { escalado: number | null; por100g: number | null }) {
+  if (escalado === null) return null;
+
+  const alto = por100g !== null && por100g >= SODIO_ALTO_MG_POR_100G;
+
+  return (
+    <span
+      title={alto ? AYUDA_SODIO_ALTO : undefined}
+      className={`whitespace-nowrap ${alto ? "font-semibold text-carbs" : "text-ink-faint"}`}
+    >
+      Na {gramosEnteros(escalado)} mg
+    </span>
   );
 }
 

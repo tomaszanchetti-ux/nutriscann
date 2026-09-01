@@ -128,11 +128,12 @@
     },
     "donut_detail_title": {
       "since": "card-3.1",
-      "used_in": "DonutMacros — el encabezado de la leyenda del ANILLO EXTERIOR (la subdivisión de cada macro)"
+      "used_in": "SIN USO desde el Q/A de la WS08 (huérfana declarada)",
+      "huerfana": "Encabezaba la leyenda del ANILLO EXTERIOR («Dentro de cada macronutriente»). Tomás sacó esa sección entera del reporte el 01/09/2026: el anillo exterior se sigue DIBUJANDO —los gajos de azúcares, fibra y saturadas están— pero ya no se lista debajo. La clave se queda porque la lista de claves está CERRADA con candado (kb/seed/src/textos.test.ts exige que config/copy.json y CopyDeLaApp coincidan exactamente): borrarla es un cambio de las dos puntas y de kb/, que esta WS no toca. Si la sección no vuelve, se saca en el mismo movimiento que report_others_title y report_weight_label."
     },
     "donut_rest": {
       "since": "card-3.1",
-      "used_in": "DonutMacros — dentro de un macro, lo que queda después de sus partes medidas (grasas no saturadas; hidratos que no son azúcares ni fibra)"
+      "used_in": "DonutMacros — dentro de un macro, lo que queda después de sus partes medidas (grasas no saturadas; hidratos que no son azúcares ni fibra). Desde la WS08 ya NO se ve como fila: sobrevive en la descripción accesible del gráfico (aria-label), que es la que enumera el desglose para quien no lo ve."
     },
 
     "match_exacto": { "since": "card-3.1", "used_in": "BadgeDeMatch — el sello del ítem" },
@@ -188,11 +189,13 @@
     },
     "report_others_title": {
       "since": "card-3.1",
-      "used_in": "PantallaReporte — el título del SEGUNDO recuadro (fibra, saturadas, azúcares y sodio)"
+      "used_in": "SIN USO desde el Q/A de la WS08 (huérfana declarada)",
+      "huerfana": "Titulaba el SEGUNDO recuadro del reporte («Del resto del análisis»: fibra, saturadas, azúcares y sodio). Tomás lo sacó entero el 01/09/2026 — la pantalla muestra pocas cosas y muy útiles. Los datos NO se perdieron: siguen viajando en el payload del motor y en el expediente, salieron solo de la pantalla. La clave se queda por el candado de claves cerradas (ver donut_detail_title)."
     },
     "report_weight_label": {
       "since": "card-3.1",
-      "used_in": "PantallaReporte — la etiqueta del peso que entró a la suma, al pie del segundo recuadro"
+      "used_in": "SIN USO desde el Q/A de la WS08 (huérfana declarada)",
+      "huerfana": "Era la etiqueta del peso identificado, al pie del segundo recuadro, y se fue con él. La clave se queda por el candado de claves cerradas (ver donut_detail_title)."
     }
   },
 
@@ -209,7 +212,7 @@
     "scanning_title": "Mirando tu plato",
 
     "report_kcal_label": "calorías del plato",
-    "report_macros_title": "De dónde vienen esas calorías",
+    "report_macros_title": "Componente nutricional de tu plato",
     "report_items_title": "Qué hay en el plato",
     "report_partial_title": "Este total es parcial",
     "report_cta": "Escanear otro plato",

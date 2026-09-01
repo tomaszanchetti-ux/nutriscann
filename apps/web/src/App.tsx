@@ -43,8 +43,8 @@ import { PantallaPerfil } from "./components/PantallaPerfil";
 import { PantallaPremium } from "./components/PantallaPremium";
 import { PantallaReporte } from "./components/PantallaReporte";
 import { PantallaTerminos } from "./components/PantallaTerminos";
-import { PieDeDiagnostico } from "./components/PieDeDiagnostico";
-import { analizarFoto, ErrorDeAnalisis } from "./lib/api";
+import { PieDeDiagnostico, PieLegal } from "./components/PieDeDiagnostico";
+import { analizarFoto, ErrorDeAnalisis, USA_FIXTURE_DE_ANALISIS } from "./lib/api";
 import { cargarConfig, CONFIG_DE_ARRANQUE, type ConfigDeLaApp } from "./lib/config";
 import { comprimirImagen, ErrorDeImagen } from "./lib/imagen";
 import type { RespuestaDeAnalisis } from "./lib/types";
@@ -283,13 +283,33 @@ export default function App() {
         )}
       </main>
 
+      {/* EL ORDEN DEL PIE (Q/A de Tomás, WS08): primero la barra de secciones,
+          y debajo de ella —última de la pantalla— la advertencia chica con su
+          enlace a los Términos. El bloque de diagnóstico ya no se mete en el
+          medio: no se renderiza fuera de desarrollo. */}
       {mostrarNavegacion && <BarraDeNavegacion activa={seccion} onIr={setSeccion} />}
 
-      <PieDeDiagnostico
-        origenDeConfig={config.origen}
+      <PieLegal
         disclaimer={config.copy.disclaimer}
         onVerTerminos={seccion === "terminos" ? null : abrirTerminos}
       />
+
+      {/* EL DIAGNÓSTICO TÉCNICO, SOLO EN DESARROLLO. Proyecto, emulador,
+          Firestore, versión del backend, catálogo y latencia son la respuesta a
+          "¿contra qué estoy hablando?" durante el Q/A local, y no le dicen nada
+          a quien está mirando su plato. Vite lo elimina del bundle de
+          producción: `import.meta.env.DEV` es una constante en el build.
+
+          LA SEGUNDA CONDICIÓN NO ES UN CINTURÓN DE MÁS. El pie es también donde
+          avisa el MODO FIXTURE ("lo que ves NO viene del backend"), y esa
+          advertencia no puede depender de estar en desarrollo: un build de
+          producción hecho con `VITE_ANALYZE_FIXTURE` puesto mostraría un plato
+          inventado sin decirlo. `USA_FIXTURE_DE_ANALISIS` también se pliega a
+          `false` en un build normal, así que el componente se sigue borrando
+          entero cuando el fixture está apagado. */}
+      {(import.meta.env.DEV || USA_FIXTURE_DE_ANALISIS) && (
+        <PieDeDiagnostico origenDeConfig={config.origen} />
+      )}
     </div>
   );
 }

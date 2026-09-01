@@ -36,8 +36,23 @@
  * un macro es exactamente el arco de ese macro.
  *
  * EL SODIO NO ESTÁ, y no es un olvido: no aporta calorías, y este anillo reparte
- * calorías. Vive en el segundo recuadro del reporte, con los otros valores que
- * se miden pero no suman kcal.
+ * calorías. Se sigue midiendo y sigue en el payload; desde la WS08 ya no tiene
+ * recuadro propio en el reporte, y solo aparece en pantalla cuando el aviso de
+ * total parcial tiene que explicar que faltó.
+ *
+ * ---------------------------------------------------------------------------
+ * QUÉ SE VE Y QUÉ NO, DESPUÉS DEL Q/A DE LA WS08
+ *
+ * El DIBUJO no cambió: los dos anillos se calculan y se pintan exactamente
+ * igual, con la misma aritmética de abajo. Lo que cambió es la LEYENDA:
+ *
+ *   · la lista del anillo interior va en orden DECRECIENTE y con números
+ *     enteros (los decimales descuadraban la columna en móvil);
+ *   · la fila «Sin explicar» ya no se lista — el arco apagado se queda, y la
+ *     nota del final lo explica en palabras;
+ *   · la leyenda del anillo exterior («Dentro de cada macronutriente») se sacó
+ *     entera. Los gajos de azúcares, fibra y saturadas siguen dibujados, y su
+ *     desglose sigue enunciado en la descripción accesible del gráfico.
  *
  * ---------------------------------------------------------------------------
  * HONESTIDAD DEL ANILLO (la doctrina de la card 2.3, ahora en dos radios)
@@ -47,9 +62,9 @@
  * taparla sería inventar un cuadre. Pero un anillo tiene 360 grados sí o sí:
  *
  *   · si los tres suman MENOS de 100, lo que falta se dibuja como un tramo
- *     apagado, "sin explicar", y se nombra en la leyenda;
+ *     apagado, "sin explicar", y la nota del final dice cuánto es;
  *   · si suman MÁS de 100, el reparto se hace sobre esa suma (el anillo cierra)
- *     y la leyenda dice cuánto sobra.
+ *     y esa misma nota dice cuánto sobra.
  *
  * Lo mismo, un piso más afuera: si las partes medidas de un macro suman MÁS que
  * el macro (puede pasar entre fichas de fuentes distintas), el dibujo se reparte
@@ -62,7 +77,7 @@
  * se asume nunca que lo que no se midió vale cero.
  * ------------------------------------------------------------------------- */
 import type { CopyDeLaApp } from "../lib/config";
-import { gramos, porcentaje } from "../lib/formato";
+import { gramos, gramosEnteros, porcentaje, porcentajeEntero } from "../lib/formato";
 import type { PorcentajesDeMacros, TotalesNutrientes } from "../lib/types";
 
 /** El anillo interior: grueso, es el que manda. */
@@ -356,103 +371,42 @@ export function DonutMacros({ copy, macro_pct, nutrients, centro }: DonutMacrosP
         </div>
       </div>
 
-      {/* La leyenda del anillo interior: el reparto calórico, con los gramos. */}
+      {/* LA LEYENDA — el reparto calórico, y nada más (Q/A de Tomás, WS08).
+          Tres decisiones, las tres suyas:
+            · ORDEN DECRECIENTE por porcentaje: el macro que más pesa se lee
+              primero. El ANILLO no se reordena —cada color se queda en su sitio
+              y la animación entra igual—; se ordena la LISTA, que es la que se
+              recorre de arriba abajo.
+            · NÚMEROS ENTEROS, sin coma: los decimales descuadraban la columna en
+              móvil y no cambiaban ninguna decisión de quien mira su plato.
+            · SIN la fila «Sin explicar»: el hueco sigue dibujado como arco
+              apagado y la nota de abajo lo explica en palabras cuando existe.
+              Una fila con "sin dato" en su columna de gramos no informaba. */}
       <dl className="flex flex-col gap-2">
-        {macros.map((macro) => (
-          <div
-            key={macro.clave}
-            className="flex items-center gap-3 rounded-xl bg-surface-2/60 px-3 py-2"
-          >
-            <span
-              aria-hidden="true"
-              className="size-3 shrink-0 rounded-full"
-              style={{ backgroundColor: macro.color }}
-            />
-            <dt className="text-sm text-ink-soft">{macro.etiqueta}</dt>
-            <dd className="ml-auto flex items-baseline gap-3 font-mono tabular-nums">
-              <span className="text-ink">{porcentaje(macro.pct)}</span>
-              <span className="w-16 text-right text-sm text-ink-faint">
-                {macro.gramos === null ? copy.nutrient_no_data : `${gramos(macro.gramos)} g`}
-              </span>
-            </dd>
-          </div>
-        ))}
-        {haySobrante && (
-          <div className="flex items-center gap-3 rounded-xl bg-surface-2/60 px-3 py-2">
-            <span
-              aria-hidden="true"
-              className="size-3 shrink-0 rounded-full"
-              style={{ backgroundColor: "var(--color-line)" }}
-            />
-            <dt className="text-sm text-ink-faint">{copy.donut_unexplained}</dt>
-            <dd className="ml-auto flex items-baseline gap-3 font-mono tabular-nums">
-              <span className="text-ink-faint">{porcentaje(sobrante)}</span>
-              <span className="w-16 text-right text-sm text-ink-faint">
-                {copy.nutrient_no_data}
-              </span>
-            </dd>
-          </div>
-        )}
-      </dl>
-
-      {/* La leyenda del anillo exterior: qué hay DENTRO de cada macro. */}
-      <div className="flex flex-col gap-3">
-        <h3 className="text-xs tracking-[0.14em] text-ink-faint uppercase">
-          {copy.donut_detail_title}
-        </h3>
-        {desglose
-          .filter((fila) => fila.macro.partes.length > 0)
-          .map((fila) => (
-            <div key={fila.macro.clave} className="flex flex-col gap-1.5">
-              <p className="text-xs text-ink-faint">{fila.macro.etiqueta}</p>
-              {/* Un `dl` por macro, y no uno solo con encabezados adentro: el
-                  título del grupo no es un término ni una definición, y `dl` no
-                  admite otra cosa. */}
-              <dl className="flex flex-col gap-1.5">
-                {fila.macro.partes.map((parte) => (
-                  <div key={parte.id} className="flex items-center gap-3 pl-1">
-                    {/* Sin dato, sin color: lo que no está en el anillo no puede
-                        tener su gajo pintado en la leyenda. El círculo vacío es
-                        el hueco, dibujado. */}
-                    {parte.gramos === null ? (
-                      <span
-                        aria-hidden="true"
-                        className="size-2.5 shrink-0 rounded-full border border-dashed border-line"
-                      />
-                    ) : (
-                      <span
-                        aria-hidden="true"
-                        className="size-2.5 shrink-0 rounded-full"
-                        style={{ backgroundColor: parte.color }}
-                      />
-                    )}
-                    <dt className="text-sm text-ink-soft">{parte.etiqueta}</dt>
-                    <dd className="ml-auto font-mono text-sm text-ink tabular-nums">
-                      {parte.gramos === null ? (
-                        <span className="text-ink-faint">{copy.nutrient_no_data}</span>
-                      ) : (
-                        `${gramos(parte.gramos)} g`
-                      )}
-                    </dd>
-                  </div>
-                ))}
-                {fila.resto !== null && fila.resto > 0 && (
-                  <div className="flex items-center gap-3 pl-1">
-                    <span
-                      aria-hidden="true"
-                      className="size-2.5 shrink-0 rounded-full"
-                      style={{ backgroundColor: fila.macro.colorTenue }}
-                    />
-                    <dt className="text-sm text-ink-soft">{fila.macro.etiquetaDelResto}</dt>
-                    <dd className="ml-auto font-mono text-sm text-ink tabular-nums">
-                      {gramos(fila.resto)} g
-                    </dd>
-                  </div>
-                )}
-              </dl>
+        {[...macros]
+          .sort((uno, otro) => otro.pct - uno.pct)
+          .map((macro) => (
+            <div
+              key={macro.clave}
+              className="flex items-center gap-3 rounded-xl bg-surface-2/60 px-3 py-2"
+            >
+              <span
+                aria-hidden="true"
+                className="size-3 shrink-0 rounded-full"
+                style={{ backgroundColor: macro.color }}
+              />
+              <dt className="text-sm text-ink-soft">{macro.etiqueta}</dt>
+              <dd className="ml-auto flex items-baseline gap-3 font-mono tabular-nums">
+                <span className="text-ink">{porcentajeEntero(macro.pct)}</span>
+                <span className="w-14 text-right text-sm text-ink-faint">
+                  {macro.gramos === null
+                    ? copy.nutrient_no_data
+                    : `${gramosEnteros(macro.gramos)} g`}
+                </span>
+              </dd>
             </div>
           ))}
-      </div>
+      </dl>
 
       {Math.abs(macro_pct.sin_explicar) >= 0.05 && (
         <p className="text-xs leading-relaxed text-ink-faint">

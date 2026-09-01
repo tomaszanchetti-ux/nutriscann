@@ -1,22 +1,25 @@
 /**
- * El pie de diagnóstico: lo que quedó de la pantalla de la Fase 0.
+ * El pie de la app, en DOS piezas que ahora tienen públicos distintos (Q/A de
+ * Tomás, WS08).
  *
- * El health-check sigue vivo —el navegador alcanza el backend, el backend
- * alcanza Firestore, qué catálogo hay publicado— pero ya no es la pantalla: es
- * una línea discreta abajo de todo. Sigue estando porque durante el Q/A local
- * la primera pregunta ante cualquier rareza es "¿contra qué estoy hablando?", y
- * la respuesta tiene que estar a la vista sin abrir la consola.
+ * ---------------------------------------------------------------------------
+ * `PieLegal` — LO QUE VE EL USUARIO. La advertencia en una línea y el enlace a
+ * los Términos y Condiciones, y nada más. Va debajo de la barra de navegación,
+ * al final de todas las pantallas: la app dice números en más de una y la
+ * advertencia vale para todas. El reparto con la pantalla de T&C está pensado:
+ * acá la advertencia en una línea, allá el desarrollo. No se duplica; se
+ * continúa.
  *
- * También declara de dónde salieron los textos (Firestore o arranque en frío) y
- * si la app está corriendo contra el FIXTURE en vez del backend — eso último en
- * un tono que no se pueda confundir con un resultado real.
- *
- * Y desde la card 3.4 es además LA PUERTA A LOS TÉRMINOS Y CONDICIONES. El
- * reparto: acá va la advertencia en una línea, y el enlace de abajo lleva a la
- * pantalla que la desarrolla. No se duplica el texto; se continúa. El enlace
- * está en el pie —o sea, en todas las pantallas— porque la app dice números en
- * más de una y la advertencia vale para todas.
- */
+ * `PieDeDiagnostico` — LO QUE VE QUIEN DESARROLLA, Y SOLO EN DESARROLLO. Es lo
+ * que quedó de la pantalla de la Fase 0: contra qué proyecto se está hablando,
+ * si el backend y Firestore son los emulados, de dónde salieron los textos, la
+ * versión del catálogo y la latencia. Durante el Q/A local la primera pregunta
+ * ante cualquier rareza es "¿contra qué estoy hablando?" y la respuesta tiene
+ * que estar a la vista sin abrir la consola — pero al usuario esa línea no le
+ * dice nada, así que en producción NO SE RENDERIZA. Quien la monta es `App`,
+ * detrás de `import.meta.env.DEV`; el componente no decide solo para que la
+ * condición se lea en un único sitio, junto al resto de la composición.
+ * ------------------------------------------------------------------------- */
 import { useEffect, useState } from "react";
 
 import { fetchHealth, MODO_DE_DEMO, USA_FIXTURE_DE_ANALISIS, type HealthReport } from "../lib/api";
@@ -29,12 +32,17 @@ type EstadoDeSalud =
   | { fase: "vivo"; reporte: HealthReport }
   | { fase: "caido"; mensaje: string };
 
-export function PieDeDiagnostico({
-  origenDeConfig,
+/**
+ * El pie que SÍ ve el usuario: la advertencia chica y el enlace a los T&C.
+ *
+ * Va después de la barra de navegación y es lo último de la pantalla, en el
+ * cuerpo más chico de toda la app: es una advertencia que tiene que estar y que
+ * nadie tiene que leer para usar NutriScann.
+ */
+export function PieLegal({
   disclaimer,
   onVerTerminos,
 }: {
-  origenDeConfig: OrigenDeConfig;
   disclaimer: string;
   /**
    * Abre los Términos y Condiciones. `null` = ya se está leyéndolos, y entonces
@@ -42,6 +50,27 @@ export function PieDeDiagnostico({
    */
   onVerTerminos: (() => void) | null;
 }) {
+  return (
+    <footer className="flex flex-col gap-1 pt-3 pb-8">
+      <p className="font-sans text-[0.625rem] leading-relaxed text-ink-faint">{disclaimer}</p>
+
+      {/* EL ENLACE A LOS TÉRMINOS (card 3.4). Discreto, pero con área de toque
+          real: 44 px de alto, como todo lo que se toca en esta app. Va después
+          del disclaimer porque es su continuación, no su encabezado. */}
+      {onVerTerminos !== null && (
+        <button
+          type="button"
+          onClick={onVerTerminos}
+          className="flex min-h-11 w-fit items-center rounded-lg font-sans text-[0.6875rem] text-ink-faint underline underline-offset-4 transition-colors active:text-ink-soft"
+        >
+          {COPY_TERMINOS.enlace}
+        </button>
+      )}
+    </footer>
+  );
+}
+
+export function PieDeDiagnostico({ origenDeConfig }: { origenDeConfig: OrigenDeConfig }) {
   const [salud, setSalud] = useState<EstadoDeSalud>({ fase: "consultando" });
 
   useEffect(() => {
@@ -110,27 +139,6 @@ export function PieDeDiagnostico({
           </>
         )}
       </p>
-
-      {/* EL TEXTO LEGAL, ÚLTIMO Y CHICO (card 3.1, pedido de Tomás).
-          Va al final de la pantalla —debajo del reporte, de los botones y del
-          propio diagnóstico— y en el cuerpo más chico de toda la app: es una
-          advertencia que tiene que estar y que nadie tiene que leer para usar
-          NutriScann. Que esté siempre y no solo en el reporte es a propósito: la
-          app dice números en más de una pantalla. */}
-      <p className="mt-1 font-sans text-[0.625rem] leading-relaxed text-ink-faint">{disclaimer}</p>
-
-      {/* EL ENLACE A LOS TÉRMINOS (card 3.4). Discreto, pero con área de toque
-          real: 44 px de alto, como todo lo que se toca en esta app. Va después
-          del disclaimer porque es su continuación, no su encabezado. */}
-      {onVerTerminos !== null && (
-        <button
-          type="button"
-          onClick={onVerTerminos}
-          className="flex min-h-11 w-fit items-center rounded-lg font-sans text-[0.6875rem] text-ink-faint underline underline-offset-4 transition-colors active:text-ink-soft"
-        >
-          {COPY_TERMINOS.enlace}
-        </button>
-      )}
     </footer>
   );
 }

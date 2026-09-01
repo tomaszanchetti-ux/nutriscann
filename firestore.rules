@@ -5,6 +5,9 @@ rules_version = '2';
 // Postura: TODO cerrado por defecto. El cliente nunca escribe datos de negocio;
 // escribe solo el backend (Admin SDK, que se saltea estas reglas por diseño).
 // El cliente lee su propio material y el catálogo público, nada más.
+//
+// UNA excepción, declarada y acotada (WS08): `waitlist`, donde el navegador crea
+// —y solo crea— el alta de la lista de espera. Su regla explica el alcance.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -39,6 +42,41 @@ service cloud.firestore {
     // Nadie la lee ni la escribe desde el cliente.
     match /curation_queue/{itemId} {
       allow read, write: if false;
+    }
+
+    // Lista de espera de los planes de pago (WS08). Es la ÚNICA colección que el
+    // cliente escribe, y por eso es la única excepción a la postura de arriba.
+    // La puerta se abre lo justo:
+    //
+    //   · SOLO `create`. Nadie lee la lista desde el navegador —quien se apunta
+    //     no puede ver quién más está—, nadie corrige lo que escribió y nadie
+    //     borra. Todo eso se hace por el Admin SDK o por la consola.
+    //   · La FORMA se verifica acá y no se confía en el formulario: exactamente
+    //     cinco campos, todos texto y ninguno vacío. `hasOnly` es lo que impide
+    //     que alguien use esta puerta para guardar cualquier cosa.
+    //   · El tope de 200 caracteres no es una regla de negocio: es el freno a un
+    //     documento de un megabyte por campo, que la puerta abierta permitiría.
+    //
+    // NO se valida el CONTENIDO —que el correo exista, que el plan sea uno de
+    // los tres— porque las reglas no pueden saberlo y fingir que sí daría una
+    // garantía falsa. Eso se mira al leer la lista, no al escribirla.
+    match /waitlist/{altaId} {
+      allow read, update, delete: if false;
+      allow create: if esAltaDeListaDeEspera(request.resource.data);
+    }
+
+    function textoDeAlta(valor) {
+      return valor is string && valor.trim().size() > 0 && valor.size() <= 200;
+    }
+
+    function esAltaDeListaDeEspera(datos) {
+      return datos.keys().hasOnly(['nombre', 'apellidos', 'correo', 'plan', 'fecha'])
+        && datos.keys().hasAll(['nombre', 'apellidos', 'correo', 'plan', 'fecha'])
+        && textoDeAlta(datos.nombre)
+        && textoDeAlta(datos.apellidos)
+        && textoDeAlta(datos.correo)
+        && textoDeAlta(datos.plan)
+        && textoDeAlta(datos.fecha);
     }
 
     // Cierre explícito: cualquier ruta no declarada arriba queda negada.

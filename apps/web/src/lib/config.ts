@@ -149,7 +149,7 @@ export const COPY_DE_ARRANQUE: CopyDeLaApp = {
   capture_help: "Haz la foto desde arriba, con el plato entero y buena luz.",
   scanning_title: "Mirando tu plato",
   report_kcal_label: "calorías del plato",
-  report_macros_title: "De dónde vienen esas calorías",
+  report_macros_title: "Componente nutricional de tu plato",
   report_items_title: "Qué hay en el plato",
   report_partial_title: "Este total es parcial",
   report_cta: "Escanear otro plato",

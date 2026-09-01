@@ -33,6 +33,20 @@ export function porcentaje(valor: number, conSigno = false): string {
   return `${valor < 0 ? "−" : "+"}${texto} %`;
 }
 
+/**
+ * Porcentaje ENTERO, sin coma: "43 %".
+ *
+ * Es el de la lista de macros del reporte desde el Q/A de la WS08. El motivo es
+ * de pantalla y no de precisión: en un móvil, "43,2 %" y "9,7 %" tienen anchos
+ * distintos aunque la columna sea tabular, y la lista se veía desalineada. El
+ * decimal no cambiaba ninguna decisión de quien mira su plato — y donde sí
+ * importa, en la nota de lo que queda sin explicar, se sigue usando
+ * `porcentaje()` con su decimal.
+ */
+export function porcentajeEntero(valor: number): string {
+  return `${ENTERO.format(Math.round(valor))} %`;
+}
+
 /** La confianza, de 0..1 a un porcentaje entero: 0,248 → "25 %". */
 export function confianza(valor: number): string {
   return `${ENTERO.format(Math.round(valor * 100))} %`;
