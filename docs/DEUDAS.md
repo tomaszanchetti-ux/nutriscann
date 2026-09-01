@@ -153,3 +153,14 @@ quinto/botellín 200 ml · **tercio/mediana/media 330 ml** · litrona 1.000 ml
 (etiqueta + gramos, densidad ≈ 1) y aliases regionales con confianza; "caña" y
 "tercio" como porciones por defecto de grifo y botella. Con esto la card tiene
 TODO lo que USDA no sabía; queda solo ejecutarla (WS06).
+
+**🥃🍷 Tragos (aportado por Tomás, 01/09)** — destilados 45 ml: 65-100 kcal (0
+carbohidratos) · cerveza 330 ml: 150-160 · vino copa 150 ml: 65-85 · cócteles:
+160 (cuba libre) a 400+ (con cremas). Fuente destacable: Ministerio de Sanidad
+(estilosdevidasaludable.sanidad.gob.es), la misma familia que el PDF SENC de v2.
+**Contraste USDA: destilados ✓ (80-proof ≈ 104 kcal/45 ml) · cerveza ✓ (~145/330) ·
+⚠️ vino NO cruza: USDA da ~83 kcal/100 ml → una copa de 150 ml son ~125 kcal, no
+65-85 (ese rango parece ser por 100 ml). Al armar la ficha, ganan los números USDA
+y la porción se declara explícita.** Alcance: fichas simples (destilado genérico,
+vino tinto/blanco) en el lote v1.1; los cócteles son candidatos a receta compuesta
+(cuba libre = ron + refresco de cola, mecanismo 1.7) — v1.1+, no urgente.
