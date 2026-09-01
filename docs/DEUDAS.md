@@ -133,3 +133,13 @@ en español: tenerlo presente para la decisión de naming antes del lanzamiento.
 **Contraste: coincide con USDA ("Tortillas, corn" ~218 kcal/100 g × 30 g ≈ 65).**
 Ficha directa de USDA + porción "1 pieza (30 g)"; de paso resuelve la única regresión
 de la card 2.6 (`tortilla, corn` → Tortilla de trigo, DT-26).
+
+**🫓 Arepa** — datos aportados (asada simple, por 100 g): 168-215 kcal · 35-40 g
+carbohidratos · 3,5-5 proteína · 0,6-1 grasa · 2,5-3,5 fibra. **Caso especial: es la
+única del lote SIN ficha USDA posible** (verificado en los dos golden tests: el
+"no_catalogado" de la arepa era correcto). Dos caminos para la card: (a) **receta
+compuesta** (mecanismo 1.7: harina de maíz precocida USDA + agua + sal + rendimiento
+de plancha 0,757 medido) — preferible porque hereda provenance USDA; (b) curación
+manual con fuente web declarada (precedente salmorejo). El rango aportado por Tomás
+queda como contraste para validar la derivación: si la receta no cae en 168-215
+kcal/100 g, algo está mal.
