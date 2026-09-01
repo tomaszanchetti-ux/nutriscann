@@ -17,7 +17,7 @@
  * para volver el motor no determinístico.
  */
 import { aliasConfidence, aliasText, type CanonicalFood } from "../kb/types";
-import { normalizar } from "./normalize";
+import { claveDeMatching, estadoDeCoccion, variantesDeIndice } from "./normalize";
 
 /** Un término del catálogo, ya normalizado, apuntando a su ficha. */
 export interface TerminoIndexado {
@@ -31,6 +31,19 @@ export interface TerminoIndexado {
   idioma: "en" | "es";
   /** De qué campo salió. Va al `motivo` del item: nadie tiene que adivinarlo. */
   campo: "names.en" | "names.es" | "alias";
+  /**
+   * La clave NO es el término tal cual: es una variante que dedujo el índice
+   * (`variantesDeIndice`), como `beef steak` para `Beef, steak, NFS`. Solo existe
+   * cuando vale `true`, igual que `generic` en el catálogo.
+   */
+  variante?: true;
+  /**
+   * El estado de cocción que DECLARA el término (`Lentils, raw` declara crudo;
+   * `Lentejas cocidas` declara cocido; `Paella` no declara nada). Lo usa la
+   * regla del crudo/cocido en `match.ts`. Solo existe cuando el término dice
+   * algo: la mayoría de los nombres no dice nada y no lleva la clave.
+   */
+  estado?: "crudo" | "cocido";
 }
 
 /**
@@ -193,7 +206,13 @@ export function construirIndice(
     const lista = entrada.idioma === "en" ? index.difusoEn : index.difusoEs;
     const previo = mapa.get(entrada.clave);
     if (previo) {
-      if (previo.food_id !== entrada.food_id) {
+      // LAS COLISIONES QUE SE REPORTAN SON LAS DE LOS TÉRMINOS QUE ESCRIBIÓ LA
+      // CURACIÓN, no las de las variantes que deduce el índice. La lista existe
+      // para que un duplicado en `kb/` suene en CI; una variante que choca con
+      // un nombre real no es un error de nadie —es una regla general aplicada a
+      // 1.022 fichas— y lo único que tiene que pasar es que PIERDA, siempre y de
+      // la misma manera. Por eso se descarta en silencio.
+      if (previo.food_id !== entrada.food_id && entrada.variante !== true && previo.variante !== true) {
         index.colisiones.push({
           clave: entrada.clave,
           idioma: entrada.idioma,
@@ -207,32 +226,17 @@ export function construirIndice(
     lista.push(entrada);
   };
 
-  for (const ficha of activas) {
-    agregar({
-      clave: normalizar(ficha.names.en),
-      texto: ficha.names.en,
-      food_id: ficha.id,
-      confianza: 1,
-      idioma: "en",
-      campo: "names.en",
-    });
-
+  /** Los términos que ESCRIBIÓ la curación, en el orden de precedencia. */
+  const terminosDeLaFicha = (ficha: CanonicalFood): Omit<TerminoIndexado, "clave">[] => {
+    const terminos: Omit<TerminoIndexado, "clave">[] = [
+      { texto: ficha.names.en, food_id: ficha.id, confianza: 1, idioma: "en", campo: "names.en" },
+    ];
     if (ficha.names.es !== null) {
-      agregar({
-        clave: normalizar(ficha.names.es),
-        texto: ficha.names.es,
-        food_id: ficha.id,
-        confianza: 1,
-        idioma: "es",
-        campo: "names.es",
-      });
+      terminos.push({ texto: ficha.names.es, food_id: ficha.id, confianza: 1, idioma: "es", campo: "names.es" });
     }
-
     for (const alias of ficha.aliases.es) {
-      const texto = aliasText(alias);
-      agregar({
-        clave: normalizar(texto),
-        texto,
+      terminos.push({
+        texto: aliasText(alias),
         food_id: ficha.id,
         // La confianza del alias ES la confianza del match: un alias de 0,5 no
         // es el nombre del alimento, es el gemelo nutricional más cercano que
@@ -242,12 +246,44 @@ export function construirIndice(
         campo: "alias",
       });
     }
+    return terminos;
+  };
+
+  // DOS PASADAS, Y EL ORDEN ES EL PUNTO. Primero entran TODOS los términos tal
+  // como los escribió la curación; recién después entran las variantes que el
+  // índice deduce (`variantesDeIndice`). Así una variante nunca le puede sacar
+  // el lugar a un nombre real: cuando las dos claves coinciden, la que ya está
+  // en el mapa es la escrita a mano, y la deducida se descarta.
+  // El estado se decide sobre EL TEXTO DEL TÉRMINO, no sobre la ficha:
+  // `Limes, raw` declara crudo y `Lime juice` no declara nada, aunque las dos
+  // salieran de la misma fruta.
+  const conEstado = (termino: Omit<TerminoIndexado, "clave">, clave: string): TerminoIndexado => {
+    const estado = estadoDeCoccion(clave);
+    return estado === null ? { ...termino, clave } : { ...termino, clave, estado };
+  };
+
+  for (const ficha of activas) {
+    for (const termino of terminosDeLaFicha(ficha)) {
+      agregar(conEstado(termino, claveDeMatching(termino.texto)));
+    }
+  }
+  for (const ficha of activas) {
+    for (const termino of terminosDeLaFicha(ficha)) {
+      for (const clave of variantesDeIndice(termino.texto)) {
+        agregar({ ...conEstado(termino, clave), variante: true });
+      }
+    }
   }
 
   // El difuso recorre de más largo a más corto: así el primer candidato válido
-  // de cada nivel ya es el más específico y el desempate es estable.
+  // de cada nivel ya es el más específico y el desempate es estable. A igual
+  // largo gana el término escrito por la curación sobre la variante deducida, y
+  // recién después el id: el orden tiene que ser total para que el motor sea
+  // determinístico.
   const porLargo = (a: TerminoIndexado, b: TerminoIndexado): number =>
-    b.clave.length - a.clave.length || (a.food_id < b.food_id ? -1 : a.food_id > b.food_id ? 1 : 0);
+    b.clave.length - a.clave.length ||
+    Number(a.variante === true) - Number(b.variante === true) ||
+    (a.food_id < b.food_id ? -1 : a.food_id > b.food_id ? 1 : 0);
   index.difusoEn.sort(porLargo);
   index.difusoEs.sort(porLargo);
 

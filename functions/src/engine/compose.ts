@@ -29,7 +29,7 @@ import { derivarReceta, type Derivation, type ResolvedIngredient } from "../kb/t
 import { COOKING_TRANSFORMS } from "../kb/cooking.transforms";
 import type { CatalogIndex } from "./catalog";
 import { FACTOR_COMPOSICION, FACTOR_GENERICO, PREPARACION_POR_DEFECTO } from "./constants";
-import { buscarAlimento, redondear } from "./match";
+import { buscarConDosNombres, redondear } from "./match";
 import type { ComponenteDelPlato, Composicion, VisionComponent, VisionItem } from "./types";
 
 export interface ComposicionLograda {
@@ -98,7 +98,10 @@ export function componerPlato(item: VisionItem, index: CatalogIndex): ResultadoD
         ? componente.grams
         : 0;
     const nombre = typeof componente.food_en === "string" ? componente.food_en : "";
-    const match = buscarAlimento(nombre, index);
+    // Los ingredientes también vienen con sus dos nombres desde la card 2.6: un
+    // "sofrito" o un "pimiento del piquillo" no tienen nombre en inglés de USDA.
+    const nombreEs = typeof componente.food_es === "string" ? componente.food_es : "";
+    const match = buscarConDosNombres(nombre, nombreEs, index);
     if (match === null || gramos <= 0) {
       sinMatch.push({ termino_en: nombre, grams: gramos });
       continue;

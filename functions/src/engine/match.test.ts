@@ -12,10 +12,11 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { construirIndice, GUARDAS_DE_VOCABULARIO } from "./catalog";
-import { buscarAlimento, guardaQueViola } from "./match";
-import { contieneSecuencia, empiezaConPalabra, normalizar } from "./normalize";
+import { COBERTURA_DIFUSA_MIN, CONFIANZA_DIFUSA_MAX } from "./constants";
+import { buscarAlimento, buscarConDosNombres, guardaQueViola } from "./match";
+import { claveDeMatching, contieneSecuencia, empiezaConPalabra, normalizar, variantesDeIndice } from "./normalize";
 import { aliasConfidence, aliasText } from "../kb/types";
-import { catalogoReal, fichaFalsa, indiceDeFixture, indiceReal } from "./testing";
+import { catalogoReal, fichaFalsa, fichaReal, indiceDeFixture, indiceReal } from "./testing";
 
 const index = indiceReal();
 
@@ -114,14 +115,38 @@ describe("el cruce Catsup — por qué los índices están separados", () => {
     assert.equal(index.exactoEs.get("catsup")?.food_id, "fdc-2709733");
   });
 
-  it("es el ÚNICO cruce del catálogo (medido)", () => {
-    const cruces = [...index.exactoEn.entries()].filter(
-      ([clave, entrada]) => index.exactoEs.has(clave) && index.exactoEs.get(clave)?.food_id !== entrada.food_id,
-    );
+  it("es el ÚNICO cruce ESCRITO POR LA CURACIÓN (medido)", () => {
+    // CARD 2.6: el filtro por `variante` es nuevo y es lo que este test siempre
+    // quiso decir. La medición es sobre el VOCABULARIO QUE ESCRIBIÓ LA CURACIÓN
+    // —dos términos idénticos con dos dueños en `kb/`—, y ese sigue siendo uno
+    // solo. Las claves que el índice DEDUCE (`variantesDeIndice`) también cruzan
+    // de idioma, pero eso no es un error de curación: es una regla general
+    // aplicada a 1.022 fichas, y lo que hay que exigirle es que pierda siempre
+    // contra un nombre escrito (el test de abajo).
+    const cruces = [...index.exactoEn.entries()].filter(([clave, entrada]) => {
+      if (entrada.variante === true) return false;
+      const es = index.exactoEs.get(clave);
+      return es !== undefined && es.variante !== true && es.food_id !== entrada.food_id;
+    });
     assert.deepEqual(
       cruces.map(([c]) => c),
       ["catsup"],
     );
+  });
+
+  it("una variante deducida NUNCA le gana a un nombre escrito, ni cruzando de idioma", () => {
+    // El caso medido: `Salsa, NFS` (fdc-2709736, la salsa mexicana) le deja al
+    // índice INGLÉS la variante `salsa`, y `salsa` es el `names.es` escrito de
+    // `Sauce, NFS` (fdc-2710177). Con la cascada vieja de dos niveles exactos
+    // —inglés y después español— la variante inglesa ganaba y "salsa" devolvía
+    // salsa mexicana. Los cuatro niveles de `buscarAlimento` ponen a las
+    // variantes debajo de todo lo escrito.
+    assert.equal(index.exactoEn.get("salsa")?.variante, true);
+    assert.equal(index.exactoEs.get("salsa")?.variante, undefined);
+    const r = buscarAlimento("salsa", index);
+    assert.ok(r);
+    assert.equal(r.ficha.id, "fdc-2710177");
+    assert.equal(r.idioma, "es");
   });
 });
 
@@ -277,6 +302,228 @@ describe("guardas duras de vocabulario", () => {
       if (r === null) continue;
       assert.ok(!guarda.prohibido_en.includes(r.ficha.id), `${guarda.termino} -> ${r.ficha.id}`);
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// CARD 2.6 — el recall
+//
+// Todo lo de acá sale del test de 10 platos reales del 01/09/2026: 12 de 17
+// alimentos salieron sin datos y 10 de esos 12 SÍ estaban en el catálogo. Los
+// términos son EXACTAMENTE los que dijo el modelo de visión, letra por letra —
+// no son ejemplos inventados para que el test pase, son la vara que midió el
+// problema. El informe está en el expediente de la card.
+// ---------------------------------------------------------------------------
+
+describe("card 2.6 — el plural plegado (causa D)", () => {
+  it("`lime, raw` encuentra `Limes, raw` y por vía exacta", () => {
+    const r = buscarAlimento("lime, raw", index);
+    assert.ok(r);
+    assert.equal(r.ficha.id, "fdc-168155");
+    assert.equal(r.nivel, "exacto");
+    assert.equal(r.confianza_match, 1);
+  });
+
+  it("el singular encuentra al plural del catálogo, y al revés", () => {
+    assert.equal(buscarAlimento("pepinillo", index)?.ficha.id, "fdc-168558");
+    assert.equal(buscarAlimento("pepinillos", index)?.ficha.id, "fdc-168558");
+  });
+
+  it("plegar no es singularizar: la regla es pobre a propósito", () => {
+    assert.equal(claveDeMatching("Limes, raw"), "lime raw");
+    assert.equal(claveDeMatching("papas fritas"), "papa frita");
+    // Palabras cortas y terminadas en `ss`: intactas.
+    assert.equal(claveDeMatching("gas"), "gas");
+    assert.equal(claveDeMatching("bass"), "bass");
+    // No adivina irregulares, y no hace falta que lo haga: los dos lados pliegan igual.
+    assert.equal(claveDeMatching("fries"), "frie");
+  });
+
+  it("la guarda sigue disparando con la consulta plegada", () => {
+    // Si `guardaQueViola` comparara contra el término sin plegar, `pepinillos`
+    // (plegado a `pepinillo`) dejaría de disparar y la guarda se caería en
+    // silencio, que es la peor forma en que se puede caer una guarda.
+    assert.ok(guardaQueViola(claveDeMatching("pepinillos"), "fdc-169378", GUARDAS_DE_VOCABULARIO));
+    assert.ok(guardaQueViola(claveDeMatching("pepinillo"), "fdc-169378", GUARDAS_DE_VOCABULARIO));
+  });
+});
+
+describe("card 2.6 — las variantes del índice (causa B)", () => {
+  it("`beef steak, grilled` llega a `Beef, steak, NFS`", () => {
+    const r = buscarAlimento("beef steak, grilled", index);
+    assert.ok(r);
+    assert.equal(r.ficha.id, "fdc-2705824");
+  });
+
+  it("`white rice, cooked` llega EXACTO a `Rice, white, cooked, NS as to fat`", () => {
+    // La inversión del nombre de USDA: `Rice, white` se dice `white rice`.
+    const r = buscarAlimento("white rice, cooked", index);
+    assert.ok(r);
+    assert.equal(r.ficha.id, "fdc-2708403");
+    assert.equal(r.nivel, "exacto");
+  });
+
+  it("las tres formas de variante, una por una", () => {
+    assert.deepEqual(variantesDeIndice("Beef, steak, NFS").sort(), ["beef steak", "steak beef"]);
+    assert.ok(variantesDeIndice("Yellow rice, cooked, NS as to fat").includes("yellow rice cooked"));
+    assert.ok(variantesDeIndice("Rice, white, cooked, NS as to fat").includes("white rice cooked"));
+    assert.ok(
+      variantesDeIndice("Spanish potato omelette (tortilla de patatas)").includes("spanish potato omelette"),
+    );
+    // Un nombre sin comas ni marcadores no genera nada: la regla no inventa.
+    assert.deepEqual(variantesDeIndice("Coleslaw"), []);
+  });
+
+  it("NO se invierte cuando el primer segmento ya es una frase", () => {
+    // `Egg white omelet, scrambled, or fried` invertido daba `scrambled egg
+    // white omelet...`, y con eso "scrambled eggs" resolvía a la CLARA de huevo
+    // (100 kcal) en vez de al huevo revuelto (185). La convención de USDA es
+    // "SUSTANTIVO, calificativo", y un sustantivo es UNA palabra.
+    const variantes = variantesDeIndice("Egg white omelet, scrambled, or fried, NS as to fat");
+    assert.equal(
+      variantes.some((v) => v.startsWith("scrambled")),
+      false,
+      variantes.join(" | "),
+    );
+  });
+});
+
+describe("card 2.6 — la paradoja de la cobertura (causa C)", () => {
+  it("`coleslaw, cabbage and carrot salad` llega a Coleslaw, que es su NÚCLEO", () => {
+    // El caso más claro del test: la consulta CONTIENE un nombre exacto del
+    // catálogo, pero solo cubre el 24 % de lo que dijo la visión y el piso lo
+    // descartaba. Cuanto mejor describía el modelo, peor matcheaba.
+    const r = buscarAlimento("coleslaw, cabbage and carrot salad", index);
+    assert.ok(r);
+    assert.equal(r.ficha.id, "fdc-2709815");
+  });
+
+  it("descontar los descriptores sube la confianza de un match que era correcto", () => {
+    // `beef steak, grilled`: la palabra "grilled" no es otro alimento sin
+    // explicar, es un adjetivo del mismo. Antes de la card la confianza era 0,33.
+    const r = buscarAlimento("beef steak, grilled", index);
+    assert.ok(r);
+    assert.equal(r.confianza_match, CONFIANZA_DIFUSA_MAX);
+  });
+
+  it("EL PISO NO SE MOVIÓ: una lasaña no resuelve a la ricota que lleva adentro", () => {
+    // Si en vez de las dos puertas se hubiera bajado `COBERTURA_DIFUSA_MIN`,
+    // esta consulta habría matcheado `Ricotta` o `Spinach`. Es el candado de que
+    // el recall se abrió sin abrir la puerta a inventar.
+    assert.equal(COBERTURA_DIFUSA_MIN, 0.3);
+    assert.equal(buscarAlimento("lasagna with meat sauce and spinach ricotta", index), null);
+  });
+
+  it("lo que viene detrás de un conector es un ACOMPAÑAMIENTO, no el plato", () => {
+    // La arepa no está en el catálogo (verificado: 0 coincidencias) y el queso
+    // sí. Sin esta regla, una arepa rellena de queso devolvía QUESO.
+    assert.equal(buscarAlimento("arepa, grilled, filled with cheese", index), null);
+    // Y el queso solo, nombrado como tal, sigue llegando al queso.
+    assert.equal(buscarAlimento("cheese, white, fresh", index)?.ficha.id, "fdc-2705704");
+  });
+
+  it("las guardas de la DT-15 aguantan todas las puertas nuevas", () => {
+    // El chorizo, el cruce Catsup, los pepinillos dulces y la familia Pastel:
+    // los cuatro escenarios que el Bloque 0 midió, revisados de nuevo ahora que
+    // el difuso acepta por núcleo.
+    assert.notEqual(buscarAlimento("chorizo a la parrilla", index)?.ficha.id, "fdc-2705835");
+    assert.equal(buscarAlimento("Catsup", index)?.ficha.id, "fdc-168556");
+    assert.equal(buscarAlimento("pepinillos", index)?.ficha.id, "fdc-168558");
+    assert.equal(buscarAlimento("Pastel de carne casero de la abuela", index)?.ficha.id, "fdc-2706579");
+  });
+});
+
+describe("card 2.6 — la regla del crudo y el cocido", () => {
+  it("`lentils` y `lentejas` dan las COCIDAS, que es lo que hay en un plato", () => {
+    // LA TRAMPA MEDIDA: `Lentejas crudas` (fdc-172420) tiene 352 kcal/100 g y las
+    // cocidas (fdc-2707423) 166. Más del doble. Antes de esta card el error no se
+    // veía porque el motor no matcheaba nada; abrir el recall lo encendía.
+    assert.equal(buscarAlimento("lentils", index)?.ficha.id, "fdc-2707423");
+    assert.equal(buscarAlimento("lentejas", index)?.ficha.id, "fdc-2707423");
+    assert.equal(buscarAlimento("lentil stew with meat", index)?.ficha.id, "fdc-2707423");
+  });
+
+  it("nombrarlas crudas SÍ da las crudas: la regla no le saca nada a nadie", () => {
+    assert.equal(buscarAlimento("lentils, raw", index)?.ficha.id, "fdc-172420");
+    assert.equal(buscarAlimento("lentejas crudas", index)?.ficha.id, "fdc-172420");
+  });
+
+  it("una fruta o una verdura de ensalada SIGUEN siendo crudas", () => {
+    // La primera versión de la regla prohibía todo lo crudo y convertía la
+    // manzana en manzana al horno y el tomate de la ensalada en tomate cocido con
+    // grasa. La regla desempata mirando los datos: solo gana la cocida cuando la
+    // cruda es MÁS densa (o sea, cuando está seca).
+    assert.equal(buscarAlimento("apple", index)?.ficha.id, "fdc-2709215");
+    assert.equal(buscarAlimento("manzana", index)?.ficha.id, "fdc-2709215");
+    assert.equal(buscarAlimento("tomate", index)?.ficha.id, "fdc-2709719");
+    assert.equal(buscarAlimento("zanahoria", index)?.ficha.id, "fdc-170393");
+    assert.equal(buscarAlimento("spinach", index)?.ficha.id, "fdc-168462");
+  });
+
+  it("el desempate mira las kcal, no una lista de alimentos", () => {
+    const crudas = fichaReal("fdc-172420");
+    const cocidas = fichaReal("fdc-2707423");
+    assert.ok(crudas.per_100g.kcal > cocidas.per_100g.kcal, "las lentejas crudas están SECAS");
+    const tomateCrudo = fichaReal("fdc-2709719");
+    const tomateCocido = fichaReal("fdc-2709720");
+    assert.ok(tomateCrudo.per_100g.kcal < tomateCocido.per_100g.kcal, "el tomate cocido lleva grasa agregada");
+  });
+
+  it("el índice marca el estado sobre EL TÉRMINO, no sobre la ficha", () => {
+    assert.equal(index.exactoEn.get(claveDeMatching("Lentils, raw"))?.estado, "crudo");
+    assert.equal(index.exactoEs.get(claveDeMatching("Lentejas cocidas con sal y grasa"))?.estado, "cocido");
+    assert.equal(index.exactoEs.get(claveDeMatching("Paella"))?.estado, undefined);
+  });
+});
+
+describe("card 2.6 — los dos nombres de la visión (causa A)", () => {
+  it("el español desbloquea los platos que el inglés de USDA no sabe nombrar", () => {
+    // Los tres casos del test real: la visión describió el plato en inglés y el
+    // catálogo lo tenía curado en español desde la Fase 1.
+    assert.equal(buscarConDosNombres("rice, cooked, seafood paella style", "paella", index)?.ficha.id, "fdc-2706723");
+    assert.equal(
+      buscarConDosNombres("lasagna with meat sauce and spinach ricotta", "lasaña", index)?.ficha.id,
+      "fdc-2708755",
+    );
+    assert.equal(buscarConDosNombres("french fries, fried", "papas fritas", index)?.ficha.id, "fdc-2709456");
+  });
+
+  it("gana el que el catálogo conoce MEJOR, no el que se pregunta primero", () => {
+    // En inglés `beef steak, grilled` es un difuso al 0,6; en español `bife` es
+    // el nombre de la ficha. Tiene que ganar el español.
+    const r = buscarConDosNombres("beef steak, grilled", "bife", index);
+    assert.ok(r);
+    assert.equal(r.idioma, "es");
+    assert.equal(r.confianza_match, 1);
+  });
+
+  it("a igualdad gana el inglés, que es la precedencia de la card 2.1", () => {
+    // `Croissant` es el nombre en los dos idiomas: los dos dan 1,0 y manda el inglés.
+    const r = buscarConDosNombres("croissant", "croissant", index);
+    assert.ok(r);
+    assert.equal(r.idioma, "en");
+  });
+
+  it("sin `food_es` el motor se comporta EXACTAMENTE como antes", () => {
+    // El campo es opcional en el tipo justamente para esto: una salida vieja del
+    // modelo, o un item al que el modelo no le puso nombre en español, no cambia
+    // ni un byte del resultado.
+    for (const termino of ["apple, raw", "Chorizo", "olive oil for frying", "Zzzz plato inexistente xyz"]) {
+      for (const es of [undefined, null, "", "   "]) {
+        assert.deepEqual(buscarConDosNombres(termino, es, index), buscarAlimento(termino, index), `${termino}/${es}`);
+      }
+    }
+  });
+
+  it("se compara la confianza QUE VE EL USUARIO, con el descuento de genérica", () => {
+    // `Paella, NFS` es genérica: su match vale 1,0 × 0,85 = 0,85 en pantalla. Un
+    // difuso inglés de 0,9 (que no existe, pero podría) tendría que ganarle. El
+    // candado es que el español gana igual contra el difuso de 0,189 que da el
+    // inglés real, y que la ficha elegida es la genérica marcada.
+    const r = buscarConDosNombres("rice, cooked, seafood paella style", "paella", index);
+    assert.ok(r);
+    assert.equal(r.ficha.generic, true);
+    assert.equal(r.confianza_match, 1);
   });
 });
 

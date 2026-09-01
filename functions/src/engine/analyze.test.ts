@@ -27,6 +27,89 @@ describe("la foto que no es comida", () => {
   });
 });
 
+describe("card 2.6 — el escaneo con los dos nombres", () => {
+  it("un plato que el inglés no sabe nombrar deja de salir sin datos", () => {
+    // El item 03 del test de los 10 platos, letra por letra: la visión describió
+    // una paella como "arroz cocido estilo paella de mariscos" y el motor
+    // devolvía `no_catalogado` con `nutrients: null`, teniendo la ficha.
+    const r = analizarEscaneo(
+      escaneo([
+        { food_en: "rice, cooked, seafood paella style", food_es: "paella", grams: 350, confidence: 0.75 },
+      ]),
+      index,
+    );
+    const item = r.items[0];
+    assert.ok(item);
+    assert.equal(item.food_id, "fdc-2706723");
+    assert.equal(item.match, "alias");
+    assert.equal(item.generic, true);
+    assert.ok(item.nutrients !== null, "ahora SÍ hay números");
+    assert.equal(item.confidence, redondear(0.75 * FACTOR_GENERICO));
+    assert.deepEqual(r.curation_candidates, [], "no entra a la cola: el catálogo sí lo tenía");
+    assert.equal(r.totals?.completo, true);
+  });
+
+  it("el término en español también resuelve los INGREDIENTES de un compuesto", () => {
+    const r = analizarEscaneo(
+      escaneo([
+        {
+          food_en: "zzz unknown dish qqq",
+          food_es: "zzz plato inexistente qqq",
+          grams: 300,
+          confidence: 0.8,
+          preparation: "mezclado",
+          components: [
+            { food_en: "zzz unknown grain qqq", food_es: "arroz blanco cocido", grams: 200 },
+            { food_en: "Chorizo", grams: 100 },
+          ],
+        },
+      ]),
+      index,
+    );
+    const item = r.items[0];
+    assert.ok(item);
+    assert.equal(item.match, "compuesto");
+    assert.equal(item.composicion?.componentes[0]?.food_id, "fdc-2708403");
+  });
+
+  it("el total de un plato que antes salía en 43,6 kcal ahora se puede sumar", () => {
+    // La foto 07 del test: bife + papas + ensalada + kétchup + salsa. El sistema
+    // devolvía 43,6 kcal de ~700 reales porque solo matcheaba el kétchup, y lo
+    // declaraba incompleto. Lo que se mide acá no es el número exacto —depende de
+    // los gramos que estime la visión— sino que ya NO haya items sin datos.
+    const r = analizarEscaneo(
+      escaneo([
+        { food_en: "beef steak, grilled", food_es: "bife", grams: 180, confidence: 0.9 },
+        { food_en: "french fries, fried", food_es: "papas fritas", grams: 180, confidence: 0.95 },
+        { food_en: "coleslaw, cabbage and carrot salad", food_es: "coleslaw", grams: 120, confidence: 0.85 },
+        { food_en: "ketchup", food_es: "kétchup", grams: 40, confidence: 0.9 },
+        { food_en: "gravy, brown sauce", food_es: "salsa de carne", grams: 40, confidence: 0.6 },
+      ]),
+      index,
+    );
+    assert.equal(r.totals?.items_sin_datos, 0);
+    assert.equal(r.totals?.completo, true);
+    assert.equal(r.totals?.grams_cuantificados, 560);
+    assert.ok((r.totals?.nutrients.kcal ?? 0) > 400, `${r.totals?.nutrients.kcal} kcal`);
+  });
+
+  it("y la arepa SIGUE saliendo sin datos, que es lo correcto", () => {
+    // El candado de que el recall se abrió sin abrir la puerta a inventar: la
+    // arepa no está en el catálogo (0 coincidencias, verificado) y el queso que
+    // lleva adentro no la puede reemplazar.
+    const r = analizarEscaneo(
+      escaneo([{ food_en: "arepa, grilled, filled with cheese", food_es: "arepa", grams: 150, confidence: 0.85 }]),
+      index,
+    );
+    const item = r.items[0];
+    assert.ok(item);
+    assert.equal(item.match, "no_catalogado");
+    assert.equal(item.nutrients, null);
+    assert.equal(item.confidence, 0);
+    assert.equal(r.curation_candidates[0]?.motivo, "sin_match");
+  });
+});
+
 describe("la confianza se COMPONE", () => {
   it("visión × matching", () => {
     const r = analizarEscaneo(escaneo([{ food_en: "Chorizo", grams: 100, confidence: 0.9 }]), index);

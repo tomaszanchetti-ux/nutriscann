@@ -16,7 +16,7 @@ import { describe, it } from "node:test";
 import { aliasConfidence, aliasText } from "../kb/types";
 import { construirIndice, MINIMO_DE_FICHAS } from "./catalog";
 import { buscarAlimento } from "./match";
-import { normalizar } from "./normalize";
+import { claveDeMatching, normalizar, sinDescriptores } from "./normalize";
 import { catalogoReal, indiceReal } from "./testing";
 
 const catalogo = catalogoReal();
@@ -43,7 +43,11 @@ describe("F6 — un catálogo vacío no puede pasar por un plato exótico", () =
 
   it("un fixture chico tiene que DECLARAR que es chico", () => {
     const chico = construirIndice(catalogo.foods.slice(0, 3), "test", { minimo_de_fichas: 1 });
-    assert.equal(chico.exactoEn.size, 3);
+    // CARD 2.6: se cuentan los términos ESCRITOS, no las variantes que el índice
+    // deduce de cada nombre (`Beef, steak, NFS` deja además `beef steak`). Lo que
+    // este test mide es que el fixture tiene tres fichas y no el catálogo entero.
+    const escritos = [...chico.exactoEn.values()].filter((e) => e.variante !== true);
+    assert.equal(escritos.length, 3);
   });
 
   it("las fichas retiradas no cuentan para el piso", () => {
@@ -60,13 +64,118 @@ describe("el índice no tiene ambigüedades", () => {
   it("todo el vocabulario en español está indexado", () => {
     const terminos = new Set<string>();
     for (const f of activas) {
-      if (f.names.es !== null) terminos.add(normalizar(f.names.es));
-      for (const a of f.aliases.es) terminos.add(normalizar(aliasText(a)));
+      if (f.names.es !== null) terminos.add(claveDeMatching(f.names.es));
+      for (const a of f.aliases.es) terminos.add(claveDeMatching(aliasText(a)));
     }
     terminos.delete("");
-    assert.equal(index.exactoEs.size, terminos.size);
+    // CARD 2.6, dos cambios y los dos con intención:
+    //  · `claveDeMatching` y no `normalizar`: la clave del índice pliega el
+    //    plural, así que el conjunto con el que se compara tiene que plegarlo
+    //    también o el test estaría midiendo otra cosa.
+    //  · se filtran las variantes deducidas: lo que este test exige es que NO SE
+    //    PIERDA ningún término escrito por la curación. Que además haya claves de
+    //    más es justamente lo que la card agregó, y tiene su propio test.
+    const escritos = [...index.exactoEs.values()].filter((e) => e.variante !== true);
+    assert.equal(escritos.length, terminos.size);
+  });
+
+  it("las variantes deducidas SUMAN claves y no pisan ninguna escrita", () => {
+    // El candado de la regla: una variante nunca ocupa el lugar de un nombre
+    // real. Si mañana el orden de las dos pasadas de `construirIndice` se
+    // invierte, esto suena.
+    for (const mapa of [index.exactoEn, index.exactoEs]) {
+      for (const [clave, entrada] of mapa) {
+        if (entrada.variante !== true) continue;
+        assert.equal(claveDeMatching(entrada.texto) === clave, false, `${clave} debería ser literal`);
+      }
+    }
+    const variantes = [...index.exactoEn.values(), ...index.exactoEs.values()].filter((e) => e.variante === true);
+    assert.ok(variantes.length > 200, `${variantes.length} variantes: el catálogo tiene 197 fichas con NFS`);
   });
 });
+
+describe("card 2.6 — plegar el plural no rompe nada, MEDIDO", () => {
+  it("no crea ni una colisión nueva en los 1.022 nombres en inglés", () => {
+    const colisiones = medirColisiones(activas.map((f) => f.names.en));
+    assert.deepEqual(colisiones, []);
+  });
+
+  it("no crea ni una colisión nueva en los 1.768 términos en español", () => {
+    // Se compara POR FICHA: dos términos de la MISMA ficha que se pliegan a la
+    // misma clave no son una colisión (es un plural y su singular), y el
+    // catálogo tiene alguno. Lo que no puede pasar es que el plegado junte dos
+    // alimentos DISTINTOS.
+    const terminos: { texto: string; id: string }[] = [];
+    for (const f of activas) {
+      if (f.names.es !== null) terminos.push({ texto: f.names.es, id: f.id });
+      for (const a of f.aliases.es) terminos.push({ texto: aliasText(a), id: f.id });
+    }
+    const sinPlegar = new Map<string, string>();
+    const nuevas: string[] = [];
+    for (const t of terminos) {
+      const plano = normalizar(t.texto);
+      const previo = sinPlegar.get(plano);
+      if (previo === undefined) sinPlegar.set(plano, t.id);
+    }
+    const plegado = new Map<string, string>();
+    for (const t of terminos) {
+      const clave = claveDeMatching(t.texto);
+      if (clave === "") continue;
+      const previo = plegado.get(clave);
+      if (previo !== undefined && previo !== t.id && sinPlegar.get(normalizar(t.texto)) !== previo) {
+        nuevas.push(`${clave}: ${previo} vs ${t.id}`);
+      }
+      if (previo === undefined) plegado.set(clave, t.id);
+    }
+    assert.deepEqual(nuevas, []);
+  });
+
+  it("las listas de palabras se comparan PLEGADAS", () => {
+    // El candado del bug de orden: si las listas de `constants.ts` se pliegan
+    // antes de que exista `LARGO_MINIMO_PARA_PLEGAR`, quedan sin plegar EN
+    // SILENCIO y `fritas` deja de reconocerse como descriptor. Acá se ve.
+    assert.equal(sinDescriptores(claveDeMatching("papas fritas")), "papa");
+    assert.equal(sinDescriptores(claveDeMatching("lentejas cocidas")), "lenteja");
+  });
+});
+
+describe("card 2.6 — describir de más no puede desviar un match, MEDIDO", () => {
+  /**
+   * EL BARRIDO QUE CIERRA LA CARD. La paradoja que se vino a arreglar era que
+   * cuanto mejor describía la visión, peor matcheaba. Lo que NO puede pasar al
+   * arreglarla es lo contrario: que una palabra de más lleve a OTRO alimento.
+   *
+   * Se le agrega a los 1.022 nombres del catálogo un descriptor de cocción, un
+   * acompañamiento y un adjetivo, y se exige que los 1.022 sigan resolviendo a
+   * SU PROPIA ficha. No "casi todos": los 1.022. Es la diferencia entre abrir el
+   * recall y aflojar el motor.
+   */
+  for (const sufijo of [", grilled", " with rice", ", fresh", " a la plancha"]) {
+    it(`"<nombre>${sufijo}" sigue dando la misma ficha, las 1.022 veces`, () => {
+      const desviados: string[] = [];
+      for (const f of activas) {
+        const r = buscarAlimento(f.names.en + sufijo, index);
+        if (r === null || r.ficha.id !== f.id) {
+          desviados.push(`${f.names.en}${sufijo} -> ${r === null ? "null" : r.ficha.id}`);
+        }
+      }
+      assert.deepEqual(desviados, []);
+    });
+  }
+});
+
+function medirColisiones(textos: string[]): string[] {
+  const porClave = new Map<string, string>();
+  const colisiones: string[] = [];
+  for (const texto of textos) {
+    const clave = claveDeMatching(texto);
+    if (clave === "") continue;
+    const previo = porClave.get(clave);
+    if (previo !== undefined && normalizar(previo) !== normalizar(texto)) colisiones.push(`${clave}: ${previo} / ${texto}`);
+    if (previo === undefined) porClave.set(clave, texto);
+  }
+  return colisiones;
+}
 
 describe("todo alimento se encuentra a sí mismo", () => {
   it("los 1.022 `names.en` matchean exacto contra su propia ficha", () => {

@@ -19,13 +19,27 @@
  *      como se llaman. La confianza es LA DEL ALIAS (1,0 / 0,8 / 0,6 / 0,5).
  *   3. DIFUSO, por contención de palabras. Nunca pasa de 0,6.
  *
+ * Desde la card 2.6 los dos niveles exactos son CUATRO, porque el índice además
+ * de los términos escritos por la curación aprende VARIANTES de cada nombre
+ * (`Beef, steak, NFS` deja también `beef steak`). El orden es: inglés escrito,
+ * español escrito, inglés deducido, español deducido. Una variante nunca le gana
+ * a un nombre que alguien escribió, ni siquiera cruzando de idioma.
+ *
  * Y encima de los tres, las GUARDAS: pares término/ficha que están prohibidos
  * salga el match de donde salga.
  */
 import type { CanonicalFood } from "../kb/types";
 import type { CatalogIndex, GuardaDeVocabulario, TerminoIndexado } from "./catalog";
-import { COBERTURA_DIFUSA_MIN, CONFIANZA_DIFUSA_MAX, DECIMALES } from "./constants";
-import { contieneSecuencia, empiezaConPalabra, normalizar } from "./normalize";
+import { COBERTURA_DIFUSA_MIN, CONFIANZA_DIFUSA_MAX, DECIMALES, FACTOR_GENERICO } from "./constants";
+import {
+  claveDeMatching,
+  contieneSecuencia,
+  estadoDeCoccion,
+  empiezaConPalabra,
+  inicioDelAcompanamiento,
+  posicionDeSecuencia,
+  sinDescriptores,
+} from "./normalize";
 
 export type NivelDeMatch = "exacto" | "alias" | "difuso";
 
@@ -38,6 +52,38 @@ export interface MatchResult {
   termino_matcheado: string;
   idioma: "en" | "es";
   motivo: string;
+}
+
+/**
+ * LOS DOS NOMBRES QUE DIJO LA VISIÓN, y gana el que el catálogo conoce mejor.
+ *
+ * Desde la card 2.6 la visión nombra cada alimento dos veces: en inglés (el
+ * registro de USDA, que es de donde salen los `names.en`) y en español de España
+ * (el registro del usuario, que es de donde salió la curación). Los dos se
+ * buscan por separado, con la misma cascada, y gana EL MEJOR — no el primero.
+ *
+ * SE COMPARA LA CONFIANZA QUE VE EL USUARIO, no la del matching a secas: una
+ * ficha genérica ya llega con su 15 % descontado (`FACTOR_GENERICO`), y comparar
+ * antes de ese descuento haría ganar a un match nominalmente más alto que en la
+ * pantalla vale menos. A IGUALDAD GANA EL INGLÉS, que es la precedencia que la
+ * card 2.1 declaró y por la misma razón: `names.en` es la clave primaria limpia.
+ */
+export function buscarConDosNombres(
+  termino_en: string,
+  termino_es: string | undefined | null,
+  index: CatalogIndex,
+): MatchResult | null {
+  const porEn = buscarAlimento(termino_en, index);
+  if (typeof termino_es !== "string" || termino_es.trim().length === 0) return porEn;
+  const porEs = buscarAlimento(termino_es, index);
+  if (porEs === null) return porEn;
+  if (porEn === null) return porEs;
+  return confianzaVisible(porEs) > confianzaVisible(porEn) ? porEs : porEn;
+}
+
+/** La confianza del match ya con el descuento de ficha genérica: la de pantalla. */
+function confianzaVisible(match: MatchResult): number {
+  return match.confianza_match * (match.ficha.generic === true ? FACTOR_GENERICO : 1);
 }
 
 /** Redondeo estable: el mismo escaneo dos veces da el mismo byte. */
@@ -64,6 +110,12 @@ export function redondear(valor: number, decimales: number = DECIMALES): number 
  *
  * La guarda se levanta si la consulta trae alguna de las palabras que nombran
  * explícitamente la variante prohibida ("pepinillos DULCES").
+ *
+ * EL TÉRMINO DE LA GUARDA SE VUELVE A PASAR POR `claveDeMatching` acá dentro, no
+ * se confía en cómo está escrito en la lista. Desde la card 2.6 la clave pliega
+ * el plural, y una guarda escrita como `pepinillos` contra una consulta plegada a
+ * `pepinillo` no dispararía: la guarda se caería en silencio, que es la peor
+ * forma en que se puede caer una guarda.
  */
 export function guardaQueViola(
   consultaNormalizada: string,
@@ -72,9 +124,9 @@ export function guardaQueViola(
 ): GuardaDeVocabulario | null {
   for (const guarda of guardas) {
     if (!guarda.prohibido_en.includes(food_id)) continue;
-    if (!empiezaConPalabra(consultaNormalizada, guarda.termino)) continue;
+    if (!empiezaConPalabra(consultaNormalizada, claveDeMatching(guarda.termino))) continue;
     const levantada = (guarda.salvo_si_contiene ?? []).some((palabra) =>
-      contieneSecuencia(consultaNormalizada, normalizar(palabra)),
+      contieneSecuencia(consultaNormalizada, claveDeMatching(palabra)),
     );
     if (!levantada) return guarda;
   }
@@ -93,7 +145,9 @@ interface CandidatoDifuso {
 /**
  * El difuso de UN índice (inglés o español, nunca los dos juntos).
  *
- * Dos direcciones, y la primera le gana siempre a la segunda:
+ * Dos direcciones. Hasta la card 2.6 la primera le ganaba SIEMPRE a la segunda;
+ * ahora gana la de más confianza y la A solo desempata (ver el final de la
+ * función, con el caso medido de `crackers, saltine`):
  *
  *   A. EL NOMBRE DEL CATÁLOGO ESTÁ DENTRO DE LA CONSULTA. La visión dijo de más
  *      ("olive oil for frying" y el catálogo tiene `Olive oil`, fdc-2710186 —
@@ -116,35 +170,153 @@ interface CandidatoDifuso {
  * En las dos direcciones la confianza es `0,6 × cobertura × confianza del
  * término`: decrece con la distancia entre los dos textos, y arrastra la reserva
  * del alias cuando el término que ganó era un alias con reserva.
+ *
+ * LO QUE AGREGÓ LA CARD 2.6, y está explicado en su lugar más abajo:
+ *   · la cobertura de la dirección A no cuenta las palabras que solo describen
+ *     la presentación ("grilled", "casero"): no son comida sin explicar;
+ *   · un nombre que es el NÚCLEO de la consulta entra aunque cubra poco, y le
+ *     gana a uno más largo que está más atrás;
+ *   · lo que viene detrás de un conector ("...with cheese") es un
+ *     acompañamiento y no puede ser el plato;
+ *   · entre una ficha que dice CRUDA y su hermana COCIDA, gana la cocida cuando
+ *     la cruda es más densa (o sea, cuando está seca).
  */
 function difusoEnIndice(
   consulta: string,
   lista: TerminoIndexado[],
-  guardas: GuardaDeVocabulario[],
+  index: CatalogIndex,
 ): CandidatoDifuso | null {
-  let mejorA: CandidatoDifuso | null = null;
+  const guardas = index.guardas;
+  // La dirección A, partida en dos: los nombres que arrancan en la primera
+  // palabra de la consulta (el NÚCLEO) y los que arrancan más atrás.
+  let mejorNucleo: CandidatoDifuso | null = null;
+  let mejorOtro: CandidatoDifuso | null = null;
   let mejorB: CandidatoDifuso | null = null;
+  // Un objeto y no una variable suelta: el análisis de flujo de TypeScript no
+  // sigue lo que escribe una función anidada y daría por sentado que sigue en
+  // `null`. Nunca se le pelea al chequeador con un cast: se le cambia la forma.
+  const cocido: { mejor: CandidatoDifuso | null } = { mejor: null };
+
+  // El denominador de la dirección A: lo que la visión dijo, descontando lo que
+  // no es comida. Se calcula UNA vez, no una por candidato.
+  const identidad = sinDescriptores(consulta);
+  const acompanamiento = inicioDelAcompanamiento(consulta);
+  // Solo hay algo que respetar si lo que dijo la visión pidió CRUDO: ahí nombró
+  // la ficha que quería. Si pidió cocido —o no dijo nada— el desempate corre.
+  const estadoPedido = estadoDeCoccion(consulta);
+
+  // El mejor candidato que DICE estar cocido, MIRANDO TAMBIÉN LOS QUE NO LLEGAN
+  // AL PISO DE COBERTURA. Solo se usa para desempatar contra un ganador que dice
+  // estar crudo, y ahí la pregunta ya no es "¿matcheo o no?" —eso ya se contestó
+  // que sí— sino "¿la cruda o la cocida?". El piso está para no inventar un
+  // alimento; acá no se inventa ninguno, se elige entre dos formas del mismo.
+  // Sin este rescate la regla no muerde en español: `Lentejas crudas` cubre el
+  // 54 % de "lentejas" y `Lentejas cocidas con sal y grasa` solo el 23 %, así que
+  // la cocida nunca llegaba a ser candidata.
+  const anotarCocido = (candidato: CandidatoDifuso): void => {
+    if (candidato.entrada.estado !== "cocido") return;
+    if (cocido.mejor === null || candidato.confianza > cocido.mejor.confianza) cocido.mejor = candidato;
+  };
 
   for (const entrada of lista) {
     if (guardaQueViola(consulta, entrada.food_id, guardas) !== null) continue;
 
-    if (contieneSecuencia(consulta, entrada.clave)) {
-      const cobertura = entrada.clave.length / consulta.length;
-      if (cobertura >= COBERTURA_DIFUSA_MIN && (mejorA === null || cobertura > mejorA.cobertura)) {
-        mejorA = { entrada, cobertura, direccion: "nombre_en_consulta", confianza: confianzaDifusa(entrada, cobertura) };
+    const posicion = posicionDeSecuencia(consulta, entrada.clave);
+    if (posicion >= 0) {
+      // Un nombre que arranca DETRÁS del primer conector es un acompañamiento,
+      // no el plato: el queso de "arepa filled with cheese" no es la comida de
+      // la foto, es lo que hay adentro de una comida que no está en el catálogo.
+      if (acompanamiento >= 0 && posicion > acompanamiento) continue;
+      // La cobertura se topea en 1: el nombre del catálogo puede ser más largo
+      // que la identidad de la consulta cuando el propio nombre trae un
+      // descriptor ("Yellow rice, cooked" contra "yellow rice ... seasoned").
+      const cobertura = Math.min(1, entrada.clave.length / identidad.length);
+      // DOS PUERTAS, NO UN PISO MÁS BAJO: la cobertura de siempre, o ser el
+      // NÚCLEO de lo que dijo la visión. Ver `COBERTURA_DIFUSA_MIN`.
+      const esNucleo = posicion === 0;
+      const candidato: CandidatoDifuso = {
+        entrada,
+        cobertura,
+        direccion: "nombre_en_consulta",
+        confianza: confianzaDifusa(entrada, cobertura),
+      };
+      anotarCocido(candidato);
+      if (cobertura >= COBERTURA_DIFUSA_MIN || esNucleo) {
+        // EL NÚCLEO LE GANA A UN NOMBRE MÁS LARGO QUE ESTÁ MÁS ATRÁS, y esto es
+        // nuevo de la card 2.6. Con "gana el más largo" a secas, `pizza, cheese`
+        // resolvía a QUESO: `cheese` (6 letras, en la posición 1) le ganaba a
+        // `pizza` (5, en la 0) y una porción de pizza salía con los valores de un
+        // queso. El sustantivo principal va adelante — es la misma regla del
+        // núcleo que estructura las guardas y la dirección B— y entre dos núcleos
+        // sigue ganando el más largo, que es el más específico.
+        const mejor = esNucleo ? mejorNucleo : mejorOtro;
+        if (mejor === null || cobertura > mejor.cobertura) {
+          if (esNucleo) mejorNucleo = candidato;
+          else mejorOtro = candidato;
+        }
       }
       continue;
     }
 
+    // LA DIRECCIÓN B MIDE CONTRA EL TEXTO COMPLETO, no contra la identidad, y es
+    // deliberado aunque parezca una inconsistencia con la dirección A. Acá las
+    // palabras de más son DEL CATÁLOGO, no de la visión: son afirmaciones que
+    // nadie hizo. Descontarle descriptores a la consulta la haría decir todavía
+    // menos y volvería MÁS injustificado lo que agrega el nombre, no menos.
+    // Medido: con la identidad, `pollo a la plancha` se quedaba en "pollo" y
+    // resolvía a `Pollo Kiev` (280 kcal) con un 30 % de confianza. Un número
+    // equivocado con cara de medido es exactamente lo que este motor no hace.
     if (empiezaConPalabra(entrada.clave, consulta)) {
       const cobertura = consulta.length / entrada.clave.length;
+      const candidato: CandidatoDifuso = {
+        entrada,
+        cobertura,
+        direccion: "consulta_en_nombre",
+        confianza: confianzaDifusa(entrada, cobertura),
+      };
+      anotarCocido(candidato);
       if (cobertura >= COBERTURA_DIFUSA_MIN && (mejorB === null || cobertura > mejorB.cobertura)) {
-        mejorB = { entrada, cobertura, direccion: "consulta_en_nombre", confianza: confianzaDifusa(entrada, cobertura) };
+        mejorB = candidato;
       }
     }
   }
 
-  return mejorA ?? mejorB;
+  // GANA EL QUE MÁS CONFIANZA TRAE, y a igualdad gana A (la dirección segura:
+  // ahí el nombre del catálogo entró ENTERO en lo que dijo la visión).
+  //
+  // Antes A ganaba siempre, y con las variantes del índice eso se volvió un
+  // problema medido: para `crackers, saltine`, la dirección A encontraba
+  // `cracker` (la variante de `Crackers, NFS`) y le ganaba a la dirección B, que
+  // tenía `Crackers, saltine, reduced sodium` —la ficha que SÍ explica la palabra
+  // "saltine"—. Elegir por confianza es elegir al que deja menos sin explicar.
+  const mejorA = mejorNucleo ?? mejorOtro;
+  const ganador = mejorA === null ? mejorB : mejorB === null ? mejorA : mejorB.confianza > mejorA.confianza ? mejorB : mejorA;
+
+  // LA REGLA DEL CRUDO/COCIDO (ver `PALABRAS_DE_CRUDO` en `constants.ts`).
+  //
+  // Solo desempata, nunca castiga, y ADEMÁS SE LO PREGUNTA A LOS DATOS. Si el que
+  // ganó dice estar crudo y hay una hermana que dice estar cocida, la cocida gana
+  // ÚNICAMENTE cuando el crudo tiene MÁS calorías por 100 g que ella. Ese número
+  // es lo que separa a las dos familias, y no hace falta ninguna lista:
+  //
+  //   - `Lentejas crudas` 352 kcal contra `Lentejas cocidas` 166. El crudo es más
+  //     denso porque está SECO: nadie come lentejas crudas, y lo que hay en la
+  //     foto es la cocida. La regla muerde.
+  //   - `Tomate crudo` 18 kcal contra `Tomate cocido` 50; `Espinaca cruda` 23
+  //     contra la cocida 59. Acá el crudo es MENOS denso —cocinar suma grasa, no
+  //     saca agua— y el crudo es una forma perfectamente normal de comerlo. La
+  //     regla NO muerde y el tomate de la ensalada sigue siendo crudo.
+  //
+  // Sin este chequeo, la primera versión de la regla convertía todo tomate y toda
+  // zanahoria de una ensalada en verdura cocida con grasa. Está medido.
+  if (estadoPedido !== "crudo" && ganador !== null && ganador.entrada.estado === "crudo" && cocido.mejor !== null) {
+    const fichaCruda = index.porId.get(ganador.entrada.food_id);
+    const fichaCocida = index.porId.get(cocido.mejor.entrada.food_id);
+    if (fichaCruda !== undefined && fichaCocida !== undefined && fichaCruda.per_100g.kcal > fichaCocida.per_100g.kcal) {
+      return cocido.mejor;
+    }
+  }
+  return ganador;
 }
 
 function confianzaDifusa(entrada: TerminoIndexado, cobertura: number): number {
@@ -181,7 +353,7 @@ function mejorEntreIdiomas(en: CandidatoDifuso | null, es: CandidatoDifuso | nul
  * ficha se declara sin ficha y sin números (regla dura 2).
  */
 export function buscarAlimento(termino: string, index: CatalogIndex): MatchResult | null {
-  const consulta = normalizar(termino);
+  const consulta = claveDeMatching(termino);
   if (consulta.length === 0) return null;
 
   const desdeEntrada = (
@@ -203,25 +375,58 @@ export function buscarAlimento(termino: string, index: CatalogIndex): MatchResul
     };
   };
 
-  // 1 — exacto contra names.en
-  const exactoEn = index.exactoEn.get(consulta);
-  if (exactoEn !== undefined) {
-    const r = desdeEntrada(exactoEn, "exacto", 1, `Coincidencia exacta con el nombre en inglés del catálogo ("${exactoEn.texto}").`);
+  const comoVariante = (entrada: TerminoIndexado): string =>
+    entrada.variante === true
+      ? ` El índice llegó por una variante del nombre: se le sacaron los marcadores de USDA que dicen "sin especificar más".`
+      : "";
+
+  const exactoEn = (entrada: TerminoIndexado): MatchResult | null =>
+    desdeEntrada(
+      entrada,
+      "exacto",
+      1,
+      `Coincidencia exacta con el nombre en inglés del catálogo ("${entrada.texto}").${comoVariante(entrada)}`,
+    );
+
+  const exactoEs = (entrada: TerminoIndexado): MatchResult | null =>
+    desdeEntrada(
+      entrada,
+      "alias",
+      entrada.confianza,
+      (entrada.campo === "alias"
+        ? `Coincidencia exacta con un alias en español ("${entrada.texto}", confianza declarada ${entrada.confianza}).`
+        : `Coincidencia exacta con el nombre en español del catálogo ("${entrada.texto}").`) + comoVariante(entrada),
+    );
+
+  // LOS CUATRO NIVELES EXACTOS, Y EL ORDEN ES UNA DECISIÓN.
+  //
+  // Primero los términos TAL COMO LOS ESCRIBIÓ LA CURACIÓN (inglés y después
+  // español, que es la precedencia de siempre), y recién después las variantes
+  // que el índice dedujo. Una variante no puede ganarle a un nombre real ni
+  // siquiera cruzando de idioma, y eso se descubrió con un caso concreto:
+  // `Salsa, NFS` (fdc-2709736, la salsa mexicana) genera la variante inglesa
+  // `salsa`, que es a la vez el `names.es` de `Sauce, NFS` (fdc-2710177). Con
+  // dos niveles, la variante inglesa le ganaba al nombre español y "salsa"
+  // devolvía salsa mexicana. Con cuatro, el nombre escrito manda.
+  const entradaEnLiteral = index.exactoEn.get(consulta);
+  if (entradaEnLiteral !== undefined && entradaEnLiteral.variante !== true) {
+    const r = exactoEn(entradaEnLiteral);
     if (r !== null) return r;
   }
 
-  // 2 — exacto contra el vocabulario español (names.es + aliases con confianza)
-  const exactoEs = index.exactoEs.get(consulta);
-  if (exactoEs !== undefined) {
-    const comoAlias = exactoEs.campo === "alias";
-    const r = desdeEntrada(
-      exactoEs,
-      "alias",
-      exactoEs.confianza,
-      comoAlias
-        ? `Coincidencia exacta con un alias en español ("${exactoEs.texto}", confianza declarada ${exactoEs.confianza}).`
-        : `Coincidencia exacta con el nombre en español del catálogo ("${exactoEs.texto}").`,
-    );
+  const entradaEsLiteral = index.exactoEs.get(consulta);
+  if (entradaEsLiteral !== undefined && entradaEsLiteral.variante !== true) {
+    const r = exactoEs(entradaEsLiteral);
+    if (r !== null) return r;
+  }
+
+  if (entradaEnLiteral !== undefined && entradaEnLiteral.variante === true) {
+    const r = exactoEn(entradaEnLiteral);
+    if (r !== null) return r;
+  }
+
+  if (entradaEsLiteral !== undefined && entradaEsLiteral.variante === true) {
+    const r = exactoEs(entradaEsLiteral);
     if (r !== null) return r;
   }
 
@@ -229,10 +434,15 @@ export function buscarAlimento(termino: string, index: CatalogIndex): MatchResul
   //     confianza. Separados para que `Catsup` no tenga dos dueños; en
   //     competencia para que la precedencia del inglés no le gane a un español
   //     que se parece mucho más (ver `mejorEntreIdiomas`).
-  const candidatoEn = difusoEnIndice(consulta, index.difusoEn, index.guardas);
-  const candidatoEs = difusoEnIndice(consulta, index.difusoEs, index.guardas);
+  const candidatoEn = difusoEnIndice(consulta, index.difusoEn, index);
+  const candidatoEs = difusoEnIndice(consulta, index.difusoEs, index);
   const ganador = mejorEntreIdiomas(candidatoEn, candidatoEs);
   const perdedor = ganador === candidatoEn ? candidatoEs : candidatoEn;
+
+  // La reserva del crudo: si lo que se identificó NO dijo nada sobre la cocción
+  // y la ficha que ganó dice que está cruda, el catálogo no tenía la cocida y
+  // eso hay que decirlo donde se lee, no dejarlo en un número.
+  const pidioCrudo = estadoDeCoccion(consulta) === "crudo";
 
   for (const candidato of [ganador, perdedor]) {
     if (candidato === null) continue;
@@ -241,12 +451,17 @@ export function buscarAlimento(termino: string, index: CatalogIndex): MatchResul
       candidato.direccion === "nombre_en_consulta"
         ? `el nombre del catálogo está dentro de lo que se identificó`
         : `lo que se identificó es el principio del nombre del catálogo`;
+    const reserva =
+      candidato.entrada.estado === "crudo" && !pidioCrudo
+        ? " OJO: la ficha es la del alimento CRUDO y lo que se identificó no dijo que lo estuviera; " +
+          "el catálogo no tiene la versión cocida de este alimento, y crudo y cocido no dan los mismos valores."
+        : "";
     const r = desdeEntrada(
       candidato.entrada,
       "difuso",
       candidato.confianza,
       `Coincidencia aproximada en ${idioma} con "${candidato.entrada.texto}": ${direccion} ` +
-        `(cobertura ${redondear(candidato.cobertura, 2)}).`,
+        `(cobertura ${redondear(candidato.cobertura, 2)}).${reserva}`,
     );
     if (r !== null) return r;
   }

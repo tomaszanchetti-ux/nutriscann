@@ -16,6 +16,7 @@ import {
   MAX_ITEMS,
   MAX_REINTENTOS,
   MODELO_VISION,
+  PROMPT_VISION,
   esTransitorio,
   interpretarVision,
   pedirVision,
@@ -127,14 +128,23 @@ test("el esquema pide exactamente los campos de VisionResult", () => {
     >
   )["items"] as unknown as Record<string, unknown>;
   assert.equal(item["additionalProperties"], false, "todo objeto tiene que declarar additionalProperties:false");
-  assert.deepEqual(item["required"], ["food_en", "grams", "confidence"]);
+  // CARD 2.6: `food_es` es nuevo y es REQUERIDO. El catálogo tiene 1.768
+  // términos curados en español y hasta esta card el prompt le prohibía al
+  // modelo usarlos; pedirlo como opcional habría sido volver a dejarlo al azar.
+  assert.deepEqual(item["required"], ["food_en", "food_es", "grams", "confidence"]);
   assert.deepEqual(Object.keys(item["properties"] as object), [
     "food_en",
+    "food_es",
     "grams",
     "confidence",
     "preparation",
     "components",
   ]);
+
+  const componentes = (item["properties"] as Record<string, Record<string, unknown>>)["components"];
+  const componente = componentes?.["items"] as Record<string, unknown>;
+  assert.equal(componente["additionalProperties"], false);
+  assert.deepEqual(componente["required"], ["food_en", "food_es", "grams"]);
 
   const preparation = (item["properties"] as Record<string, Record<string, unknown>>)["preparation"];
   assert.deepEqual(preparation?.["enum"], ["frito", "horneado", "horneado_masa", "plancha", "mezclado"]);
@@ -316,7 +326,7 @@ test("los rangos que el esquema no puede exigir los exige el código", () => {
   assert.equal(vision.items[2]?.grams, 0, "gramos que no son número se vuelven 0");
 });
 
-test("un item sin nombre se descarta: nombrar nada no es un alimento", () => {
+test("un item sin NINGÚN nombre se descarta: nombrar nada no es un alimento", () => {
   const vision = interpretarVision(
     JSON.stringify({
       is_food: true,
@@ -325,6 +335,77 @@ test("un item sin nombre se descarta: nombrar nada no es un alimento", () => {
   );
   assert.equal(vision.items.length, 1);
   assert.equal(vision.items[0]?.food_en, "bread");
+});
+
+// ---------------------------------------------------------------------------
+// CARD 2.6 — la visión nombra en los dos idiomas
+// ---------------------------------------------------------------------------
+
+test("`food_es` llega al motor tal cual, y sin él nada cambia", () => {
+  const vision = interpretarVision(
+    JSON.stringify({
+      is_food: true,
+      items: [
+        { food_en: "rice, cooked, seafood paella style", food_es: "paella", grams: 350, confidence: 0.75 },
+        { food_en: "croissant", grams: 70, confidence: 0.95 },
+        { food_en: "stew", food_es: "  ", grams: 300, confidence: 0.6 },
+      ],
+    }),
+  );
+  assert.equal(vision.items[0]?.food_es, "paella");
+  // Sin el campo, o con el campo en blanco, el item NO lo lleva: el motor
+  // distingue "no lo dijo" de "dijo una cadena vacía" sin tener que mirar dentro.
+  assert.equal("food_es" in (vision.items[1] ?? {}), false);
+  assert.equal("food_es" in (vision.items[2] ?? {}), false);
+});
+
+test("un item que SOLO tiene nombre en español no se tira a la basura", () => {
+  // El esquema pide los dos nombres, pero un plato que en inglés no tiene nombre
+  // —y el modelo deja el campo vacío— sigue siendo un alimento que el catálogo
+  // español sabe encontrar. Descartarlo sería perder comida por una formalidad.
+  const vision = interpretarVision(
+    JSON.stringify({
+      is_food: true,
+      items: [{ food_en: "", food_es: "salmorejo", grams: 250, confidence: 0.8 }],
+    }),
+  );
+  assert.equal(vision.items.length, 1);
+  assert.equal(vision.items[0]?.food_es, "salmorejo");
+  assert.equal(vision.items[0]?.food_en, "");
+});
+
+test("los ingredientes también viajan con sus dos nombres", () => {
+  const vision = interpretarVision(
+    JSON.stringify({
+      is_food: true,
+      items: [
+        {
+          food_en: "stew",
+          food_es: "guiso",
+          grams: 300,
+          confidence: 0.6,
+          components: [
+            { food_en: "chickpeas", food_es: "garbanzos", grams: 120 },
+            { food_en: "chorizo", grams: 40 },
+          ],
+        },
+      ],
+    }),
+  );
+  assert.deepEqual(vision.items[0]?.components, [
+    { food_en: "chickpeas", food_es: "garbanzos", grams: 120 },
+    { food_en: "chorizo", grams: 40 },
+  ]);
+});
+
+test("el prompt le PIDE el español y ya no le prohíbe los términos del catálogo", () => {
+  // La contradicción que midió el test de los 10 platos: el prompt viejo decía
+  // textualmente que prefiriera "beef steak, grilled" antes que "bife de
+  // chorizo", y el catálogo tiene 1.768 términos curados en español que nunca
+  // recibían una consulta. Si alguien vuelve a poner esa instrucción, esto suena.
+  assert.match(PROMPT_VISION, /food_es/);
+  assert.match(PROMPT_VISION, /espa/i);
+  assert.equal(/antes que el nombre de un\s+plato regional/.test(PROMPT_VISION), false);
 });
 
 test("una `preparation` fuera de la lista cerrada se ignora", () => {

@@ -22,7 +22,7 @@
  */
 import Anthropic from "@anthropic-ai/sdk";
 
-import type { Preparacion, VisionItem, VisionResult } from "../engine";
+import type { Preparacion, VisionComponent, VisionItem, VisionResult } from "../engine";
 import { ErrorDeAnalisis } from "./errores";
 
 /** El modelo. Está en `CLAUDE.md` y en el §D4 del plan; no se elige por request. */
@@ -89,15 +89,23 @@ export const ESQUEMA_VISION = {
       items: {
         type: "object",
         additionalProperties: false,
-        required: ["food_en", "grams", "confidence"],
+        required: ["food_en", "food_es", "grams", "confidence"],
         properties: {
           food_en: {
             type: "string",
             description:
               "El nombre del alimento en INGLÉS GENÉRICO, en el registro de USDA FoodData Central " +
               '(por ejemplo "chicken breast, grilled", "white rice, cooked", "olive oil"). ' +
-              "Sin marcas comerciales, sin adjetivos de presentación y sin nombres de plato regionales " +
-              "cuando exista el nombre genérico del alimento.",
+              "Sin marcas comerciales y sin adjetivos de presentación.",
+          },
+          food_es: {
+            type: "string",
+            description:
+              "EL MISMO alimento nombrado en ESPAÑOL DE ESPAÑA, como lo diría alguien al sentarse a la " +
+              'mesa: "paella", "tortilla de patatas", "lasaña", "papas fritas", "bife", "panecillo". ' +
+              "El nombre corto y común del plato o del alimento, sin describir los ingredientes y sin " +
+              "traducir palabra por palabra el nombre en inglés. Si el alimento no tiene un nombre en " +
+              "español, escribí el que se usa igual (por ejemplo \"croissant\" o \"ketchup\").",
           },
           grams: {
             type: "number",
@@ -132,9 +140,10 @@ export const ESQUEMA_VISION = {
             items: {
               type: "object",
               additionalProperties: false,
-              required: ["food_en", "grams"],
+              required: ["food_en", "food_es", "grams"],
               properties: {
                 food_en: { type: "string", description: "El ingrediente en inglés genérico de USDA." },
+                food_es: { type: "string", description: "El mismo ingrediente en español de España." },
                 grams: { type: "number", description: "Gramos de ese ingrediente dentro del plato." },
               },
             },
@@ -151,15 +160,19 @@ export const PROMPT_VISION = [
   "",
   "Lo que hacés:",
   "1. Decidís si la foto es comida o bebida lista para consumir (`is_food`).",
-  "2. Nombrás cada alimento distinguible en INGLÉS GENÉRICO, en el registro de USDA FoodData Central.",
-  "   El nombre en inglés es la clave con la que después se busca el alimento en una base nutricional:",
-  '   preferí siempre el término común y descriptivo ("beef steak, grilled") antes que el nombre de un',
-  '   plato regional ("bife de chorizo") o una marca.',
+  "2. Nombrás cada alimento distinguible DOS VECES, en `food_en` y en `food_es`. Son los dos idiomas de",
+  "   la base nutricional que hay del otro lado, y con los dos se busca:",
+  '   · `food_en`: el término común de USDA FoodData Central ("beef steak, grilled", "white rice, cooked").',
+  '   · `food_es`: el mismo alimento como lo llamaría alguien en España ("bife", "arroz blanco cocido",',
+  '     "paella", "tortilla de patatas", "lasaña", "papas fritas"). El nombre CORTO Y COMÚN del plato.',
+  "   Los dos nombres son del MISMO alimento: no pongas el plato en uno y un ingrediente en el otro.",
+  "   Preferí siempre el nombre común y corto antes que una descripción larga: la base guarda nombres",
+  '   de alimentos, no descripciones. "coleslaw" antes que "coleslaw, cabbage and carrot salad".',
   "3. Estimás los gramos de la porción VISIBLE de cada alimento, a partir del tamaño aparente y de",
   "   referencias de la foto (el plato, los cubiertos, un vaso).",
   "4. Ponés `confidence` entre 0 y 1 según cuánto confiás en la IDENTIFICACIÓN, no en los gramos.",
   "5. `preparation` solo si el método de cocción se VE. Si no se distingue, omitís el campo.",
-  "6. `components` solo cuando el plato entero no tiene un nombre genérico obvio y hay que describirlo",
+  "6. `components` solo cuando el plato entero no tiene un nombre obvio y hay que describirlo",
   "   por sus ingredientes visibles. En un alimento simple, omitís el campo.",
   "",
   "Lo que NO hacés, nunca:",
@@ -412,13 +425,19 @@ function interpretarItem(entrada: unknown): VisionItem | null {
   const objeto = entrada as Record<string, unknown>;
 
   const food_en = typeof objeto["food_en"] === "string" ? objeto["food_en"].trim() : "";
-  if (food_en.length === 0) return null;
+  const food_es = typeof objeto["food_es"] === "string" ? objeto["food_es"].trim() : "";
+  // ALCANZA CON QUE HAYA UNO DE LOS DOS NOMBRES. El esquema pide los dos, pero
+  // el item se descarta solo si no quedó NINGUNA forma de nombrar el alimento:
+  // un plato que solo tiene nombre en español se busca igual, y el motor sabe
+  // buscar con lo que haya (`buscarConDosNombres`).
+  if (food_en.length === 0 && food_es.length === 0) return null;
 
   const item: VisionItem = {
     food_en,
     grams: numeroNoNegativo(objeto["grams"]),
     confidence: recortar01(objeto["confidence"]),
   };
+  if (food_es.length > 0) item.food_es = food_es;
 
   const preparation = objeto["preparation"];
   if (typeof preparation === "string" && (PREPARACIONES as readonly string[]).includes(preparation)) {
@@ -429,11 +448,16 @@ function interpretarItem(entrada: unknown): VisionItem | null {
   if (Array.isArray(components)) {
     const limpios = components
       .filter((c): c is Record<string, unknown> => c !== null && typeof c === "object" && !Array.isArray(c))
-      .map((c) => ({
-        food_en: typeof c["food_en"] === "string" ? c["food_en"].trim() : "",
-        grams: numeroNoNegativo(c["grams"]),
-      }))
-      .filter((c) => c.food_en.length > 0);
+      .map((c) => {
+        const componente: VisionComponent = {
+          food_en: typeof c["food_en"] === "string" ? c["food_en"].trim() : "",
+          grams: numeroNoNegativo(c["grams"]),
+        };
+        const es = typeof c["food_es"] === "string" ? c["food_es"].trim() : "";
+        if (es.length > 0) componente.food_es = es;
+        return componente;
+      })
+      .filter((c) => c.food_en.length > 0 || (c.food_es ?? "").length > 0);
     if (limpios.length > 0) item.components = limpios;
   }
 

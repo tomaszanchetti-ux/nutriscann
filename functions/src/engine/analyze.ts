@@ -25,7 +25,7 @@ import type { CatalogIndex } from "./catalog";
 import { escalar, gramosValidos, interpretarGramos, sumarTotales } from "./arithmetic";
 import { componerPlato } from "./compose";
 import { FACTOR_GENERICO } from "./constants";
-import { buscarAlimento, redondear } from "./match";
+import { buscarConDosNombres, redondear } from "./match";
 import type {
   CurationCandidate,
   EngineItem,
@@ -66,6 +66,7 @@ function itemSaneado(crudo: unknown): VisionItem {
   const componentes = Array.isArray(item.components) ? item.components : undefined;
   return {
     food_en: terminoDeVision(item.food_en),
+    food_es: terminoDeVision(item.food_es),
     grams: typeof item.grams === "number" ? item.grams : Number.NaN,
     confidence: typeof item.confidence === "number" ? item.confidence : 0,
     preparation: item.preparation ?? null,
@@ -76,6 +77,7 @@ function itemSaneado(crudo: unknown): VisionItem {
             const componente = (typeof c === "object" && c !== null ? c : {}) as Partial<VisionComponent>;
             return {
               food_en: terminoDeVision(componente.food_en),
+              food_es: terminoDeVision(componente.food_es),
               grams: typeof componente.grams === "number" ? componente.grams : Number.NaN,
             };
           }),
@@ -101,8 +103,9 @@ function resolverItem(item: VisionItem, index: CatalogIndex, cola: ColaDeCuracio
   const { gramos: gramosDeclarados, problema: problemaDeGramos } = interpretarGramos(item.grams);
   const preparation = item.preparation ?? null;
 
-  // 1 — el plato entero, tal cual, contra el catálogo
-  const match = buscarAlimento(termino_en, index);
+  // 1 — el plato entero, tal cual, contra el catálogo. Los DOS nombres que dijo
+  //     la visión, y gana el que el catálogo conoce mejor (card 2.6).
+  const match = buscarConDosNombres(termino_en, terminoDeVision(item.food_es), index);
   if (match !== null) {
     const esGenerico = match.ficha.generic === true;
     const confianzaMatch = redondear(match.confianza_match * (esGenerico ? FACTOR_GENERICO : 1));

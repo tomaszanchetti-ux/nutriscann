@@ -31,6 +31,8 @@ export type Preparacion = "frito" | "horneado" | "horneado_masa" | "plancha" | "
 /** Un ingrediente visible de un plato que la visión no supo nombrar entero. */
 export interface VisionComponent {
   food_en: string;
+  /** El mismo ingrediente en español. Ver `VisionItem.food_es`. */
+  food_es?: string;
   grams: number;
 }
 
@@ -44,6 +46,21 @@ export interface VisionComponent {
 export interface VisionItem {
   /** El nombre en inglés, en el mismo registro que los `names.en` del catálogo. */
   food_en: string;
+  /**
+   * EL MISMO ALIMENTO, EN ESPAÑOL. Card 2.6.
+   *
+   * No es una traducción de cortesía: el catálogo tiene 1.768 términos curados
+   * en español —`Paella`, `Lasaña`, `Bife`, `Papas fritas`— y hasta esta card el
+   * modelo tenía prohibido usarlos (el prompt le pedía inglés genérico de USDA).
+   * El motor buscaba en un índice español que nadie alimentaba. Medido en el test
+   * de los 10 platos: paella, lasaña y risotto existían en el catálogo y salieron
+   * sin datos por esto.
+   *
+   * Es OPCIONAL en el tipo porque el motor tiene que seguir funcionando con una
+   * salida vieja o incompleta: sin `food_es` el matching es exactamente el de
+   * antes. Ver `buscarConDosNombres` en `match.ts`.
+   */
+  food_es?: string;
   grams: number;
   /** 0..1 — cuánto confía la visión en la IDENTIFICACIÓN, no en el número. */
   confidence: number;
