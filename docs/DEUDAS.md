@@ -100,3 +100,30 @@ de la cuenta de facturación.
 
 `manifest.webmanifest` declara `"icons": []`. La app se instala igual, pero sin ícono
 propio. Se resuelve en la Fase 3, cuando exista identidad visual definitiva.
+
+---
+
+## DT-27 · Lote de fichas nuevas v1.1 — insumos de Tomás (01/09/2026) 🟡
+
+**Regla de la card:** los números salen de USDA (o fuente citable declarada, como el
+salmorejo); los insumos de abajo sirven de **contraste y selección**, no de fuente.
+De Tomás falta lo que USDA no sabe: porciones de España y vocabulario de barra.
+
+**🍺 Cerveza** — datos aportados (por 355 ml): regular 153 kcal · 12-13 g carbohidratos ·
+1,6 g proteína · 0 grasa. Rangos por tipo: 0,0 % 18-37 · light 100-110 · regular
+150-180 · artesanal/IPA 180-250 · negra 200-300. **Contraste con USDA: 153/355 ml =
+43,1 kcal/100 ml — coincide exacto con "Alcoholic beverage, beer, regular" de SR.**
+Selección propuesta: 3-4 fichas (regular · light/0,0 · IPA/artesanal · negra), caveat
+de "calorías del alcohol" (7 kcal/g, el candado de Atwater ya lo contempla).
+Pendiente de Tomás: porciones reales de España (¿caña 200 ml? ¿tercio 330? ¿doble?
+¿pinta 500?) para los `portion_hints`.
+
+**🍋 Limón** — datos aportados (por 100 g comestible): 29 kcal · 9,32 g carbohidratos
+(2,5 azúcares) · 2,8 fibra · 1,1 proteína · 0,3 grasa · vit. C 53 mg. **Contraste:
+coincide con "Lemons, raw, without peel" de USDA (29 kcal/100 g) — la fuente Wikipedia
+casi seguro bebe de USDA.** Ficha directa de SR; decidir si además hace falta "zumo de
+limón" (la rodaja del agua o la ensalada pesa ~5-10 g: el impacto calórico es ~0).
+
+**⚠️ Nota de marca:** una de las fuentes citadas por Tomás es `nutriscan.app` — la
+marca "NutriScan App" ya detectada en la WS03. Existe y publica contenido nutricional
+en español: tenerlo presente para la decisión de naming antes del lanzamiento.
