@@ -18,10 +18,12 @@ golden/
     fotos/               30 fotos, 6,4 MB (ver "sobre el peso")
     respuestas/          corrida v1 · catálogo 3.0.0+b2b227e1
     respuestas-v2/       corrida v2 · catálogo 3.1.0+47b8c77d
+    respuestas-v3/       corrida v3 · catálogo 3.4.0+1c2270c1
     predicciones.md      LA VARA: qué ficha y qué rango, escrito antes de correr
     criterios.json       lo mismo, en una forma que una máquina puede leer
     evaluacion.md        el informe de la v1
     evaluacion-v2.md     el informe de la v2 (el que abrió la DT-28)
+    evaluacion-v3.md     el informe de la v3 (5 de 5 criterios, con sus salvedades)
     fotos.md             de dónde salió cada foto y con qué licencia
     herramientas/        los scripts con los que se buscaron y bajaron las fotos
   test-10/               el test anterior, de 10 platos, con su informe
@@ -80,7 +82,10 @@ git show <commit>:kb/build/foods.canonical.json > /tmp/kb-de-la-corrida.json
 node golden/bin/informe.js --catalogo=/tmp/kb-de-la-corrida.json
 ```
 
-El informe avisa solo cuando el índice no coincide con la corrida.
+El informe avisa solo cuando el índice no coincide con la corrida. **La v3 es la
+excepción cómoda**: se grabó con el 3.4.0, que es el catálogo de `kb/build/` hoy, así
+que `node golden/bin/informe.js respuestas-v2 respuestas-v3` corre sin desfase del lado
+de la v3 (el aviso se enciende solo para la v2, que es del 3.1.0).
 
 ### Lo que el replay NO puede ver
 
@@ -96,9 +101,25 @@ completo**.
 ## Volver a correr las fotos (esto sí cuesta)
 
 ```bash
-./golden/runner.sh -o set-30/respuestas-v3 -e https://.../analyze
+# el circuito local, que es como se corrió la v3:
+cd functions && npm run build && cd ..
+PATH="/opt/homebrew/opt/openjdk/bin:$PATH" firebase emulators:start --only functions,firestore
+npm run kb:seed:local          # en otra terminal, con el emulador ya arriba
+cd golden && ./runner.sh -o set-30/respuestas-v4 -b set-30/bodies-v4
+
+# o contra un endpoint desplegado:
+./golden/runner.sh -o set-30/respuestas-v4 -e https://.../analyze
 ```
 
-30 llamadas al modelo de visión. Una corrida nueva **no reemplaza** a las
-anteriores: se guarda al lado, porque comparar dos corridas es la única forma de
-saber cuánto se mueve el modelo solo.
+**Las rutas de `-o` y `-b` se resuelven contra el directorio desde el que se llama al
+runner** (no contra el repo): pasarlas como `set-30/...` exige estar parado en `golden/`.
+
+**Antes de gastar un centavo, un curl de humo** con una foto sola y chequear que
+`meta.kb_version` de la respuesta sea el catálogo que se quería medir. Sembrar el
+catálogo y correr son dos pasos distintos, y el emulador arranca con Firestore vacío.
+
+30 llamadas al modelo de visión. **Costo medido en la v3: USD 0,25** (99.701 tokens de
+entrada, 5.133 de salida, `claude-sonnet-5`), unos 4 minutos de reloj.
+
+Una corrida nueva **no reemplaza** a las anteriores: se guarda al lado, porque comparar
+dos corridas es la única forma de saber cuánto se mueve el modelo solo.
