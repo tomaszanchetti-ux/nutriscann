@@ -277,9 +277,24 @@ Hallazgos que redefinieron las cards: `config/app` en Firestore estaba vacío de
 
 **Sale cuando:** `curl` con una foto devuelve el JSON completo con números trazables a `foods/`, y el circuito local entero (front + emulador) permite el Q/A visual de Tomás.
 
-### Fase 3 — Frontend (2 sesiones)
-Sesión A: captura + compresión de imagen + animación de escaneo. Sesión B: pantalla de reporte (count-up, donut SVG, card de recomendación, lista colapsable) + PWA (manifest, instalable) + estados de error amables ("No pude reconocer el plato, ¿probás con más luz?").
-**Sale cuando:** el flujo foto→reporte funciona en TU teléfono contra el backend real.
+### Fase 3 — Frontend + deploy completo (la próxima WS)
+
+Cards definidas el 01/09/2026 (WS06) a partir de los comentarios de front de Tomás
+(PDF "Comentarios frontend (Fase 3)"), con su OK explícito:
+
+| Card | Qué entrega |
+|---|---|
+| **3.1 — El reporte pulido** | Texto legal/disclaimer más chico y al final de la pantalla · evaluar "Del resto del análisis" (fibra, saturadas, azúcares, sodio) como colores adicionales del donut (mostrar las dos variantes, elige Tomás) · card de ítem sin el wording "ficha" y sin la línea de % visión/ficha (el resto tal cual, "golazo") · **cierra DT-20** (tipos del front alineados a `TotalesNutrientes` nullable + candado byte a byte), **DT-22** (los ~15 textos hardcodeados a `config/copy.json`) y **DT-23** (el título de macros huérfano) — misma zona de código |
+| **3.2 — El escaneo mágico** | La animación del scanner que barre la foto, retícula, micro-textos que rotan y son verdad (mapean a los pasos reales del motor), estados de "cargando". La espera ES el show |
+| **3.3 — CTAs + Premium teaser** | Doble CTA: "Escanear otro plato" tal cual + "Pasarte a premium" igual tamaño, distinto color · sección **Perfil** con funcionalidades premium visibles pero bloqueadas → modal simple que explica premium + CTA · sección **Premium** que explica e invita. *(v1: vitrina — el pago real con Stripe es v2)* |
+| **3.4 — T&C + identidad** | Sección de Términos y Condiciones (no somos nutricionistas ni médicos, no reemplaza consulta profesional, valores de bases internacionales con USDA citada, la app ayuda a entender lo que comés) · íconos de la PWA (**DT-5**) · pasada de copy España (**DT-21**, sin voseo — se edita `config/copy.json` + seed, sin deploy) |
+| **3.5 — Deploy completo (cierre de fase)** | DT-2 (la key la carga Tomás) + DT-3 (Storage) + target completo del CI + **seed real del catálogo con OK de Tomás** (⚠️ 2 de 3 `scanning_steps` cambian vs. lo publicado a mano) + verificación E2E en producción desde el teléfono de Tomás |
+
+⚠️ Antes de 3.4/3.5 conviene la decisión de marca: `nutriscan.app` existe y publica
+contenido nutricional (detectada WS03, re-confirmada WS05).
+
+**Sale cuando:** el flujo foto→reporte funciona en el teléfono de Tomás contra el
+backend real, en producción.
 
 ### Fase 4 — Hardening + salida a producción (1 sesión)
 Firebase **App Check** (solo tu app puede llamar al endpoint) + **login real desde v1** (decisión 30/08: Google + email vía Firebase Auth, como en Prode — SIN perfil ni configuración en v1; el registro existe para saber quiénes son los usuarios y que cada uno sea dueño de sus scans) + rate limit desde `config/` (ej. 10 scans/día por usuario — es tu API key la que paga) + logging estructurado + presupuesto de facturación GCP con alertas + QA E2E con el golden set.
@@ -299,6 +314,13 @@ La v1 deja los cimientos exactos para esto; nada de lo anterior se tira:
 4. **El esquema de recomendación (movido acá desde la v1, decisión 31/08/2026):** la v1 muestra solo lo medido; toda recomendación llega en v2 y **se deriva siempre de los nutrientes y calorías del plato** (principio de Tomás: todo se basa en eso). La base ya está construida y dormida: las 6 reglas v1 con umbrales OPS citados (`config/recommendation_rules.json`, publicadas por el seeder, DT-6 pendiente de calibrar). En v2 se enriquece con fuentes declaradas y citables, mismas reglas de honestidad que la OPS: **(a)** OMS — "Alimentación sana" (https://www.who.int/es/news-room/fact-sheets/detail/healthy-diet) · **(b)** Academia Española de Nutrición y Dietética — dieta del deportista (https://www.academianutricionydietetica.org/nutricion-deportiva/dieta-deportista/) · **(c)** Ministerio de Sanidad de España — pesos de raciones por grupo y frecuencias recomendadas, SENC 2004 (`datasets/alimentacionSaludable-ministerio-sanidad.pdf`) — la pieza clave para armar planes con raciones concretas. La recomendación contextual completa: perfil + historial del día → "Vas 40 g de proteína abajo de tu target; esta cena te viene perfecta", y **planes por perfil** repartidos entre las comidas declaradas, con platos del propio catálogo (el LLM compone, la DB cuantifica — como siempre).
 5. **"Qué me conviene comer hoy":** endpoint `suggest` — perfil + calendario de entrenamiento + lo ya comido → sugerencia de dieta del día con platos y cantidades, grounded en `foods/` (el mismo patrón: el LLM compone, la DB cuantifica).
 6. **Paywall:** Stripe + claim `premium` en el token de Firebase Auth; los endpoints v2 lo verifican server-side.
+
+7. **Unit economics de premium (definido por Tomás el 01/09/2026 — el alcance de premium se decide desde el negocio):**
+   - **Costo por foto (MEDIDO en el E2E real de la WS05):** ~$0,0075 — 2.733 tokens de entrada + 123 de salida a Sonnet 5 ($2/$10 por millón) ≈ $0,007, más ~$0,0002 de GCP (Function + Firestore + Storage: el 3 % del costo). Número de planificación: **$0,01/foto**.
+   - **Costo por plan de dieta diario (v2, estimado):** perfil + lo comido + catálogo + reglas ≈ 4-6K tokens entrada, ~1K salida → **~$0,025 con Sonnet 5**, ~$0,012 si la redacción va a Haiku 4.5 (los números ya vienen calculados — el patrón de siempre).
+   - **Esquema:** gratuito **3 fotos/día** (ya en `config/`, editable sin deploy) → peor caso $0,72/mes, realista ~$0,12 · premium **15 fotos/día + 1 plan diario** → peor caso ~$4,35/mes, realista ~$1,20.
+   - **Precio objetivo €5,99–7,99/mes:** a €5,99, Stripe se lleva ~€0,34 → margen ~80 % en uso realista y positivo incluso en el peor caso. **El tope diario ES la garantía del unit economics** (acota el peor caso por diseño) y vive en `config/`: se ajusta sin deploy.
+   - Palancas si el volumen crece (identificadas, no urgentes): prompt caching del sistema del escaneo (~−25 %/foto), Haiku para redacción (−50 % del plan), compresión de imagen ya hecha.
 
 ---
 
