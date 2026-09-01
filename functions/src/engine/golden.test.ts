@@ -210,16 +210,26 @@ describe("card 6.1 — la evidencia grabada del golden set, dentro del repo", ()
     assert.deepEqual(versionesDeLaCorrida(v2), ["3.1.0+47b8c77d"]);
   });
 
-  it("el criterio 2 recalibrado sobre la v2: 23 de 26, y el pollo sigue afuera", () => {
+  it("el criterio 2 recalibrado sobre la v2: 21 de 26, y el pollo sigue afuera", () => {
     // Los archivos están congelados, así que el número es exacto y se puede
     // afirmar. Contra el criterio escrito, la v2 daba 20/26 = 76,9 % y FALLABA.
+    // Con los parches de la DT-38 (WS07) la vara se movió: criterios.json es uno
+    // solo y re-juzga las corridas viejas — la arepa del 3.1.0 no tenía ficha
+    // (callarse era el acierto) y las cervezas del 27 daban silencio. La v2 baja
+    // a 21/26 = 80,8 % sin que nada del producto empeore, y sigue pasando.
     const r = criterio2(v2, criteriosDelSet());
     assert.equal(r.denominador, 26);
-    assert.equal(r.en_regla, 23);
-    assert.equal(r.porcentaje, 88.5);
+    assert.equal(r.en_regla, 21);
+    assert.equal(r.porcentaje, 80.8);
     assert.equal(r.pasa, true);
     const fuera = r.filas.filter((f) => f.veredicto === "fuera_de_rango").map((f) => f.plato);
-    assert.deepEqual(fuera, ["16-jamon-serrano", "17-pollo-arroz-verduras", "22-desayuno-ingles"]);
+    assert.deepEqual(fuera, [
+      "09-arepa",
+      "16-jamon-serrano",
+      "17-pollo-arroz-verduras",
+      "22-desayuno-ingles",
+      "27-bocadillo-calamares",
+    ]);
   });
 
   it("la visión se movió entre las dos corridas sobre las MISMAS fotos", () => {
