@@ -315,12 +315,17 @@ La v1 deja los cimientos exactos para esto; nada de lo anterior se tira:
 5. **"Qué me conviene comer hoy":** endpoint `suggest` — perfil + calendario de entrenamiento + lo ya comido → sugerencia de dieta del día con platos y cantidades, grounded en `foods/` (el mismo patrón: el LLM compone, la DB cuantifica).
 6. **Paywall:** Stripe + claim `premium` en el token de Firebase Auth; los endpoints v2 lo verifican server-side.
 
-7. **Unit economics de premium (definido por Tomás el 01/09/2026 — el alcance de premium se decide desde el negocio):**
-   - **Costo por foto (MEDIDO en el E2E real de la WS05):** ~$0,0075 — 2.733 tokens de entrada + 123 de salida a Sonnet 5 ($2/$10 por millón) ≈ $0,007, más ~$0,0002 de GCP (Function + Firestore + Storage: el 3 % del costo). Número de planificación: **$0,01/foto**.
-   - **Costo por plan de dieta diario (v2, estimado):** perfil + lo comido + catálogo + reglas ≈ 4-6K tokens entrada, ~1K salida → **~$0,025 con Sonnet 5**, ~$0,012 si la redacción va a Haiku 4.5 (los números ya vienen calculados — el patrón de siempre).
-   - **Esquema:** gratuito **3 fotos/día** (ya en `config/`, editable sin deploy) → peor caso $0,72/mes, realista ~$0,12 · premium **15 fotos/día + 1 plan diario** → peor caso ~$4,35/mes, realista ~$1,20.
-   - **Precio objetivo €5,99–7,99/mes:** a €5,99, Stripe se lleva ~€0,34 → margen ~80 % en uso realista y positivo incluso en el peor caso. **El tope diario ES la garantía del unit economics** (acota el peor caso por diseño) y vive en `config/`: se ajusta sin deploy.
-   - Palancas si el volumen crece (identificadas, no urgentes): prompt caching del sistema del escaneo (~−25 %/foto), Haiku para redacción (−50 % del plan), compresión de imagen ya hecha.
+7. **Unit economics y esquema de tiers (definido por Tomás el 01/09/2026 — el alcance de premium se decide desde el negocio, margen objetivo 70 %):**
+   - **Costo por foto (MEDIDO en el E2E real de la WS05):** ~$0,0075 — 2.733 tokens de entrada + 123 de salida a Sonnet 5 ($2/$10 por millón) ≈ $0,007, más ~$0,0002 de GCP (el 3 %). Número de planificación: **$0,01/foto**.
+   - **Costo por plan de dieta diario (v2, estimado):** ~$0,025 con Sonnet 5 · **~$0,012 con Haiku 4.5 redactando** sobre los números ya calculados (el patrón de siempre) — el plan usa Haiku.
+   - **Los tres tiers (todos los cupos en `config/`, ajustables sin deploy; cupo MENSUAL como garantía + tope diario como ráfaga):**
+     · **La escalera habla sola: 15 → 40 → 150 fotos/mes.** ⚠️ El cupo que se comunica es el MENSUAL (un "3/día" gratuito promete 90/mes potenciales y deja al premium de 40 pareciendo menos — el error lo cazó Tomás el 01/09); el tope diario es solo anti-ráfaga interno.
+     · **Gratuito:** cupo **15 fotos/mes** (tope de ráfaga 3/día) · peor caso €0,11/mes · es el funnel, no inventario publicitario.
+     · **Premium €12/año (pago único):** cupo **40 fotos/mes** (ráfagas hasta 5/día) + historial completo · neto tras Stripe €0,96/mes · peor caso $0,30 → **margen 71 % garantizado**.
+     · **Premium Gold €4,99/mes:** cupo **150 fotos/mes** (ráfagas hasta 15/día) + **plan de dieta diario según rutina** (el diferenciador — no entra en €12/año) + tendencias · neto €4,67 · peor caso $1,49 → **margen 70 % garantizado**, realista ~85 %.
+   - **Sostener a los gratuitos (la cuenta honesta):** cada gratuito activo cuesta ~€0,08/mes realista (techo duro €0,11 por el cupo de 15). 1 Gold sostiene 6-8 gratuitos; 1 anual sostiene ~2. El 70 % del negocio ENTERO exige ~10-12 % de conversión; con la conversión típica de freemium (3-5 %) el margen total queda en ~25-40 % — rentable siempre (los cupos impiden lo negativo por diseño), y a escala chica el costo absoluto es ruido (1.000 gratuitos activos ≈ €100/mes peor caso).
+   - **Ads: NO, en ningún tier (decisión 01/09/2026).** AdSense rechazaría la PWA por "thin content" (la lección del Prode); AdMob no sirve para PWAs (solo apps de store, vía TWA sería v2+); y el número no justifica: un gratuito genera €0,05-0,15/mes de ads — ruido hasta decenas de miles de activos. No se construye sitio web para ads. Candidata v2+: empaquetar TWA en Play Store + AdMob, condicionada a escala.
+   - Palancas si el volumen crece: prompt caching del escaneo (~−25 %/foto), compresión de imagen ya hecha.
 
 ---
 
