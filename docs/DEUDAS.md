@@ -143,3 +143,13 @@ de plancha 0,757 medido) — preferible porque hereda provenance USDA; (b) curac
 manual con fuente web declarada (precedente salmorejo). El rango aportado por Tomás
 queda como contraste para validar la derivación: si la receta no cae en 168-215
 kcal/100 g, algo está mal.
+
+**🍺 Cerveza — porciones y vocabulario de España (aportado por Tomás, 01/09):**
+*De grifo:* corto/zurito/penalti 100-140 ml (Castilla y León-Galicia-Rioja / País
+Vasco / Aragón) · **caña ~200 ml (la estándar; en el sur/levante hasta 250-300)** ·
+doble/cañón ~400 ml · tubo ~330 ml · jarra/tanque/maceta 500 ml. *De botella:*
+quinto/botellín 200 ml · **tercio/mediana/media 330 ml** · litrona 1.000 ml
+(cachi/katxi/mini en vaso de fiesta). → `portion_hints` de las fichas de cerveza
+(etiqueta + gramos, densidad ≈ 1) y aliases regionales con confianza; "caña" y
+"tercio" como porciones por defecto de grifo y botella. Con esto la card tiene
+TODO lo que USDA no sabía; queda solo ejecutarla (WS06).
