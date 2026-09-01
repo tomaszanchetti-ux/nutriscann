@@ -139,6 +139,19 @@ export interface EngineItem {
   /** Solo cuando vale `true`, igual que en el catálogo. */
   generic?: true;
   /**
+   * LA FICHA NOMBRA LO QUE LA VISIÓN DESCRIBIÓ (DT-37). Solo cuando vale `true`.
+   *
+   * No es una confianza: es la respuesta a otra pregunta. `confidence` mide
+   * cuánto se puede creer en este match; esto mide si la ficha que ganó habla de
+   * lo que se describió — su vocabulario explica la mayor parte de las palabras
+   * de identidad del término, o directamente la consulta ES uno de sus nombres.
+   *
+   * Existe porque la compuerta del total necesitaba distinguir "no sé qué es
+   * esto" de "sé qué es y lo encontré por una vía que puntúa bajo". Ver
+   * `identidad_respaldada` en `match.ts` y `sumarTotales` en `arithmetic.ts`.
+   */
+  identidad_respaldada?: true;
+  /**
    * La visión no dio una masa usable (0, negativa, `NaN`, `Infinity`). El item
    * conserva la ficha —se sabe QUÉ es— pero sale con `nutrients: null`: no se
    * cuantifica con un cero inventado. Baja `completo` en los totales.

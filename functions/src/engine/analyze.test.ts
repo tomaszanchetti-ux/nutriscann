@@ -500,3 +500,69 @@ describe("determinismo", () => {
     assert.equal(a, b);
   });
 });
+
+/**
+ * DT-37 — EL PLATO 05 DEL GOLDEN, DE PUNTA A PUNTA (card 6.5).
+ *
+ * La única regresión ✅→🟡 de la corrida v3, contra el catálogo REAL: acá el caso
+ * ES el catálogo real —la ficha `fdc-2708755` con su alias corto `Lasaña` y su
+ * nombre largo— y un fixture no lo reproduciría. El término en español es el que
+ * la visión escribió aquel día, reconstruido desde el motivo grabado (el
+ * expediente no guarda `food_es`: DT-25) y verificado contra el número exacto de
+ * la corrida: difuso 0,099 de matching, 0,084 de confianza final.
+ */
+describe("DT-37 — la lasaña del plato 05 vuelve a publicar su total", () => {
+  const lasana = (): VisionResult =>
+    escaneo([
+      {
+        food_en: "lasagna, meat and spinach ricotta",
+        food_es: "lasaña de carne con espinaca y ricotta",
+        grams: 350,
+        confidence: 0.85,
+      },
+    ]);
+
+  it("la ficha correcta, la confianza de la corrida v3, y el total publicado", () => {
+    const r = analizarEscaneo(lasana(), index);
+    const item = r.items[0];
+    assert.ok(item);
+    assert.equal(item.food_id, "fdc-2708755", "la ficha que el ✅ escrito pedía");
+    assert.equal(item.match, "difuso");
+    assert.equal(item.confidence_match, 0.099, "el número exacto de la corrida v3");
+    assert.equal(item.confidence, 0.084, "y por debajo del piso de 0,12");
+    assert.ok(item.confidence < CONFIANZA_MINIMA_PARA_UN_TOTAL);
+    assert.equal(item.identidad_respaldada, true, "pero la ficha NOMBRA lo que se describió");
+
+    assert.ok(r.totals);
+    assert.equal(r.totals.total_no_publicable, undefined);
+    assert.equal(r.totals.nutrients.kcal, 724.5, "350 g × 207 kcal/100 g");
+    assert.equal(r.totals.completo, true);
+    assert.ok(r.totals.macro_pct !== null);
+  });
+
+  it("y la comida de plástico del 28 sigue muda, con el catálogo real", () => {
+    // El contra-caso, y contra el catálogo de verdad: si la segunda puerta se
+    // abriera de más, el plato que hizo nacer la compuerta volvería a publicar
+    // 1.550 kcal de resina.
+    const r = analizarEscaneo(
+      escaneo([
+        { food_en: "honey toast with whipped cream and cookie", food_es: "tostada con miel y nata", grams: 250, confidence: 0.6 },
+        {
+          food_en: "honey toast with whipped cream and chocolate banana",
+          food_es: "tostada con miel, nata y plátano",
+          grams: 260,
+          confidence: 0.6,
+        },
+      ]),
+      index,
+    );
+    for (const item of r.items) {
+      assert.equal(item.food_id, "fdc-169640", "sigue matcheando a Miel");
+      assert.equal(item.identidad_respaldada, undefined, "y la miel no nombra el postre");
+    }
+    assert.ok(r.totals);
+    assert.equal(r.totals.total_no_publicable, true);
+    assert.equal(r.totals.nutrients.kcal, null);
+    assert.equal(r.totals.completo, false);
+  });
+});

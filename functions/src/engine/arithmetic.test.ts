@@ -257,6 +257,67 @@ describe("card 2.8 — un total donde nadie se identificó no es un total comple
   });
 });
 
+/**
+ * DT-37 · DEFECTO 1 — LA SEGUNDA PUERTA DE LA COMPUERTA (card 6.5).
+ *
+ * El escenario se construye con fixtures y no con el catálogo real, por la misma
+ * razón que el del plato 28: lo que se mide acá es LA REGLA, y atarla a que una
+ * ficha siga dando 0,084 sería atar el candado a una curación que se mueve. El
+ * plato entero, con su ficha de verdad, está en `analyze.test.ts`.
+ */
+describe("DT-37 — la compuerta distingue `no sé qué es` de `sé qué es por una vía floja`", () => {
+  it("una ficha que NOMBRA lo que se describió publica su total aunque puntúe 0,084", () => {
+    // El plato 05 del golden en su forma mínima: un solo ítem, ficha correcta,
+    // aritmética exacta, y una confianza de 0,084 contra el piso de 0,12. Era la
+    // única regresión ✅→🟡 de la corrida v3.
+    const t = sumarTotales([
+      item({ termino_en: "lasagna, meat and spinach ricotta", grams: 350, confidence: 0.084, confidence_vision: 0.85, match: "difuso", identidad_respaldada: true }),
+    ]);
+    assert.ok(t);
+    assert.equal(t.completo, true);
+    assert.equal(t.total_no_publicable, undefined);
+    assert.equal(typeof t.nutrients.kcal, "number");
+    assert.ok(t.macro_pct !== null);
+  });
+
+  it("y la MISMA confianza sin ficha que la respalde sigue sin publicar", () => {
+    // La otra mitad, que es la que impide abrir la compuerta de más: cambia UNA
+    // cosa respecto del test de arriba —que la ficha nombre lo que se describió—
+    // y el total vuelve a no publicarse.
+    const t = sumarTotales([
+      item({ termino_en: "honey toast with whipped cream and cookie", grams: 250, confidence: 0.084, confidence_vision: 0.85, match: "difuso" }),
+    ]);
+    assert.ok(t);
+    assert.equal(t.completo, false);
+    assert.equal(t.total_no_publicable, true);
+    assert.equal(t.nutrients.kcal, null);
+    assert.match(t.macro_pct_motivo ?? "", /ninguna ficha que nombre/);
+  });
+
+  it("la mitad de VISIÓN sigue contando: si el modelo no supo qué miraba, no hay total", () => {
+    // Una ficha que nombra perfectamente lo que se describió, y una visión que
+    // dijo "creo que esto es una lasaña" con un 5 %. El que no sabe qué es acá es
+    // el que miró la foto, y la segunda puerta no lo tapa.
+    const t = sumarTotales([
+      item({ termino_en: "lasaña", grams: 350, confidence: 0.05, confidence_vision: 0.05, match: "difuso", identidad_respaldada: true }),
+    ]);
+    assert.ok(t);
+    assert.equal(t.completo, false);
+    assert.equal(t.total_no_publicable, true);
+  });
+
+  it("alcanza con UN ítem respaldado, igual que con la confianza", () => {
+    // La compuerta mira el mejor ítem, no el promedio: la segunda puerta se abre
+    // con la misma regla, o serían dos criterios distintos para la misma pregunta.
+    const t = sumarTotales([
+      item({ termino_en: "duda", grams: 50, confidence: 0.03, confidence_vision: 0.5, match: "difuso" }),
+      item({ termino_en: "lasaña", grams: 350, confidence: 0.084, confidence_vision: 0.85, match: "difuso", identidad_respaldada: true }),
+    ]);
+    assert.ok(t);
+    assert.equal(t.completo, true);
+  });
+});
+
 describe("porcentajes de macros (Atwater 4/4/9)", () => {
   const base: SumaDeNutrientes = {
     kcal: 200,

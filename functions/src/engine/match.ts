@@ -30,7 +30,13 @@
  */
 import type { CanonicalFood } from "../kb/types";
 import type { CatalogIndex, GuardaDeVocabulario, TerminoIndexado } from "./catalog";
-import { COBERTURA_DIFUSA_MIN, CONFIANZA_DIFUSA_MAX, DECIMALES, FACTOR_GENERICO } from "./constants";
+import {
+  COBERTURA_DIFUSA_MIN,
+  CONFIANZA_DIFUSA_MAX,
+  DECIMALES,
+  FACTOR_GENERICO,
+  RESPALDO_MINIMO_DE_IDENTIDAD,
+} from "./constants";
 import {
   claveDeMatching,
   contieneSecuencia,
@@ -38,6 +44,7 @@ import {
   empiezaConPalabra,
   inicioDelAcompanamiento,
   lecturasDelTermino,
+  mismaPalabra,
   mismasPreparaciones,
   posicionDeSecuencia,
   sinDescriptores,
@@ -55,6 +62,19 @@ export interface MatchResult {
   termino_matcheado: string;
   idioma: "en" | "es";
   motivo: string;
+  /**
+   * LA FICHA NOMBRA LO QUE LA VISIÓN DESCRIBIÓ, y esto es OTRA cosa que la
+   * confianza. Solo viaja cuando vale `true`.
+   *
+   * Un match exacto siempre la trae: la consulta ES un término de la ficha. Un
+   * difuso la trae cuando el nombre del catálogo está DENTRO de lo que dijo la
+   * visión y el vocabulario entero de la ficha explica la mayor parte de las
+   * palabras de identidad de la consulta (`RESPALDO_MINIMO_DE_IDENTIDAD`).
+   *
+   * La usa la compuerta del total, que necesita distinguir "no sé qué es esto"
+   * de "sé qué es y lo encontré por una vía que puntúa bajo" (DT-37).
+   */
+  identidad_respaldada?: true;
 }
 
 /**
@@ -70,6 +90,54 @@ export interface MatchResult {
  * antes de ese descuento haría ganar a un match nominalmente más alto que en la
  * pantalla vale menos. A IGUALDAD GANA EL INGLÉS, que es la precedencia que la
  * card 2.1 declaró y por la misma razón: `names.en` es la clave primaria limpia.
+ *
+ * ------------------------------------------------------------------------
+ * DT-37 — UNA CONTRADICCIÓN NO SE GANA POR PUNTAJE (card 6.5)
+ * ------------------------------------------------------------------------
+ *
+ * La corrida v3 del golden midió el agujero de "gana el más confiado", y el
+ * detalle importa porque es contraintuitivo: EL QUE GANABA TENÍA EL SCORE MÁS
+ * ALTO Y ERA EL PEOR MATCH.
+ *
+ *   · `lime` (inglés) → `Lima cruda`, difuso 0,3, **la ficha correcta**. La
+ *     visión tradujo mal y escribió `limón`, que es el nombre EXACTO de otra
+ *     ficha (`Limón`, 1,0). Ganaba el 1,0 y al usuario español se le mostraba
+ *     "Limón" sobre una lima, al 85 % de confianza.
+ *   · `gravy, brown sauce` (inglés) → `Salsa de carne`, difuso 0,176, **la ficha
+ *     correcta**. El español (`salsa parda`) caía en `Salsa mexicana` con 0,232
+ *     y ganaba. Tres corridas seguidas.
+ *
+ * LA SEÑAL QUE LOS SEPARA no es el score: es que la ficha que encontró el
+ * español NO EXPLICA NI UNA PALABRA de lo que la visión escribió en inglés.
+ * `Limón` no dice "lime" en ninguno de sus nombres; `Salsa mexicana` no dice ni
+ * "gravy" ni "brown". Eso no es "otro camino al mismo alimento": es una
+ * CONTRADICCIÓN entre los dos nombres que emitió el mismo modelo, y una
+ * contradicción no se resuelve mirando cuál de los dos está más seguro.
+ *
+ * CUÁNDO GANA EL INGLÉS ENTONCES, y las dos condiciones existen para no romper
+ * los ítems que hoy entran por el español (36 de 66 en la v3):
+ *
+ *   1. cuando su ficha explica el término inglés ENTERO (respaldo 1): ahí no
+ *      quedó ni una palabra sin nombrar y el español no nombra ninguna. Es el
+ *      caso `lime`;
+ *   2. cuando NINGUNO DE LOS DOS llegó por un término escrito —los dos son
+ *      difusos, o sea las dos son conjeturas del motor— y el inglés al menos
+ *      explica algo. Entre dos conjeturas manda la clave primaria limpia, que es
+ *      la precedencia de la card 2.1. Es el caso `gravy`.
+ *
+ * LO QUE ESTA REGLA NO TOCA, y es la mitad de por qué está escrita así: un
+ * término que la CURACIÓN escribió en español (un nombre o un alias, nivel
+ * `exacto`/`alias`) le sigue ganando a una conjetura inglesa aunque no comparta
+ * palabras con ella. Medido: `pork belly, boiled` → `Tocino cocido` (el español
+ * escrito) contra `Cerdo` (el difuso inglés) no se mueve; `saltine crackers` →
+ * `Galletas saladas` tampoco. El español es el idioma que la curación
+ * enriqueció y esta regla no lo degrada: solo le saca el derecho a ganar
+ * CONTRADICIENDO al inglés cuando él también está adivinando.
+ *
+ * MEDIDO sobre tres corpus (card 6.5): los 1.115 pares `(names.en, names.es)`
+ * del catálogo no cambian ni uno; los 176 pares `(término inglés grabado, nombre
+ * español de la ficha que ganó)` de las tres corridas del golden cambian UNO, y
+ * es `lime` → `Lima cruda`, que es el arreglo.
  */
 export function buscarConDosNombres(
   termino_en: string,
@@ -81,7 +149,65 @@ export function buscarConDosNombres(
   const porEs = buscarAlimento(termino_es, index);
   if (porEs === null) return porEn;
   if (porEn === null) return porEs;
+  if (contradiceAlIngles(termino_en, porEn, porEs)) return porEn;
   return confianzaVisible(porEs) > confianzaVisible(porEn) ? porEs : porEn;
+}
+
+/**
+ * ¿La ficha que encontró el español contradice lo que la visión escribió en
+ * inglés, y el inglés tiene con qué reemplazarla? Ver `buscarConDosNombres`.
+ */
+function contradiceAlIngles(termino_en: string, porEn: MatchResult, porEs: MatchResult): boolean {
+  if (porEs.ficha.id === porEn.ficha.id) return false;
+  if (respaldoDeIdentidad(termino_en, porEs.ficha) > 0) return false;
+  const respaldoEn = respaldoDeIdentidad(termino_en, porEn.ficha);
+  if (respaldoEn === 1) return true;
+  return respaldoEn > 0 && porEn.nivel === "difuso" && porEs.nivel === "difuso";
+}
+
+/**
+ * TODAS LAS PALABRAS CON LAS QUE EL CATÁLOGO NOMBRA A UNA FICHA: su nombre en
+ * inglés, su nombre en español y sus alias, sin repetir.
+ *
+ * Es el vocabulario COMPLETO y no el término que ganó el match, y esa es toda la
+ * idea: `fdc-2708755` ganó por el alias `Lasaña` —seis letras— pero se llama
+ * `Lasagna with meat and spinach` / `Lasaña con carne y espinaca`, y con eso
+ * explica también la carne y la espinaca que la visión describió.
+ */
+export function vocabularioDeLaFicha(ficha: CanonicalFood): string[] {
+  const textos: (string | null)[] = [ficha.names.en, ficha.names.es];
+  for (const alias of ficha.aliases?.es ?? []) {
+    textos.push(typeof alias === "string" ? alias : alias.alias);
+  }
+  const palabras = new Set<string>();
+  for (const texto of textos) {
+    if (typeof texto !== "string" || texto.length === 0) continue;
+    for (const palabra of tokens(claveDeMatching(texto))) palabras.add(palabra);
+  }
+  return [...palabras];
+}
+
+/**
+ * QUÉ PROPORCIÓN DE LO QUE DIJO LA VISIÓN NOMBRA ESTA FICHA. 0..1.
+ *
+ * Se cuentan las palabras de IDENTIDAD de la consulta (sin los descriptores de
+ * presentación ni el pegamento gramatical: "grilled", "de", "con") y se pregunta
+ * por cada una si aparece en el vocabulario de la ficha. Nada más que eso.
+ *
+ * NO ES UNA CONFIANZA Y NO SE MULTIPLICA POR NADA. La confianza dice cuánto se
+ * puede creer que esta ficha es ese alimento; el respaldo dice cuánto de lo que
+ * se describió tiene nombre en esta ficha. Dos preguntas distintas, y la segunda
+ * es la que la compuerta del total necesitaba y no tenía (DT-37).
+ *
+ * Se compara palabra contra palabra con `mismaPalabra` y no con `===` por el
+ * residuo del plegado del plural (`tomatoe` contra `tomato`): ver ahí el caso.
+ */
+export function respaldoDeIdentidad(termino: string, ficha: CanonicalFood): number {
+  const palabras = tokens(sinDescriptores(claveDeMatching(termino)));
+  if (palabras.length === 0) return 0;
+  const vocabulario = vocabularioDeLaFicha(ficha);
+  const explicadas = palabras.filter((palabra) => vocabulario.some((w) => mismaPalabra(palabra, w)));
+  return explicadas.length / palabras.length;
 }
 
 /** La confianza del match ya con el descuento de ficha genérica: la de pantalla. */
@@ -505,11 +631,18 @@ function buscarUnaLectura(termino: string, index: CatalogIndex): MatchResult | n
   const consulta = claveDeMatching(termino);
   if (consulta.length === 0) return null;
 
+  /**
+   * `respalda` contesta la pregunta de la DT-37 —¿esta ficha NOMBRA lo que la
+   * visión describió?— y entra como función porque la ficha se resuelve acá
+   * adentro. Un nivel exacto contesta que sí sin mirar nada: la consulta ES un
+   * término de la ficha.
+   */
   const desdeEntrada = (
     entrada: TerminoIndexado,
     nivel: NivelDeMatch,
     confianza: number,
     motivo: string,
+    respalda: (ficha: CanonicalFood) => boolean,
   ): MatchResult | null => {
     const ficha = index.porId.get(entrada.food_id);
     if (ficha === undefined || ficha.deprecated) return null;
@@ -521,6 +654,7 @@ function buscarUnaLectura(termino: string, index: CatalogIndex): MatchResult | n
       termino_matcheado: entrada.texto,
       idioma: entrada.idioma,
       motivo,
+      ...(respalda(ficha) ? { identidad_respaldada: true as const } : {}),
     };
   };
 
@@ -529,12 +663,15 @@ function buscarUnaLectura(termino: string, index: CatalogIndex): MatchResult | n
       ? ` El índice llegó por una variante del nombre: se le sacaron los marcadores de USDA que dicen "sin especificar más".`
       : "";
 
+  const siempre = (): boolean => true;
+
   const exactoEn = (entrada: TerminoIndexado): MatchResult | null =>
     desdeEntrada(
       entrada,
       "exacto",
       1,
       `Coincidencia exacta con el nombre en inglés del catálogo ("${entrada.texto}").${comoVariante(entrada)}`,
+      siempre,
     );
 
   const exactoEs = (entrada: TerminoIndexado): MatchResult | null =>
@@ -545,6 +682,7 @@ function buscarUnaLectura(termino: string, index: CatalogIndex): MatchResult | n
       (entrada.campo === "alias"
         ? `Coincidencia exacta con un alias en español ("${entrada.texto}", confianza declarada ${entrada.confianza}).`
         : `Coincidencia exacta con el nombre en español del catálogo ("${entrada.texto}").`) + comoVariante(entrada),
+      siempre,
     );
 
   // LOS CUATRO NIVELES EXACTOS, Y EL ORDEN ES UNA DECISIÓN.
@@ -614,6 +752,15 @@ function buscarUnaLectura(termino: string, index: CatalogIndex): MatchResult | n
       candidato.confianza,
       `Coincidencia aproximada en ${idioma} con "${candidato.entrada.texto}": ${direccion} ` +
         `(cobertura ${redondear(candidato.cobertura, 2)}).${reserva}`,
+      // DT-37 — LA IDENTIDAD RESPALDADA, Y LA DIRECCIÓN B QUEDA AFUERA. Que el
+      // nombre del catálogo esté DENTRO de lo que dijo la visión (direcciones A
+      // y C) significa que lo que sobra lo dijo la visión: describió de más. Al
+      // revés —la consulta adentro del nombre, dirección B— lo que sobra son
+      // afirmaciones del catálogo que nadie hizo, y ahí el respaldo valdría 1
+      // por construcción sin significar nada. Ver `RESPALDO_MINIMO_DE_IDENTIDAD`.
+      (ficha) =>
+        candidato.direccion !== "consulta_en_nombre" &&
+        respaldoDeIdentidad(consulta, ficha) >= RESPALDO_MINIMO_DE_IDENTIDAD,
     );
     if (r !== null) return r;
   }

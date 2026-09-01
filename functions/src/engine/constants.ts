@@ -263,6 +263,59 @@ export const PALABRAS_DE_COCIDO: readonly string[] = [
  */
 export const CONFIANZA_MINIMA_PARA_UN_TOTAL = 0.12;
 
+/**
+ * LA SEGUNDA PUERTA DE LA COMPUERTA: CUÁNTO DE LO QUE DIJO LA VISIÓN TIENE QUE
+ * NOMBRAR LA FICHA PARA QUE EL MOTOR PUEDA DECIR "SÉ QUÉ ES ESTO".
+ *
+ * POR QUÉ HACÍA FALTA UNA SEGUNDA PUERTA (DT-37, corrida v3 del golden). El
+ * plato 05 —una lasaña— llegó a SU ficha correcta (`fdc-2708755` Lasaña con
+ * carne y espinaca), con la aritmética exacta, y no publicó total: la visión
+ * escribió un nombre largo (`lasaña ... carne ... espinaca ... ricotta`), el
+ * término del catálogo que ganó fue el alias corto `Lasaña`, y la cobertura
+ * difusa —que mide CUÁNTO DEL TEXTO quedó sin explicar— se hundió a 0,21. Con
+ * eso la confianza final quedó en 0,084 contra el piso de 0,12 y la compuerta,
+ * escrita para la comida de plástico del plato 28, se disparó sobre un plato
+ * bueno. **El piso está para cortar "no sé qué es esto", no "sé qué es y lo
+ * encontré por una vía que puntúa bajo".**
+ *
+ * QUÉ MIDE ESTE NÚMERO, que es OTRA cosa que la cobertura: la cobertura compara
+ * la consulta contra EL TÉRMINO que ganó (`Lasaña`, seis letras); el respaldo la
+ * compara contra TODO EL VOCABULARIO DE LA FICHA —sus nombres en los dos idiomas
+ * y sus alias— y cuenta qué proporción de las palabras de identidad de la
+ * consulta nombra esa ficha. Es la pregunta del usuario: "¿la ficha que me
+ * diste habla de lo que yo describí?".
+ *
+ * DE DÓNDE SALE EL NÚMERO. Del histograma real de los ítems que quedaron POR
+ * DEBAJO del piso en las tres corridas del golden set (v1, v2 y v3), que son los
+ * únicos a los que esta puerta les cambia algo:
+ *
+ *   0,14 · 0,17 · 0,17 · 0,17 · 0,17 · 0,20   ← los seis ítems `Miel` de la
+ *                                               comida de plástico (plato 28)
+ *   0,25 · 0,25   ← `fish fillet ...` → Pescado: sabe que es pescado y nada más
+ *   ─────────── el hueco ───────────
+ *   0,50 · 0,50   ← `tuna, canned` → Atún · `pork meatball, boiled` → Cerdo:
+ *                   la ficha explica la mitad, y lo que NO explica (la albóndiga)
+ *                   es justamente lo que movería el número
+ *   0,75          ← la lasaña del plato 05, con su ficha correcta
+ *
+ * 0,6 cae entre 0,50 y 0,75 y deja afuera a los dos del 0,50: **ante la duda el
+ * piso se sube**, que es la misma regla con la que se eligió el 0,12. Con 0,5 la
+ * albóndiga de cerdo publicaría un total apoyada en una ficha de cerdo genérico.
+ *
+ * LÍMITES DECLARADOS, los tres:
+ *   · la puerta NO se abre para la dirección "la consulta está DENTRO del nombre
+ *     del catálogo" (`flatbread` → `Crackers, flatbread`). Ahí el respaldo vale
+ *     1 por construcción —la consulta es una palabra y la ficha la contiene— y
+ *     lo que sobra son afirmaciones DEL CATÁLOGO que la visión nunca hizo: es el
+ *     caso medido que publicó una galleta donde había una tortilla (+89 %);
+ *   · el respaldo mide PALABRAS, no significados: una ficha que comparte la
+ *     palabra sin ser el alimento (el `Cóctel` de `cocktail sausages`) cuenta
+ *     como explicada. Por eso es una SEGUNDA puerta y no un reemplazo del piso;
+ *   · sigue haciendo falta que la visión haya sabido qué miraba: la mitad de
+ *     visión de la confianza se compara contra el mismo piso. Ver `sumarTotales`.
+ */
+export const RESPALDO_MINIMO_DE_IDENTIDAD = 0.6;
+
 /** Los factores de Atwater, en kcal por gramo. Convención universal. */
 export const ATWATER = { protein: 4, carbs: 4, fat: 9 } as const;
 

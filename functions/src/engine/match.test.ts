@@ -13,12 +13,20 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { construirIndice, GUARDAS_DE_VOCABULARIO } from "./catalog";
 import { COBERTURA_DIFUSA_MIN, CONFIANZA_DIFUSA_MAX } from "./constants";
-import { buscarAlimento, buscarConDosNombres, guardaQueViola } from "./match";
+import {
+  buscarAlimento,
+  buscarConDosNombres,
+  guardaQueViola,
+  redondear,
+  respaldoDeIdentidad,
+  vocabularioDeLaFicha,
+} from "./match";
 import {
   claveDeMatching,
   contieneSecuencia,
   empiezaConPalabra,
   lecturasDelTermino,
+  mismaPalabra,
   normalizar,
   sinColaDescriptiva,
   variantesDeIndice,
@@ -875,5 +883,159 @@ describe("card 6.1 — la barra de la visión es una O (DT-28, punto 2)", () => 
       const r = buscarAlimento(f.names.en, index);
       assert.equal(r?.ficha.id, f.id, f.names.en);
     }
+  });
+});
+
+/**
+ * DT-37 · DEFECTO 2 — EL DUELO DE IDIOMAS, MEDIDO EN LA CORRIDA v3.
+ *
+ * Los dos casos que abrieron la deuda tienen la misma forma y la forma es la
+ * trampa: EL QUE GANABA TRAÍA EL SCORE MÁS ALTO Y ERA EL PEOR MATCH. Los tests
+ * corren contra el catálogo real porque el caso ES el catálogo real —`Limón` y
+ * `Lima cruda` son dos fichas de USDA que existen y se parecen— y los términos
+ * en español son los que la visión escribió aquel día, reconstruidos desde el
+ * motivo grabado (el expediente no guarda `food_es`: DT-25).
+ */
+describe("DT-37 — el idioma más confiado no gana si contradice al inglés", () => {
+  it("`lime` recupera la LIMA aunque la visión la haya traducido como `limón`", () => {
+    // Plato 08 de la v3: `lime` (inglés) → `Lima cruda` 0,3, la ficha correcta;
+    // `limón` (español, mal traducido) → `Limón` 1,0. Ganaba el 1,0 y al usuario
+    // le quedaba "Limón" sobre una lima, al 85 % de confianza.
+    const soloIngles = buscarAlimento("lime", index);
+    const soloEspanol = buscarAlimento("limón", index);
+    assert.equal(soloIngles?.ficha.id, "fdc-168155", "la ficha correcta es la lima");
+    assert.equal(soloEspanol?.ficha.id, "fdc-167746", "y el español exacto sigue llevando al limón");
+    assert.ok(soloEspanol.confianza_match > soloIngles.confianza_match, "el perdedor puntúa MÁS alto");
+
+    const r = buscarConDosNombres("lime", "limón", index);
+    assert.equal(r?.ficha.id, "fdc-168155");
+  });
+
+  it("`gravy, brown sauce` recupera la salsa de carne contra la salsa mexicana", () => {
+    // Plato 07, tres corridas seguidas perdiendo. Los dos son difusos: ninguno de
+    // los dos idiomas llegó por un término que alguien escribió, y entre dos
+    // conjeturas manda la clave primaria limpia (`names.en`).
+    const r = buscarConDosNombres("gravy, brown sauce", "salsa parda", index);
+    assert.equal(r?.ficha.id, "fdc-2707149");
+    assert.equal(r?.nivel, "difuso");
+  });
+
+  it("el español que la CURACIÓN escribió le sigue ganando a una conjetura inglesa", () => {
+    // Los cuatro casos medidos en las corridas del golden donde el español ganó
+    // Y TENÍA RAZÓN. En los dos primeros el español ni comparte palabras con el
+    // término inglés —`Tocino` no dice "pork", `Salchicha` no dice "cocktail"—:
+    // lo que los salva es que son términos ESCRITOS, no difusos.
+    const casos: [string, string, string][] = [
+      ["pork belly, boiled", "panceta cocida", "fdc-2705885"],
+      ["cocktail sausages, cooked", "salchichas de cóctel", "fdc-2706190"],
+      ["saltine crackers", "galletas saladas", "fdc-2708132"],
+      ["toasted white bread", "pan tostado", "fdc-2707592"],
+    ];
+    for (const [en, es, esperada] of casos) {
+      assert.equal(buscarConDosNombres(en, es, index)?.ficha.id, esperada, `${en} / ${es}`);
+    }
+  });
+
+  it("los platos que el español desbloqueó en la card 2.6 no se mueven", () => {
+    // Los mismos tres casos del test de la card 2.6, más el bife: son los ítems
+    // que entran por el español y hoy resuelven bien (36 de los 66 de la v3).
+    assert.equal(buscarConDosNombres("rice, cooked, seafood paella style", "paella", index)?.ficha.id, "fdc-2706723");
+    assert.equal(buscarConDosNombres("french fries, fried", "papas fritas", index)?.ficha.id, "fdc-2709456");
+    assert.equal(buscarConDosNombres("beef steak, grilled", "bife", index)?.ficha.id, "fdc-2705824");
+    assert.equal(
+      buscarConDosNombres("lasagna with meat sauce and spinach ricotta", "lasaña", index)?.ficha.id,
+      "fdc-2708755",
+    );
+  });
+
+  it("EL BARRIDO: los 1.115 pares (names.en, names.es) del catálogo no cambian ni uno", () => {
+    // La red de regresión de esta regla. Cada ficha con nombre en los dos idiomas
+    // se busca con los dos a la vez: el desempate nuevo no puede cambiar ni una.
+    const fallos: string[] = [];
+    let pares = 0;
+    for (const f of catalogoReal().foods) {
+      if (f.deprecated || f.names.es === null) continue;
+      pares += 1;
+      const r = buscarConDosNombres(f.names.en, f.names.es, index);
+      if (r === null || r.ficha.id !== f.id) {
+        fallos.push(`${f.id} "${f.names.en}"/"${f.names.es}" -> ${r === null ? "null" : r.ficha.id}`);
+      }
+    }
+    assert.ok(pares > 1000, `el catálogo bajó a ${pares} pares bilingües`);
+    assert.deepEqual(fallos, []);
+  });
+
+  it("sin `food_es` el desempate nuevo ni existe", () => {
+    for (const termino of ["lime", "gravy, brown sauce", "apple, raw", "Zzzz plato inexistente xyz"]) {
+      for (const es of [undefined, null, "", "   "]) {
+        assert.deepEqual(buscarConDosNombres(termino, es, index), buscarAlimento(termino, index), `${termino}/${es}`);
+      }
+    }
+  });
+});
+
+/**
+ * DT-37 · DEFECTO 1 — EL RESPALDO DE IDENTIDAD.
+ *
+ * La medida que la compuerta del total no tenía: ¿la ficha que ganó NOMBRA lo
+ * que la visión describió? Es otra pregunta que la confianza y por eso es otro
+ * número. Acá se mide la señal; el efecto sobre el total está en
+ * `arithmetic.test.ts` y el plato entero en `analyze.test.ts`.
+ */
+describe("DT-37 — el respaldo de identidad", () => {
+  it("cuenta las palabras que la ficha nombra, sobre las que dijo la visión", () => {
+    const lasana = fichaReal("fdc-2708755");
+    // `lasaña · carne · espinaca · ricotta`: la ficha nombra las tres primeras.
+    assert.equal(redondear(respaldoDeIdentidad("lasaña de carne con espinaca y ricotta", lasana), 2), 0.75);
+    // La miel del plato 28 explica UNA palabra de seis: sabe que hay miel adentro
+    // de algo, y no sabe qué es ese algo.
+    const miel = fichaReal("fdc-169640");
+    assert.ok(respaldoDeIdentidad("honey toast with whipped cream and cookie", miel) < 0.25);
+    // Y una ficha que no comparte NADA da cero, que es la señal del duelo.
+    assert.equal(respaldoDeIdentidad("lime", fichaReal("fdc-167746")), 0);
+  });
+
+  it("el vocabulario es el de TODOS los nombres, no el del término que ganó", () => {
+    const vocabulario = vocabularioDeLaFicha(fichaReal("fdc-2708755"));
+    for (const palabra of ["lasagna", "meat", "spinach", "lasana", "carne", "espinaca"]) {
+      assert.ok(vocabulario.includes(palabra), `falta "${palabra}" en el vocabulario`);
+    }
+  });
+
+  it("el plural plegado no rompe la comparación: `tomatoe` y `tomato` son la misma palabra", () => {
+    // `Tomatoes, raw` tiene clave `tomatoe raw`; la visión escribe `tomato`.
+    assert.ok(mismaPalabra("tomato", "tomatoe"));
+    assert.equal(respaldoDeIdentidad("tomato, sliced", fichaReal("fdc-2709719")), 1);
+    // Y la tolerancia no junta dos alimentos distintos.
+    assert.equal(mismaPalabra("lime", "lima"), false);
+  });
+
+  it("un match exacto siempre trae la identidad respaldada", () => {
+    assert.equal(buscarAlimento("Croissant", index)?.identidad_respaldada, true);
+    assert.equal(buscarAlimento("paella", index)?.identidad_respaldada, true);
+  });
+
+  it("un difuso la trae solo si la ficha nombra la mayor parte de lo que se dijo", () => {
+    // La lasaña: cobertura 0,21 —una vía flojísima— pero la ficha nombra la
+    // lasaña, la carne y la espinaca.
+    const lasana = buscarAlimento("lasaña de carne con espinaca y ricotta", index);
+    assert.equal(lasana?.ficha.id, "fdc-2708755");
+    assert.equal(lasana?.nivel, "difuso");
+    assert.equal(lasana?.identidad_respaldada, true);
+    // La comida de plástico: mismo nivel difuso, y la ficha no nombra el postre.
+    const miel = buscarAlimento("honey toast with whipped cream and cookie", index);
+    assert.equal(miel?.ficha.id, "fdc-169640");
+    assert.equal(miel?.identidad_respaldada, undefined);
+  });
+
+  it("la dirección B queda afuera aunque el respaldo dé 1", () => {
+    // `flatbread` → `Crackers, flatbread`: la consulta está DENTRO del nombre, así
+    // que el respaldo vale 1 por construcción y no significa nada. Es el ítem que
+    // publicó una galleta donde había una tortilla (+89 %).
+    const r = buscarAlimento("flatbread", index);
+    assert.equal(r?.ficha.id, "fdc-2708157");
+    assert.equal(r?.nivel, "difuso");
+    assert.equal(respaldoDeIdentidad("flatbread", r.ficha), 1);
+    assert.equal(r?.identidad_respaldada, undefined);
   });
 });

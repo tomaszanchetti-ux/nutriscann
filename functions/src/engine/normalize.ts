@@ -509,3 +509,31 @@ export function empiezaConPalabra(pajar: string, aguja: string): boolean {
   if (aguja.length === 0 || pajar.length === 0) return false;
   return pajar === aguja || pajar.startsWith(`${aguja} `);
 }
+
+/**
+ * ¿DOS PALABRAS SUELTAS NOMBRAN EL MISMO ALIMENTO?
+ *
+ * Existe por el residuo del plegado pobre, y el caso es exactamente este: la
+ * ficha `Tomatoes, raw` tiene clave `tomatoe raw` —`plegarPlural` le saca UNA `s`
+ * y no pretende acertar el singular— y la visión escribe `tomato, sliced`, cuya
+ * clave es `tomato`. Comparando las claves ENTERAS eso no molesta nunca, porque
+ * los dos textos pasan por la misma función y caen en la misma clave; comparando
+ * PALABRA CONTRA PALABRA entre dos textos distintos (una consulta contra el
+ * nombre de una ficha, que es lo que hace `respaldoDeIdentidad`) sí molesta:
+ * `tomato` y `tomatoe` son la misma palabra y darían distinto.
+ *
+ * La tolerancia es UNA sola y del mismo tamaño que el plegado que la causó: se
+ * ignora una `e` final en palabras de 4 letras o más. `lime`/`lima` siguen siendo
+ * dos palabras distintas (`lim` no es `lima`), que es lo que hay que preservar.
+ *
+ * EL ERROR BARATO ESTÁ DE ESTE LADO: quien pregunta por esta función lo hace para
+ * decidir si dos textos hablan del mismo alimento, y de más a menos el costo es
+ * asimétrico — creer que comparten una palabra deja las cosas como están, creer
+ * que no comparten NINGUNA es lo que dispara una decisión.
+ */
+export function mismaPalabra(a: string, b: string): boolean {
+  if (a === b) return true;
+  const raiz = (p: string): string =>
+    p.length >= LARGO_MINIMO_PARA_PLEGAR && p.endsWith("e") ? p.slice(0, -1) : p;
+  return raiz(a) === raiz(b);
+}

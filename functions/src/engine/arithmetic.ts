@@ -159,14 +159,32 @@ export function sumarTotales(items: EngineItem[]): EngineTotals | null {
   // total parcial que ya existe desde la card 2.3, y `macro_pct: null` con su
   // `macro_pct_motivo` es el camino que ya se usa cuando no hay nada que
   // repartir. La compuerta entra por esas dos puertas y no agrega ninguna.
+  //
+  // DOS PUERTAS PARA "SÉ QUÉ ES ESTO" (DT-37, card 6.5). La confianza sola no
+  // alcanzaba y está medido: la lasaña del plato 05 del golden llegó a SU ficha
+  // correcta y no publicó total, porque la vía que la encontró —un alias corto
+  // dentro de un nombre largo— puntúa 0,084. El piso existe para cortar "no sé
+  // qué es esto", no "sé qué es y lo encontré por una vía floja", y esas dos
+  // cosas se distinguen preguntando si la ficha NOMBRA lo que la visión
+  // describió (`identidad_respaldada`, ver `RESPALDO_MINIMO_DE_IDENTIDAD`).
+  //
+  // Y LA MITAD DE VISIÓN SIGUE CONTANDO: la segunda puerta reemplaza la mitad
+  // del matching, no la de la visión. Un plato donde el modelo dijo "creo, con
+  // un 5 %, que esto es una lasaña" no publica total aunque la ficha nombre la
+  // lasaña entera — ahí el que no sabe qué es es el que miró la foto. Se compara
+  // contra la misma vara, que es la única que este archivo conoce.
   const mejorConfianza = conDatos.reduce((mejor, i) => Math.max(mejor, i.confidence), 0);
-  const sinNadieIdentificado = mejorConfianza < CONFIANZA_MINIMA_PARA_UN_TOTAL;
+  const algunaIdentidadRespaldada = conDatos.some(
+    (i) => i.identidad_respaldada === true && i.confidence_vision >= CONFIANZA_MINIMA_PARA_UN_TOTAL,
+  );
+  const sinNadieIdentificado = mejorConfianza < CONFIANZA_MINIMA_PARA_UN_TOTAL && !algunaIdentidadRespaldada;
 
   const macro_pct = sinNadieIdentificado ? null : porcentajesDeMacros(nutrients);
   const motivoDeLaCompuerta =
     `Ningún alimento de esta foto se identificó con confianza suficiente: el mejor llegó al ` +
     `${redondear(mejorConfianza * 100, 1)} % y el mínimo para publicar un total es ` +
-    `${redondear(CONFIANZA_MINIMA_PARA_UN_TOTAL * 100, 1)} %. Los alimentos y sus valores siguen abajo, ` +
+    `${redondear(CONFIANZA_MINIMA_PARA_UN_TOTAL * 100, 1)} %; tampoco hay ninguna ficha que nombre lo ` +
+    `que se describió. Los alimentos y sus valores siguen abajo, ` +
     `uno por uno, pero sumarlos y llamar a eso "el total del plato" sería afirmar algo que el análisis no sostiene.`;
 
   // LA COMPUERTA CIERRA ENTERA (card 6.1). Antes apagaba la declaración y dejaba

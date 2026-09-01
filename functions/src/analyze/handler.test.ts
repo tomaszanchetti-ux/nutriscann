@@ -198,6 +198,10 @@ test("`items` y `totals` son los del motor, no una copia parecida", async () => 
     "confidence_vision",
     "food_id",
     "grams",
+    // DT-37 (card 6.5): la ficha NOMBRA lo que la visión describió. Viaja al
+    // front porque la compuerta del total se apoya en ella y el reporte tiene
+    // que poder explicar por qué un plato de confianza baja publicó su total.
+    "identidad_respaldada",
     "match",
     "motivo",
     "name_en",

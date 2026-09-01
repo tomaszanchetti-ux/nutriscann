@@ -126,6 +126,7 @@ function resolverItem(item: VisionItem, index: CatalogIndex, cola: ColaDeCuracio
       confidence_match: confianzaMatch,
       match: match.nivel,
       ...(esGenerico ? { generic: true as const } : {}),
+      ...(match.identidad_respaldada === true ? { identidad_respaldada: true as const } : {}),
       ...(problemaDeGramos !== null ? { grams_no_estimados: true as const } : {}),
       ...(caveats.length > 0 ? { caveats } : {}),
       per_100g: match.ficha.per_100g,
