@@ -368,13 +368,39 @@ corrieron a mano; el candado que falta es **DT-48**. Y el bundle real quedó en
 116,65 kB gzip contra los 114,2 declarados, por los dos commits visuales del
 final: **DT-49**.
 
-**Lo único que falta para cerrar la v1: el E2E desde el teléfono de Tomás** — el
-login con Google en **Safari y en la PWA instalada** (el arnés convierte las
-ventanas emergentes en pestañas y el traspaso muere ahí) y **un token de App Check
-real** (no existe emulador). Verificado por API que la puerta está abierta del
-lado de Google: `google.com` habilitado con su cliente OAuth, enlace por correo
-habilitado y los dominios autorizados incluyen `caliscan.app` y `app.caliscan.app`.
-**El merge la desplegó; el teléfono la certifica.**
+**El E2E desde el teléfono, ejecutado el 02/09/2026 a las 13:50 (Madrid). La v1
+queda CERTIFICADA y la Fase 4 cerrada.** Lo que probó, con la evidencia al lado:
+
+| Qué se probó | Evidencia |
+|---|---|
+| Login con Google en el teléfono | 1 cuenta dada de alta, proveedor `google.com` |
+| El backend exige token | `no_autenticado` registrado ante una llamada sin cabecera → 401 |
+| **El cupo muerde** | `"agotado el cupo del dia: 3/3"` · **HTTP 429 en 0,12 s** a la cuarta foto |
+| El contador es honesto | `usados_dia: 3` · `usados_mes: 3` · `devueltos: 0` · `zona: Europe/Madrid` |
+| Los escaneos se persisten | 2 documentos en `owners/{uid}/scans` |
+| **App Check con un token REAL** | **Ninguna advertencia de procedencia en las tres peticiones.** El silencio prueba: la procedencia se comprueba ANTES del cupo y `advertir` está cableado a `logger.warn` (`index.ts:167`) — el mismo logger que sí escribió el mensaje del 429. **Es la primera vez que se ve un token emitido por nuestra clave de reCAPTCHA**, que es justo lo que la WS09 no pudo probar |
+
+**El número que parecía no cuadrar, y cuadra:** 3 créditos consumidos y solo 2
+escaneos guardados. La tercera foto **no era comida**: el handler devuelve 200 con
+ítems vacíos, **no persiste nada a propósito** (§7) y **consume el crédito igual**,
+porque el modelo miró la foto y contestó. La latencia lo confirma — 2,6 s contra
+5,5 y 3,2 de las otras dos: se cortó antes de buscar en el catálogo.
+
+**⚠️ La trampa que solo apareció en un teléfono real (y la razón por la que esta
+fase no se cerró con el CI en verde).** El primer intento de entrar con Google
+falló con **`Error 400: redirect_uri_mismatch`**. Causa: la card 4.1 movió el
+`authDomain` a `app.caliscan.app` —con razón, porque con el dominio de Firebase la
+redirección se rompe en Safari y en la PWA de iPhone—, pero **esa dirección de
+retorno nunca se dio de alta en el cliente OAuth de Google**, que solo conocía
+`nutriscann-f809e.firebaseapp.com`. Se comprobó preguntándole a Google por las dos
+direcciones antes y después del arreglo. **No hay API que lo edite: es consola.**
+Quedó escrito como **DT-50** porque vuelve a morder cada vez que se toque el
+`authDomain` o se sume un dominio. Verificado también que la pantalla de
+consentimiento está **En producción / Usuarios externos**: cualquiera puede entrar,
+no solo los probadores.
+
+**La v1 de CaliScan está viva, cerrada con llave y certificada en un teléfono
+real.**
 
 **Nota de facturación (WS09):** inicializar Auth por API dejó el proyecto como
 **Identity Platform** (`subtype: IDENTITY_PLATFORM`), que tiene un umbral gratuito de
