@@ -17,10 +17,14 @@
          el que no. `apple-touch-icon` es aparte porque iOS no lee el manifiesto
          para esto: si no está declarado en el HTML, guarda una captura de la
          página como ícono. -->
-    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
-    <link rel="icon" href="/favicon-16.png" type="image/png" sizes="16x16" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <!-- El `?v=` es el rompe-caché del cambio de marca (02/09/2026): Safari
+         cachea el apple-touch-icon con ganas y sin esto un iPhone que ya
+         visitó la app puede re-instalarla con el ícono viejo. Si el ícono
+         vuelve a cambiar, se sube la versión acá y en el manifest. -->
+    <link rel="icon" href="/icon.svg?v=caliscan1" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png?v=caliscan1" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon-16.png?v=caliscan1" type="image/png" sizes="16x16" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=caliscan1" sizes="180x180" />
 
     <link rel="manifest" href="/manifest.webmanifest" />
 
