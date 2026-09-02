@@ -55,7 +55,7 @@ export const COPY_NAVEGACION = {
   perfil: "Perfil",
   premium: "Premium",
   /** Etiqueta accesible de la barra entera. */
-  aria: "Secciones de NutriScann",
+  aria: "Secciones de CaliScan",
 } as const;
 
 /** El "atrás" que toda sección tiene, siempre. */
@@ -220,7 +220,7 @@ export const COPY_PREMIUM = {
   // sitio, en `nota_cupo`, al pie.
   nota_cupo:
     "Todos los cupos son mensuales: el número que ves es el que tienes cada mes. Hay un límite diario interno para evitar ráfagas, pero lo que se te garantiza es el mensual.",
-  nota_ads: "En NutriScann no hay publicidad. En ningún plan, tampoco en el gratuito.",
+  nota_ads: "En CaliScan no hay publicidad. En ningún plan, tampoco en el gratuito.",
   nota_pagos:
     "Los pagos todavía no están abiertos. Esta pantalla es la vitrina de lo que viene: no se te va a cobrar nada ni se te van a pedir datos de pago.",
   /**

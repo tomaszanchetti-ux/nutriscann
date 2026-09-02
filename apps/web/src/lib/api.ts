@@ -1,5 +1,5 @@
 /**
- * Cliente del backend de NutriScann.
+ * Cliente del backend de CaliScan.
  *
  * Toda llamada al servidor pasa por acá — la app nunca arma URLs sueltas.
  */

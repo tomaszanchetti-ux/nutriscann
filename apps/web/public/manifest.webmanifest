@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "NutriScann",
-  "short_name": "NutriScann",
+  "name": "CaliScan",
+  "short_name": "CaliScan",
   "description": "Haz una foto de tu plato y conoce su valor nutricional al instante.",
   "start_url": "/",
   "scope": "/",

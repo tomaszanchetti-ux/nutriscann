@@ -50,7 +50,7 @@ export const COPY_TERMINOS = {
   titulo: "Términos y condiciones",
   /** La frase que resume todo lo de abajo, para quien no va a leer todo lo de abajo. */
   entrada:
-    "En una línea: NutriScann te ayuda a entender lo que comes. No te diagnostica, no te trata y no sustituye a un profesional.",
+    "En una línea: CaliScan te ayuda a entender lo que comes. No te diagnostica, no te trata y no sustituye a un profesional.",
   actualizado: "Última actualización: 1 de septiembre de 2026",
   /** El enlace que lleva hasta aquí, en el pie de todas las pantallas. */
   enlace: "Términos y condiciones",
@@ -59,7 +59,7 @@ export const COPY_TERMINOS = {
 export const SECCIONES_DE_TERMINOS: readonly SeccionDeTerminos[] = [
   {
     id: "que_es",
-    titulo: "Qué es NutriScann",
+    titulo: "Qué es CaliScan",
     parrafos: [
       "Haces una foto de tu plato y la app reconoce los alimentos que ve y estima cuánto hay de cada uno. Con esos gramos calcula las calorías y los macronutrientes.",
       "El resultado es información para que entiendas lo que estás comiendo: un orden de magnitud fiable, no el análisis de un laboratorio. Sirve para hacerte una idea, para comparar platos y para saber por dónde andas. Para eso está hecha, y para nada más.",
@@ -69,7 +69,7 @@ export const SECCIONES_DE_TERMINOS: readonly SeccionDeTerminos[] = [
     id: "no_somos_sanitarios",
     titulo: "No somos nutricionistas ni médicos",
     parrafos: [
-      "NutriScann no es un servicio sanitario, y quienes la hacemos no somos médicos, dietistas ni nutricionistas.",
+      "CaliScan no es un servicio sanitario, y quienes la hacemos no somos médicos, dietistas ni nutricionistas.",
       "Nada de lo que leas en la app es un diagnóstico, un tratamiento ni una indicación clínica. Son números y lo que se puede decir con esos números.",
     ],
   },
@@ -77,7 +77,7 @@ export const SECCIONES_DE_TERMINOS: readonly SeccionDeTerminos[] = [
     id: "no_sustituye",
     titulo: "No sustituye una consulta profesional",
     parrafos: [
-      "Si tienes una enfermedad, estás embarazada, tomas medicación, sigues una dieta pautada o quieres cambiar tu alimentación en serio, habla con un profesional sanitario. Usa NutriScann como una herramienta más, nunca como el criterio que decide.",
+      "Si tienes una enfermedad, estás embarazada, tomas medicación, sigues una dieta pautada o quieres cambiar tu alimentación en serio, habla con un profesional sanitario. Usa CaliScan como una herramienta más, nunca como el criterio que decide.",
       "Y con las alergias, especial cuidado: la app identifica lo que cree ver en una foto y puede equivocarse. No la uses jamás para decidir si un plato es seguro para ti.",
     ],
   },
@@ -96,7 +96,7 @@ export const SECCIONES_DE_TERMINOS: readonly SeccionDeTerminos[] = [
     parrafos: [
       "Hay dos cosas que se estiman, y las dos pueden fallar: qué hay en el plato y cuánto pesa. Un guiso mezclado, una foto a contraluz o una salsa que tapa la mitad dan peores resultados que un plato ordenado con buena luz.",
       "Por eso la app te enseña siempre lo que sabe y lo que no: la confianza de cada alimento, si se usó una coincidencia exacta o la más parecida, y un aviso cuando el total no cubre el plato entero.",
-      "Cuando no hay un dato fiable, NutriScann prefiere no dar el número antes que dar uno inventado. Un hueco es honesto; un número redondo que nadie midió, no.",
+      "Cuando no hay un dato fiable, CaliScan prefiere no dar el número antes que dar uno inventado. Un hueco es honesto; un número redondo que nadie midió, no.",
     ],
   },
   {
@@ -111,7 +111,7 @@ export const SECCIONES_DE_TERMINOS: readonly SeccionDeTerminos[] = [
     id: "este_texto_crece",
     titulo: "Este texto va a crecer",
     parrafos: [
-      "NutriScann está en su primera versión. Cuando lleguen las cuentas de usuario y los pagos, esta página crecerá con lo que haga falta, empezando por qué se hace con tus fotos y con tus datos.",
+      "CaliScan está en su primera versión. Cuando lleguen las cuentas de usuario y los pagos, esta página crecerá con lo que haga falta, empezando por qué se hace con tus fotos y con tus datos.",
       "Mientras tanto no prometemos aquí nada que no podamos sostener: preferimos una página corta y cierta a una larga y prestada.",
     ],
   },

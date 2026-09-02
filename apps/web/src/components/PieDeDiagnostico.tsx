@@ -37,7 +37,7 @@ type EstadoDeSalud =
  *
  * Va después de la barra de navegación y es lo último de la pantalla, en el
  * cuerpo más chico de toda la app: es una advertencia que tiene que estar y que
- * nadie tiene que leer para usar NutriScann.
+ * nadie tiene que leer para usar CaliScan.
  */
 export function PieLegal({
   disclaimer,
