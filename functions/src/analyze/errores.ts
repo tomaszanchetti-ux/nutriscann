@@ -14,9 +14,13 @@
  * persona y puede cambiar sin tocar el código.
  */
 
+import type { BloqueoDeCupo } from "../cupo/decision";
+
 /** Los códigos de error del endpoint. Lista cerrada. */
 export type CodigoDeError =
   | "metodo_no_permitido"
+  | "no_autenticado"
+  | "cupo_agotado"
   | "cuerpo_invalido"
   | "imagen_invalida"
   | "imagen_muy_grande"
@@ -44,6 +48,26 @@ export const ERRORES: Record<CodigoDeError, DefinicionDeError> = {
     status: 405,
     clave_copy: null,
     texto_en_frio: "Este endpoint solo acepta POST.",
+  },
+  // Los dos códigos que estrena la WS09 (§2 del contrato). Sus textos en frío
+  // están en ESPAÑOL DE ESPAÑA, sin voseo (§4 del contrato, regla DT-21). Los
+  // textos viejos de este archivo vosean y siguen así a propósito: son la
+  // DT-40 (a), que se cierra moviéndolos a `config/copy.json` junto con las
+  // copias byte a byte del modo fixture del front — un movimiento solo, no seis
+  // ediciones sueltas.
+  no_autenticado: {
+    status: 401,
+    clave_copy: "error_unauthenticated",
+    texto_en_frio: "Tu sesión no es válida o ha caducado. Vuelve a entrar e inténtalo de nuevo.",
+  },
+  cupo_agotado: {
+    status: 429,
+    // Un texto solo para los DOS ámbitos, a propósito: el detalle de cuál se
+    // agotó y hasta cuándo viaja en el bloque `quota`, que es dato y no prosa.
+    // Dos textos exigirían dos claves de copy y el §5 del contrato cierra la
+    // lista en las que ya están.
+    clave_copy: "error_quota_exhausted",
+    texto_en_frio: "Has agotado tu cupo de análisis. Espera a que se renueve para analizar más fotos.",
   },
   cuerpo_invalido: {
     status: 400,
@@ -106,6 +130,23 @@ export class ErrorDeAnalisis extends Error {
   }
 }
 
+/**
+ * El `cupo_agotado`, que además del código lleva CUÁL tramo se agotó.
+ *
+ * Es un `ErrorDeAnalisis` y no un tipo aparte para que el `catch` único del
+ * handler lo siga atrapando sin una rama nueva; lo que agrega es el bloque
+ * `quota` del §2 del contrato, que el cuerpo del 429 publica tal cual.
+ */
+export class ErrorDeCupo extends ErrorDeAnalisis {
+  readonly bloqueo: BloqueoDeCupo;
+
+  constructor(bloqueo: BloqueoDeCupo) {
+    super("cupo_agotado", `agotado el cupo del ${bloqueo.ambito}: ${bloqueo.usados}/${bloqueo.limite}`);
+    this.name = "ErrorDeCupo";
+    this.bloqueo = bloqueo;
+  }
+}
+
 export interface TextoResuelto {
   message_es: string;
   /** De dónde salió el texto: de la configuración publicada o del arranque en frío. */
@@ -135,6 +176,12 @@ export interface CuerpoDeError {
     code: CodigoDeError;
     message_es: string;
     copy_source: "config" | "cold-start-default";
+    /**
+     * Solo en el 429. OPCIONAL para el front (§2 del contrato): si no viene,
+     * muestra el `message_es` y ya. Viene para que pueda decir «te quedan 0 de
+     * 15, vuelves el 1 de octubre» sin tener que deducirlo de un texto.
+     */
+    quota?: BloqueoDeCupo;
   };
 }
 
@@ -142,11 +189,19 @@ export interface CuerpoDeError {
 export function respuestaDeError(
   codigo: CodigoDeError,
   copy: Record<string, string>,
+  quota?: BloqueoDeCupo,
 ): { status: number; body: CuerpoDeError } {
   const definicion = ERRORES[codigo];
   const texto = resolverTexto(definicion.clave_copy, definicion.texto_en_frio, copy);
   return {
     status: definicion.status,
-    body: { error: { code: codigo, message_es: texto.message_es, copy_source: texto.copy_source } },
+    body: {
+      error: {
+        code: codigo,
+        message_es: texto.message_es,
+        copy_source: texto.copy_source,
+        ...(quota === undefined ? {} : { quota }),
+      },
+    },
   };
 }

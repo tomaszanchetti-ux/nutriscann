@@ -10,17 +10,34 @@
  * emulador, midiendo lo que quedó escrito en vez de confiar en que se escribió.
  *
  * EL CIRCUITO, en orden:
- *   1. validar el pedido            (puro)
- *   2. índice del catálogo          (una vez por instancia caliente)
- *   3. visión                       (la ÚNICA llamada al modelo)
- *   4. `analizarEscaneo`            (puro: matching + aritmética + composición)
- *   5. persistir scan + curación    (IO)
+ *   1. quién es                     (IO: verificar el ID token ⇒ 401 si no)
+ *   2. validar el pedido            (puro)
+ *   3. reservar un crédito del cupo (IO: una transacción ⇒ 429 si no entra)
+ *   4. índice del catálogo          (una vez por instancia caliente)
+ *   5. visión                       (la ÚNICA llamada al modelo)
+ *   6. `analizarEscaneo`            (puro: matching + aritmética + composición)
+ *   7. persistir scan + curación    (IO)
+ *
+ * Los pasos 1 y 3 los estrena la Fase 4 (cards 4.2 y 4.3) y están en ese orden
+ * por una razón cada uno: el dueño se verifica ANTES de mirar el cuerpo, y el
+ * crédito se reserva ANTES de gastar plata en el modelo. Si el circuito se cae
+ * entre el 3 y el 5, el crédito vuelve; del 5 en adelante ya está pagado
+ * (`CODIGOS_QUE_DEVUELVEN_EL_CREDITO`, más abajo, es la lista y el porqué).
  */
 import { analizarEscaneo, type CatalogIndex, type EngineResult } from "../engine";
-import type { AppConfig } from "../config";
+import { limitesDeCupo, type AppConfig } from "../config";
+import { identificarDueño, type CabecerasDelPedido, type VerificadorDeToken } from "../auth/identidad";
+import { momentoDelCupo, type Momento } from "../cupo/calendario";
+import {
+  fotoDelCupo,
+  type FotoDelCupo,
+  type LimitesDeCupo,
+  type VeredictoDeCupo,
+} from "../cupo/decision";
 import {
   CLAVE_NO_ES_COMIDA,
   ErrorDeAnalisis,
+  ErrorDeCupo,
   TEXTO_NO_ES_COMIDA_EN_FRIO,
   resolverTexto,
   respuestaDeError,
@@ -30,15 +47,32 @@ import {
 import { MEDIA_TYPES, pedirVision, type ClienteDeVision, type MediaType, type OpcionesDeVision } from "./vision";
 
 /**
- * El dueño por defecto de un scan MIENTRAS NO HAY LOGIN.
+ * QUÉ ERRORES DEVUELVEN EL CRÉDITO RESERVADO.
  *
- * Es PROVISORIO y tiene fecha de vencimiento: el login real llega en la Fase 4
- * y ahí `owner_id` pasa a salir del token de Firebase Auth, no del cuerpo del
- * pedido. Hasta entonces todos los scans de desarrollo caen bajo este dueño, y
- * la subcolección `owners/{id}/scans` ya existe con la forma definitiva — cuando
- * llegue el uid real no hay migración, hay un valor distinto.
+ * El criterio es uno solo y se puede decir en una línea: **se devuelve lo que no
+ * llegamos a pagar**. El crédito se reserva ANTES de llamar al modelo porque esa
+ * llamada es la que cuesta dinero; si el circuito se cae antes de que el modelo
+ * conteste —el modelo no responde, el catálogo no está, algo revienta del lado
+ * nuestro— no se gastó nada y el crédito vuelve.
+ *
+ * Los dos casos que NO están en esta lista, y por qué:
+ *
+ *   `respuesta_ilegible`  el modelo SÍ contestó y esos tokens ya se facturaron.
+ *                         Que su respuesta no se pudiera interpretar es un mal
+ *                         resultado, no una llamada gratis.
+ *   la foto que no es comida  ni siquiera es un error: es un 200. El modelo la
+ *                         miró y dijo que no era comida, que es exactamente el
+ *                         trabajo que se le pidió. Consume, como cualquier otro.
+ *
+ * Los errores de validación (`cuerpo_invalido`, `imagen_*`) y el `no_autenticado`
+ * no necesitan estar acá: ocurren ANTES de la reserva, así que no hay nada que
+ * devolver.
  */
-export const DUEÑO_PROVISORIO = "anon-dev";
+export const CODIGOS_QUE_DEVUELVEN_EL_CREDITO: ReadonlySet<CodigoDeError> = new Set<CodigoDeError>([
+  "modelo_no_disponible",
+  "catalogo_no_disponible",
+  "error_interno",
+]);
 
 /**
  * Techo del base64 que aceptamos: ~1,5 MB de imagen.
@@ -53,6 +87,8 @@ export const MAX_BASE64_CHARS = 2_000_000;
 export interface PedidoDeAnalisis {
   method: string;
   body: unknown;
+  /** Las cabeceras. De acá sale el `Authorization: Bearer <idToken>`. */
+  headers?: CabecerasDelPedido;
 }
 
 export interface Dependencias {
@@ -60,10 +96,30 @@ export interface Dependencias {
   /** El índice del catálogo. Se pide una vez por request y se resuelve al vuelo. */
   indice: () => Promise<CatalogIndex>;
   config: () => Promise<{ config: AppConfig }>;
+  /** Verifica el ID token y devuelve el `uid`. El IO de Auth, inyectado. */
+  verificarToken: VerificadorDeToken;
+  /** Reserva un crédito del cupo, o dice por qué no. Transacción, en Firestore. */
+  reservarCupo: (entrada: {
+    owner_id: string;
+    momento: Momento;
+    limites: LimitesDeCupo;
+  }) => Promise<VeredictoDeCupo>;
+  /** Devuelve el crédito reservado. Solo se llama en los casos de la lista de arriba. */
+  devolverCupo: (entrada: { owner_id: string; momento: Momento }) => Promise<void>;
   /** Persiste el scan y la cola. Separada para poder medirla o suprimirla. */
   persistir: (datos: DatosAPersistir) => Promise<void>;
   nuevoScanId: () => string;
+  /**
+   * El reloj de la LATENCIA. Cuenta milisegundos, no fechas: los tests lo mueven
+   * de a 100 para medir el `latency_ms` sin depender del reloj real.
+   */
   ahora?: () => number;
+  /**
+   * El reloj del CALENDARIO, que es otra cosa: de acá sale en qué mes y en qué
+   * día de Madrid cae este escaneo. Separado de `ahora` a propósito — un
+   * contador de milisegundos falso no puede ser también una fecha.
+   */
+  fecha?: () => Date;
   opcionesDeVision?: OpcionesDeVision;
   /** Adónde van los avisos. Por defecto, a ningún lado (los tests no logean). */
   advertir?: (mensaje: string, detalle: Record<string, unknown>) => void;
@@ -101,6 +157,19 @@ export interface CuerpoDeAnalisis {
    * se guardó.
    */
   persisted: boolean;
+  /**
+   * CÓMO VA EL CUPO DESPUÉS DE ESTE ESCANEO. Additivo, y ya cobrado: `usados`
+   * INCLUYE la foto que se acaba de analizar, así que un `mes: {usados: 15,
+   * limite: 15}` significa «esta fue la última».
+   *
+   * La forma es la misma que la del bloque `quota` del 429 (§2 del contrato)
+   * repetida para los dos tramos, sin el campo `ambito` —acá lo dice la clave—.
+   * Así el front usa un solo componente para «te quedan N» y para «se te acabó»,
+   * y no tiene que restar nada: los dos números vienen dados.
+   *
+   * Que el front lo muestre o no es decisión de otra card. El dato está.
+   */
+  quota: FotoDelCupo;
 }
 
 export interface RespuestaDeAnalisis {
@@ -115,7 +184,11 @@ export interface RespuestaDeAnalisis {
 export interface EntradaValidada {
   image_base64: string;
   media_type: MediaType;
-  owner_id: string;
+  /**
+   * Lo que el cliente puso en `owner_id`, SOLO para el log. No decide nada: el
+   * dueño sale del token (§1 del contrato de la WS09). Es `null` si no vino.
+   */
+  owner_id_del_cuerpo: string | null;
 }
 
 const PREFIJO_DATA_URI = /^data:image\/(jpeg|png|webp);base64,/;
@@ -148,10 +221,13 @@ export function validarEntrada(body: unknown): EntradaValidada {
     );
   }
 
+  // `owner_id` YA NO SE VALIDA, y eso es deliberado. El front dejó de mandarlo,
+  // pero durante días va a haber teléfonos con la versión vieja cacheada que lo
+  // sigan mandando (§1 del contrato). Rechazarlos con un 400 sería romperles la
+  // app por un campo que ya no miramos: se descarta en silencio y se anota en el
+  // log, que es la única forma de saber cuándo dejó de llegar.
   const owner = objeto["owner_id"];
-  if (owner !== undefined && (typeof owner !== "string" || owner.trim().length === 0)) {
-    throw new ErrorDeAnalisis("cuerpo_invalido", "`owner_id`, si viene, tiene que ser una cadena no vacía");
-  }
+  const owner_id_del_cuerpo = typeof owner === "string" && owner.trim().length > 0 ? owner.trim() : null;
 
   const sinPrefijo = crudo.replace(PREFIJO_DATA_URI, "").replace(/\s+/g, "");
   if (sinPrefijo.length > MAX_BASE64_CHARS) {
@@ -164,11 +240,7 @@ export function validarEntrada(body: unknown): EntradaValidada {
     throw new ErrorDeAnalisis("imagen_invalida", "`image_base64` no es base64 válido");
   }
 
-  return {
-    image_base64: sinPrefijo,
-    media_type: media_type as MediaType,
-    owner_id: typeof owner === "string" ? owner.trim() : DUEÑO_PROVISORIO,
-  };
+  return { image_base64: sinPrefijo, media_type: media_type as MediaType, owner_id_del_cuerpo };
 }
 
 // ---------------------------------------------------------------------------
@@ -185,6 +257,11 @@ export async function manejarAnalyze(
   let copy: Record<string, string> = {};
   let configPublicada: AppConfig | null = null;
 
+  // Lo que hace falta para poder DEVOLVER el crédito si esto se cae: qué dueño y
+  // qué período se reservaron, y si el modelo ya contestó (o sea, si ya se pagó).
+  let reservado: { owner_id: string; momento: Momento } | null = null;
+  let elModeloYaCobro = false;
+
   try {
     if (pedido.method.toUpperCase() !== "POST") {
       throw new ErrorDeAnalisis("metodo_no_permitido", `llegó un ${pedido.method}`);
@@ -199,7 +276,31 @@ export async function manejarAnalyze(
       copy = {};
     }
 
+    // 1. QUIÉN. Antes que el cuerpo: a quien no sabemos quién es no le contamos
+    //    qué le pasa a su JSON. Sin token, token roto o token vencido ⇒ 401.
+    const dueño = await identificarDueño(pedido.headers ?? {}, deps.verificarToken);
+
     const entrada = validarEntrada(pedido.body);
+    if (entrada.owner_id_del_cuerpo !== null) {
+      // No rompe y no manda: solo queda anotado. Cuando este aviso deje de
+      // aparecer en los logs es que ya no queda ningún cliente viejo cacheado.
+      deps.advertir?.("llegó `owner_id` en el cuerpo: se ignora, el dueño sale del token", {
+        owner_id_del_cuerpo: entrada.owner_id_del_cuerpo,
+        uid_del_token: dueño.uid,
+        coincide: entrada.owner_id_del_cuerpo === dueño.uid,
+      });
+    }
+
+    // 2. CUÁNTO LE QUEDA. La reserva va ANTES del catálogo y ANTES del modelo:
+    //    es la comprobación más barata que puede rebotar el pedido, y reservar
+    //    después de pagar la llamada sería reservar tarde.
+    const momento = momentoDelCupo((deps.fecha ?? (() => new Date()))());
+    const limites = limitesDeCupo(configPublicada);
+    const veredicto = await deps.reservarCupo({ owner_id: dueño.uid, momento, limites });
+    if (!veredicto.entra) throw new ErrorDeCupo(veredicto.bloqueo);
+    reservado = { owner_id: dueño.uid, momento };
+    const cupo = fotoDelCupo(veredicto.consumo, limites, momento);
+
     const indice = await deps.indice();
 
     // La `kb_version` cruzada, que el motor deja explícitamente a esta card.
@@ -221,6 +322,10 @@ export async function manejarAnalyze(
       { image_base64: entrada.image_base64, media_type: entrada.media_type },
       deps.opcionesDeVision ?? {},
     );
+
+    // El modelo contestó: a partir de acá el crédito está PAGADO y no vuelve,
+    // pase lo que pase más abajo.
+    elModeloYaCobro = true;
 
     const resultado = analizarEscaneo(vision, indice);
 
@@ -249,6 +354,11 @@ export async function manejarAnalyze(
           meta,
           message_es: texto.message_es,
           persisted: false,
+          // CONSUME IGUAL, y por eso el cupo viaja también acá: el modelo miró
+          // la foto y contestó lo que se le preguntó. No se persiste nada
+          // (§7 del plan) porque no hay análisis que guardar, pero el crédito
+          // se gastó y decirle al usuario que no sería mentirle.
+          quota: cupo,
         },
       };
     }
@@ -256,7 +366,7 @@ export async function manejarAnalyze(
     const scan_id = deps.nuevoScanId();
     let persisted = true;
     try {
-      await deps.persistir({ owner_id: entrada.owner_id, scan_id, resultado, meta });
+      await deps.persistir({ owner_id: dueño.uid, scan_id, resultado, meta });
     } catch (err) {
       // El análisis ya se pagó: se devuelve igual, con `persisted: false` para
       // que nadie suponga que quedó escrito.
@@ -273,13 +383,31 @@ export async function manejarAnalyze(
         totals: resultado.totals,
         meta,
         persisted,
+        quota: cupo,
       },
     };
   } catch (err) {
     const codigo: CodigoDeError = err instanceof ErrorDeAnalisis ? err.codigo : "error_interno";
     const detalle = err instanceof ErrorDeAnalisis ? err.detalle : describir(err);
     deps.advertir?.("analyze falló", { codigo, detalle });
-    return respuestaDeError(codigo, copy);
+
+    // El crédito vuelve solo si se reservó, si el modelo todavía no cobró y si
+    // el error es de los nuestros. Que la devolución falle NO puede convertir un
+    // 503 en un 500: se anota con el dueño y el período para poder arreglarlo a
+    // mano, y el error original sigue su camino.
+    if (reservado !== null && !elModeloYaCobro && CODIGOS_QUE_DEVUELVEN_EL_CREDITO.has(codigo)) {
+      try {
+        await deps.devolverCupo(reservado);
+      } catch (errDeDevolucion) {
+        deps.advertir?.("no se pudo devolver el crédito del cupo", {
+          owner_id: reservado.owner_id,
+          periodo: reservado.momento.mes,
+          error: describir(errDeDevolucion),
+        });
+      }
+    }
+
+    return respuestaDeError(codigo, copy, err instanceof ErrorDeCupo ? err.bloqueo : undefined);
   }
 }
 

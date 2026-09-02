@@ -21,6 +21,8 @@ import { logger } from "firebase-functions/v2";
 // memoria, timeout). Por eso alcanza con este único import de `./runtime`.
 import { ANTHROPIC_API_KEY, anthropicWorkspaceId } from "./runtime";
 import { loadConfig } from "./config";
+import { crearVerificador, usaEmuladorDeAuth } from "./auth/identidad";
+import { devolverCredito, reservarCupo } from "./cupo/persistencia";
 import { obtenerIndice } from "./analyze/catalogo";
 import { manejarAnalyze } from "./analyze/handler";
 import { guardarScan, registrarCuracion } from "./analyze/persistencia";
@@ -50,6 +52,10 @@ export const health = onRequest({ cors: true }, async (_req, res) => {
       kb_status: config.kb_version ? "publicado" : "pendiente de la Fase 1",
       config_source: source,
       region: process.env.FUNCTION_REGION ?? "europe-west1",
+      // En producción es SIEMPRE false. Se publica para que un despliegue que
+      // arrancara apuntando al emulador de Auth —o sea, aceptando tokens sin
+      // firma— se vea en la sonda y no en un incidente.
+      auth_emulator: usaEmuladorDeAuth(),
       latency_ms: Date.now() - startedAt,
       checked_at: new Date().toISOString(),
     });
@@ -90,12 +96,25 @@ const clienteDeVision: ClienteDeVision = {
 /**
  * `POST /analyze` — una foto entra, un reporte nutricional sale.
  *
- * Cuerpo: `{ image_base64, media_type, owner_id? }`.
- * Respuesta: `{ scan_id, is_food, items, totals, meta }` — `items` y `totals`
- * son EXACTAMENTE los del motor, sin reformatear.
+ * Cabecera: `Authorization: Bearer <idToken de Firebase>`. OBLIGATORIA desde la
+ * card 4.2: el dueño del scan es el `uid` de ese token y nada más.
+ * Cuerpo: `{ image_base64, media_type }`. Un `owner_id` que llegue se ignora.
+ * Respuesta: `{ scan_id, is_food, items, totals, meta, quota }` — `items` y
+ * `totals` son EXACTAMENTE los del motor, sin reformatear.
  *
  * `cors: true` porque la PWA la llama desde otro origen (Hosting, o Vite en
  * local). El secreto se declara acá y solo acá: `health` no lo ve.
+ *
+ * CORS Y LA CABECERA `Authorization` (comprobado, no supuesto — card 4.2): una
+ * cabecera que no es "simple" hace que el navegador mande un preflight `OPTIONS`
+ * con `Access-Control-Request-Headers: authorization`, y si la respuesta no la
+ * devuelve en `Access-Control-Allow-Headers` el POST no sale nunca — un fallo
+ * que en local no aparece (Vite hace de proxy) y en producción rompe todo. Acá
+ * no hay que hacer nada, y está VERIFICADO en `analyze/cors.test.ts`:
+ * `firebase-functions` construye el middleware como `cors({ origin: true })` sin
+ * `allowedHeaders`, y el paquete `cors` en ese caso REFLEJA lo que el preflight
+ * pidió. El test lo ejerce contra la copia de `cors` que este paquete tiene
+ * instalada, así que si una actualización cambiara ese default, se entera acá.
  *
  * Límite conocido (Q/A WS04): un cuerpo que NO es JSON válido lo rechaza el
  * body-parser de Express ANTES de que este handler exista — ese 400 sale como
@@ -105,11 +124,18 @@ const clienteDeVision: ClienteDeVision = {
  */
 export const analyze = onRequest({ cors: true, secrets: [ANTHROPIC_API_KEY] }, async (req, res) => {
   const respuesta = await manejarAnalyze(
-    { method: req.method, body: req.body },
+    { method: req.method, body: req.body, headers: req.headers },
     {
       cliente: clienteDeVision,
       indice: () => obtenerIndice(getFirestore()),
       config: loadConfig,
+      // El Admin SDK ya respeta `FIREBASE_AUTH_EMULATOR_HOST` por su cuenta: no
+      // hay ninguna rama de "modo local" en este circuito.
+      verificarToken: crearVerificador(),
+      reservarCupo: (entrada) => reservarCupo(getFirestore(), entrada),
+      devolverCupo: async (entrada) => {
+        await devolverCredito(getFirestore(), entrada);
+      },
       nuevoScanId: () => randomUUID(),
       persistir: async (datos) => {
         const db = getFirestore();

@@ -12,6 +12,8 @@
 import { getFirestore } from "firebase-admin/firestore";
 import { logger } from "firebase-functions/v2";
 
+import { LIMITES_EN_FRIO, normalizarLimites, type LimitesDeCupo } from "./cupo/decision";
+
 /**
  * El documento de reglas de recomendación, tal como lo publica el seed.
  *
@@ -54,7 +56,19 @@ export interface ReglasDeRecomendacion {
 export interface AppConfig {
   /** Versión del catálogo nutricional que la app espera encontrar. */
   kb_version: string | null;
-  /** Máximo de análisis por dueño y por día. Tu API key es la que paga. */
+  /**
+   * Máximo de análisis por dueño y por MES: la garantía que se le comunica al
+   * usuario (§3 del contrato de la WS09). Tu API key es la que paga.
+   */
+  max_scans_per_month: number;
+  /**
+   * Máximo por dueño y por DÍA: el freno anti-ráfaga. No es una promesa de
+   * producto, es lo que evita que una tarde se lleve el mes entero.
+   *
+   * ⚠️ Este campo y `max_scans_per_month` NO los escribe el seed del catálogo:
+   * `kb/seed/src/configuracion.ts` gobierna cinco campos con una máscara y estos
+   * dos quedan explícitamente fuera («son de otra mano»). Se publican aparte.
+   */
   max_scans_per_day: number;
   /** Textos de la interfaz, editables sin deploy. */
   copy: Record<string, string>;
@@ -62,9 +76,20 @@ export interface AppConfig {
   recommendation_rules: ReglasDeRecomendacion | null;
 }
 
-const COLD_START_DEFAULTS: AppConfig = {
+/**
+ * El arranque en frío. NO es la configuración: es lo mínimo para que la app
+ * responda algo sensato el día que `config/app` no exista o Firestore no
+ * conteste, y `source` declara cuál de los dos casos ocurrió.
+ *
+ * Los dos topes salen de `LIMITES_EN_FRIO` (15 al mes, 3 al día) y no de dos
+ * números escritos acá: el mismo par que usa la decisión del cupo cuando la
+ * configuración no llega, en un solo lugar. `max_scans_per_day` valía 10 y pasa
+ * a 3 por la decisión de Tomás del 02/09 (§3 del contrato de la WS09).
+ */
+export const COLD_START_DEFAULTS: AppConfig = {
   kb_version: null,
-  max_scans_per_day: 10,
+  max_scans_per_month: LIMITES_EN_FRIO.por_mes,
+  max_scans_per_day: LIMITES_EN_FRIO.por_dia,
   copy: {},
   recommendation_rules: null,
 };
@@ -105,4 +130,19 @@ export async function loadConfig(): Promise<ConfigResult> {
   }
 
   return { config: cached.value, source: cached.source };
+}
+
+/**
+ * Los dos topes del cupo, resueltos: lo publicado en `config/app` y, detrás, el
+ * arranque en frío.
+ *
+ * Acepta `null` porque el handler llama a esto incluso cuando `loadConfig` falló
+ * —ahí la configuración no llegó y rige el arranque en frío—, y así el camino
+ * del cupo no tiene una rama «sin configuración» que después nadie prueba.
+ */
+export function limitesDeCupo(config: AppConfig | null): LimitesDeCupo {
+  return normalizarLimites(
+    { por_mes: config?.max_scans_per_month, por_dia: config?.max_scans_per_day },
+    { por_mes: COLD_START_DEFAULTS.max_scans_per_month, por_dia: COLD_START_DEFAULTS.max_scans_per_day },
+  );
 }
