@@ -11,7 +11,9 @@
       "source": "functions",
       "codebase": "default",
       "runtime": "nodejs22",
-      "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ],
       "$comment_ignore": "Los cinco primeros son los que la CLI ignora por defecto y hay que repetirlos: declarar `ignore` REEMPLAZA la lista, no la amplía, y perder `*.local` subiría .secret.local (la API key en texto plano) al paquete de deploy. `.secret.local` y `.env*` van además explícitos porque no está garantizado que el glob `*.local` matchee archivos que empiezan con punto (minimatch usa dot:false por defecto) — una línea contra un riesgo que no vale la pena correr (Q/A WS04). Los tests compilados y testing.js se excluyen porque leen del disco (kb/build/) y no tienen nada que hacer en producción.",
       "ignore": [
         "node_modules",
@@ -29,29 +31,92 @@
       ]
     }
   ],
-  "hosting": {
-    "public": "apps/web/dist",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "rewrites": [{ "source": "**", "destination": "/index.html" }],
-    "headers": [
-      {
-        "source": "/assets/**",
-        "headers": [
-          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-        ]
-      },
-      {
-        "source": "/index.html",
-        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
-      }
-    ]
-  },
+  "$comment_hosting": "Dos sitios en el mismo proyecto desde la WS08: `app` (el site nutriscann-f809e → la PWA, futuro app.caliscan.app) y `landing` (el site caliscan → la página de marketing, futuro caliscan.app). El mapeo target→site vive en .firebaserc. La landing se sirve TAL CUAL desde apps/landing —HTML/CSS/JS planos, sin build— y sus archivos no llevan hash en el nombre, así que nada de `immutable`: una hora de caché y el HTML siempre fresco.",
+  "hosting": [
+    {
+      "target": "app",
+      "public": "apps/web/dist",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
+      "headers": [
+        {
+          "source": "/assets/**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=31536000, immutable"
+            }
+          ]
+        },
+        {
+          "source": "/index.html",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "target": "landing",
+      "public": "apps/landing",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**",
+        "assets/og.source.html"
+      ],
+      "headers": [
+        {
+          "source": "/assets/**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=3600"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(html|css|js)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "emulators": {
-    "auth": { "port": 9099 },
-    "functions": { "port": 5001 },
-    "firestore": { "port": 8080 },
-    "hosting": { "port": 5000 },
-    "storage": { "port": 9199 },
-    "ui": { "enabled": true }
+    "auth": {
+      "port": 9099
+    },
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "hosting": {
+      "port": 5000
+    },
+    "storage": {
+      "port": 9199
+    },
+    "ui": {
+      "enabled": true
+    }
   }
 }

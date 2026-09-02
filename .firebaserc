@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "nutriscann-f809e"
+  },
+  "targets": {
+    "nutriscann-f809e": {
+      "hosting": {
+        "app": [
+          "nutriscann-f809e"
+        ],
+        "landing": [
+          "caliscan"
+        ]
+      }
+    }
   }
 }
