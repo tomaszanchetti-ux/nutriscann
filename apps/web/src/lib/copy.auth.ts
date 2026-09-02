@@ -36,18 +36,21 @@ export const COPY_LOGIN = {
    * que nadie dibuja, que es justo lo que la DT-41 (c) acaba de limpiar.
    */
   /**
-   * EL ESLOGAN, y lo que puede prometer.
+   * EL ESLOGAN (escrito por Tomás, 02/09/2026).
    *
-   * Dice las tres cosas que Tomás pidió que quedaran claras —que se escanea con
-   * una foto, que sale la ficha nutricional, y que todo esto sirve para comer
-   * mejor— sin firmar nada que la v1 no haga: la app MIDE, todavía no aconseja.
-   * El perfil, los objetivos y el plan llegan en la v2, así que la mejora se
-   * cuenta como consecuencia de saber ("el primer paso"), no como una función
-   * que alguien podría buscar esta tarde y no encontrar.
+   * Abre por la promesa —comer mejor— y no por el mecanismo, y la línea de apoyo
+   * recorre en tres tiempos lo que Tomás pidió que quedara claro: la foto (qué
+   * hace el usuario), la ficha nutricional (qué recibe) y el progreso (para qué
+   * sirve). El ritmo es a propósito: cada coma es uno de los tres.
+   *
+   * Y no firma nada que la v1 no haga. La app MIDE, todavía no aconseja: el
+   * perfil, los objetivos y el plan llegan en la v2. Por eso el progreso se
+   * nombra como POSIBILIDAD y no como una función —ningún "tu plan", ningún "tu
+   * objetivo"—, que es lo que alguien podría venir a buscar esta tarde y no
+   * encontrar.
    */
-  entrada: "Sabe lo que comes con solo una foto.",
-  entrada_apoyo:
-    "Calorías y nutrientes al instante, sin pesar ni apuntar nada. El primer paso para comer mejor.",
+  entrada: "Comer mejor es posible",
+  entrada_apoyo: "Una foto, una ficha nutricional, infinitas posibilidades de progresar",
 
   google: "Continuar con Google",
   /** Entre los dos caminos. Es una palabra sola porque es un separador, no un texto. */
