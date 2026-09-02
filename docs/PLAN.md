@@ -338,7 +338,7 @@ permite contarle las fotos a alguien. Por eso las cards van juntas y en este ord
 
 | Card | Qué entrega | Estado |
 |---|---|---|
-| **4.0 — Encender la identidad** | Firebase Auth inicializado por API (no existía) · entrada por enlace de correo habilitada · dominios autorizados (`caliscan.app`, `app.caliscan.app`, `localhost`) · correos en español · ⚠️ **Google Sign-In necesita un click de Tomás en la consola**: crear su cliente OAuth es lo único que la API no autoaprovisiona | 🟢 hecho salvo el click |
+| **4.0 — Encender la identidad** | Firebase Auth inicializado por API (no existía: la configuración respondía `CONFIGURATION_NOT_FOUND`) · entrada por enlace de correo habilitada · **Google habilitado por Tomás en la consola** con su cliente OAuth —lo único que la API no autoaprovisiona— y verificado por API · dominios autorizados (`caliscan.app`, `app.caliscan.app`, `localhost`) · correos en español | ✅ 02/09 |
 | **4.1 — La puerta** | Pantalla de entrada (Google + enlace por correo), sesión persistente, cierre de sesión en Perfil, el `authDomain` al dominio propio y el token viajando en cada llamada | ⏳ |
 | **4.2 — El backend deja de confiar en el cuerpo del pedido** | `analyze` verifica el token y saca el dueño de ahí; `DUEÑO_PROVISORIO` muere; 401 `no_autenticado` | ⏳ |
 | **4.3 — El cupo que muerde** | Conteo transaccional por usuario y mes, corte en Europe/Madrid, 429 `cupo_agotado` con lo que queda y cuándo se renueva; los dos límites en `config/`, editables sin desplegar | ⏳ |
