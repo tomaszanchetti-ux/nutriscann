@@ -7,6 +7,263 @@
   "Un alias que dice lo mismo que el nombre del alimento NO se escribe: el plato ya está",
   "cubierto por el nombre, con confianza 1,0."
  ],
+ "$card_2_7_curacion_quirurgica": [
+  "01/09/2026 — el golden set de 30 platos reales midió que 3 de los 5 errores de ficha del",
+  "test no eran del motor sino de TRES filas de este catálogo: un alias español de baja",
+  "confianza apuntando a otra familia de alimento. Lo que se hizo, y por qué:",
+  "",
+  "QUITADO · `Filete` (texto plano, confianza 1,0 implícita) sobre fdc-2705824 `Bife`.",
+  "  Vivía en names.es.json. En español `filete` es un CORTE FINO, no una especie: hay",
+  "  filete de ternera, de salmón, de merluza y de pollo. Un término que nombra la forma",
+  "  del corte no puede ser el nombre de UNA ficha, y menos a 1,0. Medido: la foto 23 del",
+  "  golden set devolvió `fish fillet, sauteed` -> Bife (Beef, steak, NFS) — carne de vaca",
+  "  sobre un filete de pescado. `Bistec` se queda: ese sí es carne vacuna y solo eso.",
+  "",
+  "QUITADO · `Asado` (0,8) sobre fdc-169510 `Costilla de res a la parrilla`.",
+  "  Mismo defecto por el otro lado: `asado` es una TÉCNICA DE COCCIÓN («pollo asado»,",
+  "  «papa asada», «pimientos asados»), no un corte. Medido: la foto 17 devolvió",
+  "  `chicken thigh, roasted` -> Costilla de res (otra especie, +49 % de kcal contra la",
+  "  ficha correcta). El plato argentino NO se pierde: lo cubre `Tira de asado`, que es el",
+  "  nombre del corte y no de la técnica, y que además BAJA de 1,0 a 0,8 — la reserva ya",
+  "  estaba medida en regional.coverage.json (el corte de USDA es `rib, small end 10-12` y",
+  "  la tira argentina se corta atravesando las costillas) y hasta hoy no llegaba al",
+  "  catálogo. La reserva se dice donde se puede decir: en el alias.",
+  "",
+  "REDIRIGIDO · `Croqueta` (0,6) dejó fdc-2708024 `Buñuelo` y pasó a fdc-2709511",
+  "  `Croquetas de papa`, con `Croquetas` al lado y las dos a 0,5. El buñuelo no falla por",
+  "  familia —su input_food es agua+harina+leche+huevo+mantequilla frito en aceite, o sea",
+  "  una masa rebozada y frita— sino por NÚMERO: 378 kcal/100 g contra las ~240 de una",
+  "  croqueta real. Medido: la foto 26 mostró 415,8 kcal para 110 g de croquetas (+57 %),",
+  "  con la palabra «Buñuelo» encima. fdc-2709511 es 100 % `Potato tots, frozen, fried` y",
+  "  da 237 kcal/100 g: la densidad calórica es la correcta y el nombre no miente sobre la",
+  "  técnica. Se emite a 0,5 y no a 0,6 porque el relleno cambia ENTERO (papa en vez de",
+  "  bechamel): es el peldaño de la milanesa —misma técnica, otro contenido—, «sirve como",
+  "  estimación, no como número».",
+  "",
+  "SUMADO · `Lentejas` (0,8) sobre fdc-2707423 `Lentejas cocidas con sal y grasa`.",
+  "  Medido: el guiso de lentejas de la foto 08 llegó a la ficha correcta por el difuso, a",
+  "  14 %. La palabra sola no tenía puerta. NO puede entrar en texto plano: `Lentejas` es",
+  "  el nombre ANTERIOR de esta misma ficha, que la DT-7 renombró, y el candado del nombre",
+  "  viejo rompe el build ante cualquier alias de confianza 1,0 que lo resucite. Con una",
+  "  reserva declarada sí vuelve, y es lo correcto: 0,8 dice «esto se parece» (son lentejas",
+  "  cocidas, y el añadido es sal y grasa de cocción, que la regla de aceptación no cuenta",
+  "  como ingrediente ajeno), no «esto es». Es el mismo camino del `Bacalao` a 0,8."
+ ],
+ "$card_6_3_cobertura_mediterranea": [
+  "01/09/2026 — el censo de cobertura mediterránea (kb/cobertura/) midió los 141 platos de las dos",
+  "fuentes de referencia del mercado español contra el motor real, y encontró un patrón que se repite",
+  "veinte veces y que NO es un problema de composición sino de VOCABULARIO:",
+  "",
+  "  EL PLATO YA TIENE SU ALIAS VALIDADO, PERO CON EL NOMBRE CORTO. El nombre completo —el que",
+  "  usa el comensal y el que escribe la visión— no lo dispara, porque el nivel de alias es",
+  "  igualdad exacta sobre la consulta entera y no busca alias ADENTRO del término (es el hueco",
+  "  que la DT-26 midió con «spaghetti carbonara»). `Pisto` está a 0,8 desde la card 1.6 y",
+  "  `Pisto manchego` caía al difuso a 0,17: MISMA ficha, MISMO plato, la confianza que ve el",
+  "  usuario dividida por cinco.",
+  "",
+  "LA REGLA QUE SE APLICÓ, y que conviene leer antes de escribir la próxima:",
+  "",
+  "  EL NOMBRE REGIONAL LARGO HEREDA LA CONFIANZA DEL ALIAS CORTO YA VALIDADO. No se juzga",
+  "  la composición de nuevo: ya se juzgó cuando entró el alias corto, y `Fabada asturiana` ES",
+  "  `Fabada`. Emitir el largo con OTRA confianza sería inventar una reserva que nadie midió.",
+  "",
+  "Los siete que heredan: `Pisto manchego` (0,8 de `Pisto`) · `Fabada asturiana` (0,6 de `Fabada`) ·",
+  "`Gazpacho andaluz` (0,8 de `Gazpacho`) · `Callos a la madrileña` (0,5 de `Callos`) · `Cochinillo",
+  "asado` y `Cochinillo asado castellano` (0,5 de `Cochinillo`) · `Pulpo á feira` (0,6 de `Pulpo a la",
+  "gallega`) · `Rabo de toro a la cordobesa` (0,6 de `Rabo de toro`).",
+  "",
+  "Y DOS QUE NO HEREDAN NADA porque la ficha no tenía alias — acá sí hubo juicio nuevo y la reserva",
+  "está escrita:",
+  "",
+  "  `Empanada gallega` -> fdc-2708709 `Empanada, NFS`, 0,8. Los componentes son los mismos (masa",
+  "  + relleno) y ninguno es ajeno; la reserva es el FORMATO: la NFS de USDA es la empanadilla",
+  "  individual y la gallega es una empanada de bandeja, con más proporción de masa por bocado.",
+  "  Es un gemelo fuerte, no una identidad, y por eso 0,8 y no texto plano.",
+  "",
+  "  `Paella valenciana` y `Paella de marisco` -> fdc-2706723 `Paella, NFS`, 0,8. El README fija",
+  "  `Paella` -> `Paella, NFS` en 1,0 como ejemplo del peldaño de arriba, y eso sigue valiendo:",
+  "  el alimento SE LLAMA paella. Pero `NFS` quiere decir «sin especificar más», o sea el promedio",
+  "  de todas las paellas, y el catálogo NO distingue la valenciana (pollo y conejo) de la de",
+  "  marisco. Nombrar la variante destapa esa reserva en vez de taparla, y el único lugar donde se",
+  "  puede decir es el alias. Ojo con la lectura fácil: que el término más específico devuelva",
+  "  MENOS confianza que el genérico no es una inversión, es la verdad — decir «valenciana» revela",
+  "  que la ficha no la tiene.",
+  "",
+  "TRES ARREGLOS DE FICHA EQUIVOCADA que no son de plato sino de INGREDIENTE, y que fueron a",
+  "names.es.json en texto plano porque son variedades de un alimento cuya ficha ya declara que no",
+  "especifica la variedad (`Tomatoes, raw`, `Lettuce, raw`, `Garlic, raw`). El criterio, nuevo y",
+  "escrito para que la próxima curación no lo re-discuta:",
+  "",
+  "  UNA VARIEDAD SOBRE UNA FICHA QUE NO ESPECIFICA VARIEDAD ES UN ALIAS DE TEXTO PLANO. La ficha",
+  "  dice «raw tomatoes» sin decir cuál, y un tomate pera es un tomate crudo. No hay reserva que",
+  "  declarar: la que había ya está en el nombre de la ficha.",
+  "",
+  "  `Ajo` / `Ajos` / `Diente de ajo` / `Dientes de ajo` -> fdc-169230 `Ajo crudo`. MEDIDO: sin",
+  "  estos aliases, `ajo` resolvía por difuso a fdc-2709935 `Puerro cocido con sal y grasa` con",
+  "  0,11 — porque el puerro lleva de alias `Ajo porro cocido con sal y grasa`, que es su nombre",
+  "  en Colombia y Venezuela y contiene la palabra `ajo`. Un puerro no es un ajo (61-88 kcal",
+  "  contra 143), y `ajo` es el ingrediente más frecuente de las dos fuentes del censo. La guarda",
+  "  hermana está en guardas.vocabulario.json.",
+  "",
+  "  `Tomate pera` / `Tomates pera` -> fdc-2709719 `Tomate crudo`. MEDIDO: caía en fdc-169118",
+  "  `Pera cruda` a 0,22. Una fruta por una hortaliza, y con casi el triple de calorías (57",
+  "  contra 20). Es el error de vocabulario más barato de arreglar del censo entero.",
+  "",
+  "  `Lechuga romana` -> fdc-2709789 `Lechuga cruda`. MEDIDO: caía en fdc-2709949 `Lechuga",
+  "  cocida` a 0,30. La especie está bien y la PREPARACIÓN no: 49 kcal contra 20, un +145 %,",
+  "  sobre el ingrediente base de las ensaladas mediterráneas.",
+  "",
+  "Y DOS ARREGLOS MÁS de ficha equivocada, éstos sí de plato, que salieron del mismo censo:",
+  "",
+  "  `Pechuga de pavo` -> fdc-2706104 `Pavo` (`Turkey, NFS`), 0,8. MEDIDO: caía en fdc-2705954",
+  "  `Pechuga de pollo` a 0,30, arrastrada por la palabra `pechuga`. Las calorías casi no se",
+  "  mueven (139 contra 144) y la ESPECIE sí, que es lo que la card 2.7 dejó fijado como",
+  "  inaceptable con `Filete` sobre un salmón. La reserva del 0,8: la ficha es pavo sin",
+  "  especificar la parte, y la pechuga es la más magra del animal.",
+  "",
+  "  `Pimientos de piquillo rellenos` -> fdc-2709073 `Pimiento relleno de arroz y carne`, 0,6.",
+  "  MEDIDO: caía en fdc-2709799 `Pimientos crudos` a 0,24 — 27 kcal/100 g contra las 178 del",
+  "  plato, 6,6 veces menos. No es un error de especie sino de ALTURA: la ficha era el",
+  "  ingrediente y el plato es el plato. La ficha correcta ya llevaba `Pimientos rellenos` a",
+  "  0,8 desde la card 1.6 y el nombre largo no la disparaba; se emite a 0,6 y no a 0,8 porque",
+  "  el relleno de USDA lleva arroz y el piquillo español lleva bacalao o carne sin arroz —",
+  "  falta/sobra un ingrediente que mueve un macro, que es la definición del peldaño.",
+  "",
+  "TRES PLATOS QUE ESTABAN EN SILENCIO Y AHORA TIENEN VOZ, por la misma regla de herencia o con",
+  "su reserva escrita:",
+  "",
+  "  `Pa amb tomàquet` -> fdc-2707652 `Bruschetta`, 0,8, heredado de `Pan con tomate` (0,8):",
+  "  es el mismo plato con el nombre en catalán, y el catálogo ya lo tenía juzgado.",
+  "",
+  "  `Filloas` / `Filloa` -> fdc-2708341 `Crepe`, 0,8. La filloa gallega es harina, leche y",
+  "  huevo en sartén: un crepe. Ninguno de los dos declara relleno, así que el gemelo es",
+  "  fuerte y la única reserva es que la filloa de matanza lleva sangre o caldo, que es una",
+  "  variante y no la forma corriente.",
+  "",
+  "  `Papas arrugadas` -> fdc-2709393 `Papa hervida con cáscara`, 0,8, y `Papas arrugadas con",
+  "  mojo picón` a 0,6 sobre la misma ficha. Las dos filas no son un capricho: las papas",
+  "  arrugadas SON papa hervida con piel en agua muy salada, y el mojo es aceite —o sea el",
+  "  ingrediente que mueve la grasa. Nombrar el mojo baja el peldaño porque la ficha no lo",
+  "  tiene, exactamente como nombrar `valenciana` lo baja en la paella."
+ ],
+ "$card_6_2_dt27": [
+  "01/09/2026 — el lote de fichas de la DT-27. Cuatro entradas, todas con la reserva escrita",
+  "donde se puede escribir: en el alias.",
+  "",
+  "`Arepa` (0,8) sobre fdc-168070, que YA SE LLAMA Arepa. Es la convención del gazpacho: un",
+  "  `name` no puede llevar un número al lado y un alias sí, así que cuando la ficha se llama",
+  "  como el plato pero hay algo que declarar, se emite el alias HOMÓNIMO con su confianza.",
+  "  Lo que declara: la ficha es la arepa que USDA midió en restaurantes (5,38 g de grasa,",
+  "  2,90 saturada) y la arepa asada de casa trae 0,6-1 g. Mismo alimento, más grasa.",
+  "",
+  "`IPA` y `Cerveza IPA` (0,8) · `Cerveza artesanal` (0,6) sobre fdc-171906 `Cerveza de alta",
+  "  graduación`. La IPA baja a 0,8 y no a 1,0 porque la ficha mide graduación, no estilo:",
+  "  una IPA ronda el 6-7 % y encaja, pero el lúpulo no aporta calorías y el residual sí, y",
+  "  eso la ficha no lo distingue. `Cerveza artesanal` baja un peldaño más, a 0,6, por un",
+  "  motivo medido y no de gusto: artesanal NO quiere decir fuerte — media artesanía española",
+  "  está en 4,5-5 %, o sea en la ficha de cerveza regular (43 kcal/100 ml), no en esta (58).",
+  "  Es el peldaño del gemelo con reserva: sirve, y hay que decir cuánto.",
+  "",
+  "`Ginebra` · `Ron` · `Vodka` · `Whisky` · `Güisqui` (0,8) sobre fdc-174815, cuyo nombre en",
+  "  USDA es literalmente `distilled, all (gin, rum, vodka, whiskey) 80 proof`. A 40° los",
+  "  cuatro son agua y alcohol y no se distinguen ni en energía ni en macros: por eso no",
+  "  bajan más. Y no llegan a 1,0 porque la ficha fija la GRADUACIÓN: un whisky de 43° o una",
+  "  ginebra de 47° tienen más calorías que las 231/100 g de esta, y el alias no puede decir",
+  "  «esto es» cuando la propia fuente pone el proof en el nombre.",
+  "",
+  "`Pollo a la plancha` (0,8) sobre fdc-2705968 `Pechuga de pollo a la plancha`. Acá la",
+  "  reserva es de CORTE, no de técnica: en España «pollo a la plancha» es pechuga en la",
+  "  enorme mayoría de las cartas, pero puede ser muslo, que tiene más grasa. No cae bajo la",
+  "  guarda de la card 2.7 (`asado`, `filete`) porque no es un término de técnica a secas:",
+  "  nombra la especie Y la técnica, y la ficha es exactamente esa especie cocinada así.",
+  "  `Pollo asado`, en cambio, NO se emite: ahí sí la ficha correcta sería el pollo entero",
+  "  (fdc-2705935) y mandar un pollo asado a una pechuga sería el error de la costilla."
+ ],
+ "$card_6_4_dt33": [
+  "01/09/2026 — las reservas del lote de fichas de la DT-33. TODAS son sobre fichas NUEVAS:",
+  "esta card no tocó ni un alias de una ficha preexistente, a propósito, porque su regla de",
+  "aditividad era estricta y el diff tenía que poder leerse de un vistazo.",
+  "",
+  "0,8 — GEMELO FUERTE. Es el peldaño del `Bacalao` sobre `Bacalao al vapor`: la ficha ES la",
+  "especie y lo único que el término corto no dice es la preparación, que además es la más",
+  "vista en España.",
+  "  `Pez espada` y `Emperador` -> fdc-173704 (SR, cooked dry heat). El emperador es el mismo",
+  "    pez con el nombre de pescadería.",
+  "  `Anguila` -> fdc-174194 (SR, cooked dry heat).",
+  "  `Langosta` -> fdc-172009 (langosta espinosa cocida). El bogavante tiene ficha propia",
+  "    (fdc-2706349, 97 kcal): son especies distintas y un 47 % de diferencia, así que el",
+  "    término no se reparte entre las dos.",
+  "  `Conejo` -> fdc-2705912. La ficha es conejo GUISADO (99,2 % `rabbit, cooked, stewed`).",
+  "  `Habas` -> fdc-2707367. La ficha lleva un 6,5 % de aceite declarado en su input_food,",
+  "    que es la reserva; es el mismo caso que `Lentejas` 0,8 de la card 2.7.",
+  "  `Paletilla de cordero` -> fdc-172499. La reserva es el desgrase: SR mide el corte",
+  "    `separable lean only` (204 kcal) y la paletilla se come con su grasa.",
+  "",
+  "0,6 — GEMELO CON RESERVA: falta un ingrediente que mueve un macro, o cambia el corte.",
+  "  `Caracoles` -> fdc-167744. La ficha es caracol CRUDO y el plato va cocido con aceite.",
+  "  `Centollo` y `Buey de mar` -> fdc-2706344. Cambia la especie dentro de la familia: la",
+  "    ficha es cangrejo azul cocido al vapor (83 kcal), sin ingrediente ajeno.",
+  "  `Salmón marinado` -> fdc-2706292 (ahumado, 117 kcal). Curado en sal y azúcar contra",
+  "    curado y ahumado: la técnica cambia, la especie y el corte no.",
+  "  `Chipirones` -> fdc-174223. La ficha es calamar CRUDO; el chipirón es el mismo animal",
+  "    pequeño y casi siempre llega a la mesa cocinado.",
+  "  `Lechazo` y `Cordero lechal al horno` -> fdc-172499. El cordero de SR es de mayor edad",
+  "    que un lechal de Castilla, que es más magro y más tierno.",
+  "  `Ensalada griega` -> fdc-2709830, y es un HOMÓNIMO: la ficha ya se llama así, y el alias",
+  "    con su confianza es el único lugar donde la reserva se puede decir (la convención del",
+  "    gazpacho). La reserva está medida en el input_food: la ensalada griega de USDA es",
+  "    51,2 % LECHUGA ROMANA, más apio (6,1 %) y anchoa (3,1 %); la horiatiki que se come en",
+  "    el Mediterráneo no lleva ninguna de las tres.",
+  "",
+  "0,5 — GEMELO POBRE: sirve como estimación, no como número.",
+  "  `Chopitos` -> fdc-174223. El chopito de la barra va REBOZADO Y FRITO y la ficha es",
+  "    calamar crudo (92 kcal contra las ~234 de `Calamares rebozados`). Se emite igual y en",
+  "    el peldaño más bajo porque el silencio mandaba el término al difuso, donde caía peor;",
+  "    el 0,5 dice exactamente lo que hay que decir.",
+  "  `Habas tiernas` -> fdc-2707367. La ficha es haba SECA rehidratada y cocida (161 kcal) y",
+  "    el haba tierna de primavera ronda las 70: el cambio de estado mueve el número a la",
+  "    mitad. Se emite en el peldaño más bajo por eso mismo.",
+  "",
+  "LO QUE NO SE EMITIÓ, con el motivo:",
+  "  `Perdiz` sobre la codorniz o el faisán. Es otra especie y nadie la midió contra",
+  "    ninguna de las dos: el 0,5 diría 'se parece' y lo cierto es 'no lo sabemos'.",
+  "  `Txangurro` sobre el cangrejo. El txangurro a la donostiarra no es carne de cangrejo:",
+  "    es carne de centollo con sofrito y gratinada. Tiene su propia receta compuesta.",
+  "  `Salmón` sobre `Salmón a la plancha` o `Salmón crudo`: el término pelado ya es el NOMBRE",
+  "    de fdc-2706285, con confianza 1,0.",
+  "  `Conejo al ajillo` sobre `Conejo guisado`. Se emitió a 0,6 en el primer borrador y se",
+  "    RETIRÓ al escribir la receta compuesta: el ajillo es aceite, y una receta que lo",
+  "    declara vale más que un alias que avisa que falta. La ficha es `receta-conejo-al-ajillo`."
+ ],
+ "$card_ws07_dt39_jamon_iberico": [
+  "01/09/2026 — UNA sola línea, y sale de una medición del golden set, no de una intuición.",
+  "",
+  "`Jamón ibérico` (0,6) -> fdc-2705879 `Jamón crudo` (`Ham, prosciutto`, 195 kcal/100 g).",
+  "",
+  "QUÉ SE MIDIÓ (corrida v3 del golden set, plato 16, evidencia en golden/set-30/evaluacion-v3.md):",
+  "la visión escribió `jamón ibérico` EN ESPAÑOL —sin la palabra «serrano»— sobre un plato de",
+  "jamón curado, y el motor lo mandó por difuso a fdc-2705878 `Jamón`, que es jamón COCIDO",
+  "(117 kcal/100 g), con 0,208. Publicó 93,6 kcal para 80 g contra un rango escrito de",
+  "100–220: el plato se cayó del criterio 2 por un término que el catálogo no tenía.",
+  "`ibérico` daba CERO coincidencias en las 1.114 fichas.",
+  "",
+  "ESTO CORRIGE UN DIAGNÓSTICO YA ESCRITO: la DT-28 (punto 2) le atribuía este plato a la",
+  "barra `/`. La barra funciona y está medido — `jamón serrano/ibérico` resuelve a fdc-2705879",
+  "con 0,8. Lo que faltaba era el alias, y nada más.",
+  "",
+  "POR QUÉ 0,6 Y NO 0,8, que es lo que ya lleva `Jamón serrano` sobre esta misma ficha: el",
+  "peldaño 0,8 dice «mismos ingredientes dominantes, ninguno ajeno»; el 0,6 dice «cambia el",
+  "corte» o «falta algo que mueve un macro». El serrano y el prosciutto son el mismo producto",
+  "—cerdo blanco curado en seco— y por eso aquel es 0,8. El ibérico es otra RAZA de cerdo y",
+  "otro engorde, y la diferencia se la lleva la grasa, que es justo el macro que esta ficha",
+  "mide (8,32 g/100 g). NO se escribe acá cuánta grasa de más: ningún dataset del repo mide el",
+  "ibérico —USDA no lo tiene y BEDCA sigue sin abrirse (DT-35 g)—, así que la reserva se",
+  "declara en el peldaño y no en un número inventado. Con el alias, el término deja de caer en",
+  "el jamón COCIDO, que es un error de producto (York por ibérico) además de un −40 % de kcal.",
+  "",
+  "LO QUE ESTA LÍNEA NO HACE: no le da ficha propia al ibérico. El día que haya una fuente que",
+  "lo mida, eso es una ficha y no un alias."
+ ],
  "aliases": {
   "167987": [
    {
@@ -22,7 +279,7 @@
   ],
   "169510": [
    {
-    "alias": "Asado",
+    "alias": "Tira de asado",
     "confidence": 0.8
    }
   ],
@@ -35,6 +292,10 @@
   "174249": [
    {
     "alias": "Pulpo a la gallega",
+    "confidence": 0.6
+   },
+   {
+    "alias": "Pulpo á feira",
     "confidence": 0.6
    }
   ],
@@ -66,17 +327,33 @@
    {
     "alias": "Rabo de toro",
     "confidence": 0.6
+   },
+   {
+    "alias": "Rabo de toro a la cordobesa",
+    "confidence": 0.6
    }
   ],
   "2705879": [
    {
     "alias": "Jamón serrano",
     "confidence": 0.8
+   },
+   {
+    "alias": "Jamón ibérico",
+    "confidence": 0.6
    }
   ],
   "2705882": [
    {
     "alias": "Cochinillo",
+    "confidence": 0.5
+   },
+   {
+    "alias": "Cochinillo asado",
+    "confidence": 0.5
+   },
+   {
+    "alias": "Cochinillo asado castellano",
     "confidence": 0.5
    }
   ],
@@ -92,9 +369,19 @@
     "confidence": 0.5
    }
   ],
+  "2706104": [
+   {
+    "alias": "Pechuga de pavo",
+    "confidence": 0.8
+   }
+  ],
   "2706162": [
    {
     "alias": "Callos",
+    "confidence": 0.5
+   },
+   {
+    "alias": "Callos a la madrileña",
     "confidence": 0.5
    }
   ],
@@ -164,6 +451,16 @@
     "confidence": 0.8
    }
   ],
+  "2706723": [
+   {
+    "alias": "Paella valenciana",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Paella de marisco",
+    "confidence": 0.8
+   }
+  ],
   "2706964": [
    {
     "alias": "Bocadillo de jamón",
@@ -192,6 +489,10 @@
    {
     "alias": "Fabada",
     "confidence": 0.6
+   },
+   {
+    "alias": "Fabada asturiana",
+    "confidence": 0.6
    }
   ],
   "2707414": [
@@ -208,11 +509,19 @@
    {
     "alias": "Lentejas con chorizo",
     "confidence": 0.6
+   },
+   {
+    "alias": "Lentejas",
+    "confidence": 0.8
    }
   ],
   "2707652": [
    {
     "alias": "Pan con tomate",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Pa amb tomàquet",
     "confidence": 0.8
    }
   ],
@@ -222,16 +531,20 @@
     "confidence": 0.5
    }
   ],
-  "2708024": [
-   {
-    "alias": "Croqueta",
-    "confidence": 0.6
-   }
-  ],
   "2708331": [
    {
     "alias": "Torrijas",
     "confidence": 0.6
+   }
+  ],
+  "2708341": [
+   {
+    "alias": "Filloas",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Filloa",
+    "confidence": 0.8
    }
   ],
   "2708405": [
@@ -250,6 +563,10 @@
    {
     "alias": "Pastel brasileño",
     "confidence": 0.6
+   },
+   {
+    "alias": "Empanada gallega",
+    "confidence": 0.8
    }
   ],
   "2708722": [
@@ -298,11 +615,35 @@
    {
     "alias": "Pimientos rellenos",
     "confidence": 0.8
+   },
+   {
+    "alias": "Pimientos de piquillo rellenos",
+    "confidence": 0.6
+   }
+  ],
+  "2709393": [
+   {
+    "alias": "Papas arrugadas",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Papas arrugadas con mojo picón",
+    "confidence": 0.6
    }
   ],
   "2709456": [
    {
     "alias": "Patatas bravas",
+    "confidence": 0.5
+   }
+  ],
+  "2709511": [
+   {
+    "alias": "Croqueta",
+    "confidence": 0.5
+   },
+   {
+    "alias": "Croquetas",
     "confidence": 0.5
    }
   ],
@@ -316,11 +657,19 @@
    {
     "alias": "Pisto",
     "confidence": 0.8
+   },
+   {
+    "alias": "Pisto manchego",
+    "confidence": 0.8
    }
   ],
   "2710106": [
    {
     "alias": "Gazpacho",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Gazpacho andaluz",
     "confidence": 0.8
    }
   ],
@@ -334,6 +683,145 @@
    {
     "alias": "Pesto",
     "confidence": 1
+   }
+  ],
+  "168070": [
+   {
+    "alias": "Arepa",
+    "confidence": 0.8
+   }
+  ],
+  "171906": [
+   {
+    "alias": "IPA",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Cerveza IPA",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Cerveza artesanal",
+    "confidence": 0.6
+   }
+  ],
+  "174815": [
+   {
+    "alias": "Ginebra",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Ron",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Vodka",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Whisky",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Güisqui",
+    "confidence": 0.8
+   }
+  ],
+  "2705968": [
+   {
+    "alias": "Pollo a la plancha",
+    "confidence": 0.8
+   }
+  ],
+
+  "173704": [
+   {
+    "alias": "Pez espada",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Emperador",
+    "confidence": 0.8
+   }
+  ],
+  "174194": [
+   {
+    "alias": "Anguila",
+    "confidence": 0.8
+   }
+  ],
+  "172009": [
+   {
+    "alias": "Langosta",
+    "confidence": 0.8
+   }
+  ],
+  "2706344": [
+   {
+    "alias": "Centollo",
+    "confidence": 0.6
+   },
+   {
+    "alias": "Buey de mar",
+    "confidence": 0.6
+   }
+  ],
+  "167744": [
+   {
+    "alias": "Caracoles",
+    "confidence": 0.6
+   }
+  ],
+  "2705912": [
+   {
+    "alias": "Conejo",
+    "confidence": 0.8
+   }
+  ],
+  "2707367": [
+   {
+    "alias": "Habas",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Habas tiernas",
+    "confidence": 0.5
+   }
+  ],
+  "174223": [
+   {
+    "alias": "Chipirones",
+    "confidence": 0.6
+   },
+   {
+    "alias": "Chopitos",
+    "confidence": 0.5
+   }
+  ],
+  "2706292": [
+   {
+    "alias": "Salmón marinado",
+    "confidence": 0.6
+   }
+  ],
+  "172499": [
+   {
+    "alias": "Paletilla de cordero",
+    "confidence": 0.8
+   },
+   {
+    "alias": "Lechazo",
+    "confidence": 0.6
+   },
+   {
+    "alias": "Cordero lechal al horno",
+    "confidence": 0.6
+   }
+  ],
+  "2709830": [
+   {
+    "alias": "Ensalada griega",
+    "confidence": 0.6
    }
   ]
  }

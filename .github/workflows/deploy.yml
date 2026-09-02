@@ -77,16 +77,15 @@ jobs:
       - name: Compilar
         run: npm run build
 
-      # Objetivos del despliegue.
+      # Objetivos del despliegue: TODO, desde la card 3.5 (02/09/2026).
       #
-      # `functions` y `storage` requieren el plan Blaze del proyecto, que todavía
-      # no está activo. Desplegarlos ahora haría fallar el pipeline por una razón
-      # que no es del código. En cuanto Blaze esté activo y Storage inicializado,
-      # esta línea pasa a:
-      #     --only hosting,firestore,storage,functions
+      # Los cuatro requisitos que faltaban ya están: Blaze activo, el bucket de
+      # Storage creado en europe-west1, la ANTHROPIC_API_KEY en Secret Manager
+      # (verificada contra la API) y el hosting con sus dos targets — `app` (la
+      # PWA) y `landing` (caliscan.app) — mapeados en .firebaserc.
       - name: Desplegar a Firebase
         run: |
           npx --yes firebase-tools@15 deploy \
-            --only hosting,firestore \
+            --only hosting,firestore,storage,functions \
             --project "$PROJECT_ID" \
             --non-interactive

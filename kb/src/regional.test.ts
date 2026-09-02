@@ -57,6 +57,8 @@ function curation(overrides: Partial<Curation> = {}): Curation {
     manualFoods: [],
     transforms: new Map(),
     recipes: [],
+    genericRule: null,
+    guardas: [],
     filesFound: [],
     problems: [],
     ...overrides,
@@ -159,7 +161,11 @@ function emptyStats(): BuildStats {
     manualOverrideFoods: 0,
     curatedPortions: 0,
     curatedPortionLabels: 0,
+    curatedPortionHints: 0,
     portionNeedsReview: [],
+    genericFoods: 0,
+    genericCaveats: 0,
+    guardViolations: [],
     descriptionMismatches: [],
     foodsWithoutPortions: [],
   };
@@ -495,12 +501,15 @@ test("candado 1: un alias regional que apunta fuera de la selección rompe el bu
   assert.match(result.failures.join(" "), /no matchea nunca/);
 });
 
-test("candado 1: un alimento de USDA no puede llevar caveats", () => {
+test("candado 1: un alimento de USDA no puede llevar caveats escritos a mano", () => {
+  // Desde la DT-13 hay UNA excepción y una sola: el caveat que GENERA la política
+  // de genéricos, que el candado vuelve a derivar de la regla declarada y compara
+  // texto contra texto (`genericos.test.ts`). Todo lo demás sigue afuera.
   const food = assemble(input(curation())).catalog.foods[0];
   assert.ok(food);
   assert.deepEqual(validateFood(food), []);
   const conCaveats = { ...food, caveats: ["por 100 ml"] };
-  assert.ok(validateFood(conCaveats).some((p) => p.includes("solo puede existir en un alimento de curación manual")));
+  assert.ok(validateFood(conCaveats).some((p) => p.includes("solo puede traer el caveat generado")));
 });
 
 test("candado 3: al alimento manual se le exige el 10 % sin el margen de ±20 kcal", () => {
@@ -524,6 +533,7 @@ test("candado 3: al alimento manual se le exige el 10 % sin el margen de ±20 kc
   const catalogo = {
     kb_version: "test",
     generated_from: { selection: "test", sources: [] as never[] },
+    guardas: [],
     foods: [manualFood],
   };
   const result = lockAtwater(catalogo, new Map());

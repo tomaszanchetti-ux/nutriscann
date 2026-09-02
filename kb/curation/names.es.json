@@ -20,7 +20,6 @@
  "2705824": {
   "name": "Bife",
   "aliases": [
-   "Filete",
    "Bistec"
   ]
  },
@@ -256,15 +255,6 @@
    "Alubias con carne",
    "Judías con carne",
    "Caraotas con carne"
-  ]
- },
- "2707348": {
-  "name": "Frijoles secos cocidos con grasa",
-  "aliases": [
-   "Porotos secos cocidos con grasa",
-   "Alubias secas cocidas con grasa",
-   "Judías secas cocidas con grasa",
-   "Caraotas secas cocidas con grasa"
   ]
  },
  "2707350": {
@@ -2344,12 +2334,6 @@
    "Patatas fritas"
   ]
  },
- "2709517": {
-  "name": "Croquetas de papa congeladas",
-  "aliases": [
-   "Croquetas de patata congeladas"
-  ]
- },
  "2707193": {
   "name": "Egg foo yung",
   "aliases": []
@@ -2735,7 +2719,10 @@
  },
  "2709719": {
   "name": "Tomate crudo",
-  "aliases": []
+  "aliases": [
+   "Tomate pera",
+   "Tomates pera"
+  ]
  },
  "2707105": {
   "name": "Plato congelado de pollo",
@@ -3155,7 +3142,9 @@
  },
  "2709789": {
   "name": "Lechuga cruda",
-  "aliases": []
+  "aliases": [
+   "Lechuga romana"
+  ]
  },
  "2709949": {
   "name": "Lechuga cocida",
@@ -3598,7 +3587,12 @@
  },
  "169230": {
   "name": "Ajo crudo",
-  "aliases": []
+  "aliases": [
+   "Ajo",
+   "Ajos",
+   "Diente de ajo",
+   "Dientes de ajo"
+  ]
  },
  "169988": {
   "name": "Apio crudo",
@@ -3695,12 +3689,6 @@
   "name": "Kétchup común",
   "aliases": [
    "Catsup común"
-  ]
- },
- "169768": {
-  "name": "Puré de papa listo para comer",
-  "aliases": [
-   "Puré de patata listo para comer"
   ]
  },
  "170390": {
@@ -4967,8 +4955,7 @@
  "169510": {
   "name": "Costilla de res a la parrilla",
   "aliases": [
-   "Costilla de vaca a la parrilla",
-   "Tira de asado"
+   "Costilla de vaca a la parrilla"
   ]
  },
  "174249": {
@@ -5091,5 +5078,300 @@
  "169640": {
   "name": "Miel",
   "aliases": []
+ },
+ "168746": {
+  "name": "Cerveza",
+  "aliases": [
+   "Cerveza rubia",
+   "Caña de cerveza",
+   "Cerveza de barril"
+  ]
+ },
+ "168749": {
+  "name": "Cerveza light",
+  "aliases": [
+   "Cerveza ligera",
+   "Cerveza baja en calorías"
+  ]
+ },
+ "171906": {
+  "name": "Cerveza de alta graduación",
+  "aliases": []
+ },
+ "173190": {
+  "name": "Vino tinto",
+  "aliases": [
+   "Copa de vino tinto"
+  ]
+ },
+ "174837": {
+  "name": "Vino blanco",
+  "aliases": [
+   "Copa de vino blanco"
+  ]
+ },
+ "174815": {
+  "name": "Bebida destilada (ginebra, ron, vodka, whisky)",
+  "aliases": [
+   "Chupito"
+  ]
+ },
+ "167746": {
+  "name": "Limón",
+  "aliases": [
+   "Limón sin cáscara"
+  ]
+ },
+ "168070": {
+  "name": "Arepa",
+  "aliases": [
+   "Arepa de maíz"
+  ]
+ },
+ "2707823": {
+  "name": "Tortilla de maíz",
+  "aliases": [
+   "Tortilla mexicana",
+   "Tortilla de choclo",
+   "Tortilla de elote"
+  ]
+ },
+ "2705954": {
+  "name": "Pechuga de pollo",
+  "aliases": [
+   "Pechuga"
+  ]
+ },
+ "2705956": {
+  "name": "Pechuga de pollo al horno",
+  "aliases": [
+   "Pechuga de pollo asada"
+  ]
+ },
+ "2705968": {
+  "name": "Pechuga de pollo a la plancha",
+  "aliases": [
+   "Pechuga de pollo a la parrilla"
+  ]
+ },
+ "2707616": {
+  "name": "Pan de pita",
+  "aliases": [
+   "Pita",
+   "Pan pita",
+   "Pan árabe"
+  ]
+ },
+ "2707390": {
+  "name": "Alubias en salsa de tomate",
+  "aliases": [
+   "Judías en salsa de tomate",
+   "Alubias con tomate",
+   "Porotos en salsa de tomate",
+   "Frijoles horneados"
+  ]
+ },
+ "2706285": {
+  "name": "Salmón",
+  "aliases": [
+   "Salmón al horno"
+  ]
+ },
+ "2706287": {
+  "name": "Salmón a la plancha",
+  "aliases": [
+   "Salmón a la parrilla"
+  ]
+ },
+ "2706292": {
+  "name": "Salmón ahumado",
+  "aliases": []
+ },
+ "2706284": {
+  "name": "Salmón crudo",
+  "aliases": [
+   "Lomo de salmón crudo"
+  ]
+ },
+ "2706350": {
+  "name": "Mejillones",
+  "aliases": [
+   "Mejillón",
+   "Mejillones al vapor",
+   "Choritos"
+  ]
+ },
+ "173704": {
+  "name": "Pez espada a la plancha",
+  "aliases": [
+   "Emperador a la plancha"
+  ]
+ },
+ "174194": {
+  "name": "Anguila a la plancha",
+  "aliases": []
+ },
+ "2706344": {
+  "name": "Cangrejo",
+  "aliases": [
+   "Carne de cangrejo"
+  ]
+ },
+ "2706349": {
+  "name": "Bogavante",
+  "aliases": []
+ },
+ "172009": {
+  "name": "Langosta cocida",
+  "aliases": []
+ },
+ "174223": {
+  "name": "Calamar crudo",
+  "aliases": [
+   "Chipirón crudo"
+  ]
+ },
+ "167744": {
+  "name": "Caracoles crudos",
+  "aliases": []
+ },
+ "2705912": {
+  "name": "Conejo guisado",
+  "aliases": [
+   "Conejo estofado"
+  ]
+ },
+ "2706157": {
+  "name": "Riñones",
+  "aliases": [
+   "Riñón"
+  ]
+ },
+ "2706158": {
+  "name": "Mollejas",
+  "aliases": [
+   "Molleja"
+  ]
+ },
+ "2706154": {
+  "name": "Hígado de pollo",
+  "aliases": [
+   "Higaditos de pollo"
+  ]
+ },
+ "2706149": {
+  "name": "Codorniz",
+  "aliases": [
+   "Codornices"
+  ]
+ },
+ "2706150": {
+  "name": "Faisán",
+  "aliases": []
+ },
+ "172499": {
+  "name": "Paletilla de cordero al horno",
+  "aliases": [
+   "Paletilla de cordero asada"
+  ]
+ },
+ "167812": {
+  "name": "Panceta cruda",
+  "aliases": [
+   "Tocino fresco crudo"
+  ]
+ },
+ "2708357": {
+  "name": "Pasta cocida",
+  "aliases": [
+   "Pasta hervida",
+   "Espaguetis cocidos",
+   "Macarrones cocidos",
+   "Fideos cocidos"
+  ]
+ },
+ "168894": {
+  "name": "Harina de trigo",
+  "aliases": [
+   "Harina de trigo refinada",
+   "Harina blanca"
+  ]
+ },
+ "2709910": {
+  "name": "Maíz fresco cocido sin grasa",
+  "aliases": [
+   "Maíz dulce cocido",
+   "Maíz tierno cocido",
+   "Choclo fresco cocido sin grasa",
+   "Elote fresco cocido sin grasa"
+  ]
+ },
+ "2709889": {
+  "name": "Repollo verde cocido sin grasa",
+  "aliases": [
+   "Repollo cocido sin grasa",
+   "Col cocida sin grasa",
+   "Col verde cocida sin grasa"
+  ]
+ },
+ "2709852": {
+  "name": "Judías verdes frescas cocidas sin grasa",
+  "aliases": [
+   "Judías verdes cocidas sin grasa",
+   "Chauchas frescas cocidas sin grasa",
+   "Ejotes frescos cocidos sin grasa",
+   "Porotos verdes frescos cocidos sin grasa",
+   "Vainitas frescas cocidas sin grasa"
+  ]
+ },
+ "2709766": {
+  "name": "Alcachofa cocida",
+  "aliases": [
+   "Alcachofas cocidas",
+   "Alcachofas hervidas",
+   "Corazones de alcachofa"
+  ]
+ },
+ "2707367": {
+  "name": "Habas cocidas con sal y grasa",
+  "aliases": [
+   "Habas guisadas"
+  ]
+ },
+ "169338": {
+  "name": "Cardo cocido",
+  "aliases": [
+   "Cardos cocidos"
+  ]
+ },
+ "2709808": {
+  "name": "Calabacín crudo",
+  "aliases": [
+   "Zapallito crudo"
+  ]
+ },
+ "172238": {
+  "name": "Alcaparras",
+  "aliases": [
+   "Alcaparra"
+  ]
+ },
+ "2707587": {
+  "name": "Tahini",
+  "aliases": [
+   "Pasta de sésamo",
+   "Tahina"
+  ]
+ },
+ "2709830": {
+  "name": "Ensalada griega",
+  "aliases": []
+ },
+ "2710049": {
+  "name": "Crema de berenjena",
+  "aliases": [
+   "Baba ganoush",
+   "Baba ghanoush"
+  ]
  }
 }

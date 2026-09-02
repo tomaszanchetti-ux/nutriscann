@@ -1,0 +1,8 @@
+# Los cuerpos base64 que arma el runner antes de POSTear cada foto.
+#
+# NO van al repo y no es una omisión: son la MISMA foto en base64 (8,5 MB por
+# corrida contra 6,4 MB de todas las fotos juntas), los regenera el runner en cada
+# corrida y no se leen nunca más después de la llamada. Lo que sí va al repo es lo
+# que no se puede regenerar sin pagar: las fotos y las respuestas.
+bodies/
+bodies-*/

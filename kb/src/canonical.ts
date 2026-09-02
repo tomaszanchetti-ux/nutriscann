@@ -9,7 +9,8 @@
  */
 import { createHash } from "node:crypto";
 
-import type { Curation, ManualFood, Recipe } from "./curation";
+import type { Curation, GuardaVocabulario, ManualFood, Recipe } from "./curation";
+import { caveatDeSodio, esGenerico, type GenericRule } from "./genericos";
 import { derivarReceta, type ResolvedIngredient } from "./transforms";
 import { OPTIONAL_KEYS, REQUIRED_KEYS, type NutrientBundle } from "./nutrients";
 import { groupOverrides, toSourceId, type Selection } from "./selection";
@@ -77,6 +78,15 @@ export interface BuildStats {
    * ese silencio es el mismo del que nos defiende el candado por fuente.
    */
   orphanRegionalAliases: number[];
+  /** Fichas marcadas `generic: true` por la política DT-13. */
+  genericFoods: number;
+  /** Fichas genéricas que además se llevaron el caveat de sodio (DT-13). */
+  genericCaveats: number;
+  /**
+   * Guardas de vocabulario violadas. Rompen el build: un término que nombra a la
+   * ficha equivocada manda al usuario a otro alimento, sin decir nada.
+   */
+  guardViolations: { id: string; termino: string; donde: string; motivo: string }[];
   /** Alimentos que entraron enteros por curación manual. */
   manualFoods: number;
   /** Alimentos derivados de una receta compuesta (card 1.7). */
@@ -90,6 +100,8 @@ export interface BuildStats {
   curatedPortions: number;
   /** Porciones que recibieron su etiqueta en español desde la curación. */
   curatedPortionLabels: number;
+  /** Porciones que la curación AGREGÓ a las de USDA (card 6.2: la barra española). */
+  curatedPortionHints: number;
   /** Porciones que la selección marcó para revisar a mano. */
   portionNeedsReview: number[];
   /** La descripción de la selección no coincide con la de `food.csv`. */
@@ -112,7 +124,7 @@ export interface AssembleResult {
  * Se exporta para poder testear el desempate solo: este camino decide más de
  * doscientos valores y el candado de aceptación por fuente NO lo cubre (cuenta
  * alimentos de FNDDS y SR, y Foundation no aporta alimentos propios). Sin test
- * unitario, una regresión acá pasaría los cinco candados en verde.
+ * unitario, una regresión acá pasaría todos los candados en verde.
  */
 export function pickFoundationCandidate(
   candidates: number[],
@@ -154,6 +166,9 @@ export function assemble(input: AssembleInput): AssembleResult {
     inheritedAliases: 0,
     staleAliases: [],
     orphanRegionalAliases: [],
+    genericFoods: 0,
+    genericCaveats: 0,
+    guardViolations: [],
     manualFoods: 0,
     recipeFoods: 0,
     recipeFailures: [],
@@ -161,6 +176,7 @@ export function assemble(input: AssembleInput): AssembleResult {
     manualOverrideFoods: 0,
     curatedPortions: 0,
     curatedPortionLabels: 0,
+    curatedPortionHints: 0,
     portionNeedsReview: [],
     descriptionMismatches: [],
     foodsWithoutPortions: [],
@@ -270,6 +286,19 @@ export function assemble(input: AssembleInput): AssembleResult {
     else provenance["portion_hints"] = source;
 
     const curatedPortion = curation.portions.get(entry.fdc_id);
+
+    // Porciones que la curación AGREGA (card 6.2): la caña, el tubo, el tercio.
+    // Van DETRÁS de las de USDA y no pisan ninguna — el orden de las de la
+    // fuente no se toca. Se saltea la que ya exista con los mismos gramos y la
+    // misma etiqueta en inglés: eso no es una porción nueva, es la misma.
+    for (const hint of curatedPortion?.portion_hints ?? []) {
+      if (hints.some((h) => h.grams === hint.grams && h.label_en === hint.label_en)) continue;
+      hints.push({ ...hint });
+      if (provenance["portion_hints"] === undefined) provenance["portion_hints"] = "curation";
+      provenance["portion_hints.label_es"] = "curation";
+      stats.curatedPortionHints += 1;
+    }
+
     const curatedGrams = curatedPortion?.default_portion_g ?? null;
     const defaultPortion = curatedGrams ?? entry.default_portion_g;
     if (curatedGrams !== null) stats.curatedPortions += 1;
@@ -361,6 +390,17 @@ export function assemble(input: AssembleInput): AssembleResult {
   // acaba de entrar): los ingredientes tienen que estar todos resueltos antes.
   applyRecipes(foods, curation, stats);
 
+  // --- La política de genéricos (DT-13) --------------------------------------
+  // Al final del todo, sobre los valores DEFINITIVOS: el sodio con el que se
+  // decide el caveat es el que sale al catálogo, no el que traía el CSV antes de
+  // que Foundation o la curación manual lo pisaran.
+  applyGenericRule(foods, curation.genericRule, stats);
+
+  // Las guardas se leen sobre el catálogo ya armado, por lo mismo: un alias
+  // heredado de una exclusión o agregado por una entrada manual también tiene
+  // que pasar por acá.
+  checkVocabularyGuards(foods, curation.guardas, stats);
+
   // Orden estable: por id, comparado como texto (el id es el que viaja a
   // Firestore, así que el orden del archivo es el orden del catálogo).
   foods.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
@@ -370,25 +410,199 @@ export function assemble(input: AssembleInput): AssembleResult {
     selection: selection.criteria_version,
     sources: input.sourceIds,
   };
-  // 2.1.0 con la card 1.7.
+  // 3.0.0 con la card 2.DT (las decisiones DT-8 y DT-13 de Tomás).
   //
   // El 2.0.0 lo justificó la DT-7: retiró ocho alimentos del catálogo y renombró
-  // veintiuno, y un menor promete que lo que estaba sigue estando. Después se
-  // sumaron seis renombres más por la misma regla —el patrón `fat added` que el
-  // primer barrido no vio—, hasta los veintisiete de hoy, y una fuente nueva
-  // —`receta`— con una clave nueva y opcional en el contrato (`receta`, solo en
-  // los alimentos derivados).
+  // veintiuno, y un menor promete que lo que estaba sigue estando. La 2.1.0 fue
+  // MENOR porque lo suyo era aditivo —seis renombres de la misma ola y la fuente
+  // `receta`, con su clave nueva y opcional— y porque el 2.0.0 nunca se había
+  // publicado: no había consumidor al que romperle nada.
   //
-  // Es MENOR y no un segundo mayor por una razón concreta: el 2.0.0 nunca se
-  // publicó a Firestore, así que no hay consumidor que lo haya leído y no hay
-  // promesa que romper. Los seis renombres son la misma ola que el mayor ya
-  // anunció, antes de que llegara a nadie. Lo que sí cambia el contrato —la clave
-  // `receta` y el valor `receta` en `source`— es aditivo: quien lea el catálogo
-  // como lo leía en 2.0.0 no pierde un solo campo.
-  const kbVersion = `2.1.0+${contentHash({ generated_from: generatedFrom, foods })}`;
+  // Este es un MAYOR y por el motivo contrario en los dos frentes. La DT-8 fusiona
+  // tres pares de fichas idénticas y por lo tanto RETIRA tres alimentos
+  // (fdc-169768, fdc-2707348 y fdc-2709517), que es exactamente lo que el 2.0.0
+  // declaró como cambio mayor; y esta vez la versión anterior SÍ está publicada en
+  // Firestore, así que hay ids que un consumidor ya leyó. El seed los marcará
+  // `deprecated` y no los borra —la regla 6 del proyecto—, pero quien tenga uno de
+  // esos ids guardado deja de encontrar una ficha viva: eso es romper una promesa,
+  // y se anuncia con el número.
+  //
+  // Lo de la DT-13, en cambio, es aditivo y no habría movido el mayor solo: la
+  // clave `generic` es nueva y opcional, y los caveats generados usan una clave
+  // que el contrato ya tenía.
+  //
+  // 3.1.0 con la card 2.7 (la curación quirúrgica que abrió el golden set de 30).
+  //
+  // Es MENOR y no mayor porque no se retira ni una ficha: las 1.022 siguen, con
+  // sus ids intactos, y ningún consumidor que haya guardado un `food_id` deja de
+  // encontrarlo. Lo que cambia es VOCABULARIO —tres aliases que apuntaban a otra
+  // familia de alimento y dos que faltaban— y eso no rompe el contrato con el
+  // seed. No es un parche: sube el número porque un catálogo que dice cosas
+  // distintas es un catálogo distinto, y el `config/app` de Firestore estampa
+  // esta versión para poder decir con qué vocabulario se calculó cada reporte.
+  //
+  // 3.2.0 con la card 6.2 (el lote de fichas de la DT-27).
+  //
+  // Es MENOR y no mayor por la misma razón que la 3.1.0, y por una más: es
+  // puramente ADITIVO. Entran catorce alimentos de USDA que ya estaban en los
+  // datasets declarados —tres cervezas, dos vinos, un destilado, limón, arepa,
+  // tortilla de maíz, tres pechugas de pollo, pan de pita y alubias en salsa de
+  // tomate—, no sale ninguna ficha, no cambia ningún id y ningún consumidor que
+  // haya guardado un `food_id` deja de encontrarlo. La única extensión del
+  // contrato de curación (`portion_hints` en portions.overrides.json) también es
+  // aditiva y no cambia la FORMA del catálogo: produce más entradas en
+  // `portion_hints`, que es una lista que ya existía.
+  //
+  // Sube el número y no se queda en parche por el mismo motivo de siempre: un
+  // catálogo con catorce alimentos más es un catálogo distinto, y el `config/app`
+  // de Firestore estampa esta versión para poder decir contra qué se calculó
+  // cada reporte.
+  //
+  // 3.3.0 con la card 6.3 (el censo de cobertura mediterránea y su curación).
+  //
+  // Es MENOR por el precedente exacto de la 3.1.0, que es la otra versión de
+  // vocabulario puro: no entra ni sale ninguna ficha, no cambia ningún id, las
+  // 1.036 siguen. Lo que cambia son DIECIOCHO aliases con confianza, OCHO en texto
+  // plano y DIEZ guardas nuevas, todos salidos de medir los 141 platos de las
+  // dos fuentes de referencia del mercado español contra el motor real
+  // (`kb/cobertura/`). Sube el número —y no se queda en parche— por el mismo
+  // motivo que la 3.1.0: un catálogo que dice cosas distintas es un catálogo
+  // distinto, y `config/app` estampa esta versión para poder decir con qué
+  // vocabulario se calculó cada reporte.
+  //
+  // 3.4.0 con la card 6.4 (las fichas que faltaban del censo mediterráneo).
+  //
+  // Es MENOR y no MAYOR aunque entren 76 alimentos, por el mismo motivo que la
+  // 3.2.0: el cambio es ADITIVO en el sentido fuerte. Entran 33 fichas de USDA
+  // promovidas desde los datasets crudos (kb/selection/dt33.v1.json) y 43 fichas
+  // derivadas por receta compuesta (kb/curation/recipes.foods.json); NO sale
+  // ninguna, NO cambia ningún id y NO cambia ni un número de las 1.036 que ya
+  // estaban — verificado por diff en la card. Un `food_id` guardado por un
+  // consumidor sigue encontrando exactamente lo mismo.
+  //
+  // Sube el menor y no se queda en parche porque un catálogo con 1.112 alimentos
+  // —y con salmón, mejillón, pasta cocida y cuarenta y tres platos españoles que
+  // antes no existían— es un catálogo distinto, y `config/app` estampa esta
+  // versión para poder decir contra qué se calculó cada reporte.
+  //
+  // 3.5.0 con la card 6.4b (los dos platos que la 6.4 dejó bloqueados por
+  // rendimiento).
+  //
+  // Es MENOR y no PARCHE aunque entren solo DOS fichas, y el motivo no es el
+  // conteo: cambia la TABLA DE TRANSFORMACIONES, que es la que deriva todas las
+  // recetas. Entra `cocido_cebolla` (0,850), el primer rendimiento de hortaliza
+  // medido del proyecto, y con él la ficha `receta-calcots`; entra también
+  // `manual-salsa-de-calcots` desde una etiqueta comercial verificada. Un
+  // catálogo que sabe cocinar una cebolla —y que por lo tanto puede recalcular
+  // recetas futuras con ese factor— no es el mismo catálogo, y `config/app`
+  // estampa esta versión para poder decir contra qué se calculó cada reporte.
+  //
+  // Sigue siendo ADITIVO en el sentido fuerte: NO sale ninguna ficha, NO cambia
+  // ningún id y NO cambia ni un número de las 1.112 que ya estaban — ninguna
+  // receta preexistente usa el método nuevo. El torrezno de Soria NO entra, y su
+  // motivo medido está en recipes.foods.json: el rendimiento existe (0,403) y
+  // precisamente por eso no se puede usar, porque lo que sale de un torrezno no
+  // es solo agua sino grasa, y un `factor_peso` no sabe restarla.
+  //
+  // 3.6.0 con la card 6.4c (el torrezno, que la 6.4b dejó bloqueado, entra por
+  // OTRA PUERTA).
+  //
+  // Es MENOR y no PARCHE aunque entre UNA sola ficha, y otra vez el motivo no es
+  // el conteo: `manual-torrezno-de-soria` cierra el ÚLTIMO bloqueo del censo que
+  // no era de especie. De los cinco platos que la card 6.4 dejó sin ficha quedan
+  // TRES, y los tres son el mismo caso —besugo, perdiz y halloumi, alimentos que
+  // USDA no mide y que esperan la pasada de BEDCA—, así que el catálogo pasa de
+  // tener huecos de dos naturalezas a tener una sola. Un catálogo cuya lista de
+  // pendientes cambió de forma no es el mismo catálogo, y `config/app` estampa
+  // esta versión para poder decir contra qué se calculó cada reporte.
+  //
+  // NO cambia el modelo: la DT-36 sigue abierta y `transforms.ts` sigue sin
+  // saber restar la grasa que sale de la pieza. El torrezno entra por una
+  // ETIQUETA COMERCIAL verificada campo a campo (Hacendado 8480000334169,
+  // Atwater al 0,69 %), que es la misma puerta por la que entró la salsa de
+  // calçots en la 6.4b. El rendimiento medido 0,403 sigue FUERA de la tabla de
+  // transformaciones y `card64b.test.ts` lo sigue vigilando.
+  //
+  // Sigue siendo ADITIVO en el sentido fuerte: NO sale ninguna ficha, NO cambia
+  // ningún id y NO cambia ni un número de las 1.114 que ya estaban.
+  //
+  // 3.7.0 con la WS07 (la decisión del corte del torrezno, el alias que faltaba
+  // y el candado del generador de aliases).
+  //
+  // Es MENOR y ESTA VEZ NO ES ADITIVA, y conviene decirlo primero porque las
+  // tres anteriores sí lo eran: `manual-torrezno-de-soria` CAMBIA SUS OCHO
+  // NÚMEROS. La 6.4c lo publicó desde una etiqueta de CARETA (Hacendado
+  // 8480000334169, 580 kcal), que es el extremo magro de las 26 etiquetas
+  // contrastadas, y Tomás decidió el 01/09/2026 que la ficha tiene que ser el
+  // torrezno que MÁS se consume, que es el de PANCETA. La etiqueta nueva es
+  // Carrefour 8431876311617 (627 kcal, Atwater al 0,16 %), que cae en la mediana
+  // del mercado en cuatro campos exactos. El método no cambió —una sola
+  // etiqueta, ocho campos del mismo producto, Atwater como criterio de
+  // aceptación—; cambió QUÉ PRODUCTO representa la ficha, y eso es una decisión
+  // de producto, no una corrección de un error: la careta estaba bien medida y
+  // medía otro corte. El caveat guarda la etiqueta descartada con su código de
+  // barras para que la decisión se pueda revertir.
+  //
+  // El conteo NO se mueve: siguen siendo 1.115 fichas. Lo que se mueve es el
+  // VOCABULARIO, en tres frentes, y ninguno cambia un id: entra `Jamón ibérico`
+  // (0,6) sobre `fdc-2705879` —el término que la corrida v3 del golden set midió
+  // cayendo en el jamón COCIDO, con su evidencia en aliases.regional.json—;
+  // entran cuatro variantes regionales que el generador ya derivaba de sus
+  // propias reglas y que ninguna corrida había escrito (choclo/elote sobre el
+  // maíz sin grasa, chauchas/ejotes/porotos verdes/vainitas sobre las judías
+  // verdes); y sale `Nata de berenjena`, un falso positivo del par crema/nata
+  // sobre el baba ganoush, por `$skip`.
+  //
+  // Y entra un CANDADO que no toca el catálogo pero sí lo protege (DT-30): la
+  // lista `$retirados` de tools/variants.es.json, que impide que el generador de
+  // aliases resucite un alias que una card retiró a propósito. `Filete` sobre
+  // `fdc-2705824` y `Tira de asado` sobre `fdc-169510` volvían en cada corrida
+  // del generador, y el primero además rompe el build por su guarda.
+  //
+  // 3.8.0 con la WS07 (DT-32: las guardas de vocabulario VIAJAN EN EL CATÁLOGO).
+  //
+  // Es MENOR y es un cambio de ESQUEMA, que es una tercera categoría respecto de
+  // las anteriores: no entra ni sale ninguna ficha, no cambia ningún id, no se
+  // mueve un solo número de las 1.115 —el diff de `foods` es vacío—, y sin
+  // embargo el encabezado del catálogo pasa de TRES claves a CUATRO. La cuarta
+  // es `guardas`, y con ella el archivo deja de describir solo lo que el
+  // catálogo TIENE para describir también lo que el vocabulario NO PUEDE hacer.
+  //
+  // Es MENOR y no MAYOR porque la clave es ADITIVA en el sentido que importa
+  // acá: un consumidor viejo que lea `kb_version`, `generated_from` y `foods`
+  // sigue leyendo exactamente lo mismo, y el seed —que a propósito no conoce el
+  // esquema de un alimento y copia el encabezado tal cual— no necesita saber
+  // que existe. Nadie deja de encontrar nada.
+  //
+  // Y no se queda en PARCHE porque es el cambio que cierra la DT-32, que no era
+  // cosmética: había DOS listas de guardas —esta, que blindaba el catálogo, y
+  // una constante escrita a mano en `functions/src/engine/catalog.ts` que
+  // blindaba el matcher— y divergían dieciocho a dos. Las diecinueve que solo
+  // existían del lado de la curación NO impedían que el difuso llegara a la
+  // ficha prohibida: `pasta de tomate` caía en `Pasta cocida` a 0,25, `pasta
+  // filo` a 0,30 y `huevas de salmón` en `Salmón` a 0,30, con su guarda escrita
+  // y sin efecto. Desde esta versión la lista es una sola, la declara la
+  // curación, el candado 1 la verifica contra las fichas y `construirIndice` la
+  // lee del catálogo — el patrón de la regla 1 del proyecto: lo declarativo
+  // viaja en los datos y la constante del motor es solo arranque en frío.
+  //
+  // LA ÚNICA GUARDA NUEVA es `pepinillos`, y no es vocabulario nuevo: era la
+  // única que vivía en la constante del motor y no en el archivo de curación.
+  // Se muda con su `salvo_si_contiene` para que fundir las dos listas no pierda
+  // ninguna fila.
+  //
+  // LAS GUARDAS ENTRAN EN EL HASH, y esa es la otra mitad de la decisión: dos
+  // catálogos con las mismas fichas y distintas guardas RESPONDEN DISTINTO, así
+  // que son contenido y no metadatos. Sin esto, agregar una guarda dejaría la
+  // `kb_version` quieta y el seed no republicaría — la trazabilidad diría que el
+  // reporte se calculó con un vocabulario que ya no es el que se usó.
+  const kbVersion = `3.8.0+${contentHash({ generated_from: generatedFrom, guardas: curation.guardas, foods })}`;
 
   return {
-    catalog: { kb_version: kbVersion, generated_from: generatedFrom, foods },
+    // El orden de las claves ES el orden del archivo (`JSON.stringify` respeta
+    // el de inserción) y `foods` va última a propósito: el encabezado se lee de
+    // un vistazo antes de las 1.115 fichas.
+    catalog: { kb_version: kbVersion, generated_from: generatedFrom, guardas: curation.guardas, foods },
     stats,
     alcohol,
   };
@@ -586,6 +800,97 @@ export function applyRecipes(foods: CanonicalFood[], curation: Curation, stats: 
     foods.push(food);
     byId.set(food.id, food);
     stats.recipeFoods += 1;
+  }
+}
+
+/**
+ * Aplica la política de genéricos (DT-13) sobre el catálogo ya armado.
+ *
+ * Dos salidas, una sola regla declarada en `curation/genericos.dt13.json`:
+ *  - `generic: true` en toda ficha de USDA cuyo inglés traiga un marcador;
+ *  - un caveat con el sodio de la propia ficha, cuando pasa el umbral.
+ *
+ * Solo alcanza a los alimentos de USDA a propósito. Un alimento manual o una
+ * receta no promedian ninguna familia: los escribió o los derivó la curación
+ * para un plato concreto, y su reserva ya está escrita a mano en sus caveats.
+ *
+ * El caveat generado se AGREGA: si la ficha ya traía caveats, no se pisa ni uno.
+ */
+export function applyGenericRule(
+  foods: CanonicalFood[],
+  rule: GenericRule | null,
+  stats: BuildStats,
+): void {
+  if (rule === null) return;
+  for (const food of foods) {
+    if (food.source !== "usda_fndds" && food.source !== "usda_sr_legacy") continue;
+    if (!esGenerico(food.names.en, rule.marcadores_en)) continue;
+
+    food.generic = true;
+    food.provenance = sortKeys({ ...food.provenance, generic: "curation" });
+    stats.genericFoods += 1;
+
+    const caveat = caveatDeSodio(food.per_100g.sodium_mg, rule);
+    if (caveat === null) continue;
+    food.caveats = [...(food.caveats ?? []), caveat];
+    food.provenance = sortKeys({ ...food.provenance, caveats: "curation" });
+    stats.genericCaveats += 1;
+  }
+}
+
+/**
+ * Hace cumplir las guardas de vocabulario sobre el catálogo ya armado.
+ *
+ * Es el hermano del candado del nombre viejo: aquel impide que un nombre ya
+ * corregido vuelva de alias, este impide que un término caiga en la ficha
+ * equivocada aunque nadie lo haya escrito todavía. Igualdad exacta sobre el
+ * término normalizado, y no subcadena: `Bife de chorizo` contiene `chorizo` y
+ * está bien; lo prohibido es la ficha llamándose `Chorizo` a secas.
+ *
+ * La confianza no salva: un `chorizo` a 0,5 sobre un corte vacuno no dice "esto
+ * se parece", dice "esto es otra cosa". Para eso está el rechazo, no la escala.
+ */
+export function checkVocabularyGuards(
+  foods: CanonicalFood[],
+  guardas: GuardaVocabulario[],
+  stats: BuildStats,
+): void {
+  if (guardas.length === 0) return;
+  const byId = new Map(foods.map((food) => [food.id, food]));
+
+  for (const guarda of guardas) {
+    const termino = plano(guarda.termino);
+    for (const id of guarda.prohibido_en) {
+      const food = byId.get(id);
+      // Una guarda que apunta a una ficha que no existe no falla: simplemente no
+      // guarda nada. Es el mismo silencio del alias huérfano, y se trata igual.
+      if (food === undefined) {
+        stats.guardViolations.push({
+          id,
+          termino: guarda.termino,
+          donde: "la ficha no está en el catálogo: la guarda no guarda nada",
+          motivo: guarda.motivo,
+        });
+        continue;
+      }
+      if (food.names.es !== null && plano(food.names.es) === termino) {
+        stats.guardViolations.push({
+          id,
+          termino: guarda.termino,
+          donde: `names.es = "${food.names.es}"`,
+          motivo: guarda.motivo,
+        });
+      }
+      for (const alias of food.aliases.es) {
+        if (plano(aliasText(alias)) !== termino) continue;
+        stats.guardViolations.push({
+          id,
+          termino: guarda.termino,
+          donde: `alias "${aliasText(alias)}" con confianza ${aliasConfidence(alias)}`,
+          motivo: guarda.motivo,
+        });
+      }
+    }
   }
 }
 

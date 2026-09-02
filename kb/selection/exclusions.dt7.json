@@ -1,13 +1,34 @@
 {
  "$comment": [
-  "Fichas que SALEN de la selección por la DT-7. La evidencia de cada una está en",
-  "kb/selection/dt7.pairs.json. No se edita selection.v1.json: sigue siendo el",
-  "entregable de la card 1.1 y su diff tiene que seguir siendo el de esa card.",
-  "Los aliases heredados son el vocabulario entero que perdía la ficha excluida",
-  "—su nombre y sus propios aliases—: excluir no puede achicar el vocabulario."
+  "Fichas que SALEN de la selección por la DT-7 y por la DT-8. La evidencia de cada",
+  "una está en kb/selection/dt7.pairs.json. No se edita selection.v1.json: sigue",
+  "siendo el entregable de la card 1.1 y su diff tiene que seguir siendo el de esa",
+  "card. Los aliases heredados son el vocabulario entero que perdía la ficha",
+  "excluida —su nombre y sus propios aliases—: excluir no puede achicar el",
+  "vocabulario.",
+  "",
+  "Las ocho primeras son de la DT-7 y todas van en la misma dirección: sale la de",
+  "FNDDS y queda la de SR Legacy, que es medición de laboratorio. Las tres últimas",
+  "las decidió Tomás el 31/08/2026 al resolver los siete pares ambiguos (DT-8) y NO",
+  "siguen esa regla, porque no son el mismo caso:",
+  "  · el puré de papa sale al revés a propósito —se excluye la ficha de SR Legacy y",
+  "    queda la de FNDDS— porque la decisión no es de fuente sino de PRODUCTO: el",
+  "    puré casero es el que se ve en una foto, y el industrial `listo para comer`",
+  "    es una distinción invisible en una imagen;",
+  "  · los frijoles y las croquetas son duplicados INTRA-FNDDS, con los ocho valores",
+  "    idénticos byte a byte. Ahí no hay dos fuentes que comparar: queda la ficha",
+  "    que ya traía el vocabulario regional cargado.",
+  "",
+  "Cuando una ficha sale, su entrada en curation/names.es.json se BORRA y su nombre",
+  "y sus aliases pasan a `aliases_heredados`. Es lo que exige la cobertura exacta de",
+  "verify_curation.py, y es la razón por la que el vocabulario no se pierde.",
+  "",
+  "`criteria_version` pasa a dt7-v2: el criterio cambió (se le sumaron las fusiones",
+  "de la DT-8) y la versión del catálogo tiene que nombrar el criterio que lo",
+  "produjo, no el primero que hubo."
  ],
- "criteria_version": "dt7-v1",
- "generated": "2026-08-30",
+ "criteria_version": "dt7-v2",
+ "generated": "2026-08-31",
  "exclusions": [
   {
    "fdc_id": 2707485,
@@ -94,6 +115,42 @@
     "Pepinillos"
    ],
    "motivo": "El `Pickles, NFS` de FNDDS es 100 % `Pickles, dill` — el mismo pepinillo en eneldo de SR Legacy. Sodio, azúcares y grasa IDÉNTICOS (808 mg · 1,28 g · 0,43 g); solo 2 kcal de diferencia."
+  },
+  {
+   "fdc_id": 169768,
+   "source": "sr_legacy",
+   "description": "Potatoes, mashed, ready-to-eat",
+   "duplicado_de": 2709492,
+   "aliases_heredados": [
+    "Puré de papa listo para comer",
+    "Puré de patata listo para comer"
+   ],
+   "motivo": "DT-8, decisión de Tomás del 31/08/2026: se fusiona al CASERO. Los dos son puré de papa (7 % en calorías) y `listo para comer` es una distinción real —producto industrial— que en una foto no se ve. Es la única exclusión que retira la ficha de SR Legacy y deja la de FNDDS: acá no decide la fuente sino el producto, porque el puré que una persona fotografía es el de plato."
+  },
+  {
+   "fdc_id": 2707348,
+   "source": "fndds",
+   "description": "Beans, from dried, NS as to type, fat added",
+   "duplicado_de": 2707347,
+   "aliases_heredados": [
+    "Alubias secas cocidas con grasa",
+    "Caraotas secas cocidas con grasa",
+    "Frijoles secos cocidos con grasa",
+    "Judías secas cocidas con grasa",
+    "Porotos secos cocidos con grasa"
+   ],
+   "motivo": "DT-8, decisión de Tomás del 31/08/2026: duplicado INTRA-FNDDS con los OCHO valores idénticos byte a byte (189 kcal · 217 mg de sodio · los mismos ingredientes 75 % pinto + 25 % negro). Queda fdc-2707347, que ya traía las cuatro variantes regionales cargadas."
+  },
+  {
+   "fdc_id": 2709517,
+   "source": "fndds",
+   "description": "Potato tots, frozen, NS as to fried or baked",
+   "duplicado_de": 2709511,
+   "aliases_heredados": [
+    "Croquetas de papa congeladas",
+    "Croquetas de patata congeladas"
+   ],
+   "motivo": "DT-8, decisión de Tomás del 31/08/2026: tercer duplicado INTRA-FNDDS con los ocho valores idénticos (237 kcal · 421 mg de sodio) y el mismo ingrediente único, `Potato tots, frozen, fried`. `Congeladas` es un dato de la góndola, no del plato."
   }
  ]
 }

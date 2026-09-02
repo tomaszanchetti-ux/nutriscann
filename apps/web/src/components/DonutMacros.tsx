@@ -1,0 +1,456 @@
+/**
+ * EL DONUT DE DOBLE ANILLO: de dónde vienen las calorías, y de qué está hecho
+ * cada macronutriente.
+ *
+ * SVG a mano, sin librería de charting: cualquier paquete de charts pesaría más
+ * que toda la pantalla (`docs/PLAN.md` §4). Los colores son SEMÁNTICOS y viven
+ * en `index.css` como design tokens (`--color-protein` coral, `--color-carbs`
+ * ámbar, `--color-fat` violeta): el mismo tono significa lo mismo acá, en la
+ * lista y en cualquier pantalla futura. Las subdivisiones del anillo exterior no
+ * estrenan colores — son TONOS del macro al que pertenecen, para que se lea de
+ * un vistazo a quién pertenece cada gajo.
+ *
+ * ---------------------------------------------------------------------------
+ * LA ARITMÉTICA, QUE ES LO ÚNICO QUE NO SE NEGOCIA
+ *
+ * ANILLO INTERIOR — el reparto CALÓRICO. Son los `macro_pct` que manda el motor:
+ * gramos × Atwater (4 proteínas / 4 hidratos / 9 grasas) sobre las kcal totales
+ * (`porcentajesDeMacros` en `functions/src/engine/arithmetic.ts`). Acá no se
+ * recalcula nada: se dibuja lo que el motor ya calculó, que es la misma base que
+ * usaba el anillo simple de la card 2.3.
+ *
+ * ANILLO EXTERIOR — la SUBDIVISIÓN de cada arco interior, en su mismo lugar y
+ * con su misma amplitud. Se reparte por PROPORCIÓN DE GRAMOS DENTRO DE ESE
+ * MACRO, no sobre el plato:
+ *
+ *   · dentro de GRASAS      → saturadas / el resto      (sat_fat_g de fat_g)
+ *   · dentro de HIDRATOS    → azúcares / fibra / el resto
+ *                             (sugars_g y fiber_g de carbs_g — USDA cuenta los
+ *                              dos ADENTRO de "carbohydrate, by difference", así
+ *                              que restarlos no es una resta inventada)
+ *   · dentro de PROTEÍNAS   → nada: no hay subdivisión medida, y el arco exterior
+ *                             acompaña liso y atenuado en vez de fingir una.
+ *
+ * NADA SE CUENTA DOS VECES: el exterior es una PARTICIÓN del interior. Un gajo
+ * exterior nunca aparece fuera del arco de su padre, y la suma de los gajos de
+ * un macro es exactamente el arco de ese macro.
+ *
+ * EL SODIO NO ESTÁ, y no es un olvido: no aporta calorías, y este anillo reparte
+ * calorías. Se sigue midiendo y sigue en el payload; desde la WS08 ya no tiene
+ * recuadro propio en el reporte, y solo aparece en pantalla cuando el aviso de
+ * total parcial tiene que explicar que faltó.
+ *
+ * ---------------------------------------------------------------------------
+ * QUÉ SE VE Y QUÉ NO, DESPUÉS DEL Q/A DE LA WS08
+ *
+ * El DIBUJO no cambió: los dos anillos se calculan y se pintan exactamente
+ * igual, con la misma aritmética de abajo. Lo que cambió es la LEYENDA:
+ *
+ *   · la lista del anillo interior va en orden DECRECIENTE y con números
+ *     enteros (los decimales descuadraban la columna en móvil);
+ *   · la fila «Sin explicar» ya no se lista — el arco apagado se queda, y la
+ *     nota del final lo explica en palabras;
+ *   · la leyenda del anillo exterior («Dentro de cada macronutriente») se sacó
+ *     entera. Los gajos de azúcares, fibra y saturadas siguen dibujados, y su
+ *     desglose sigue enunciado en la descripción accesible del gráfico.
+ *
+ * ---------------------------------------------------------------------------
+ * HONESTIDAD DEL ANILLO (la doctrina de la card 2.3, ahora en dos radios)
+ *
+ * El motor NO normaliza los porcentajes para que sumen 100: la diferencia
+ * (`sin_explicar`) es información real —alcohol, fibra, redondeos de USDA— y
+ * taparla sería inventar un cuadre. Pero un anillo tiene 360 grados sí o sí:
+ *
+ *   · si los tres suman MENOS de 100, lo que falta se dibuja como un tramo
+ *     apagado, "sin explicar", y la nota del final dice cuánto es;
+ *   · si suman MÁS de 100, el reparto se hace sobre esa suma (el anillo cierra)
+ *     y esa misma nota dice cuánto sobra.
+ *
+ * Lo mismo, un piso más afuera: si las partes medidas de un macro suman MÁS que
+ * el macro (puede pasar entre fichas de fuentes distintas), el dibujo se reparte
+ * sobre esa suma para que el arco cierre — y los GRAMOS de la leyenda siguen
+ * siendo los que mandó el motor, sin tocar.
+ *
+ * Y UN `null` NO ES UN CERO. Si un valor de subdivisión no viene medido, ese
+ * gajo NO se dibuja como 0: si no hay ninguna parte medida, el arco exterior de
+ * ese macro queda liso, y la leyenda dice "sin dato" al lado de lo que falta. No
+ * se asume nunca que lo que no se midió vale cero.
+ * ------------------------------------------------------------------------- */
+import type { CopyDeLaApp } from "../lib/config";
+import { gramosEnteros, porcentaje, porcentajeEntero } from "../lib/formato";
+import type { PorcentajesDeMacros, TotalesNutrientes } from "../lib/types";
+
+/** El anillo interior: grueso, es el que manda. */
+const RADIO_INTERIOR = 66;
+const GROSOR_INTERIOR = 26;
+/** El exterior: hoy NO se dibuja (anillo simple, Q/A de Tomás). El radio se
+ *  conserva porque fija la geometría de `exteriores`, que sigue calculada;
+ *  su grosor (11) vuelve con el render si el anillo revive. */
+const RADIO_EXTERIOR = 88;
+const CENTRO = 100;
+
+const VUELTA_INTERIOR = 2 * Math.PI * RADIO_INTERIOR;
+const VUELTA_EXTERIOR = 2 * Math.PI * RADIO_EXTERIOR;
+
+/**
+ * El respiro entre gajos, EN GRADOS y no en unidades de arco: así el hueco se ve
+ * igual en los dos anillos, que tienen circunferencias distintas.
+ */
+const SEPARACION_EN_GRADOS = 2.2;
+
+/** Cuánto tarda en dibujarse cada anillo, y cuánto espera el de afuera. */
+const DIBUJO_MS = 620;
+const ESPERA_DEL_EXTERIOR_MS = 260;
+
+/** Un gajo ya resuelto: dónde empieza, cuánto mide y de qué color es. */
+interface Gajo {
+  id: string;
+  color: string;
+  /** Dónde empieza, en unidades de arco de SU anillo. */
+  inicio: number;
+  largo: number;
+  retraso: number;
+}
+
+/** Una parte medida (o no) dentro de un macro. */
+interface Parte {
+  id: string;
+  etiqueta: string;
+  color: string;
+  /** `null` = la fuente no lo declara. No es cero. */
+  gramos: number | null;
+}
+
+interface Macro {
+  clave: "protein" | "carbs" | "fat";
+  etiqueta: string;
+  color: string;
+  /** Su tono atenuado, para el arco exterior cuando no hay nada que subdividir. */
+  colorTenue: string;
+  pct: number;
+  gramos: number | null;
+  partes: Parte[];
+  /** La etiqueta de lo que queda después de las partes medidas. */
+  etiquetaDelResto: string;
+}
+
+export interface DonutMacrosProps {
+  copy: CopyDeLaApp;
+  macro_pct: PorcentajesDeMacros;
+  nutrients: TotalesNutrientes;
+  /** Lo que va en el centro del anillo. */
+  centro: React.ReactNode;
+}
+
+/** Un tono más oscuro e intenso del color del macro. */
+function intenso(token: string): string {
+  return `color-mix(in oklab, ${token} 72%, #000)`;
+}
+
+/** El mismo color, apagado contra el fondo: acompaña sin competir. */
+function tenue(token: string): string {
+  return `color-mix(in oklab, ${token} 34%, var(--color-surface-2))`;
+}
+
+export function DonutMacros({ copy, macro_pct, nutrients, centro }: DonutMacrosProps) {
+  const macros: Macro[] = [
+    {
+      clave: "protein",
+      etiqueta: copy.nutrient_protein,
+      color: "var(--color-protein)",
+      colorTenue: tenue("var(--color-protein)"),
+      pct: macro_pct.protein,
+      gramos: nutrients.protein_g,
+      // Sin subdivisión: el catálogo no mide aminoácidos, y partir el arco por
+      // algo que no se midió sería dibujar una precisión que no existe.
+      partes: [],
+      etiquetaDelResto: copy.donut_rest,
+    },
+    {
+      clave: "carbs",
+      etiqueta: copy.nutrient_carbs,
+      color: "var(--color-carbs)",
+      colorTenue: tenue("var(--color-carbs)"),
+      pct: macro_pct.carbs,
+      gramos: nutrients.carbs_g,
+      partes: [
+        {
+          id: "sugars",
+          etiqueta: copy.nutrient_sugars,
+          color: "var(--color-carbs)",
+          gramos: nutrients.sugars_g,
+        },
+        {
+          id: "fiber",
+          etiqueta: copy.nutrient_fiber,
+          color: intenso("var(--color-carbs)"),
+          gramos: nutrients.fiber_g,
+        },
+      ],
+      etiquetaDelResto: copy.donut_rest,
+    },
+    {
+      clave: "fat",
+      etiqueta: copy.nutrient_fat,
+      color: "var(--color-fat)",
+      colorTenue: tenue("var(--color-fat)"),
+      pct: macro_pct.fat,
+      gramos: nutrients.fat_g,
+      partes: [
+        {
+          id: "sat_fat",
+          etiqueta: copy.nutrient_sat_fat,
+          color: intenso("var(--color-fat)"),
+          gramos: nutrients.sat_fat_g,
+        },
+      ],
+      etiquetaDelResto: copy.donut_rest,
+    },
+  ];
+
+  // ── El anillo interior: el reparto calórico, con su base honesta ──────────
+  const suma = macros.reduce((total, macro) => total + Math.max(0, macro.pct), 0);
+  const base = suma > 100 ? suma : 100;
+  const sobrante = base - suma;
+  const haySobrante = sobrante > 0.05;
+
+  const interiores: Gajo[] = [];
+  const exteriores: Gajo[] = [];
+  /** El desglose ya resuelto, para la leyenda de abajo. */
+  const desglose: { macro: Macro; partes: Parte[]; resto: number | null }[] = [];
+
+  let acumulado = 0;
+  for (const macro of macros) {
+    const largo = (Math.max(0, macro.pct) / base) * VUELTA_INTERIOR;
+    interiores.push({
+      id: macro.clave,
+      color: macro.color,
+      inicio: acumulado,
+      largo,
+      retraso: 0,
+    });
+
+    // El mismo tramo, en el radio de afuera: misma fracción de la vuelta.
+    const fraccion = largo / VUELTA_INTERIOR;
+    const inicioExterior = (acumulado / VUELTA_INTERIOR) * VUELTA_EXTERIOR;
+    const largoExterior = fraccion * VUELTA_EXTERIOR;
+    acumulado += largo;
+
+    const medidas = macro.partes.filter((parte) => parte.gramos !== null);
+    const totalDelMacro = macro.gramos;
+
+    if (medidas.length === 0 || totalDelMacro === null || totalDelMacro <= 0) {
+      // Nada que subdividir (o nada medido): el arco exterior acompaña liso.
+      exteriores.push({
+        id: `${macro.clave}-liso`,
+        color: macro.colorTenue,
+        inicio: inicioExterior,
+        largo: largoExterior,
+        retraso: ESPERA_DEL_EXTERIOR_MS,
+      });
+      desglose.push({ macro, partes: macro.partes, resto: null });
+      continue;
+    }
+
+    // Las partes medidas, en proporción de gramos DENTRO del macro. Si suman más
+    // que el macro (fuentes distintas, redondeos), el dibujo se reparte sobre esa
+    // suma para que el arco cierre: los gramos de la leyenda no se tocan.
+    const sumaMedida = medidas.reduce((total, parte) => total + (parte.gramos ?? 0), 0);
+    const baseDelMacro = sumaMedida > totalDelMacro ? sumaMedida : totalDelMacro;
+    let dentro = inicioExterior;
+    for (const parte of medidas) {
+      const largoParte = ((parte.gramos ?? 0) / baseDelMacro) * largoExterior;
+      exteriores.push({
+        id: `${macro.clave}-${parte.id}`,
+        color: parte.color,
+        inicio: dentro,
+        largo: largoParte,
+        retraso: ESPERA_DEL_EXTERIOR_MS,
+      });
+      dentro += largoParte;
+    }
+    const resto = Math.max(0, baseDelMacro - sumaMedida);
+    if (resto > 0) {
+      exteriores.push({
+        id: `${macro.clave}-resto`,
+        color: macro.colorTenue,
+        inicio: dentro,
+        largo: (resto / baseDelMacro) * largoExterior,
+        retraso: ESPERA_DEL_EXTERIOR_MS,
+      });
+    }
+    desglose.push({ macro, partes: macro.partes, resto });
+  }
+
+  if (haySobrante) {
+    const largo = (sobrante / base) * VUELTA_INTERIOR;
+    interiores.push({
+      id: "sin_explicar",
+      color: "var(--color-line)",
+      inicio: acumulado,
+      largo,
+      retraso: 0,
+    });
+    exteriores.push({
+      id: "sin_explicar-exterior",
+      color: "var(--color-surface-2)",
+      inicio: (acumulado / VUELTA_INTERIOR) * VUELTA_EXTERIOR,
+      largo: (largo / VUELTA_INTERIOR) * VUELTA_EXTERIOR,
+      retraso: ESPERA_DEL_EXTERIOR_MS,
+    });
+  }
+
+  /**
+   * La descripción del gráfico para quien no lo ve. Se arma con los datos —por
+   * eso no está en `config/app`— y dice lo mismo que la leyenda: el reparto
+   * calórico y, dentro de cada macro, de qué está hecho.
+   */
+  const descripcion = `Reparto de calorías: ${macros
+    .map((macro) => `${macro.etiqueta} ${porcentaje(macro.pct)}`)
+    .join(", ")}.`;
+  // La descripción dice lo que el gráfico MUESTRA: al volver al anillo simple,
+  // el desglose por macro salió también de acá (contar en la etiqueta lo que el
+  // dibujo no dibuja sería describir otro gráfico). `desglose` sigue resuelto
+  // por si el anillo exterior vuelve.
+  void desglose;
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="relative mx-auto w-full max-w-[17rem]">
+        <svg viewBox="0 0 200 200" className="w-full" role="img" aria-label={descripcion}>
+          <circle
+            cx={CENTRO}
+            cy={CENTRO}
+            r={RADIO_INTERIOR}
+            fill="none"
+            stroke="var(--color-surface-2)"
+            strokeWidth={GROSOR_INTERIOR}
+          />
+          {/* EL ANILLO EXTERIOR NO SE DIBUJA (Q/A de Tomás, 01/09 por la noche):
+              el donut vuelve al anillo simple. Los gajos de `exteriores` se
+              siguen calculando —la partición es correcta y revivirla es volver a
+              renderizarla acá— pero en pantalla manda un solo círculo. */}
+          <g transform={`rotate(-90 ${CENTRO} ${CENTRO})`}>
+            {interiores.map((gajo) => (
+              <Arco
+                key={gajo.id}
+                gajo={gajo}
+                radio={RADIO_INTERIOR}
+                grosor={GROSOR_INTERIOR}
+                vuelta={VUELTA_INTERIOR}
+              />
+            ))}
+          </g>
+        </svg>
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+          {centro}
+        </div>
+      </div>
+
+      {/* LA LEYENDA — el reparto calórico, y nada más (Q/A de Tomás, WS08).
+          Tres decisiones, las tres suyas:
+            · ORDEN DECRECIENTE por porcentaje: el macro que más pesa se lee
+              primero. El ANILLO no se reordena —cada color se queda en su sitio
+              y la animación entra igual—; se ordena la LISTA, que es la que se
+              recorre de arriba abajo.
+            · NÚMEROS ENTEROS, sin coma: los decimales descuadraban la columna en
+              móvil y no cambiaban ninguna decisión de quien mira su plato.
+            · SIN la fila «Sin explicar»: el hueco sigue dibujado como arco
+              apagado y la nota de abajo lo explica en palabras cuando existe.
+              Una fila con "sin dato" en su columna de gramos no informaba. */}
+      <dl className="flex flex-col gap-2">
+        {[...macros]
+          .sort((uno, otro) => otro.pct - uno.pct)
+          .map((macro) => (
+            <div
+              key={macro.clave}
+              className="flex items-center gap-3 rounded-xl bg-surface-2/60 px-3 py-2"
+            >
+              <span
+                aria-hidden="true"
+                className="size-3 shrink-0 rounded-full"
+                style={{ backgroundColor: macro.color }}
+              />
+              <dt className="min-w-0 flex-1 text-sm text-ink-soft">{macro.etiqueta}</dt>
+              {/* El % y los gramos son COLUMNAS de ancho fijo y sin quiebre: una
+                  etiqueta larga («Hidratos de carbono») envuelve en la suya y
+                  los números quedan alineados fila contra fila (Q/A de Tomás). */}
+              <dd className="flex shrink-0 items-baseline gap-3 font-mono tabular-nums">
+                <span className="w-12 whitespace-nowrap text-right text-ink">
+                  {porcentajeEntero(macro.pct)}
+                </span>
+                <span className="w-14 whitespace-nowrap text-right text-sm text-ink-faint">
+                  {macro.gramos === null
+                    ? copy.nutrient_no_data
+                    : `${gramosEnteros(macro.gramos)} g`}
+                </span>
+              </dd>
+            </div>
+          ))}
+      </dl>
+
+      {Math.abs(macro_pct.sin_explicar) >= 0.05 && (
+        <p className="text-xs leading-relaxed text-ink-faint">
+          Los tres porcentajes se calculan cada uno contra las calorías totales y{" "}
+          <strong className="font-medium text-ink-soft">no se ajustan para que sumen 100</strong>:
+          quedan {porcentaje(macro_pct.sin_explicar, true)} sin explicar. Esa diferencia es real
+          (fibra, alcohol, redondeos de la fuente), no un error de la cuenta.
+        </p>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Un gajo, dibujado como un trozo de circunferencia.
+ *
+ * Se posiciona ROTANDO el círculo hasta su ángulo de arranque, y no con un
+ * `strokeDashoffset` negativo como en la card 2.3: así el offset queda libre
+ * para la animación de entrada —el gajo se DIBUJA desde su propio comienzo— y
+ * cada arco necesita animar una sola propiedad. La regla vive en `index.css`
+ * (`.donut-arco`), que es donde pueden vivir los keyframes.
+ */
+function Arco({
+  gajo,
+  radio,
+  grosor,
+  vuelta,
+}: {
+  gajo: Gajo;
+  radio: number;
+  grosor: number;
+  vuelta: number;
+}) {
+  if (gajo.largo <= 0) return null;
+
+  const separacion = (vuelta * SEPARACION_EN_GRADOS) / 360;
+  // Un gajo muy chico no puede pagar el respiro entero: antes que achicarlo
+  // hasta desaparecer —o dibujarlo más grande de lo que es— se dibuja entero y
+  // pegado al vecino. Lo que no se toca nunca es el TAMAÑO real del gajo.
+  const dibujo = gajo.largo > separacion * 2 ? gajo.largo - separacion : gajo.largo;
+  const anguloDeArranque = (gajo.inicio / vuelta) * 360;
+
+  return (
+    <circle
+      className="donut-arco"
+      cx={CENTRO}
+      cy={CENTRO}
+      r={radio}
+      fill="none"
+      stroke={gajo.color}
+      strokeWidth={grosor}
+      strokeLinecap="butt"
+      strokeDasharray={`${dibujo} ${vuelta}`}
+      transform={`rotate(${anguloDeArranque} ${CENTRO} ${CENTRO})`}
+      style={
+        {
+          // Como texto y no como número: una propiedad personalizada no lleva
+          // unidad, y así no depende de que el framework no le pegue un "px".
+          "--donut-largo": `${dibujo}`,
+          animationDuration: `${DIBUJO_MS}ms`,
+          animationDelay: `${gajo.retraso}ms`,
+        } as React.CSSProperties
+      }
+    />
+  );
+}

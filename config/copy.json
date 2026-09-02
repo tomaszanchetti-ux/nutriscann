@@ -1,0 +1,358 @@
+{
+  "$schema_version": 1,
+  "updated_at": "2026-09-02",
+
+  "note": "Los textos de la interfaz. Es la fuente de verdad del campo 'copy' de config/app en Firestore: se edita acá, se revisa en un PR y se publica con 'npm run kb:seed:config'. Es la regla dura n.º 1 del proyecto hecha operativa — nada hardcodeado: cambiar una palabra que el usuario lee NO requiere desplegar. Los valores que están en apps/web/src/lib/config.ts son el ARRANQUE EN FRÍO (lo que se muestra si Firestore no contesta), no la configuración.",
+
+  "publishing_note": "OJO, se publica distinto que recommendation_rules.json: de las reglas se publica el documento ENTERO, y de este archivo se publica SOLO el objeto 'copy'. El motivo es el contrato: config/app.copy es un mapa de texto a texto (Record<string,string> en functions/src/config.ts) y el front lee cada clave como stringValue. Un '$schema_version' numérico adentro de ese mapa rompería el tipo. Los metadatos, entonces, viven afuera y se quedan en el repo.",
+
+  "dt22_note": "LAS 29 CLAVES NUEVAS DE LA CARD 3.1 (prefijos nutrient_, donut_, match_, item_ y las cuatro report_ del final) SON LA DT-22: textos que el usuario leía y estaban escritos adentro de los componentes. Cambiar «Coincidencia aproximada» exigía desplegar la PWA — la regla dura n.º 1 rota fuera de 'copy'. NO entró todo lo que se lee en pantalla, y la línea está declarada: viaja acá lo que es una FRASE FIJA; se queda en el código lo que se ARMA CON DATOS (el aviso de total parcial cuenta ítems y gramos, la letra chica de un compuesto enumera sus ingredientes, la nota del donut inyecta el porcentaje sin explicar). config/app.copy es un mapa de texto a texto y no tiene convención de placeholders: partir una frase y pegarle un número al lado se rompe apenas alguien la edita. Cuando haga falta se agrega la convención y se mudan; hoy sería inventar un motor de plantillas para cuatro frases. Los textos de la vitrina premium (apps/web/src/lib/copy.premium.ts) tampoco entraron: su mudanza es de la card 3.5, junto con el seed real.",
+
+  "v2_note": "LAS 14 CLAVES 'v2_' SON LA SECCIÓN «Funcionalidades Premium» DE LA VITRINA (card 3.3, retomada en la WS08): los dos escalones de la v2 —el accesible (fichas con fuente USDA, recetas por categoría, tendencias) y el alto (planes personalizados de 1 semana / 15 días / 1 mes)—, sin precio y empujando a la lista de espera, que es la única conversión que esta pantalla puede tener antes de que existan los pagos. NACIERON 17 Y QUEDARON 14: el Q/A de Tomás (02/09/2026) se llevó tres. 'v2_intro' (el párrafo de entrada) y 'v2_nota' (el pie) salieron de la pantalla — la sección se lee mejor con las dos tarjetas y nada alrededor, y lo que decía el pie ya está dicho en 'nota_pagos', al final de la vitrina. 'v2_badge' dejó de ser TEXTO y pasó a ser ESTRUCTURA: cada tarjeta lleva ahora el nombre de SU plan ('Premium' · 'Premium Gold'), que sale de PLANES en apps/web/src/lib/copy.premium.ts leído por la misma etiqueta con la que el botón da el alta, así el sello y el alta no pueden decir cosas distintas. Son los PRIMEROS textos de la vitrina que viven acá y no en apps/web/src/lib/copy.premium.ts: la mudanza del resto sigue siendo de la card 3.5, junto con el seed real. Tres reglas que no se tocan al editarlos: (1) NINGÚN precio — la escalera 15/40/150 con sus 0 €/12 €/4,99 € es la de los tres planes de arriba y estos escalones no inventan uno; (2) los objetivos son SOLO de forma física (bajar de peso, tonificar, ganar masa muscular) — ninguna condición médica se nombra, y el bloque del plan personalizado lleva pegado el 'disclaimer' que ya existe; (3) si alguno vuelve a nombrar la app, el nombre es CaliScan (rename del 02/09/2026) — hoy ninguno lo hace: la única mención se fue con 'v2_intro'.",
+
+  "keys_note": "Lista CERRADA de claves válidas, y el seed rechaza el archivo si 'copy' no tiene exactamente estas — ni una de menos ni una de más. No es burocracia: el front lee cada clave POR SU NOMBRE contra la interfaz CopyDeLaApp (apps/web/src/lib/config.ts). Una clave mal tipeada no rompe nada visible — la pantalla cae al arranque en frío y se ve bien —, así que el error se degrada en silencio y hay que cazarlo antes de publicar. Agregar un texto nuevo es un cambio de las dos puntas: la clave acá y el campo en CopyDeLaApp.",
+
+  "keys": {
+    "capture_prompt": {
+      "since": "fase-0",
+      "used_in": "PantallaCaptura — el título de la pantalla inicial"
+    },
+    "capture_cta": {
+      "since": "fase-0",
+      "used_in": "PantallaCaptura — el botón que abre la cámara"
+    },
+    "capture_help": {
+      "since": "card-2.3",
+      "used_in": "PantallaCaptura — la línea de ayuda debajo del título"
+    },
+    "install_title": {
+      "since": "card-3.5",
+      "used_in": "AvisoDeInstalacion — el título del aviso de instalación de la PWA, en la pantalla de captura"
+    },
+    "install_ios_help": {
+      "since": "card-3.5",
+      "used_in": "AvisoDeInstalacion — la instrucción para iPhone/iPad (Safari no ofrece instalar solo: hay que contar el gesto)"
+    },
+    "install_android_cta": {
+      "since": "card-3.5",
+      "used_in": "AvisoDeInstalacion — el botón de instalar en Android, visible solo cuando el navegador entregó el beforeinstallprompt"
+    },
+    "scanning_steps": {
+      "since": "fase-0",
+      "used_in": "PantallaEscaneo — los pasos que rotan durante la espera",
+      "format": "UN SOLO STRING con los pasos separados por '|'. No es una lista porque 'copy' es un mapa de textos y una lista no entra ahí; el front lo parte. La forma la fijó lo que la Fase 0 dejó publicado, no una decisión nueva.",
+      "warning": "Los pasos son VERDAD, no decoración: describen lo que el motor está haciendo de verdad (visión → catálogo → aritmética). Cambiar el orden o inventar un paso que no existe convierte la pantalla de espera en una animación que miente.",
+      "mapping": "Uno por paso del circuito de functions/src/analyze/handler.ts, en su orden real. (1) 'Identificando qué hay en el plato y cuánto…' = pedirVision(): la ÚNICA llamada al modelo, que devuelve nombres, gramos y confianza — su schema no tiene calorías. (2) 'Buscando cada alimento en la base nutricional…' = analizarEscaneo() → buscarConDosNombres(): exacto → alias → difuso, en español y en inglés, contra el catálogo. (3) 'Calculando calorías y macros con esos gramos…' = escalar() + sumarTotales(): gramos × valores por 100 g de la ficha, más la compuerta de confianza que decide si hay total. La card 3.2 los reescribió: los tres decían algo parecido pero ninguno nombraba el reparto del trabajo — el modelo identifica y la base cuantifica, que es la regla dura n.º 2 del proyecto contada en tres renglones.",
+      "count_lock": "SON TRES, y el número está atado: kb/seed/src/textos.test.ts fija pasos.length === 3. Un cuarto paso (por ejemplo 'Preparando la foto…', que sería verdad mientras el navegador la achica) exige tocar ese test."
+    },
+    "scanning_title": {
+      "since": "card-2.3",
+      "used_in": "PantallaEscaneo — el título de la pantalla de espera"
+    },
+    "report_kcal_label": {
+      "since": "card-2.3",
+      "used_in": "PantallaReporte — la etiqueta del número grande, en el centro del donut"
+    },
+    "report_macros_title": {
+      "since": "card-2.3",
+      "used_in": "PantallaReporte — el título del PRIMER recuadro: el donut y el reparto de macros con sus gramos",
+      "dt23": "DT-23 CERRADA (card 3.1). Hasta acá este texto solo se veía en el caso borde 'sin totales' —o sea, el título de los macros aparecía justamente cuando NO había macros— y el reporte normal tenía el donut sin encabezado. Ahora encabeza el recuadro que sí muestra el reparto, y el caso 'sin totales' tiene su propio título ('report_no_totals_title')."
+    },
+    "report_items_title": {
+      "since": "card-2.3",
+      "used_in": "PantallaReporte — el encabezado de la lista de alimentos"
+    },
+    "report_partial_title": {
+      "since": "card-2.3",
+      "used_in": "PantallaReporte → AvisoParcial — el título del aviso cuando el total no cubre todo el plato"
+    },
+    "report_cta": {
+      "since": "card-2.3",
+      "used_in": "PantallaReporte (el botón del final) y PantallaMensaje (el botón cuando no había comida). Es la MISMA clave en los dos lugares a propósito: vuelven a la misma pantalla."
+    },
+    "not_food_title": {
+      "since": "card-2.3",
+      "used_in": "PantallaMensaje — el título cuando la foto no es de comida"
+    },
+    "error_not_food": {
+      "since": "fase-0",
+      "used_in": "PantallaMensaje — el detalle cuando la foto no es de comida. Solo se usa si el backend NO mandó su propio mensaje: el del backend gana, porque es específico de esa foto."
+    },
+    "error_title": {
+      "since": "card-2.3",
+      "used_in": "App — el título de la pantalla de error, cualquiera sea el motivo"
+    },
+    "error_unreadable": {
+      "since": "fase-0",
+      "used_in": "App — el detalle del error cuando el motor devuelve 'imagen_ilegible'"
+    },
+    "error_network": {
+      "since": "card-2.3",
+      "used_in": "App — el detalle del error cuando la llamada no llegó al servidor ('sin_red')"
+    },
+    "error_unexpected": {
+      "since": "card-2.3",
+      "used_in": "App — el detalle del error cuando falla algo que no sabemos nombrar"
+    },
+    "error_cta": {
+      "since": "card-2.3",
+      "used_in": "App → PantallaMensaje — el botón que reintenta después de un error"
+    },
+    "disclaimer": {
+      "since": "card-2.3",
+      "used_in": "PieDeDiagnostico — el pie legal, visible en todas las pantallas"
+    },
+
+    "nutrient_protein": {
+      "since": "card-3.1",
+      "used_in": "DonutMacros (leyenda del anillo interior) y PantallaReporte (primer recuadro)"
+    },
+    "nutrient_carbs": {
+      "since": "card-3.1",
+      "used_in": "DonutMacros (leyenda del anillo interior) y PantallaReporte (primer recuadro)"
+    },
+    "nutrient_fat": {
+      "since": "card-3.1",
+      "used_in": "DonutMacros (leyenda del anillo interior) y PantallaReporte (primer recuadro)"
+    },
+    "nutrient_fiber": {
+      "since": "card-3.1",
+      "used_in": "DonutMacros (anillo exterior, dentro de los hidratos) · PantallaReporte (segundo recuadro) · AvisoParcial"
+    },
+    "nutrient_sat_fat": {
+      "since": "card-3.1",
+      "used_in": "DonutMacros (anillo exterior, dentro de las grasas) · PantallaReporte (segundo recuadro) · AvisoParcial"
+    },
+    "nutrient_sugars": {
+      "since": "card-3.1",
+      "used_in": "DonutMacros (anillo exterior, dentro de los hidratos) · PantallaReporte (segundo recuadro) · AvisoParcial"
+    },
+    "nutrient_sodium": {
+      "since": "card-3.1",
+      "used_in": "PantallaReporte (segundo recuadro) y AvisoParcial. NO está en el donut a propósito: el sodio no aporta calorías y el donut reparte calorías."
+    },
+    "nutrient_no_data": {
+      "since": "card-3.1",
+      "used_in": "PantallaReporte y DonutMacros — lo que se muestra donde iría un número que la fuente no declara. NUNCA un cero: null no es cero."
+    },
+
+    "donut_unexplained": {
+      "since": "card-3.1",
+      "used_in": "DonutMacros — el tramo apagado del anillo interior cuando los tres macros no llegan a 100 % de las calorías"
+    },
+    "donut_detail_title": {
+      "since": "card-3.1",
+      "used_in": "SIN USO desde el Q/A de la WS08 (huérfana declarada)",
+      "huerfana": "Encabezaba la leyenda del ANILLO EXTERIOR («Dentro de cada macronutriente»). Tomás sacó esa sección entera del reporte el 01/09/2026: el anillo exterior se sigue DIBUJANDO —los gajos de azúcares, fibra y saturadas están— pero ya no se lista debajo. La clave se queda porque la lista de claves está CERRADA con candado (kb/seed/src/textos.test.ts exige que config/copy.json y CopyDeLaApp coincidan exactamente): borrarla es un cambio de las dos puntas y de kb/, que esta WS no toca. Si la sección no vuelve, se saca en el mismo movimiento que report_others_title y report_weight_label."
+    },
+    "donut_rest": {
+      "since": "card-3.1",
+      "used_in": "DonutMacros — dentro de un macro, lo que queda después de sus partes medidas (grasas no saturadas; hidratos que no son azúcares ni fibra). Desde la WS08 ya NO se ve como fila: sobrevive en la descripción accesible del gráfico (aria-label), que es la que enumera el desglose para quien no lo ve."
+    },
+
+    "match_exacto": { "since": "card-3.1", "used_in": "BadgeDeMatch — el sello del ítem" },
+    "match_exacto_ayuda": {
+      "since": "card-3.1",
+      "used_in": "BadgeDeMatch — la explicación del sello (atributo title)"
+    },
+    "match_alias": { "since": "card-3.1", "used_in": "BadgeDeMatch — el sello del ítem" },
+    "match_alias_ayuda": {
+      "since": "card-3.1",
+      "used_in": "BadgeDeMatch — la explicación del sello (atributo title)"
+    },
+    "match_difuso": { "since": "card-3.1", "used_in": "BadgeDeMatch — el sello del ítem" },
+    "match_difuso_ayuda": {
+      "since": "card-3.1",
+      "used_in": "BadgeDeMatch — la explicación del sello (atributo title)"
+    },
+    "match_compuesto": { "since": "card-3.1", "used_in": "BadgeDeMatch — el sello del ítem" },
+    "match_compuesto_ayuda": {
+      "since": "card-3.1",
+      "used_in": "BadgeDeMatch — la explicación del sello (atributo title)"
+    },
+    "match_no_catalogado": { "since": "card-3.1", "used_in": "BadgeDeMatch — el sello del ítem" },
+    "match_no_catalogado_ayuda": {
+      "since": "card-3.1",
+      "used_in": "BadgeDeMatch — la explicación del sello (atributo title)"
+    },
+
+    "item_confidence_label": {
+      "since": "card-3.1",
+      "used_in": "ItemDelPlato — la etiqueta de la barra de confianza"
+    },
+    "item_generic_badge": {
+      "since": "card-3.1",
+      "used_in": "ItemDelPlato — la marca al lado del nombre cuando la ficha es genérica"
+    },
+    "item_generic_note": {
+      "since": "card-3.1",
+      "used_in": "ItemDelPlato — la letra chica de una ficha genérica, SOLO cuando la propia ficha no lo dice ya en sus caveats"
+    },
+    "item_source_label": {
+      "since": "card-3.1",
+      "used_in": "ItemDelPlato — la etiqueta de la línea de trazabilidad (USDA #…)"
+    },
+
+    "report_no_totals_title": {
+      "since": "card-3.1",
+      "used_in": "PantallaReporte — el título cuando NO hay total que dibujar (ningún alimento se cuantificó, o la compuerta del total cerró)"
+    },
+    "report_no_totals_body": {
+      "since": "card-3.1",
+      "used_in": "PantallaReporte — el cuerpo de ese mismo caso, SOLO cuando el motor no mandó su propio motivo. El del motor gana: es específico de esta foto."
+    },
+    "report_others_title": {
+      "since": "card-3.1",
+      "used_in": "SIN USO desde el Q/A de la WS08 (huérfana declarada)",
+      "huerfana": "Titulaba el SEGUNDO recuadro del reporte («Del resto del análisis»: fibra, saturadas, azúcares y sodio). Tomás lo sacó entero el 01/09/2026 — la pantalla muestra pocas cosas y muy útiles. Los datos NO se perdieron: siguen viajando en el payload del motor y en el expediente, salieron solo de la pantalla. La clave se queda por el candado de claves cerradas (ver donut_detail_title)."
+    },
+    "report_weight_label": {
+      "since": "card-3.1",
+      "used_in": "SIN USO desde el Q/A de la WS08 (huérfana declarada)",
+      "huerfana": "Era la etiqueta del peso identificado, al pie del segundo recuadro, y se fue con él. La clave se queda por el candado de claves cerradas (ver donut_detail_title)."
+    },
+
+    "v2_title": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — el título de la sección «Funcionalidades Premium», debajo de los tres planes. Es un título y nada más: el párrafo de entrada que llevaba debajo ('v2_intro') se sacó en el Q/A del 02/09/2026, igual que el subtítulo de la pantalla de planes."
+    },
+    "v2_premium_titulo": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — el título de la tarjeta del escalón accesible. NO repite el nombre del plan (eso lo dice 'v2_premium_vinculo'): dice QUÉ trae, que es lo que se compra."
+    },
+    "v2_premium_vinculo": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — a qué plan de la escalera de arriba se suma. Ocupa el lugar donde iría un precio, y por eso NO hay precio: estos escalones no lo tienen."
+    },
+    "v2_premium_resumen": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — la línea que resume el escalón accesible"
+    },
+    "v2_premium_punto_1": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — primera viñeta del escalón accesible (las fichas con su fuente USDA)"
+    },
+    "v2_premium_punto_2": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — segunda viñeta del escalón accesible (las recetas por categoría)"
+    },
+    "v2_premium_punto_3": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — tercera viñeta del escalón accesible (las tendencias)"
+    },
+    "v2_gold_titulo": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — el título de la tarjeta del escalón alto"
+    },
+    "v2_gold_vinculo": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — a qué plan de la escalera se suma el escalón alto. Sin precio, igual que el otro."
+    },
+    "v2_gold_resumen": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — la línea que resume el escalón alto"
+    },
+    "v2_gold_punto_1": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — primera viñeta del escalón alto (la duración del plan)"
+    },
+    "v2_gold_punto_2": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — segunda viñeta del escalón alto (los tres objetivos). SOLO objetivos de forma física: bajar de peso, tonificar, ganar masa muscular. Ninguna condición médica entra acá, ni ahora ni cuando la v2 encienda esto."
+    },
+    "v2_gold_punto_3": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — tercera viñeta del escalón alto (entrenamiento y perfil)"
+    },
+    "v2_cta": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — el botón de las dos tarjetas de lo que viene. Abre el MISMO formulario de lista de espera que los planes de arriba y guarda la misma etiqueta ('premium' o 'gold'): no hay un segundo circuito. Dice lo mismo que el botón de los planes de pago, y a propósito: es la misma acción."
+    }
+  },
+
+  "copy_note": "Estos son los textos, y son LO ÚNICO que viaja a Firestore. Siguen espejados byte a byte con el arranque en frío de apps/web/src/lib/config.ts al 02/09/2026: cuando uno cambia, cambia el otro en el mismo commit.",
+
+  "dt21_note": "DT-21 CERRADA DEL LADO DE ESTE ARCHIVO (card 3.4, 01/09/2026): las 47 claves están en español de España y ninguna vosea. Se corrigieron 7 de las 18 originales —'capture_cta' (sacar→hacer una foto, que es como se dice aquí), 'capture_help' (Sacá→Haz), 'not_food_title' (Acá→Aquí), 'error_unreadable' (¿Probás→Prueba), 'error_network' (Revisá/probá→Revisa/prueba) y 'error_unexpected' (Probá→Prueba)— y se sacó la JERGA INTERNA de 6 de las nuevas: 'ficha' y 'catálogo' son palabras nuestras, no del usuario, y en pantalla ahora se dice 'la base nutricional' (el mismo nombre que ya usaban los scanning_steps) y 'alimento'. Las tocadas: los cinco 'match_*_ayuda' y 'report_no_totals_body'. QUEDA UNA, declarada y con dueño: 'item_generic_note' sigue empezando por «Ficha genérica:» porque esa frase la escribe también el catálogo (kb/curation/genericos.dt13.json → plantilla_caveat, que llega al usuario como caveat de la ficha) y las dos tienen que cambiar en el mismo movimiento; cambiar solo esta abriría una incoherencia visible. Fuera de este archivo también quedan los textos en frío de errores del backend (functions/src/analyze/errores.ts), que sí vosean: sus claves ('error_bad_image', 'error_image_too_big', 'error_model_unavailable', 'error_catalog_unavailable'…) NO están en esta lista de 47, así que hoy no se pueden corregir sin desplegar. Las dos que sí comparte el backend con el front —'error_not_food' y 'error_unreadable'— ya quedan corregidas acá para los dos lados.",
+
+  "copy": {
+    "capture_prompt": "¿Qué estás comiendo?",
+    "capture_cta": "Hacer foto del plato",
+    "capture_help": "Haz la foto desde arriba, con el plato entero y buena luz.",
+
+    "install_title": "Lleva CaliScan en tu pantalla de inicio",
+    "install_ios_help": "En Safari: toca Compartir y elige «Añadir a pantalla de inicio».",
+    "install_android_cta": "Instalar aplicación",
+
+    "scanning_steps": "Identificando qué hay en el plato y cuánto…|Buscando cada alimento en la base nutricional…|Calculando calorías y macros con esos gramos…",
+    "scanning_title": "Mirando tu plato",
+
+    "report_kcal_label": "calorías del plato",
+    "report_macros_title": "Componente nutricional de tu plato",
+    "report_items_title": "Qué hay en el plato",
+    "report_partial_title": "Este total es parcial",
+    "report_cta": "Escanear otro plato",
+
+    "not_food_title": "Aquí no veo comida",
+    "error_not_food": "Eso no parece un plato de comida. ¿Probamos con otra foto?",
+
+    "error_title": "No pude analizar la foto",
+    "error_unreadable": "No pude reconocer el plato. Prueba con más luz.",
+    "error_network": "No hay respuesta del servidor. Revisa tu conexión y prueba de nuevo.",
+    "error_unexpected": "Algo salió mal de este lado. Prueba de nuevo en un momento.",
+    "error_cta": "Probar de nuevo",
+
+    "disclaimer": "Información nutricional orientativa, calculada sobre datos de USDA. No es consejo médico.",
+
+    "nutrient_protein": "Proteínas",
+    "nutrient_carbs": "Hidratos de carbono",
+    "nutrient_fat": "Grasas",
+    "nutrient_fiber": "Fibra",
+    "nutrient_sat_fat": "Grasas saturadas",
+    "nutrient_sugars": "Azúcares",
+    "nutrient_sodium": "Sodio",
+    "nutrient_no_data": "sin dato",
+
+    "donut_unexplained": "Sin explicar",
+    "donut_detail_title": "Dentro de cada macronutriente",
+    "donut_rest": "El resto",
+
+    "match_exacto": "Coincidencia exacta",
+    "match_exacto_ayuda": "El nombre identificado en la foto coincide, letra por letra, con un alimento de la base nutricional.",
+    "match_alias": "Por sinónimo",
+    "match_alias_ayuda": "Se llegó al alimento por un sinónimo revisado a mano, con su propia confianza.",
+    "match_difuso": "Coincidencia aproximada",
+    "match_difuso_ayuda": "No hubo un nombre exacto: se usó el alimento más parecido de la base nutricional. Es una estimación, no una medición de ESTE plato.",
+    "match_compuesto": "Compuesto en el momento",
+    "match_compuesto_ayuda": "La base nutricional no tiene este plato: se sumó a partir de sus ingredientes visibles y del método de cocción.",
+    "match_no_catalogado": "No catalogado",
+    "match_no_catalogado_ayuda": "La base nutricional no tiene este alimento. No se muestran números: sin un dato de origen, no habría forma de decir de dónde sale.",
+
+    "item_confidence_label": "Confianza",
+    "item_generic_badge": "genérico",
+    "item_generic_note": "Ficha genérica: el valor es el promedio de una familia de productos, no la medición de este plato.",
+    "item_source_label": "Fuente",
+
+    "report_no_totals_title": "Sin números para este plato",
+    "report_no_totals_body": "Ninguno de los alimentos identificados está en la base nutricional, así que no hay nada que sumar. Abajo está lo que sí se reconoció.",
+    "report_others_title": "Del resto del análisis",
+    "report_weight_label": "Peso identificado",
+
+    "v2_title": "Funcionalidades Premium",
+
+    "v2_premium_titulo": "Fichas, recetas y tendencias",
+    "v2_premium_vinculo": "Llega al plan Premium",
+    "v2_premium_resumen": "Más contexto en cada plato, y la foto completa de cómo comes.",
+    "v2_premium_punto_1": "Fichas de alimentos con su fuente USDA, dato a dato.",
+    "v2_premium_punto_2": "Recetas por categoría: qué comer antes y después de entrenar.",
+    "v2_premium_punto_3": "Tendencias de tus comidas, por semana y por mes.",
+
+    "v2_gold_titulo": "Tu plan personalizado",
+    "v2_gold_vinculo": "Llega a Premium Gold",
+    "v2_gold_resumen": "Deja de improvisar: qué comer cada día, según lo que entrenas y hacia dónde vas.",
+    "v2_gold_punto_1": "Planes de 1 semana, 15 días o 1 mes.",
+    "v2_gold_punto_2": "Según tu objetivo: bajar de peso, tonificar o ganar masa muscular.",
+    "v2_gold_punto_3": "Ajustados a tu entrenamiento y a tu perfil.",
+
+    "v2_cta": "Lista de espera"
+  }
+}

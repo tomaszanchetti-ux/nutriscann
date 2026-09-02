@@ -10,6 +10,12 @@
  * Lo que NO es tolerante es un archivo mal formado: si existe y no respeta el
  * contrato, el build avisa fuerte. Tolerar la ausencia no es tolerar la basura.
  *
+ * Y hay DOS archivos donde ni siquiera la ausencia se tolera —`genericos.dt13.json`
+ * y `guardas.vocabulario.json`—, porque no son vocabulario a medio escribir sino
+ * política aprobada. Este módulo los lee igual que a los demás (devuelve `null` o
+ * una lista vacía y anota el problema): quien los declara obligatorios es el
+ * candado 0, en `locks.ts`. La lectura no decide; decide el candado.
+ *
  * Contrato acordado:
  *   names.es.json           { "<fdc_id>": { "name": "...", "aliases": ["..."] } }
  *   portions.overrides.json { "<fdc_id>": { "default_portion_g": N, "label_es": "..." } }
@@ -17,6 +23,8 @@
  *   manual.foods.json       { "foods": [ { id, per_100g, ... } ] }
  *   cooking.transforms.json { "transforms": { "<metodo>": { factor_peso, ... } } }
  *   recipes.foods.json      { "recipes": [ { id, metodo, ingredientes, ... } ] }
+ *   genericos.dt13.json     { marcadores_en, umbral_sodio_mg, plantilla_caveat }
+ *   guardas.vocabulario.json { "guardas": [ { termino, prohibido_en, salvo_si_contiene?, motivo } ] }
  *
  * Las dos claves del override son independientes: se puede corregir solo los
  * gramos, solo la etiqueta en español, o las dos.
@@ -24,6 +32,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { PLACEHOLDER_SODIO, type GenericRule } from "./genericos";
 import { OPTIONAL_KEYS, REQUIRED_KEYS } from "./nutrients";
 import { CURATION_DIR } from "./sources";
 import type { CookingTransform } from "./transforms";
@@ -32,6 +41,7 @@ import {
   type AliasWithConfidence,
   type Per100g,
   type PortionHint,
+  type VocabularyGuard,
 } from "./types";
 
 export interface CuratedName {
@@ -44,6 +54,23 @@ export interface CuratedPortion {
   default_portion_g: number | null;
   /** Cómo se llama esa porción en español ("1 unidad mediana"). */
   label_es: string | null;
+  /**
+   * Porciones que la curación AGREGA a las de USDA (card 6.2, DT-27).
+   *
+   * `label_es` alcanza para nombrar UNA porción, la de por defecto, y eso cubre
+   * el caso para el que nació: la manzana que USDA mide en tazas y la persona
+   * ve por unidades. No cubre el caso de la cerveza, donde lo que falta no es
+   * una etiqueta sino un JUEGO ENTERO de medidas que USDA no mide: la caña, el
+   * tubo, el tercio, la jarra, la litrona. Ese vocabulario es lo único que
+   * Tomás aportó como fuente en la DT-27, y sin esta clave no tendría por dónde
+   * entrar salvo inventando una ficha manual —que perdería el provenance USDA
+   * de todos los números—.
+   *
+   * Es ADITIVO: las porciones de USDA no se tocan ni se reordenan; estas van
+   * detrás. Una porción curada SIEMPRE declara su `label_es` (es su razón de
+   * ser) y queda marcada en provenance como `curation`.
+   */
+  portion_hints: PortionHint[];
 }
 
 /**
@@ -94,6 +121,18 @@ export interface Recipe {
   caveats: string[];
 }
 
+/**
+ * Una guarda de vocabulario, tal como la lee la curación.
+ *
+ * EL TIPO SE MUDÓ A `types.ts` CON LA DT-32 y acá queda el alias con el nombre
+ * de siempre. No es cosmética: `types.ts` es el único archivo que se copia byte
+ * a byte a `functions/src/kb/`, y desde que la guarda VIAJA EN EL CATÁLOGO el
+ * motor tiene que hablar exactamente del mismo objeto que escribe la curación.
+ * Mientras el tipo vivía acá, la lista del matcher era otra estructura escrita a
+ * mano y las dos divergieron.
+ */
+export type GuardaVocabulario = VocabularyGuard;
+
 export interface Curation {
   names: Map<number, CuratedName>;
   portions: Map<number, CuratedPortion>;
@@ -105,6 +144,10 @@ export interface Curation {
   transforms: Map<string, CookingTransform>;
   /** Recetas compuestas, en el orden del archivo. */
   recipes: Recipe[];
+  /** La política de genéricos (DT-13). `null` mientras el archivo no exista. */
+  genericRule: GenericRule | null;
+  /** Guardas de vocabulario, en el orden del archivo. */
+  guardas: GuardaVocabulario[];
   /** Archivos que se encontraron, para que el reporte diga qué se mezcló. */
   filesFound: string[];
   /** Problemas de forma en archivos que sí existen. */
@@ -126,6 +169,21 @@ function readJsonObject(path: string, problems: string[]): Record<string, unknow
   return parsed as Record<string, unknown>;
 }
 
+/**
+ * Una clave `$algo` es un COMENTARIO, no un fdc_id.
+ *
+ * Los archivos de curación con forma de lista (`aliases.regional.json`,
+ * `recipes.foods.json`, `guardas.vocabulario.json`) llevan su `$comment` al lado
+ * del bucket de datos y por eso nunca chocaron con el parser. Los dos que son un
+ * mapa plano por `fdc_id` —`names.es.json` y `portions.overrides.json`— no tenían
+ * dónde ponerlo: cualquier clave que no fuera un número se reportaba como
+ * problema. Se admite el prefijo `$`, que es el que ya usa todo `kb/`, y NADA
+ * más: una clave mal tipeada sigue siendo un error, que es de lo que protege.
+ */
+function esComentario(key: string): boolean {
+  return key.startsWith("$");
+}
+
 /** Un número finito y positivo, o `null` con el problema anotado. */
 function positive(value: unknown, label: string, problems: string[]): number | null {
   const parsed = Number(value);
@@ -144,6 +202,8 @@ export function loadCuration(dir: string = CURATION_DIR): Curation {
   const manualFoods: ManualFood[] = [];
   const transforms = new Map<string, CookingTransform>();
   const recipes: Recipe[] = [];
+  const guardas: GuardaVocabulario[] = [];
+  let genericRule: GenericRule | null = null;
   const filesFound: string[] = [];
   const problems: string[] = [];
 
@@ -152,6 +212,7 @@ export function loadCuration(dir: string = CURATION_DIR): Curation {
     filesFound.push("names.es.json");
     const raw = readJsonObject(namesFile, problems);
     for (const [key, value] of Object.entries(raw ?? {})) {
+      if (esComentario(key)) continue;
       const fdcId = Number(key);
       if (!Number.isInteger(fdcId)) {
         problems.push(`names.es.json: la clave "${key}" no es un fdc_id`);
@@ -183,6 +244,7 @@ export function loadCuration(dir: string = CURATION_DIR): Curation {
     filesFound.push("portions.overrides.json");
     const raw = readJsonObject(portionsFile, problems);
     for (const [key, value] of Object.entries(raw ?? {})) {
+      if (esComentario(key)) continue;
       const fdcId = Number(key);
       if (!Number.isInteger(fdcId)) {
         problems.push(`portions.overrides.json: la clave "${key}" no es un fdc_id`);
@@ -192,7 +254,11 @@ export function loadCuration(dir: string = CURATION_DIR): Curation {
         problems.push(`portions.overrides.json[${key}]: se esperaba un objeto`);
         continue;
       }
-      const entry = value as { default_portion_g?: unknown; label_es?: unknown };
+      const entry = value as {
+        default_portion_g?: unknown;
+        label_es?: unknown;
+        portion_hints?: unknown;
+      };
 
       let grams: number | null = null;
       if (entry.default_portion_g !== undefined && entry.default_portion_g !== null) {
@@ -215,9 +281,40 @@ export function loadCuration(dir: string = CURATION_DIR): Curation {
         }
       }
 
-      // Una entrada que no aporta ni gramos ni etiqueta no es un override.
-      if (grams === null && labelEs === null) continue;
-      portions.set(fdcId, { default_portion_g: grams, label_es: labelEs });
+      // Porciones que la curación agrega (la caña, el tercio, la jarra…).
+      const hints: PortionHint[] = [];
+      if (entry.portion_hints !== undefined) {
+        if (!Array.isArray(entry.portion_hints)) {
+          problems.push(`portions.overrides.json[${key}]: "portion_hints" debe ser una lista`);
+        } else {
+          for (const [index, hint] of (entry.portion_hints as unknown[]).entries()) {
+            const label = `portions.overrides.json[${key}].portion_hints[${index}]`;
+            if (hint === null || typeof hint !== "object" || Array.isArray(hint)) {
+              problems.push(`${label}: se esperaba { grams, label_en, label_es }`);
+              continue;
+            }
+            const h = hint as { grams?: unknown; label_en?: unknown; label_es?: unknown };
+            const hintGrams = positive(h.grams, `${label}: "grams"`, problems);
+            if (hintGrams === null) continue;
+            if (typeof h.label_en !== "string" || h.label_en.trim() === "") {
+              problems.push(`${label}: "label_en" ausente o vacío`);
+              continue;
+            }
+            // El `label_es` NO es opcional acá, a diferencia de una porción de
+            // USDA: una porción que la curación inventa existe justamente para
+            // nombrar una medida en español. Sin el nombre no aporta nada.
+            if (typeof h.label_es !== "string" || h.label_es.trim() === "") {
+              problems.push(`${label}: una porción curada tiene que declarar "label_es"`);
+              continue;
+            }
+            hints.push({ grams: hintGrams, label_en: h.label_en.trim(), label_es: h.label_es.trim() });
+          }
+        }
+      }
+
+      // Una entrada que no aporta ni gramos ni etiqueta ni porciones no es un override.
+      if (grams === null && labelEs === null && hints.length === 0) continue;
+      portions.set(fdcId, { default_portion_g: grams, label_es: labelEs, portion_hints: hints });
     }
   }
 
@@ -357,7 +454,143 @@ export function loadCuration(dir: string = CURATION_DIR): Curation {
     }
   }
 
-  return { names, portions, regionalAliases, manualFoods, transforms, recipes, filesFound, problems };
+  // --- La política de genéricos (DT-13) -------------------------------------
+  const genericFile = join(dir, "genericos.dt13.json");
+  if (existsSync(genericFile)) {
+    filesFound.push("genericos.dt13.json");
+    const raw = readJsonObject(genericFile, problems);
+    if (raw !== null) genericRule = parseGenericRule(raw, "genericos.dt13.json", problems);
+  }
+
+  // --- Guardas de vocabulario -----------------------------------------------
+  const guardasFile = join(dir, "guardas.vocabulario.json");
+  if (existsSync(guardasFile)) {
+    filesFound.push("guardas.vocabulario.json");
+    const raw = readJsonObject(guardasFile, problems);
+    const list = raw?.["guardas"];
+    if (raw !== null && !Array.isArray(list)) {
+      problems.push('guardas.vocabulario.json: se esperaba { "guardas": [ ... ] }');
+    } else {
+      for (const [index, item] of ((list ?? []) as unknown[]).entries()) {
+        const label = `guardas.vocabulario.json[${index}]`;
+        if (item === null || typeof item !== "object" || Array.isArray(item)) {
+          problems.push(`${label}: se esperaba un objeto`);
+          continue;
+        }
+        const entry = item as {
+          termino?: unknown;
+          prohibido_en?: unknown;
+          salvo_si_contiene?: unknown;
+          motivo?: unknown;
+        };
+        if (typeof entry.termino !== "string" || entry.termino.trim() === "") {
+          problems.push(`${label}: "termino" ausente o vacío`);
+          continue;
+        }
+        if (
+          !Array.isArray(entry.prohibido_en) ||
+          entry.prohibido_en.length === 0 ||
+          entry.prohibido_en.some((id) => typeof id !== "string" || id.trim() === "")
+        ) {
+          problems.push(`${label}: "prohibido_en" es una lista NO vacía de ids del catálogo`);
+          continue;
+        }
+        // La excepción es OPCIONAL, pero si está tiene que ser una lista de
+        // palabras de verdad: una lista vacía o con un texto en blanco es una
+        // excepción que promete levantar la guarda y no la levanta nunca — el
+        // mismo modo de falla silencioso que la card 2.7 le encontró a `sweet`.
+        let salvo: string[] | undefined;
+        if (entry.salvo_si_contiene !== undefined) {
+          if (
+            !Array.isArray(entry.salvo_si_contiene) ||
+            entry.salvo_si_contiene.length === 0 ||
+            entry.salvo_si_contiene.some((p) => typeof p !== "string" || p.trim() === "")
+          ) {
+            problems.push(`${label}: "salvo_si_contiene" es una lista NO vacía de palabras`);
+            continue;
+          }
+          salvo = (entry.salvo_si_contiene as string[]).map((p) => p.trim());
+        }
+        // Una guarda sin motivo es una prohibición sin razón: dentro de un año
+        // nadie sabe si sigue valiendo y se borra la guarda en vez del error.
+        if (typeof entry.motivo !== "string" || entry.motivo.trim() === "") {
+          problems.push(`${label}: falta "motivo"`);
+          continue;
+        }
+        guardas.push({
+          termino: entry.termino.trim(),
+          prohibido_en: (entry.prohibido_en as string[]).map((id) => id.trim()),
+          // La clave solo existe cuando la guarda declara una excepción, igual
+          // que `generic` en una ficha: un `undefined` explícito viajaría al
+          // JSON del catálogo como una clave que no dice nada.
+          ...(salvo === undefined ? {} : { salvo_si_contiene: salvo }),
+          motivo: entry.motivo.trim(),
+        });
+      }
+    }
+  }
+
+  return {
+    names,
+    portions,
+    regionalAliases,
+    manualFoods,
+    transforms,
+    recipes,
+    genericRule,
+    guardas,
+    filesFound,
+    problems,
+  };
+}
+
+/**
+ * Valida la política de genéricos. Exigente por la misma razón que la curación
+ * manual: es una regla que toca cientos de fichas de una, así que un error acá
+ * no se ve como un alimento raro sino como trescientos.
+ */
+function parseGenericRule(
+  raw: Record<string, unknown>,
+  label: string,
+  problems: string[],
+): GenericRule | null {
+  const before = problems.length;
+
+  const marcadores: string[] = [];
+  const rawMarcadores = raw["marcadores_en"];
+  if (!Array.isArray(rawMarcadores) || rawMarcadores.length === 0) {
+    problems.push(`${label}: "marcadores_en" es una lista NO vacía de textos`);
+  } else {
+    for (const marcador of rawMarcadores) {
+      if (typeof marcador === "string" && marcador.trim() !== "") marcadores.push(marcador.trim());
+      else problems.push(`${label}: "marcadores_en" debe ser una lista de textos`);
+    }
+  }
+
+  const umbral = Number(raw["umbral_sodio_mg"]);
+  if (!Number.isFinite(umbral) || umbral < 0) {
+    problems.push(`${label}: "umbral_sodio_mg" debe ser un número >= 0`);
+  }
+
+  const plantilla = typeof raw["plantilla_caveat"] === "string" ? (raw["plantilla_caveat"] as string).trim() : "";
+  if (plantilla === "") {
+    problems.push(`${label}: falta "plantilla_caveat"`);
+  } else if (!plantilla.includes(PLACEHOLDER_SODIO)) {
+    // Un caveat que avisa que "puede variar" sin decir de qué número habla no
+    // informa nada: quien lo lee no tiene cómo saber si le importa.
+    problems.push(`${label}: la plantilla tiene que traer ${PLACEHOLDER_SODIO}`);
+  }
+
+  const version = typeof raw["criteria_version"] === "string" ? (raw["criteria_version"] as string).trim() : "";
+  if (version === "") problems.push(`${label}: falta "criteria_version"`);
+
+  if (problems.length !== before) return null;
+  return {
+    criteria_version: version,
+    marcadores_en: marcadores,
+    umbral_sodio_mg: umbral,
+    plantilla_caveat: plantilla,
+  };
 }
 
 /** Valida una receta entera. Exigente por el mismo motivo que la curación manual. */

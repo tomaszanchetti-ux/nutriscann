@@ -6,7 +6,13 @@
   "prefijo del de la otra, o donde las dos coinciden palabra por palabra salvo por",
   "marcadores de estado (crudo/cocido/seco/en lata/con sal/con grasa…). 136 pares.",
   "Este archivo es el ÚNICO lugar donde se autoriza cambiar una ficha preexistente:",
-  "lo que no está acá, no se tocó."
+  "lo que no está acá, no se tocó.",
+  "",
+  "DT-8 (31/08/2026): Tomás resolvió los SIETE pares que la DT-7 había dejado como",
+  "ambiguos. Este archivo es también el REGISTRO de esa decisión: cada par ambiguo",
+  "lleva ahora su `resolucion`, su `accion`, su `decision` y quién la tomó. Las tres",
+  "fusiones se ejecutan por kb/selection/exclusions.dt7.json, con el mismo mecanismo",
+  "de herencia de vocabulario del grupo A."
  ],
  "criteria_version": "dt7-v1",
  "generated": "2026-08-30",
@@ -16,18 +22,20 @@
   "con_sufijo_solo_de_estado": 40,
   "de_esos_40": {
    "resueltos": 22,
-   "pendientes_de_decision": 4,
+   "pendientes_de_decision": 0,
    "descartados_a_mano": 14,
-   "$nota_descartados_a_mano": "Los dos nombres YA declaran su estado y difieren de verdad: `Pera en lata` contra `Pera cruda`, `Yuca frita` contra `Yuca cruda`, `Papaya seca` contra `Papaya cruda`, `Manzana cruda` contra `Manzana cruda sin piel`, las cuatro variantes de `Frijoles en lata / secos cocidos` contra `Frijoles refritos de lata`… El clasificador automático los marca como candidatos porque el sufijo es un marcador de estado; la revisión a mano los descarta porque el nombre no miente."
+   "$nota_descartados_a_mano": "Los dos nombres YA declaran su estado y difieren de verdad: `Pera en lata` contra `Pera cruda`, `Yuca frita` contra `Yuca cruda`, `Papaya seca` contra `Papaya cruda`, `Manzana cruda` contra `Manzana cruda sin piel`, las cuatro variantes de `Frijoles en lata / secos cocidos` contra `Frijoles refritos de lata`… El clasificador automático los marca como candidatos porque el sufijo es un marcador de estado; la revisión a mano los descarta porque el nombre no miente.",
+   "$nota_pendientes": "Eran 4 y los resolvió la DT-8 el 31/08/2026, junto con los 3 duplicados intra-fuente que la DT-7 había encontrado de paso: 7 decisiones en total. De las 7, tres fusionan (puré de papa, frijoles secos, croquetas de papa congeladas) y cuatro no tocan la ficha (los dos pares de parmesano, los pepinillos y la mantequilla genérica, que pasa a estar cubierta por la DT-13)."
   },
   "descartados_automaticamente": 97,
-  "duplicados_intra_fuente_hallados_de_paso": 3
+  "duplicados_intra_fuente_hallados_de_paso": 3,
+  "$nota_intra_fuente": "Los tres estaban fuera del censo cruzado —son pares FNDDS/FNDDS— y por eso la DT-7 los dejó como ambiguos: la pregunta era la misma que la del grupo A y merecía la misma decisión explícita. La DT-8 fusionó dos (frijoles y croquetas) y conservó el tercero (parmesano rallado contra en trozo), porque ahí la foto distingue."
  },
  "politica": {
   "A": "Duplicado real (mismo alimento, mismo estado): queda UNA ficha, la de SR Legacy, que es medición de laboratorio. La de FNDDS sale de la selección por kb/selection/exclusions.dt7.json y le hereda su vocabulario entero — nombre y aliases — a la que queda.",
   "B": "Mismo alimento en distinto estado: se quedan las dos y el nombre del cocido de FNDDS hace visible la sal y la grasa que USDA le agregó.",
   "C": "El nombre escondía otra receta: se renombra diciendo la verdad.",
-  "ambiguo": "Se lista con su evidencia y va a decisión de producto. Esta card no lo resuelve."
+  "ambiguo": "La DT-7 los listó con su evidencia y NO los resolvió: la diferencia era real y la decisión, de producto. Los siete los resolvió Tomás el 31/08/2026 (DT-8), y cada uno lleva abajo su `decision` y su `decidido_por`. El criterio que salió de las siete: se FUSIONA cuando las dos fichas son la misma medición contada dos veces (los ocho valores idénticos, o una diferencia que ninguna foto puede mostrar), y se CONSERVAN LAS DOS cuando la diferencia se mide (el sodio del parmesano) o se ve (rallado contra trozo). Lo que no se resuelve borrando una ficha —dos pepinillos que el nombre ya distingue— es del matcher de la fase 2, no del catálogo."
  },
  "pares": [
   {
@@ -519,7 +527,7 @@
   },
   {
    "grupo": "ambiguo",
-   "resolucion": "Pendiente de decisión de producto",
+   "resolucion": "DT-8 — CONSERVAR LAS DOS: la diferencia de sodio es real",
    "fndds": {
     "fdc_id": 2705728,
     "descripcion_usda": "Cheese, Parmesan, dry grated",
@@ -535,11 +543,13 @@
     "ingredientes": []
    },
    "motivo": "Los dos son parmesano rallado: 2 % en calorías. Pero el sodio es 1398 vs 1750 mg (25 %) y la distinción `dry grated` / `grated` es de la propia USDA. Fusionar borra una diferencia real de sodio; no fusionar deja dos parmesanos rallados.",
-   "accion": "ninguna — decisión de Tomás"
+   "accion": "ninguna sobre el catálogo · porción de la ficha de SR corregida en curation/portions.overrides.json",
+   "decidido_por": "Tomás, 31/08/2026 (DT-8)",
+   "decision": "Los 1.398 mg de la ficha de FNDDS contra los 1.750 de la de SR son un 25 % de diferencia REAL, y la distinción `dry grated` / `grated` la hace la propia USDA. Fusionar borraría un dato que existe. De paso se corrigió lo que sí estaba mal: la ficha de SR traía 100 g de porción por defecto, que en parmesano rallado no es una porción sino un envase. Pasa a 5 g con la etiqueta `1 cucharada rallada` — es la porción `1 tbsp` que la propia USDA mide, y es coherente con los 6,2 g (`1 tablespoon`) de su gemela de FNDDS."
   },
   {
    "grupo": "ambiguo",
-   "resolucion": "Pendiente de decisión de producto",
+   "resolucion": "DT-8 — FUSIONAR al casero: queda fdc-2709492, sale fdc-169768",
    "fndds": {
     "fdc_id": 2709492,
     "descripcion_usda": "Potato, mashed, NFS",
@@ -554,11 +564,17 @@
     "ingredientes": []
    },
    "motivo": "Los dos son puré de papa: 7 % en calorías. `listo para comer` es una distinción real (producto industrial) y a la vez invisible en una foto.",
-   "accion": "ninguna — decisión de Tomás"
+   "accion": "excluir de la selección",
+   "decidido_por": "Tomás, 31/08/2026 (DT-8)",
+   "decision": "Es la ÚNICA fusión que retira la ficha de SR Legacy y deja la de FNDDS, y no es un descuido: acá no decide la fuente sino el producto. El puré que una persona fotografía es el de plato, y `listo para comer` —producto industrial— es una distinción invisible en una imagen. El vocabulario del excluido pasa entero al que queda, con el mecanismo del grupo A.",
+   "aliases_heredados": [
+    "Puré de papa listo para comer",
+    "Puré de patata listo para comer"
+   ]
   },
   {
    "grupo": "ambiguo",
-   "resolucion": "Pendiente de decisión de producto",
+   "resolucion": "DT-8 — SIN CAMBIO DE CATÁLOGO: es un problema del matcher, no de las fichas",
    "fndds": {
     "fdc_id": 2710097,
     "descripcion_usda": "Pickles, NFS",
@@ -573,11 +589,13 @@
     "ingredientes": []
    },
    "motivo": "`Pepinillos` (encurtido en salmuera) contra `Pepinillos dulces` (18,27 g de azúcares): el nombre YA los distingue, pero un usuario que escriba `pepinillos` sin más puede querer cualquiera de los dos. Es un problema de matching, no de catálogo.",
-   "accion": "ninguna — decisión de Tomás"
+   "accion": "ninguna",
+   "decidido_por": "Tomás, 31/08/2026 (DT-8)",
+   "decision": "El nombre YA los distingue: `Pepinillos` es el encurtido en salmuera y `Pepinillos dulces` trae 18,27 g de azúcares. Que alguien escriba `pepinillos` a secas y pueda estar queriendo cualquiera de los dos no se arregla borrando una ficha —se perdería un alimento que existe—: se arregla en el matcher de la fase 2, que es quien tiene el contexto de la foto. El catálogo queda como está."
   },
   {
    "grupo": "ambiguo",
-   "resolucion": "Pendiente de decisión de producto",
+   "resolucion": "DT-8 — SE CONSERVA como genérico: lo cubre la política DT-13",
    "fndds": {
     "fdc_id": 2710154,
     "descripcion_usda": "Butter, NFS",
@@ -592,11 +610,13 @@
     "ingredientes": []
    },
    "motivo": "El `Butter, NFS` de FNDDS trae 524 mg de sodio, entre la mantequilla con sal (643) y la sin sal (11) de SR Legacy. El genérico es legítimo para una foto, pero su sodio no es el de ninguna de las dos.",
-   "accion": "ninguna — decisión de Tomás"
+   "accion": "ninguna sobre la ficha · la alcanza curation/genericos.dt13.json",
+   "decidido_por": "Tomás, 31/08/2026 (DT-8)",
+   "decision": "Los 524 mg de sodio del `Butter, NFS` no son los de la mantequilla con sal (643) ni los de la sin sal (11): son el promedio de una familia, que es exactamente lo que la ficha dice ser. El genérico es legítimo para una foto —nadie distingue con y sin sal en una imagen— y lo que faltaba no era retirarlo sino DECIR que es un promedio. Eso es la DT-13: la ficha sale con `generic: true` y, por pasar el umbral de 400 mg, con el caveat de sodio generado."
   },
   {
    "grupo": "ambiguo",
-   "resolucion": "Pendiente de decisión de producto",
+   "resolucion": "DT-8 — FUSIONAR: queda fdc-2707347, sale fdc-2707348",
    "fndds": {
     "fdc_id": 2707347,
     "descripcion_usda": "Beans, NFS",
@@ -615,11 +635,20 @@
     ]
    },
    "motivo": "`Frijoles` (Beans, NFS) y `Frijoles secos cocidos con grasa` tienen los OCHO valores idénticos. Es un duplicado INTRA-FNDDS, fuera del censo cruzado de la DT-7: la pregunta —¿se queda el genérico o el específico?— es la misma que resolvió la DT-7 para los pares cruzados, y merece la misma decisión explícita.",
-   "accion": "ninguna — decisión de Tomás"
+   "accion": "excluir de la selección",
+   "decidido_por": "Tomás, 31/08/2026 (DT-8)",
+   "decision": "Los OCHO valores son idénticos byte a byte y el `input_food` es el mismo (75 % pinto + 25 % negro, los dos `fat added`): no hay dos alimentos, hay una ficha contada dos veces. Queda fdc-2707347, que ya traía las cuatro variantes regionales (Porotos · Alubias · Judías · Caraotas); las cinco del excluido se heredan.",
+   "aliases_heredados": [
+    "Alubias secas cocidas con grasa",
+    "Caraotas secas cocidas con grasa",
+    "Frijoles secos cocidos con grasa",
+    "Judías secas cocidas con grasa",
+    "Porotos secos cocidos con grasa"
+   ]
   },
   {
    "grupo": "ambiguo",
-   "resolucion": "Pendiente de decisión de producto",
+   "resolucion": "DT-8 — CONSERVAR LAS DOS: rallado y en trozo no son la misma foto",
    "fndds": {
     "fdc_id": 2705728,
     "descripcion_usda": "Cheese, Parmesan, dry grated",
@@ -638,11 +667,13 @@
     ]
    },
    "motivo": "`Queso parmesano rallado seco` y `Queso parmesano en trozo` también tienen los ocho valores idénticos: otro duplicado intra-FNDDS. Rallar no cambia la composición, pero la porción por defecto sí (6,2 g contra 5 g).",
-   "accion": "ninguna — decisión de Tomás"
+   "accion": "ninguna",
+   "decidido_por": "Tomás, 31/08/2026 (DT-8)",
+   "decision": "Los ocho valores coinciden porque rallar no cambia la composición, pero la porción por defecto sí (6,2 g contra 5 g) y sobre todo una foto los distingue: un cuenco de queso rallado y una cuña de parmesano no son la misma imagen, y el motor de la fase 2 tiene que poder devolver la que corresponde. Coherente con la decisión de arriba sobre el par rallado seco / rallado de SR: cuando la diferencia se ve o se mide, se conservan las dos."
   },
   {
    "grupo": "ambiguo",
-   "resolucion": "Pendiente de decisión de producto",
+   "resolucion": "DT-8 — FUSIONAR: queda fdc-2709511, sale fdc-2709517",
    "fndds": {
     "fdc_id": 2709511,
     "descripcion_usda": "Potato tots, NFS",
@@ -659,7 +690,13 @@
     ]
    },
    "motivo": "`Croquetas de papa` y `Croquetas de papa congeladas` tienen los ocho valores idénticos: tercer duplicado intra-FNDDS.",
-   "accion": "ninguna — decisión de Tomás"
+   "accion": "excluir de la selección",
+   "decidido_por": "Tomás, 31/08/2026 (DT-8)",
+   "decision": "Tercer duplicado intra-FNDDS con los ocho valores idénticos (237 kcal · 421 mg de sodio) y el mismo ingrediente único, `Potato tots, frozen, fried`. `Congeladas` es un dato de la góndola, no del plato: en una foto no se ve de dónde salieron.",
+   "aliases_heredados": [
+    "Croquetas de papa congeladas",
+    "Croquetas de patata congeladas"
+   ]
   }
  ],
  "descartados_por_familia": [

@@ -169,36 +169,56 @@
    "plato": "Croqueta",
    "region": "ES",
    "veredicto": "gemelo",
-   "alimento": "fdc-2708024",
-   "fdc_id": 2708024,
+   "alimento": "fdc-2709511",
+   "fdc_id": 2709511,
    "fuente": "fndds",
    "en_seleccion_previa": true,
    "promovido": false,
    "alias": "Croqueta",
-   "confianza": 0.6,
+   "confianza": 0.5,
+   "$revision_card_2_7": "01/09/2026 — esta fila apuntaba a fdc-2708024 `Fritter, plain` (Buñuelo) con confianza 0,6 y se REDIRIGIÓ a fdc-2709511, con guarda sobre el buñuelo en curation/guardas.vocabulario.json para los dos términos (`croqueta` y `croquetas`). El rechazo del buñuelo NO es por composición —la lectura de la ronda anterior era correcta: harina + leche + huevo + mantequilla frito en aceite ES una masa rebozada y frita— sino por NÚMERO, que es una objeción que la ronda anterior no se hizo. Medido en el golden set de 30 (plato 26): 110 g de croquetas salieron 415,8 kcal contra las ~264 reales, un +57 %, con el nombre «Buñuelo» encima y una confianza final de 0,51, a nueve centésimas de romper la condición dura del test. El alias emitido pasa a ser `Croqueta` + `Croquetas`, los dos a 0,5.",
    "evidencia_composicion": {
-    "descripcion_usda": "Fritter, plain",
+    "descripcion_usda": "Potato tots, NFS",
     "ingredientes": [
-     "27.6 % Milk, NFS",
-     "23.0 % Flour, wheat, all-purpose, enriched, bleached",
-     "22.1 % Beverages, water, tap, drinking",
-     "14.7 % Vegetable oil, NFS",
-     "9.2 % Eggs, Grade A, Large, egg whole",
-     "2.8 % Butter, stick, unsalted"
+     "100.0 % Potato tots, frozen, fried"
     ],
     "per_100g_medido": {
-     "kcal": 378,
-     "protein_g": 6.56,
-     "carbs_g": 27.46,
-     "fat_g": 26.93,
-     "fiber_g": 0.9,
-     "sat_fat_g": 5.577,
-     "sugars_g": 2.06,
-     "sodium_mg": 340
+     "kcal": 237,
+     "protein_g": 1.9,
+     "carbs_g": 24.4,
+     "fat_g": 15.46,
+     "fiber_g": 2.3,
+     "sat_fat_g": 2.315,
+     "sugars_g": 0.28,
+     "sodium_mg": 421
     },
-    "lectura": "Harina 23 % + leche 27,6 % + huevo 9,2 % + mantequilla 2,8 % frito en aceite: es una bechamel rebozada y frita, que es exactamente la croqueta. Le falta el jamón y sale más grasa (26,9 g/100 g)."
+    "lectura": "La técnica es la de la croqueta —una masa moldeada, rebozada y frita— y la densidad calórica es la que corresponde: 237 kcal/100 g contra las ~240 de una croqueta de jamón real, un 1 % de diferencia, donde el buñuelo se iba un 57 % arriba. Lo que cambia es el RELLENO, entero: papa en vez de bechamel. Se ve en la proteína, 1,9 g/100 g contra los ~7 de una croqueta con leche y jamón, y en los hidratos, que suben a 24,4 g. Por eso el peldaño es 0,5 y no 0,6: no es que falte un ingrediente, es que el contenido es otro. Es el mismo caso de la milanesa —misma técnica, otra materia— y por la escala se acepta diciendo la verdad en vez de dejar al usuario sin nada. La ficha además es genérica (`NFS`), así que el motor le baja la confianza una vez más."
    },
    "rechazados": [
+    {
+     "fdc_id": 2708024,
+     "fuente": "fndds",
+     "descripcion_usda": "Fritter, plain",
+     "ingredientes": [
+      "27.6 % Milk, NFS",
+      "23.0 % Flour, wheat, all-purpose, enriched, bleached",
+      "22.1 % Beverages, water, tap, drinking",
+      "14.7 % Vegetable oil, NFS",
+      "9.2 % Eggs, Grade A, Large, egg whole",
+      "2.8 % Butter, stick, unsalted"
+     ],
+     "per_100g_medido": {
+      "kcal": 378,
+      "protein_g": 6.56,
+      "carbs_g": 27.46,
+      "fat_g": 26.93,
+      "fiber_g": 0.9,
+      "sat_fat_g": 5.577,
+      "sugars_g": 2.06,
+      "sodium_mg": 340
+     },
+     "motivo": "Rechazado por el número, no por la familia: harina + leche + huevo + mantequilla frito en aceite es una bechamel rebozada, y en eso la lectura de la ronda anterior tenía razón. Pero absorbe 14,7 % de aceite sobre la masa y sale a 378 kcal/100 g con 26,9 g de grasa, cuando una croqueta real ronda 240 kcal y 14 g. Sobre una ración de 110 g eso son 415,8 kcal contra 264: +57 %. Un gemelo que se equivoca por más de la mitad en el único número que el producto publica no es un gemelo, sea cual sea su composición."
+    },
     {
      "fdc_id": 2706508,
      "fuente": "fndds",
@@ -557,8 +577,9 @@
    "fuente": "sr_legacy",
    "en_seleccion_previa": false,
    "promovido": true,
-   "alias": "Asado",
+   "alias": "Tira de asado",
    "confianza": 0.8,
+   "$revision_card_2_7": "01/09/2026 — el alias emitido era `Asado` a secas y se RETIRÓ, con guarda en curation/guardas.vocabulario.json. `Asado` no nombra un corte: nombra una técnica de cocción que se aplica a cualquier alimento, y medido en el golden set de 30 (plato 17) atrapó un `chicken thigh, roasted` y lo devolvió como costilla de vaca. El plato sigue cubierto por `Tira de asado`, que sí es el nombre del corte. Ese alias existía desde la card 1.3 en names.es.json en TEXTO PLANO, o sea a confianza 1,0, contradiciendo el 0,8 que esta misma fila mide: se movió acá para que la reserva medida —el corte de USDA es `rib, small end (ribs 10-12)` y la tira argentina se corta atravesando las costillas, y además esta ficha va sin salsa— sea la que ve el motor.",
    "evidencia_composicion": {
     "descripcion_usda": "Beef, rib, small end (ribs 10-12), separable lean and fat, trimmed to 1/8\" fat, all grades, cooked, broiled",
     "ingredientes": [],

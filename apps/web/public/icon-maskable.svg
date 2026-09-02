@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="CaliScan">
+  <title>CaliScan</title>
+  <!--
+    LA VARIANTE MASKABLE (card 3.4, DT-5).
+
+    Mismo dibujo que `icon.svg` —el donut de macros dentro de las esquinas del
+    scanner, con los mismos tokens de color— encogido para respetar la ZONA
+    SEGURA de los íconos maskable: Android recorta el ícono con la forma que le
+    dé la gana (círculo, cuadrado redondeado, gota), y solo garantiza lo que
+    entre en el círculo central del 80 % del lienzo, o sea 204,8 de radio.
+
+    Lo que se movió:
+      anillo  r=100, trazo 40  → borde exterior a 120 del centro
+      esquinas a 128 del centro en cada eje → 128·√2 = 181 del centro
+    con el trazo redondeado de 16 sumando 8 en la punta: 192 < 204,8. Entra.
+
+    Circunferencia = 2·π·100 = 628,32. Tramos con 8 de aire:
+      verde 278 · ámbar 181 · coral 145, arrancando en 0, 286 y 475.
+    Los grados: -90 + (arranque / 628,32) · 360.
+
+    El fondo es OPACO y a sangre en todo el lienzo, que es justo lo que pide un
+    maskable: si fuera transparente, el recorte dejaría bordes sucios.
+  -->
+  <rect width="512" height="512" fill="#12160f"/>
+
+  <g fill="none" stroke-linecap="butt">
+    <circle cx="256" cy="256" r="100" stroke="#2d362b" stroke-width="40"/>
+    <circle cx="256" cy="256" r="100" stroke="#4fbe82" stroke-width="40"
+            stroke-dasharray="278 629" transform="rotate(-90 256 256)"/>
+    <circle cx="256" cy="256" r="100" stroke="#e7b354" stroke-width="40"
+            stroke-dasharray="181 629" transform="rotate(73.9 256 256)"/>
+    <circle cx="256" cy="256" r="100" stroke="#ec7b64" stroke-width="40"
+            stroke-dasharray="145 629" transform="rotate(182.1 256 256)"/>
+  </g>
+
+  <g fill="none" stroke="#4fbe82" stroke-width="16" stroke-linecap="round"
+     stroke-linejoin="round" opacity="0.62">
+    <path d="M128 168v-40h40"/>
+    <path d="M344 128h40v40"/>
+    <path d="M384 344v40h-40"/>
+    <path d="M168 384h-40v-40"/>
+  </g>
+</svg>

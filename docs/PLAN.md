@@ -2,7 +2,9 @@
 
 > **Norte:** una app donde el usuario saca UNA foto de su plato y recibe un reporte nutricional visual (calorías, macros en pie chart, recomendación de una línea). UX de 2 interacciones. Arquitectura seria desde el día 1: nada hardcodeado, todo DB + APIs + endpoints.
 >
-> **Estado:** Fase 0 cerrada (salvo el plan Blaze, DT-1). **Fase 1 COMPLETA (WS03, 30/08/2026): cards 1.1–1.7 con Q/A adversarial** — catálogo canónico 2.1.0 con 1.025 alimentos (703 FNDDS + 307 SR + 6 manuales + 9 recetas compuestas), seed idempotente construido y probado contra el emulador. España es el grupo regional más grande (50 platos medidos). Resta: seed real a Firestore + merge a `main` con OK de Tomás. Última actualización: 30/08/2026.
+> **Estado:** Fase 0 cerrada. Fase 1 COMPLETA y mergeada (WS03). Fase 2 BACKEND CERRADO (WS06: golden 5/5). **Fase 3 — WS07 (01/09/2026): cards 3.1–3.4 EJECUTADAS en multiagente; queda SOLO la 3.5 (deploy) para la WS08.** El repaso de la WS07 saldó DT-30, DT-37, DT-38 (salvo la cláusula del 70 %), DT-39 (núcleo), DT-32, DT-25, DT-20, DT-21, DT-22, DT-23 y DT-5 — y el torrezno pasó a panceta (etiqueta Carrefour, la mediana del mercado) por decisión de producto. Catálogo **3.8.0: 1.115 fichas + 21 guardas emitidas que MUERDEN en el matcher**; `termino_es` viaja al expediente (la corrida v4 podrá re-jugar el duelo de idiomas); criterio 2 de la v3: **25/26 = 96,2 %**. Front: escaneo mágico + vitrina premium + donut de doble anillo + T&C + íconos PWA + copy de España. **Branch `fase/02-motor-analisis` pusheada SIN merge** (merge solo con OK de Tomás). Ver "Dónde retoma la WS08".
+>
+> *(Registro WS05, superseded: el E2E real funciona y el motor aprendió a hablar.)* Primer análisis real de punta a punta (la carbonara de Tomás: 525 kcal trazables, scan persistido, reporte en pantalla, ~$0,007/scan). **Cards 2.5–2.8 cerradas con Q/A**: DT-18 (los 18 textos de la UI con fuente de verdad en `config/copy.json`, seeder con máscara de 5) · recall del matching EN/ES (visión bilingüe con `food_es`, variantes USDA, cobertura por núcleo, crudo/cocido — 5→14 matches sobre los 17 términos grabados) · curación quirúrgica (**catálogo 3.1.0**: los alias tóxicos `Filete`/`Asado`/`Croqueta` extirpados con guarda, 5 guardas de vocabulario) · compuerta del total (`CONFIANZA_MINIMA_PARA_UN_TOTAL=0.12`: la comida de plástico ya no firma 1.550 kcal como total), cortes que no cocinan, nombre partido. **240 tests en functions, 148 en kb.** **Golden set de 30 platos construido y corrido DOS veces** (predicciones antes, 5 criterios de mercado fijados por adelantado): v1 1/5 criterios → **v2 3/5, con CERO fichas equivocadas y 0❌ de 30 platos**. Falta poco y está medido: DT-28 (cola descriptiva USDA, tokenizar `/`, el payload de la compuerta, recalibrar criterio 2, estabilidad de visión). Ver "Dónde retoma la WS06". Última actualización: 01/09/2026.
 >
 > **Mecánica:** toda fase arranca midiendo (Bloque 0) y recién después define sus cards. Ver `CLAUDE.md`.
 >
@@ -64,6 +66,8 @@ config/app                          ← NADA HARDCODEADO: reglas de negocio en D
   thresholds, copy de la UI, límites de rate (scans/día por dispositivo)
 ```
 
+**⚠️ Nota (31/08/2026):** el esquema de `foods/` de arriba es el boceto original; **el contrato real y vigente es `kb/src/types.ts` (`CanonicalFood`)** — `names.{en,es}` en vez de `name`/`name_en`, aliases con confianza (string u objeto), `portion_hints` como array con etiquetas bilingües, provenance por campo, `generic`, `caveats`, `receta`. Ante cualquier diferencia, gana `types.ts`.
+
 **Regla de oro:** cambiar una recomendación, un umbral o un texto = editar un documento en Firestore. Cero deploys.
 
 ---
@@ -85,8 +89,11 @@ Foto → [1] Sonnet 5 (visión): "¿QUÉ hay en el plato y CUÁNTO?"
            explícitamente etiquetado como estimación, y el alimento entra a una cola de
            curación para sumarlo a foods/ (el catálogo crece con el uso real).
 
-     → [3] Sonnet 5 (texto, barato): "Con ESTOS números [los de la DB], escribí UNA
-         recomendación según ESTAS reglas [las de config/]" → una frase, cálida y accionable.
+     → [3 — SOLO v2, decisión 31/08/2026] Sonnet 5 (texto, barato): "Con ESTOS números
+         [los de la DB], escribí UNA recomendación según ESTAS reglas [las de config/]".
+         En la v1 este paso NO existe: el reporte muestra solo lo medido (calorías,
+         macros, composición). El set de reglas v1 queda construido, publicado en
+         config/ y dormido hasta la v2 (§6) — nada se tira.
 
      → Respuesta completa al cliente + persistencia del scan.
 ```
@@ -117,10 +124,12 @@ Foto → [1] Sonnet 5 (visión): "¿QUÉ hay en el plato y CUÁNTO?"
 
 **Pantalla 2 — El reporte.** Orden visual estricto:
 1. **Calorías totales** — número gigante animado (count-up), con un anillo de progreso.
-2. **Donut chart de macros** — proteína / carbohidratos / grasas, con % y gramos. Paleta fija y semántica: proteína = coral, carbos = ámbar, grasas = violeta (los mismos colores SIEMPRE, en el chart, en las cards y en la recomendación).
-3. **La recomendación** — una card destacada con icono según el tag: 🏋️ "Alta en carbohidratos: ideal para un día de entrenamiento o desgaste físico."
-4. Lista colapsada de ingredientes detectados (con gramos y confianza) — para el que quiere el detalle, invisible para el que no.
-5. Un solo CTA: "Escanear otro plato".
+2. **Donut chart de macros** — proteína / carbohidratos / grasas, con % y gramos. Paleta fija y semántica: proteína = coral, carbos = ámbar, grasas = violeta (los mismos colores SIEMPRE, en el chart y en las cards).
+3. Lista colapsada de ingredientes detectados (con gramos, confianza y la letra chica de las fichas — los caveats) — para el que quiere el detalle, invisible para el que no.
+4. Un solo CTA: "Escanear otro plato".
+
+*(La card de recomendación que estaba acá pasó a la v2 — decisión 31/08/2026: la v1
+muestra solo lo medido, sin consejos. Ver §6.)*
 
 **Sistema visual:** dark-mode-first (la comida fotografiada resalta sobre fondo oscuro), tipografía grande, esquinas redondeadas, glassmorphism sutil en las cards. Todo el copy sale de `config/` (editable sin deploy). Charts custom en SVG/Framer Motion — sin librería pesada de charting para un solo donut.
 
@@ -241,13 +250,55 @@ Pipeline en `kb/` (cuatro capas):
 
 **Sale cuando:** `foods.canonical.json` commiteado con provenance por campo, candados pasando, `foods/` poblada con `kb_version`, y el seed re-ejecutado dos veces da el mismo resultado (prueba de idempotencia).
 
-### Fase 2 — Motor de análisis (1-2 sesiones)
-Cloud Function `analyze`: recepción de imagen → paso 1 (Sonnet 5 visión, schema estricto) → paso 2 (lookup + matching + aritmética) → paso 3 (recomendación desde reglas de `config/`) → persistencia del scan. Tests del matching y de la aritmética (puros, sin LLM — la decisión separada de la lectura, como en Arc One). Golden set: 10 fotos de platos conocidos con resultados esperados, para medir precisión antes de tocar UX.
-**Sale cuando:** `curl` con una foto devuelve el JSON completo con números trazables a `foods/`.
+### Fase 2 — Motor de análisis ← **EN CURSO (WS04, 31/08/2026)**
 
-### Fase 3 — Frontend (2 sesiones)
-Sesión A: captura + compresión de imagen + animación de escaneo. Sesión B: pantalla de reporte (count-up, donut SVG, card de recomendación, lista colapsable) + PWA (manifest, instalable) + estados de error amables ("No pude reconocer el plato, ¿probás con más luz?").
-**Sale cuando:** el flujo foto→reporte funciona en TU teléfono contra el backend real.
+Cloud Function `analyze` en DOS pasos (el paso 3 de recomendación pasó a la v2, decisión 31/08): recepción de imagen (base64 en el POST — Storage llega con DT-3) → paso 1 (Sonnet 5 visión, schema estricto sin campos de nutrientes) → paso 2 (lookup + matching + aritmética + composición on-demand vía `transforms.ts`) → persistencia del scan. Tests del matching y de la aritmética (puros, sin LLM — la decisión separada de la lectura, como en Arc One). Desarrollo 100 % local contra emuladores; deploy real al cierre (Blaze ya activo).
+
+#### Bloque 0 — medido el 31/08/2026 ✅ (verificación en vivo de repo, catálogo, Firestore y facturación)
+
+Hallazgos que redefinieron las cards: `config/app` en Firestore estaba vacío de reglas y sin versión (no existía seeder de config) · el `.gitignore` no cubría los archivos de la key · el front no podía apuntar al emulador · SDK de Anthropic 51 minors atrás · la estructura real del catálogo difiere del §2 de este plan (**el contrato verdadero es `kb/src/types.ts`**: `names.{en,es}`, aliases heterogéneos con confianza, `portion_hints[]`) · `names.en` 100 % único (clave primaria limpia del matching) · 0 colisiones exactas de alias — el riesgo del matching es difuso (familia "Pastel", "Catsup" EN↔ES, "chorizo"/"Bife de chorizo").
+
+#### Las cards de la Fase 2 (definidas sobre lo medido)
+
+| Card | Qué entrega | Estado |
+|---|---|---|
+| **2.0 — Cimientos** | `.gitignore` cubre los archivos de secretos · seeder de `config/` (valida antes de publicar, máscara de 4 campos, idempotente) · circuito local front→emulador (`VITE_FUNCTIONS_EMULATOR`) · `kb:seed:local` · SDK `@anthropic-ai/sdk` ^0.122.0 | ✅ 31/08, Q/A adversarial aplicado |
+| **2.DT — Decisiones DT-8/DT-13** | Catálogo **3.0.0+b2b227e1, 1.022 alimentos**: 3 fusiones con herencia de vocabulario (0 términos perdidos, medido) · porción del parmesano SR corregida (100→5 g) · política de genéricos: `generic: true` (339) + caveat de sodio por regla declarativa (101) con candado bidireccional · guarda de vocabulario "chorizo" (rompe el build) | ✅ 31/08, Q/A adversarial aplicado |
+| **2.1 — El corazón determinístico** | `functions/src/engine/`: la cascada de matching (exacto por `names.en` → alias con confianza → difuso por tokens con especificidad, el mejor candidato entre EN y ES gana y el inglés solo desempata; guardas chorizo/pepinillos; `generic` ×0,85) + aritmética honesta (null jamás 0, totales parciales declarados) + composición on-demand todo-o-nada con `transforms.ts` por copia derivada con candado byte a byte. 122 tests; las 9 recetas del catálogo recompuestas en runtime idénticas | ✅ 31/08, Q/A en 2 pasadas |
+| **2.2 — La llamada al modelo** | La ÚNICA llamada (visión, `output_config.format` con schema sin campos de nutrientes — la regla dura 2 imposible de violar, no solo prohibida) + endpoint `analyze` con CORS probado, 413 al carácter, reintentos exactos (3 techo, 0 para errores definitivos), doble piso del catálogo, persistencia + cola de curación con dedupe entre escaneos. 56 tests propios (178 functions) | ✅ 31/08, Q/A aplicado |
+| **2.3 — Front mínimo para Q/A visual** | Captura → compresión canvas → reporte de SOLO lo medido: kcal, donut que no normaliza a 100, confianza por item, letra chica desplegada, "total parcial" honesto. Config por REST sin SDK (76,6 kB gzip). Modo fixture con números del motor real, byte a byte | ✅ 31/08, Q/A aplicado |
+| **2.4 — Golden set + Q/A E2E** | Superada por lo hecho en la WS05: E2E real (carbonara) + golden set de **30** platos (simples/compuestos/negativos) con predicciones previas y 5 criterios de mercado, corrido 2 veces. El set vive en el scratchpad de la sesión; **incorporarlo al repo es parte de DT-28** | ✅ 01/09 (WS05, ampliada) |
+| **2.5 — DT-18: copy al seeder** | `config/copy.json` (18 claves byte a byte con el front) + seeder con máscara de 5 campos + circuito de emulador en 7 corridas. El pie del front pasó a "textos: Firestore" | ✅ 01/09, Q/A aplicado |
+| **2.6 — Recall del matching EN/ES** | Visión bilingüe (`food_es`), variantes de índice USDA, cobertura por núcleo, plurales, regla crudo/cocido. 5→14 matches en los 17 términos; 0 fichas mal elegidas; 218 tests | ✅ 01/09, Q/A aplicado |
+| **2.7 — Curación quirúrgica** | Catálogo **3.1.0**: `Filete`/`Asado` extirpados, `Croqueta`→Croquetas de papa, alias `Lentejas`, 5 guardas de vocabulario con test de mordida | ✅ 01/09, Q/A aplicado |
+| **2.8 — Compuerta + cortes + nombre partido** | `CONFIANZA_MINIMA_PARA_UN_TOTAL=0.12` (el plástico no firma más totales) · cortes que no cocinan (`apple slices` matchea) · dirección C del difuso (solo rompe silencios, garantía medida). 240 tests | ✅ 01/09, Q/A aplicado |
+
+**Decisiones de producto de la WS04:** v1 sin recomendaciones (solo lo medido) · límite de uso: **3 escaneos/día** en v1 (valor en `config/app`, editable sin deploy; baja a 1/día cuando exista premium — el mecanismo de conteo por usuario llega en la Fase 4 con el login) · la imagen viaja como base64 (Storage con DT-3).
+
+**La WS06 (01/09/2026) cerró el backend** — la agenda de la WS05 cumplida entera y ampliada: cards 6.1 (DT-28) · 6.2 (DT-27) · 6.3 (censo mediterráneo + curación) · 6.4/6.4b (las fichas que faltaban: 44 de 48 platos) · 6.5 (**golden v3: 5/5**) · 6.6 (Fase 3 + tiers premium al plan).
+
+**Dónde retoma la WS08 — el repaso visual y el deploy definitivo (card 3.5):** los ajustes del Q/A visual de Tomás (PDF del 01/09) quedaron EJECUTADOS en la propia WS07 (menos cosas y más útiles: pie reordenado con lo técnico solo-dev, macros en decreciente y enteros, sin secciones de desglose, sodio en la card de ítem con ámbar honesto, vitrina con las palabras de Tomás y **la LISTA DE ESPERA nueva** — modal nombre/apellidos/correo → colección `waitlist` con regla de solo-alta). Decisiones tomadas el 01/09: jamón 0,6 · cláusula del 70 % como está · T&C aprobados. **La WS08 abre con el repaso visual de Tomás sobre la instancia local y, con su OK, la card 3.5**: decisión de MARCA/dominio primero (`nutriscan.app` existe) · DT-2 (key) + DT-3 (Storage) + target del CI + seed real con OK de Tomás (catálogo 3.8.0 + 21 guardas, 47 claves de copy, scanning_steps + 4.º paso) + **deploy de `firestore.rules` (waitlist)** + la cosecha DT-41 + E2E desde el teléfono. **Sale cuando: la v1 VIVA en el dominio elegido, verificada desde el teléfono de Tomás.**
+
+**Sale cuando:** `curl` con una foto devuelve el JSON completo con números trazables a `foods/`, y el circuito local entero (front + emulador) permite el Q/A visual de Tomás.
+
+### Fase 3 — Frontend + deploy completo (la próxima WS)
+
+Cards definidas el 01/09/2026 (WS06) a partir de los comentarios de front de Tomás
+(PDF "Comentarios frontend (Fase 3)"), con su OK explícito:
+
+| Card | Qué entrega |
+|---|---|
+| **3.1 — El reporte pulido** | Texto legal/disclaimer más chico y al final de la pantalla · evaluar "Del resto del análisis" (fibra, saturadas, azúcares, sodio) como colores adicionales del donut (mostrar las dos variantes, elige Tomás) · card de ítem sin el wording "ficha" y sin la línea de % visión/ficha (el resto tal cual, "golazo") · **cierra DT-20** (tipos del front alineados a `TotalesNutrientes` nullable + candado byte a byte), **DT-22** (los ~15 textos hardcodeados a `config/copy.json`) y **DT-23** (el título de macros huérfano) — misma zona de código |
+| **3.2 — El escaneo mágico** | La animación del scanner que barre la foto, retícula, micro-textos que rotan y son verdad (mapean a los pasos reales del motor), estados de "cargando". La espera ES el show |
+| **3.3 — CTAs + Premium teaser** | Doble CTA: "Escanear otro plato" tal cual + "Pasarte a premium" igual tamaño, distinto color · sección **Perfil** con funcionalidades premium visibles pero bloqueadas → modal simple que explica premium + CTA · sección **Premium** que muestra **los tiers cerrados del §6.7** (Gratuito 15/mes · €12/año 40/mes · Gold €4,99/mes 150/mes + plan diario). *(v1: vitrina — el pago real con Stripe es v2)* |
+| **3.4 — T&C + identidad** | Sección de Términos y Condiciones (no somos nutricionistas ni médicos, no reemplaza consulta profesional, valores de bases internacionales con USDA citada, la app ayuda a entender lo que comés) · íconos de la PWA (**DT-5**) · pasada de copy España (**DT-21**, sin voseo — se edita `config/copy.json` + seed, sin deploy) |
+| **3.5 — Deploy completo (cierre de fase)** | DT-2 (la key la carga Tomás) + DT-3 (Storage) + target completo del CI + **seed real del catálogo con OK de Tomás** (⚠️ 2 de 3 `scanning_steps` cambian vs. lo publicado a mano) + verificación E2E en producción desde el teléfono de Tomás |
+
+⚠️ Antes de 3.4/3.5 conviene la decisión de marca: `nutriscan.app` existe y publica
+contenido nutricional (detectada WS03, re-confirmada WS05).
+
+**Sale cuando:** el flujo foto→reporte funciona en el teléfono de Tomás contra el
+backend real, en producción.
 
 ### Fase 4 — Hardening + salida a producción (1 sesión)
 Firebase **App Check** (solo tu app puede llamar al endpoint) + **login real desde v1** (decisión 30/08: Google + email vía Firebase Auth, como en Prode — SIN perfil ni configuración en v1; el registro existe para saber quiénes son los usuarios y que cada uno sea dueño de sus scans) + rate limit desde `config/` (ej. 10 scans/día por usuario — es tu API key la que paga) + logging estructurado + presupuesto de facturación GCP con alertas + QA E2E con el golden set.
@@ -262,11 +313,23 @@ Firebase **App Check** (solo tu app puede llamar al endpoint) + **login real des
 La v1 deja los cimientos exactos para esto; nada de lo anterior se tira:
 
 1. ~~Auth real~~ **Ya existe desde v1** (decisión 30/08): el login Google/email llega en v1 y el `ownerId` es el uid real desde el primer scan — no hay migración de scans anónimos.
-2. **Perfil** en `owners/{uid}/profile`: peso, altura, edad, sexo, deportes, frecuencia, objetivo (bajar/mantener/rendir). → TDEE y targets diarios de macros calculados por fórmula (Mifflin-St Jeor — determinística, no LLM).
+2. **Perfil** en `owners/{uid}/profile` (lista definida por Tomás, 31/08/2026): sexo · edad **en rangos** (la fórmula usa el punto medio) · altura · peso · **actividad deportiva desglosada** (veces por día × días por semana × deportes elegidos de una lista cerrada — el tipo cambia el consejo: fuerza pide proteína, resistencia pide carbohidratos) · objetivo (bajar de peso / subir músculo / tonificar / …) · **comidas del día** (desayuno / almuerzo / merienda / cena, sí o no — el plan reparte solo entre las comidas que el usuario realmente hace) · **elección alimentaria** (vegano, vegetariano…) e **intolerancias** (lactosa, gluten…). Las intolerancias filtran con cuidado declarado: la app es informativa, no médica — las alergias severas quedan explícitamente fuera del alcance (un error ahí no es una mala sugerencia). → TDEE y targets diarios de macros calculados por fórmula (Mifflin-St Jeor — determinística, no LLM). Las marcas por ficha que el filtro necesita (origen animal, lácteo, gluten) se derivan por regla declarativa en la curación — misma maquinaria que los genéricos de la DT-13.
 3. **Aislamiento real por workspace:** ya existe estructuralmente (subcolecciones por owner desde v1); en v2 se endurece con security rules por uid + el contexto del perfil viaja SOLO en la llamada de ese usuario. Sin contaminación cruzada por construcción.
-4. **Recomendación contextual:** el paso 3 del motor recibe además el perfil + el historial del día → "Vas 40g de proteína abajo de tu target; esta cena alta en proteína te viene perfecta."
+4. **El esquema de recomendación (movido acá desde la v1, decisión 31/08/2026):** la v1 muestra solo lo medido; toda recomendación llega en v2 y **se deriva siempre de los nutrientes y calorías del plato** (principio de Tomás: todo se basa en eso). La base ya está construida y dormida: las 6 reglas v1 con umbrales OPS citados (`config/recommendation_rules.json`, publicadas por el seeder, DT-6 pendiente de calibrar). En v2 se enriquece con fuentes declaradas y citables, mismas reglas de honestidad que la OPS: **(a)** OMS — "Alimentación sana" (https://www.who.int/es/news-room/fact-sheets/detail/healthy-diet) · **(b)** Academia Española de Nutrición y Dietética — dieta del deportista (https://www.academianutricionydietetica.org/nutricion-deportiva/dieta-deportista/) · **(c)** Ministerio de Sanidad de España — pesos de raciones por grupo y frecuencias recomendadas, SENC 2004 (`datasets/alimentacionSaludable-ministerio-sanidad.pdf`) — la pieza clave para armar planes con raciones concretas. La recomendación contextual completa: perfil + historial del día → "Vas 40 g de proteína abajo de tu target; esta cena te viene perfecta", y **planes por perfil** repartidos entre las comidas declaradas, con platos del propio catálogo (el LLM compone, la DB cuantifica — como siempre).
 5. **"Qué me conviene comer hoy":** endpoint `suggest` — perfil + calendario de entrenamiento + lo ya comido → sugerencia de dieta del día con platos y cantidades, grounded en `foods/` (el mismo patrón: el LLM compone, la DB cuantifica).
 6. **Paywall:** Stripe + claim `premium` en el token de Firebase Auth; los endpoints v2 lo verifican server-side.
+
+7. **Unit economics y esquema de tiers (definido por Tomás el 01/09/2026 — el alcance de premium se decide desde el negocio, margen objetivo 70 %):**
+   - **Costo por foto (MEDIDO en el E2E real de la WS05):** ~$0,0075 — 2.733 tokens de entrada + 123 de salida a Sonnet 5 ($2/$10 por millón) ≈ $0,007, más ~$0,0002 de GCP (el 3 %). Número de planificación: **$0,01/foto**.
+   - **Costo por plan de dieta diario (v2, estimado):** ~$0,025 con Sonnet 5 · **~$0,012 con Haiku 4.5 redactando** sobre los números ya calculados (el patrón de siempre) — el plan usa Haiku.
+   - **Los tres tiers (todos los cupos en `config/`, ajustables sin deploy; cupo MENSUAL como garantía + tope diario como ráfaga):**
+     · **La escalera habla sola: 15 → 40 → 150 fotos/mes.** ⚠️ El cupo que se comunica es el MENSUAL (un "3/día" gratuito promete 90/mes potenciales y deja al premium de 40 pareciendo menos — el error lo cazó Tomás el 01/09); el tope diario es solo anti-ráfaga interno.
+     · **Gratuito:** cupo **15 fotos/mes** (tope de ráfaga 3/día) · peor caso €0,11/mes · es el funnel, no inventario publicitario.
+     · **Premium €12/año (pago único):** cupo **40 fotos/mes** (ráfagas hasta 5/día) + historial completo · neto tras Stripe €0,96/mes · peor caso $0,30 → **margen 71 % garantizado**.
+     · **Premium Gold €4,99/mes:** cupo **150 fotos/mes** (ráfagas hasta 15/día) + **plan de dieta diario según rutina** (el diferenciador — no entra en €12/año) + tendencias · neto €4,67 · peor caso $1,49 → **margen 70 % garantizado**, realista ~85 %.
+   - **Sostener a los gratuitos (la cuenta honesta):** cada gratuito activo cuesta ~€0,08/mes realista (techo duro €0,11 por el cupo de 15). 1 Gold sostiene 6-8 gratuitos; 1 anual sostiene ~2. El 70 % del negocio ENTERO exige ~10-12 % de conversión; con la conversión típica de freemium (3-5 %) el margen total queda en ~25-40 % — rentable siempre (los cupos impiden lo negativo por diseño), y a escala chica el costo absoluto es ruido (1.000 gratuitos activos ≈ €100/mes peor caso).
+   - **Ads: NO, en ningún tier (decisión 01/09/2026).** AdSense rechazaría la PWA por "thin content" (la lección del Prode); AdMob no sirve para PWAs (solo apps de store, vía TWA sería v2+); y el número no justifica: un gratuito genera €0,05-0,15/mes de ads — ruido hasta decenas de miles de activos. No se construye sitio web para ads. Candidata v2+: empaquetar TWA en Play Store + AdMob, condicionada a escala.
+   - Palancas si el volumen crece: prompt caching del escaneo (~−25 %/foto), compresión de imagen ya hecha.
 
 ---
 

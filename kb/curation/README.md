@@ -13,12 +13,14 @@ parche puesto ahí se pierde en el próximo seed y el error vuelve.
 
 | Archivo | Qué es | Lo consume |
 |---|---|---|
-| `names.es.json` | **El entregable.** `{fdc_id: {name, aliases}}` para los 1.009 alimentos de USDA del catálogo. | el build |
-| `portions.overrides.json` | Porción por defecto corregida + etiqueta, para las entradas cuya porción USDA es inservible como sugerencia. | el build |
+| `names.es.json` | **El entregable.** `{fdc_id: {name, aliases}}` para los 1.021 alimentos de USDA del catálogo. | el build |
+| `portions.overrides.json` | Porción por defecto corregida + etiqueta, para las entradas cuya porción USDA es inservible como sugerencia. Desde la card 6.2, además `portion_hints`: porciones que la curación **agrega** (la caña, el tercio, la jarra). | el build |
 | `aliases.regional.json` | **Aliases con confianza** (card 1.6): el nombre de un plato típico apuntando a su gemelo nutricional. | el build |
 | `manual.foods.json` | **Alimentos que USDA no tiene**, declarados enteros (6). Precedencia máxima del pipeline. | el build |
 | `cooking.transforms.json` | **Métodos de cocción** declarativos y reutilizables, cada uno con su fuente medida. | el build (y la Fase 2, en runtime) |
 | `recipes.foods.json` | **Fichas derivadas de receta**: ingredientes + gramos + método. Sin un solo número nutricional. | el build |
+| `genericos.dt13.json` | **La política de los genéricos** (DT-13): qué marca a una ficha como promedio de familia, desde qué sodio se lleva un caveat y con qué texto. | el build |
+| `guardas.vocabulario.json` | **Términos prohibidos por ficha**: `chorizo` no puede nombrar al bife de chorizo. | el build |
 | `glossary.es.json` | El vocabulario EN→ES: 1013 términos y frases. Herramienta de trabajo y documentación. | las herramientas |
 | `tools/variants.es.json` | Variantes regionales (papa/patata, fresa/frutilla), más `$skip` y `$extra`. | `build_aliases.py` |
 | `tools/` | `draft_names.py` (borrador), `build_aliases.py` (aliases), `verify_curation.py` (candados). | quien cura |
@@ -209,6 +211,31 @@ ya está cubierto por el nombre, con confianza 1,0. El generador de la card 1.6
 omitió siete por esto (paella, gazpacho, churros, empanada, dulce de leche,
 tiramisú, focaccia).
 
+### El límite del alias: es SOLO español
+
+El contrato lo dice con la forma del campo, y conviene tenerlo escrito porque el
+golden set de 30 hizo la pregunta: `aliases` tiene **una sola clave, `es`**. No
+hay dónde declarar un alias en inglés. El caso concreto medido (plato 08) es
+`bread roll`, que cae en *Pan* (fdc-2707591) teniendo *Panecillo* (fdc-2707595)
+en el catálogo: **no se arregla con un alias**, porque el término está en inglés
+y del lado inglés el único vocabulario que existe es `names.en`, que en las
+fichas de USDA lo escribe el CSV y esta capa no pisa. Es del matcher o de una
+extensión del contrato, no de la curación. Anotado para no volver a intentarlo.
+
+Por el mismo motivo, **la regla del paréntesis solo se puede aplicar donde la
+curación escribe el inglés**: en las fichas `manual` y `receta`. El golden set
+dejó probado (2 de 2, la tortilla de patatas y el bocadillo de calamares, a 0,95
+y 0,88) que un `names.en` con la forma *nombre genérico en inglés (nombre
+regional)* es lo que el modelo tiende a escribir entero. Al revisar las 15 fichas
+propias, **las cinco que tienen un equivalente genérico conocido en inglés ya la
+llevan** —tortilla de patatas, bocadillo de calamares, pan de queso, huevos
+rotos, merluza en salsa verde— y las otras diez son platos cuyo nombre regional
+*es* el término que se usa en inglés (salmorejo, migas, turrón, coxinha, farofa,
+tarta de Santiago, escalivada, ajoblanco, gazpachuelo, açaí), con el descriptor
+en inglés detrás de la coma. **No hay ningún renombre pendiente por esta regla**,
+y los dos platos del test que fallaron con nombre propio —la paella y el risotto—
+son fichas de USDA, donde no hay mecanismo para tocar `names.en`.
+
 ## Los alimentos de curación manual
 
 `manual.foods.json` es la **precedencia más alta del pipeline**
@@ -278,7 +305,7 @@ valor que entró por una puerta que no existe.
 El candado de aceptación por fuente exige **al menos 1 alimento manual**. El
 motivo es el mismo que el de los otros dos pisos: el build lee la curación de
 forma tolerante, así que si alguien renombra o vacía `manual.foods.json` el
-catálogo saldría sin el salmorejo y con los cinco candados en verde.
+catálogo saldría sin el salmorejo y con todos los demás candados en verde.
 
 ## Cómo se agrega una entrada nueva
 
@@ -363,7 +390,7 @@ porqué de cada descarte, está en **`kb/selection/dt7.pairs.json`**.
 | **A** (8) | Duplicado real: mismo alimento, mismo estado | Queda la ficha de SR Legacy —medición de laboratorio—; la de FNDDS sale por `kb/selection/exclusions.dt7.json` y **le hereda su vocabulario entero** a la que queda |
 | **B** (9) | Mismo alimento en distinto estado | Se quedan las dos, y el cocido de FNDDS pasa a decir lo que trae: `Lentejas` → `Lentejas cocidas con sal y grasa` |
 | **C** (5) | El nombre escondía otra receta | Se renombra: `Ruibarbo` → `Ruibarbo cocido con azúcar` |
-| **ambiguo** (7) | La diferencia es real y la decisión es de producto | Se listan con su evidencia. No los resuelve la curación |
+| **ambiguo** (7) | La diferencia es real y la decisión es de producto | Se listaron con su evidencia y los resolvió la **DT-8** (abajo) |
 
 **Excluir no puede achicar el vocabulario.** Lo que perdía la ficha excluida —su
 nombre *y* sus aliases— pasa entero a la que queda, con confianza 1,0: no es un
@@ -400,6 +427,157 @@ artefacto y rompe si alguno reaparece.
 
 Con una **reserva declarada sí puede volver**, y es lo correcto: `Bacalao` a 0,8
 sobre el bacalao al vapor dice "esto se parece", no "esto es".
+
+## La DT-8: los siete ambiguos, resueltos
+
+La DT-7 dejó siete pares sin resolver a propósito: la diferencia era real y la
+decisión era de producto, no de curación. Tomás los resolvió el **31/08/2026** y
+la resolución de cada uno vive en el mismo `dt7.pairs.json`, con su `decision` y
+su `decidido_por` — el censo es también el registro de la decisión.
+
+El criterio que salió de las siete, y que sirve para la próxima:
+
+> Se **fusiona** cuando las dos fichas son la misma medición contada dos veces:
+> los ocho valores idénticos, o una diferencia que ninguna foto puede mostrar.
+> Se **conservan las dos** cuando la diferencia se **mide** (el sodio del
+> parmesano: 1.398 contra 1.750 mg) o se **ve** (rallado contra en trozo).
+> Lo que no se arregla borrando una ficha —dos pepinillos que el nombre ya
+> distingue— es del **matcher** de la fase 2, no del catálogo.
+
+| Par | Decisión |
+|---|---|
+| Parmesano rallado seco / rallado de SR | **Las dos**: 25 % de sodio de diferencia, y la distinción es de USDA |
+| Parmesano rallado seco / en trozo | **Las dos**: la composición es igual, la foto no |
+| Puré de papa / listo para comer | **Fusionar** al casero (queda el de FNDDS) |
+| Frijoles / secos cocidos con grasa | **Fusionar** (ocho valores idénticos) |
+| Croquetas de papa / congeladas | **Fusionar** (ocho valores idénticos) |
+| Pepinillos / dulces | **Sin cambio**: es del matcher |
+| Mantequilla NFS | **Se conserva**: la cubre la DT-13 |
+
+Las tres fusiones se ejecutan por `exclusions.dt7.json` con el mecanismo del
+grupo A —herencia de vocabulario entero— y **la entrada de la ficha excluida se
+borra de `names.es.json`**: la cobertura de `verify_curation.py` es exacta, y el
+vocabulario no se pierde porque pasa a `aliases_heredados`.
+
+Una fusión rompe la regla de la DT-7 a propósito y está anotada: en el puré sale
+la ficha de **SR Legacy** y queda la de FNDDS, porque ahí no decide la fuente
+sino el producto — el puré que una persona fotografía es el de plato.
+
+## La DT-13: los genéricos, y por qué el promedio no es de nadie
+
+USDA publica fichas que no miden un alimento sino el **promedio de una familia**:
+las marca con `NFS` (*not further specified*) y con `NS as to …`. Hay **339** en
+el catálogo. `Queso, NFS` no es un queso: es el promedio de todos los quesos que
+come la encuesta, y su sodio —964 mg— no es el de ninguno en particular.
+
+La curación **borra el marcador del nombre en español** (esa es la convención de
+arriba: `Pera en lata`, no "Pera en lata NFS"), así que el usuario nunca ve la
+diferencia entre una ficha medida y un promedio. Eso está bien para el nombre y
+mal para el número. La DT-13 lo resuelve con **una regla declarativa**, no con 339
+ediciones a mano:
+
+```jsonc
+// curation/genericos.dt13.json
+{
+  "marcadores_en": [", NFS", "NS as to"],
+  "umbral_sodio_mg": 400,
+  "plantilla_caveat": "Ficha genérica: … Los {sodio_mg} mg de sodio por 100 g …"
+}
+```
+
+Dos salidas al catálogo:
+
+1. **`generic: true`** en las 339. Es para el motor de la fase 2: un match contra
+   un promedio vale menos que uno contra una medición, y el motor no tiene por
+   qué volver a parsear el inglés de USDA para saberlo.
+2. **Un caveat generado** en las **101** que además pasan el umbral de sodio, con
+   **el número de la propia ficha adentro**. Por eso la plantilla tiene que traer
+   `{sodio_mg}` y el build la rechaza si no: un caveat que avisa que "puede
+   variar" sin decir de cuánto se está hablando no informa nada.
+
+Se eligió el sodio y no otro nutriente porque es el que más se dispersa dentro de
+una familia y el que arrastra la recomendación de la OPS. El umbral y el texto
+viven en el archivo y **no en el build**: subirlo a 500 o reescribir la frase es
+editar un JSON y recompilar.
+
+Tres reglas del mecanismo:
+
+- El caveat generado **se agrega**, no pisa: si la ficha ya traía caveats, quedan.
+- La regla **solo alcanza a los alimentos de USDA**. Un alimento manual o una
+  receta no promedian ninguna familia y su reserva ya está escrita a mano.
+- El **candado re-deriva**: el candado 1 vuelve a calcular la marca y el caveat de
+  cada ficha desde la regla declarada y exige que el catálogo diga exactamente
+  eso, en las dos direcciones — ni un genérico sin marcar, ni una marca de más, ni
+  un caveat escrito a mano colado en una ficha de USDA, ni el caveat generado
+  repetido dos veces (se compara la lista entera, no si el texto *está*).
+
+### Estos dos archivos NO son opcionales
+
+`genericos.dt13.json` y `guardas.vocabulario.json` son la única excepción a la
+tolerancia de esta capa, y el **candado 0** la hace cumplir: si falta uno, o si
+alguno no respeta su contrato, el build no escribe nada.
+
+El motivo se midió en el Q/A de la card: borrando `genericos.dt13.json` el build
+salía **en verde** publicando un catálogo con cero marcas `generic` y cero
+caveats, y borrando `guardas.vocabulario.json` un alias `Chorizo` sobre el bife de
+chorizo pasaba sin que nadie lo notara. Es el mismo silencio del mapeo vacío de
+FNDDS que le dio origen al candado 2: nada explota, simplemente no queda nada.
+
+Y hay un motivo más, propio de la DT-13: **la regla es la llave del candado 1**.
+Sin ella, el candado no puede re-derivar las marcas y deja pasar un `generic: true`
+de más. Un candado cuya llave puede desaparecer sin ruido no es un candado.
+
+## Las guardas de vocabulario
+
+`guardas.vocabulario.json` declara **términos que no pueden nombrar a una ficha**.
+Es el hermano del candado del nombre viejo: aquel impide que un nombre ya
+corregido vuelva de alias, este impide que una palabra caiga en la ficha
+equivocada **aunque nadie la haya escrito todavía**.
+
+La primera es `chorizo`. `Bife de chorizo` (`Beef, steak, strip`) es un **corte
+vacuno** y el chorizo es un **embutido**: los dos existen en España y en
+Argentina, y son dos alimentos distintos (239 kcal y 361 mg de sodio contra 341
+kcal y 983 mg). `chorizo` a secas es del embutido, donde ya vive con confianza
+0,6.
+
+La comparación es **por igualdad exacta** sobre el término normalizado —sin
+tildes, en minúsculas—, contra el nombre y contra cada alias: `Bife de chorizo`
+*contiene* la palabra y es un nombre correcto; lo prohibido es la ficha
+llamándose `Chorizo` o llevándolo de alias. Y **la confianza no salva**: un
+`chorizo` a 0,5 sobre un corte vacuno no dice "esto se parece", dice "esto es otra
+cosa".
+
+### La regla que salió de la card 2.7: técnica y corte no son alimentos
+
+El golden set de 30 platos reales (01/09/2026) dejó **medida** la regla general
+de la que el chorizo era el primer caso particular:
+
+> **Un término genérico de técnica de cocción o de forma de corte no puede ser el
+> alias de una ficha concreta, con ninguna confianza.**
+
+En español `filete` nombra cómo está cortado —de ternera, de salmón, de merluza,
+de pollo— y `asado` nombra cómo está cocinado —pollo, papa, pimiento—. Un alias
+así no dice "esto se parece a esto": dice "**todo** lo cortado o cocinado así ES
+esta ficha", y por eso la escala no lo arregla. Lo que sí puede ser alias es el
+nombre del plato o del corte: `Tira de asado`, `Bistec`. El costo medido de no
+tener la regla fueron dos de los tres errores de ficha del test —una costilla de
+vaca sobre un muslo de pollo y un bife sobre un filete de salmón.
+
+Y una guarda que **no** es de familia, porque conviene tenerla a la vista: la de
+`croqueta`/`croquetas` sobre el buñuelo. Por composición el buñuelo aprobaba
+—harina, leche, huevo y mantequilla fritos en aceite *son* una masa rebozada— y
+sin embargo se rechazó, **por número**: 378 kcal/100 g contra las ~240 de una
+croqueta real, o sea +57 % sobre la única cifra que el producto publica. La regla
+de oro pregunta de qué está hecho el gemelo; este caso agrega que **también hay
+que mirar cuánto mide**, porque un gemelo que se equivoca por más de la mitad no
+es un gemelo aunque su lista de ingredientes cierre.
+
+Las **veinte** guardas vigentes están en `guardas.vocabulario.json` (5 con la
+card 2.7, 7 con la 6.2, 17 con la 6.3 y 20 con la 6.4),
+cada una con el número que la justifica, y hay dos tests que las fijan: uno
+comprueba que sigan declaradas —el candado 0 exige que el archivo exista, no que
+traiga *estas* filas— y otro construye la ficha con el alias prohibido y verifica
+que la guarda muerda.
 
 ## Las recetas compuestas (card 1.7)
 
@@ -492,3 +670,51 @@ un factor, que además perdería ese sodio.
 Una receta que no se puede derivar **no se saltea en silencio**: rompe el build
 nombrando el ingrediente que falta. Ya pasó en la primera corrida, y fue así como
 se supo exactamente qué seis ingredientes sueltos había que promover.
+
+### La ola de 43 recetas de la card 6.4, y las cuatro reglas que salieron de ahí
+
+La card 1.7 dejó nueve recetas; la 6.4 sumó **43** de una vez, para cerrar los
+platos que el censo mediterráneo había dejado sin ficha. Escribir cuarenta y tres
+seguidas obligó a fijar cuatro cosas que hasta ahora estaban implícitas.
+
+**1. El agua que se evapora NO se declara, y eso es un número, no un descuido.**
+La tortillita de camarones se bate con unos 200 g de agua que se van enteros en
+la freidora. Declararla habría bajado la ficha de 278 a 192 kcal/100 g —un 31 %
+por debajo— sobre un plato que ronda las 350. La regla ya estaba escrita («el
+agua que se evapora la representa el factor del método»); lo que faltaba era
+aplicarla al revés: **si el agua se va, no entra la línea.** El agua que se queda
+—el caldo de un pote, el almíbar de un tocinillo, la papilla de unas gachas— sí
+entra, apuntando a `fdc-2710707`.
+
+**2. Cuando la receta declara su aceite, el 6,5 % de `frito` se declara TAMBIÉN,
+y como segunda línea.** La tabla dice que `frito` es para las frituras que no
+declaran su aceite; el pestiño declara el de la masa y además absorbe el de la
+sartén. La salida no es elegir una de las dos grasas: es escribir las dos, con el
+método en `mezclado` y la segunda línea calculada como el 6,5 % del peso de la
+masa — que es la **mediana medida** sobre 117 platos `fried` de FNDDS, no un
+número elegido. El tumbet usa el mismo mecanismo para la berenjena y el
+calabacín. Deja las dos grasas visibles en la receta en vez de esconder una
+dentro de un factor.
+
+**3. Un ingrediente que ya trae su cocción NO se acompaña de su caldo.** El arroz
+a banda, el arroz al caldero y la fideuá se cuecen EN el fumet, y las fichas
+`Arroz blanco cocido` y `Pasta cocida` ya traen esa agua adentro. Sumar el caldo
+aparte la contaría dos veces y bajaría la densidad del plato. La regla se lee al
+revés de la anterior y es la misma: **el agua entra una sola vez, donde de verdad
+está.**
+
+**4. Las reservas se nombran por su TIPO, y son tres.** Escribirlas con la misma
+etiqueta hace que se puedan contar y buscar:
+
+| Etiqueta | Qué declara | Ejemplo |
+|---|---|---|
+| `RESERVA DE ESPECIE` | La ficha mide otro animal o planta | El marmitako usa `Atún cocido` porque USDA no mide bonito |
+| `RESERVA DE INGREDIENTE` | Falta el ingrediente o se sustituye | Las gachas usan harina de trigo: la de almortas no existe en ningún dataset |
+| `RESERVA DEL RENDIMIENTO` | El factor aplicado es el más cercano, no el propio | La ensaimada usa `horneado_masa`, medido sobre masa quebrada |
+
+Y una regla de honestidad que la card estrenó y conviene repetir: cuando la ficha
+derivada queda **por debajo** de lo que se sabe del plato real, se dice el número
+y se dice cuánto —«la ficha da ~278 y la tortillita real ronda las 350»— en vez de
+mover un gramo hasta que cierre. Ese ajuste es exactamente el defecto por el que
+la arepa descartó su receta en la card 6.2 y por el que la pulpa de açaí sigue
+bloqueada.

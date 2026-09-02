@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#12160f" />
+    <meta name="color-scheme" content="dark" />
+
+    <title>Términos y condiciones — CaliScan</title>
+    <meta
+      name="description"
+      content="Los términos y condiciones de CaliScan: qué es, de dónde salen los números, qué precisión esperar y por qué no sustituye a un profesional sanitario."
+    />
+    <link rel="canonical" href="https://caliscan.app/terminos.html" />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="CaliScan" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:url" content="https://caliscan.app/terminos.html" />
+    <meta property="og:title" content="Términos y condiciones — CaliScan" />
+    <meta
+      property="og:description"
+      content="CaliScan te ayuda a entender lo que comes. No te diagnostica, no te trata y no sustituye a un profesional."
+    />
+
+    <link rel="icon" href="assets/logo-mark.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="assets/logo-mark.svg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400..700&family=Spline+Sans+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <a class="salto-al-contenido" href="#contenido">Saltar al contenido</a>
+
+    <!-- ==================================================================== -->
+    <!-- EL TEXTO DE ESTA PÁGINA NO ES NUEVO.                                  -->
+    <!-- Son los Términos y Condiciones que ya vive dentro de la app, en       -->
+    <!-- `apps/web/src/lib/copy.terminos.ts`, traídos aquí tal cual: mismos    -->
+    <!-- apartados, mismo orden y mismos párrafos, palabra por palabra. Lo     -->
+    <!-- único que cambia es el envoltorio (HTML plano en vez de React) y el   -->
+    <!-- nombre de la marca, que en este sitio es CaliScan.                    -->
+    <!--                                                                       -->
+    <!-- Si el texto legal cambia allá, se copia aquí. No se redacta dos veces. -->
+    <!-- ==================================================================== -->
+
+    <!-- La marca, igual que en el índice: <symbol> + <use>, en línea, porque el
+         wordmark es texto y un SVG externo no carga la fuente de la página. -->
+    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position: absolute">
+      <defs>
+        <linearGradient id="g-hoja" x1="18" y1="46" x2="46" y2="18" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#4fbe82" stop-opacity="0.10" />
+          <stop offset="1" stop-color="#4fbe82" stop-opacity="0.28" />
+        </linearGradient>
+        <linearGradient id="g-haz" x1="10" y1="32" x2="54" y2="32" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#4fbe82" stop-opacity="0" />
+          <stop offset="0.3" stop-color="#4fbe82" stop-opacity="1" />
+          <stop offset="0.7" stop-color="#4fbe82" stop-opacity="1" />
+          <stop offset="1" stop-color="#4fbe82" stop-opacity="0" />
+        </linearGradient>
+
+        <symbol id="marca" viewBox="0 0 64 64">
+          <path
+            d="M18 46C18 30 30 18 46 18C46 34 34 46 18 46Z"
+            fill="url(#g-hoja)"
+            stroke="#4fbe82"
+            stroke-width="2.6"
+            stroke-linejoin="round"
+          />
+          <path d="M18 46 46 18" stroke="#2f9e63" stroke-width="2.2" stroke-linecap="round" fill="none" />
+          <g stroke="url(#g-haz)" stroke-linecap="round" fill="none">
+            <path d="M11 32H53" stroke-width="5" opacity="0.22" />
+            <path d="M11 32H53" stroke-width="2.2" />
+          </g>
+          <g fill="none" stroke="#4fbe82" stroke-width="3.4" stroke-linecap="round">
+            <path d="M21 4.5H12A7.5 7.5 0 0 0 4.5 12V21" />
+            <path d="M43 4.5H52A7.5 7.5 0 0 1 59.5 12V21" />
+            <path d="M59.5 43V52A7.5 7.5 0 0 1 52 59.5H43" />
+            <path d="M21 59.5H12A7.5 7.5 0 0 1 4.5 52V43" />
+          </g>
+        </symbol>
+
+        <symbol id="logotipo" viewBox="0 0 252 64">
+          <use href="#marca" width="64" height="64" />
+          <text x="78" y="44.5" class="wordmark" font-size="37" font-weight="700" letter-spacing="-0.9">
+            <tspan fill="#e8ece4">Cali</tspan><tspan fill="#4fbe82">Scan</tspan>
+          </text>
+        </symbol>
+      </defs>
+    </svg>
+
+    <header class="cabecera">
+      <div class="envoltura cabecera__fila">
+        <a class="cabecera__marca" href="index.html" aria-label="CaliScan, inicio">
+          <svg class="logotipo" viewBox="0 0 252 64" role="img" aria-label="CaliScan">
+            <use href="#logotipo" />
+          </svg>
+        </a>
+
+        <a class="boton boton--pequeno" data-enlace-app href="#">Abrir CaliScan</a>
+      </div>
+    </header>
+
+    <main id="contenido">
+      <article class="envoltura envoltura--estrecha legal">
+        <a class="legal__volver" href="index.html">
+          <svg viewBox="0 0 20 20" class="boton__flecha" aria-hidden="true">
+            <path
+              d="M16 10H5m0 0 4.2-4.2M5 10l4.2 4.2"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Volver
+        </a>
+
+        <h1 class="legal__titulo">Términos y condiciones</h1>
+
+        <p class="legal__entrada">
+          En una línea: CaliScan te ayuda a entender lo que comes. No te diagnostica, no te trata y
+          no sustituye a un profesional.
+        </p>
+
+        <div class="legal__cuerpo">
+          <section>
+            <h2>Qué es CaliScan</h2>
+            <p>
+              Haces una foto de tu plato y la app reconoce los alimentos que ve y estima cuánto hay
+              de cada uno. Con esos gramos calcula las calorías y los macronutrientes.
+            </p>
+            <p>
+              El resultado es información para que entiendas lo que estás comiendo: un orden de
+              magnitud fiable, no el análisis de un laboratorio. Sirve para hacerte una idea, para
+              comparar platos y para saber por dónde andas. Para eso está hecha, y para nada más.
+            </p>
+          </section>
+
+          <section>
+            <h2>No somos nutricionistas ni médicos</h2>
+            <p>
+              CaliScan no es un servicio sanitario, y quienes la hacemos no somos médicos, dietistas
+              ni nutricionistas.
+            </p>
+            <p>
+              Nada de lo que leas en la app es un diagnóstico, un tratamiento ni una indicación
+              clínica. Son números y lo que se puede decir con esos números.
+            </p>
+          </section>
+
+          <section>
+            <h2>No sustituye una consulta profesional</h2>
+            <p>
+              Si tienes una enfermedad, estás embarazada, tomas medicación, sigues una dieta pautada
+              o quieres cambiar tu alimentación en serio, habla con un profesional sanitario. Usa
+              CaliScan como una herramienta más, nunca como el criterio que decide.
+            </p>
+            <p>
+              Y con las alergias, especial cuidado: la app identifica lo que cree ver en una foto y
+              puede equivocarse. No la uses jamás para decidir si un plato es seguro para ti.
+            </p>
+          </section>
+
+          <section>
+            <h2>De dónde salen los números</h2>
+            <p>
+              Los valores nutricionales no se los inventa nadie: salen de bases de datos
+              nutricionales internacionales, públicas y consultables.
+            </p>
+            <p>
+              La principal, con diferencia, es USDA FoodData Central, la base de datos del
+              Departamento de Agricultura de los Estados Unidos. Cuando un plato de aquí no está en
+              ninguna base, se compone sumando sus ingredientes, o se añade a mano dejando escrito de
+              dónde salen sus valores.
+            </p>
+            <p>
+              Cada alimento del informe lleva su origen a la vista, para que puedas comprobarlo tú
+              mismo.
+            </p>
+          </section>
+
+          <section>
+            <h2>Qué precisión esperar</h2>
+            <p>
+              Hay dos cosas que se estiman, y las dos pueden fallar: qué hay en el plato y cuánto
+              pesa. Un guiso mezclado, una foto a contraluz o una salsa que tapa la mitad dan peores
+              resultados que un plato ordenado con buena luz.
+            </p>
+            <p>
+              Por eso la app te enseña siempre lo que sabe y lo que no: la confianza de cada
+              alimento, si se usó una coincidencia exacta o la más parecida, y un aviso cuando el
+              total no cubre el plato entero.
+            </p>
+            <p>
+              Cuando no hay un dato fiable, CaliScan prefiere no dar el número antes que dar uno
+              inventado. Un hueco es honesto; un número redondo que nadie midió, no.
+            </p>
+          </section>
+
+          <section>
+            <h2>Los planes y los pagos</h2>
+            <p>
+              Hoy no se cobra nada. La pantalla de planes es la vitrina de lo que viene: no hay pagos
+              abiertos, no se te piden datos de pago y ningún botón te va a cobrar por error.
+            </p>
+            <p>El día que eso cambie, lo verás escrito antes de pagar nada.</p>
+          </section>
+
+          <section>
+            <h2>Este texto va a crecer</h2>
+            <p>
+              CaliScan está en su primera versión. Cuando lleguen las cuentas de usuario y los pagos,
+              esta página crecerá con lo que haga falta, empezando por qué se hace con tus fotos y
+              con tus datos.
+            </p>
+            <p>
+              Mientras tanto no prometemos aquí nada que no podamos sostener: preferimos una página
+              corta y cierta a una larga y prestada.
+            </p>
+          </section>
+        </div>
+
+        <p class="legal__actualizado">Última actualización: 1 de septiembre de 2026</p>
+      </article>
+    </main>
+
+    <footer class="pie">
+      <div class="envoltura pie__rejilla">
+        <div>
+          <svg class="logotipo logotipo--pie" viewBox="0 0 252 64" role="img" aria-label="CaliScan">
+            <use href="#logotipo" />
+          </svg>
+          <p class="pie__dominio">caliscan.app</p>
+        </div>
+
+        <p class="pie__aviso">
+          Información nutricional orientativa, calculada sobre datos de USDA FoodData Central. No es
+          consejo médico.
+        </p>
+      </div>
+
+      <div class="envoltura pie__base">
+        <p>© CaliScan 2026</p>
+        <nav class="pie__enlaces" aria-label="Legal">
+          <a href="index.html">Portada</a>
+          <a data-enlace-app href="#">Abrir la app</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="main.js"></script>
+  </body>
+</html>

@@ -41,14 +41,48 @@ export interface OpcionesDestino {
   baseDeDatos?: string | undefined;
 }
 
+/** Los únicos nombres de host que pueden ser un emulador: la máquina de uno. */
+const HOSTS_DE_LOOPBACK = new Set(["localhost", "127.0.0.1", "::1"]);
+
+/**
+ * El nombre de host de un `host:puerto`, sin esquema, sin puerto y sin los
+ * corchetes de IPv6. `https://firestore.googleapis.com` ⇒ `firestore.googleapis.com`.
+ */
+export function nombreDeHost(host: string): string {
+  const sinEsquema = host.replace(/^https?:\/\//i, "").replace(/\/+$/, "");
+  const entreCorchetes = /^\[([^\]]+)\](?::\d+)?$/.exec(sinEsquema);
+  if (entreCorchetes) return (entreCorchetes[1] as string).toLowerCase();
+  // IPv6 sin corchetes (`::1`): no puede llevar puerto, no habría cómo separarlo.
+  if (sinEsquema.split(":").length > 2) return sinEsquema.toLowerCase();
+  return (sinEsquema.split(":")[0] ?? "").toLowerCase();
+}
+
 /**
  * Arma el destino y, de paso, es el único candado que separa emulador de
- * producción: contra el proyecto real sin token no se sigue.
+ * producción. Son DOS candados, uno por rama, porque hay dos formas de
+ * equivocarse:
+ *
+ *   - contra el proyecto real, sin token no se sigue;
+ *   - con `--emulator`, el host tiene que ser la máquina de uno. Sin esto,
+ *     `--emulator --host https://firestore.googleapis.com` escribiría en la
+ *     API REAL con `Bearer owner` y, peor, en silencio: `esEmulador` sería
+ *     `true` y el aviso "⚠️ PROYECTO REAL" no se imprimiría. El mismo agujero
+ *     lo abría `FIRESTORE_EMULATOR_HOST`, que entra por acá y por eso se
+ *     valida DESPUÉS de resolverla, no antes.
  */
 export function crearDestino(opciones: OpcionesDestino): Destino {
   const baseDeDatos = opciones.baseDeDatos ?? "(default)";
   if (opciones.emulador) {
     const host = opciones.host ?? process.env["FIRESTORE_EMULATOR_HOST"] ?? "localhost:8080";
+    if (!HOSTS_DE_LOOPBACK.has(nombreDeHost(host))) {
+      throw new Error(
+        `El emulador tiene que estar en esta máquina y recibí el host '${host}'. ` +
+          "Solo se admiten localhost, 127.0.0.1 y [::1]. " +
+          "Un --emulator apuntando afuera escribiría en un Firestore real creyendo que " +
+          "es el emulador, y sin el aviso que avisa. " +
+          "Para escribir en el proyecto real, sacá --emulator y pasá un --token.",
+      );
+    }
     const raiz = host.startsWith("http") ? `${host.replace(/\/$/, "")}/v1` : `http://${host}/v1`;
     return {
       raiz,

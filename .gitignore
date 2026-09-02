@@ -19,6 +19,32 @@ kb/sources/
 # Credenciales: nunca al repo. La key de Anthropic vive en Secret Manager.
 serviceAccount*.json
 *.pem
+# El archivo con el que la CLI de Firebase resuelve los secretos en local
+# (`firebase functions:secrets`): tiene la API key de Anthropic en texto plano.
+.secret.local
+# Los .env de las funciones: en local es donde termina cualquier variable
+# sensible. Van TODAS las variantes porque la CLI de Firebase carga sola
+# `.env.<project-id>` (`.env.nutriscann-f809e`) y `.env.production`: no son
+# nombres teóricos, los lee sin que nadie los nombre.
+# La ruta va ANCLADA porque apps/web/.env sí va al repo — son claves públicas
+# de identidad del proyecto Firebase, no secretos.
+/functions/.env
+/functions/.env.*
+# …salvo un ejemplo sin valores, que es documentación y tiene que poder
+# versionarse (como apps/web/.env.local.example).
+!/functions/.env*.example
+# Volcado de `firebase functions:config:get`: trae la configuración con sus
+# secretos adentro.
+.runtimeconfig.json
+# El .env del seed: ahí terminaría un SEED_TOKEN, que es una credencial viva
+# contra el proyecto REAL.
+/kb/seed/.env
 
 # Caché incremental de TypeScript: artefacto de compilación.
 *.tsbuildinfo
+
+# Residuales del Q/A de la WS04: los `.env.*.local` de Vite son per-máquina por
+# convención de la propia herramienta, y un `.env` en la raíz hoy no lo lee
+# nadie — si algún día existe, que nazca ignorado.
+.env.*.local
+/.env

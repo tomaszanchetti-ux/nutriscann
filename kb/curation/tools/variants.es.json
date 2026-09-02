@@ -37,15 +37,56 @@
   [
    "Sándwich de carne al jugo",
    "zumo"
+  ],
+  [
+   "Crema de berenjena",
+   "nata"
   ]
  ],
+ "$retirados": {
+  "$comment": [
+   "ALIASES RETIRADOS: los que una card sacó A PROPÓSITO y el generador NO puede volver a emitir.",
+   "",
+   "Es el hermano del candado del nombre viejo (dt7.pairs.json) y de las guardas de vocabulario,",
+   "y existe por un error MEDIDO (DT-30): la card 2.7 extirpó `Filete` de fdc-2705824 y",
+   "`Tira de asado` de fdc-169510, y el generador los resucitaba en la corrida siguiente —el",
+   "primero por la regla de variantes (`bife` -> `filete`), el segundo por su propia línea de",
+   "`$extra`—, dejando `build_aliases.py --check` en rojo en `main` desde antes de la WS06 y",
+   "listo para romper el build por la guarda `filete`. Un alias que se saca a mano y vuelve solo",
+   "no está sacado: está esperando la próxima corrida.",
+   "",
+   "El candado es de DOS DIRECCIONES y por eso vive acá y no en el script: `build_aliases.py`",
+   "(a) nunca EMITE un alias retirado, y (b) lo SACA de names.es.json si alguien lo escribió a",
+   "mano, avisando por stderr. La lista es declarativa: retirar un alias es agregar una fila con",
+   "su motivo, no editar código.",
+   "",
+   "El generador honra además `guardas.vocabulario.json`: ningún alias generado puede ser un",
+   "término prohibido para esa ficha. Las dos listas no se pisan —una guarda prohíbe un TÉRMINO",
+   "en una ficha aunque nadie lo haya escrito nunca; esta lista fija un alias que SÍ existió y se",
+   "retiró— y `Tira de asado` es justo el caso que la guarda no cubre: la guarda de fdc-169510 es",
+   "sobre `asado` a secas, y `Tira de asado` no es igual a `asado`."
+  ],
+  "2705824": [
+   {
+    "alias": "Filete",
+    "retirado_por": "card 2.7 (01/09/2026)",
+    "motivo": "`filete` es la FORMA DEL CORTE, no la especie. Como alias de fdc-2705824 (`Beef, steak, NFS`) hacía que cualquier filete fuera carne de vaca: medido en el golden set de 30, `fish fillet, sauteed with brown sauce` (plato 23) cayó en `Bife`. Está además prohibido por `guardas.vocabulario.json`, así que emitirlo ROMPE EL BUILD. Lo genera la regla de variantes `bife` -> `filete`, que sigue siendo correcta para otras fichas."
+   }
+  ],
+  "169510": [
+   {
+    "alias": "Tira de asado",
+    "retirado_por": "card 2.7 (01/09/2026)",
+    "motivo": "La card 2.7 no borró el corte argentino: lo BAJÓ de 1,0 a 0,8 y lo mudó a `aliases.regional.json`, porque la reserva estaba medida en regional.coverage.json (el corte de USDA es `rib, small end 10-12` y la tira argentina se corta atravesando las costillas) y no llegaba al catálogo. Volver a emitirlo desde `$extra` lo republica EN TEXTO PLANO, y un alias en texto plano es un alias de confianza 1,0: la misma reserva dicha dos veces con dos números distintos, y el 0,8 anulado por la puerta de atrás. La guarda de esta ficha es sobre `asado` a secas y no lo alcanza."
+   }
+  ]
+ },
  "$extra": {
   "168043": [
    "Guiso de mote con cordero"
   ],
   "169510": [
-   "Costilla de vaca a la parrilla",
-   "Tira de asado"
+   "Costilla de vaca a la parrilla"
   ],
   "173468": [
    "Sal de mesa"

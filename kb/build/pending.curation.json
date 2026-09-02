@@ -1,5 +1,5 @@
 {
-  "kb_version": "2.1.0+9056186e",
+  "kb_version": "3.8.0+843ecb80",
   "total": 0,
   "$comment": "Alimentos sin names.es. Los produce el build; los resuelve la curación (kb/curation/names.es.json). Se regenera en cada build.",
   "pending": []

@@ -46,6 +46,51 @@ test("el destino emulador respeta FIRESTORE_EMULATOR_HOST", () => {
   }
 });
 
+test("el destino emulador acepta las tres formas de nombrar esta máquina", () => {
+  for (const host of ["localhost:8080", "127.0.0.1:9999", "[::1]:8080", "http://localhost:8080"]) {
+    const destino = crearDestino({ proyecto: "p", emulador: true, host });
+    assert.equal(destino.esEmulador, true, `rechazó ${host}`);
+  }
+});
+
+test("--emulator con un host que NO es esta máquina se frena", () => {
+  // El agujero: escribiría en la API REAL con `Bearer owner`, y sin el aviso
+  // "⚠️ PROYECTO REAL", porque esEmulador sería true.
+  assert.throws(
+    () =>
+      crearDestino({
+        proyecto: "p",
+        emulador: true,
+        host: "https://firestore.googleapis.com",
+      }),
+    /tiene que estar en esta máquina/,
+  );
+  assert.throws(
+    () => crearDestino({ proyecto: "p", emulador: true, host: "firestore.googleapis.com" }),
+    /tiene que estar en esta máquina/,
+  );
+  // Y un nombre que se le parece a localhost tampoco pasa.
+  assert.throws(
+    () => crearDestino({ proyecto: "p", emulador: true, host: "localhost.evil.com:8080" }),
+    /tiene que estar en esta máquina/,
+  );
+});
+
+test("FIRESTORE_EMULATOR_HOST entra por el mismo candado", () => {
+  const previo = process.env["FIRESTORE_EMULATOR_HOST"];
+  process.env["FIRESTORE_EMULATOR_HOST"] = "https://firestore.googleapis.com";
+  try {
+    assert.throws(
+      () => crearDestino({ proyecto: "p", emulador: true }),
+      /tiene que estar en esta máquina/,
+      "la variable de entorno esquivó el candado",
+    );
+  } finally {
+    if (previo === undefined) delete process.env["FIRESTORE_EMULATOR_HOST"];
+    else process.env["FIRESTORE_EMULATOR_HOST"] = previo;
+  }
+});
+
 test("contra el proyecto real sin token no se sigue", () => {
   const previo = process.env["SEED_TOKEN"];
   delete process.env["SEED_TOKEN"];

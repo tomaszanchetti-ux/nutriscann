@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /**
- * Sistema visual de NutriScann.
+ * Sistema visual de CaliScan.
  *
  * Dark-first a propósito: la comida fotografiada resalta sobre fondo oscuro.
  * Los colores de macros son SEMÁNTICOS y fijos — el mismo tono significa lo
@@ -50,5 +50,200 @@ body {
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===========================================================================
+ * EL DONUT DE DOBLE ANILLO (card 3.1) — los arcos se DIBUJAN al entrar.
+ *
+ * Por qué acá y no en `className`: son keyframes, y Tailwind no los expresa.
+ * Todo lo demás del donut (radios, colores, grosores) sigue siendo SVG con los
+ * tokens de `@theme`.
+ *
+ * Cómo funciona, en una línea: cada gajo es un trozo de circunferencia con
+ * `stroke-dasharray: <su largo> <la vuelta entera>`, y la animación mueve el
+ * `stroke-dashoffset` desde su largo hasta 0 — o sea, el trazo entra por su
+ * propio comienzo y crece hasta su tamaño real. El largo se lo pasa el
+ * componente en `--donut-largo`, en unidades de usuario del SVG.
+ *
+ * Se anima UNA sola propiedad, y es de las que el navegador puede componer sin
+ * recalcular layout. Los arcos del anillo exterior arrancan con un retraso —lo
+ * pone el componente— para que el ojo lea primero el reparto y después su
+ * desglose: el orden del dibujo es el orden de la explicación.
+ * ======================================================================== */
+
+.donut-arco {
+  animation-name: donut-dibuja;
+  animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+  animation-fill-mode: both;
+}
+
+@keyframes donut-dibuja {
+  from {
+    stroke-dashoffset: var(--donut-largo);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* El bloque global de más arriba aplasta toda duración a 0,01 ms, que acá
+     alcanzaría; se apaga igual y de forma explícita, para que el gráfico
+     aparezca ENTERO y quieto en vez de parpadear en su primer cuadro. Lo que se
+     lee —los porcentajes, los gramos, la leyenda— nunca dependió de la
+     animación. */
+  .donut-arco {
+    animation: none !important;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ===========================================================================
+ * EL ESCANEO (card 3.2) — la espera ES el show.
+ *
+ * CSS puro y cero dependencias nuevas: la PWA tiene que seguir liviana, y todo
+ * lo de acá abajo son gradientes y `transform`, que el navegador compone en la
+ * GPU sin repintar la foto.
+ *
+ * Las clases viven acá y no en `className` porque son keyframes: Tailwind no
+ * las expresa. Todo lo demás (tamaños, colores, bordes) sigue siendo Tailwind
+ * con los tokens de `@theme` de arriba — no hay un sistema visual nuevo.
+ * ======================================================================== */
+
+.escaneo-marco {
+  /* La retícula es de 7×7 celdas SIEMPRE, sea cual sea el ancho del teléfono:
+     en porcentaje y no en píxeles, así el paso no cambia entre un móvil chico y
+     uno grande. */
+  --reticula-paso: 14.2857%;
+  --reticula-color: color-mix(in oklab, var(--color-accent) 20%, transparent);
+}
+
+.escaneo-foto {
+  animation: escaneo-foto-entra 600ms ease-out both;
+}
+
+/* La retícula: dos gradientes de una línea cada uno, repetidos por
+   `background-size`. Es un solo elemento y no dibuja nada por celda. */
+.escaneo-reticula {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--reticula-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--reticula-color) 1px, transparent 1px);
+  background-size: var(--reticula-paso) var(--reticula-paso);
+  animation: escaneo-reticula-entra 700ms ease-out both;
+}
+
+/* El haz: una banda con degradado y una línea nítida en su borde de avance.
+   Se mueve con `transform`, no con `top`, para no forzar layout en cada cuadro. */
+.escaneo-haz {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 22%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    color-mix(in oklab, var(--color-accent) 8%, transparent) 55%,
+    color-mix(in oklab, var(--color-accent) 30%, transparent) 92%,
+    color-mix(in oklab, var(--color-accent) 60%, transparent) 100%
+  );
+  animation: escaneo-barrido 2600ms cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+}
+
+.escaneo-haz::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--color-accent);
+  box-shadow: 0 0 12px 1px color-mix(in oklab, var(--color-accent) 70%, transparent);
+}
+
+/* Las esquinas laten SOLO mientras la foto se prepara: el latido se apaga en el
+   momento exacto en que el pedido sale y el haz empieza a barrer. La diferencia
+   entre los dos estados es información, no decoración. */
+.escaneo-esquinas--preparando {
+  animation: escaneo-latido 1600ms ease-in-out infinite;
+}
+
+.escaneo-texto {
+  animation: escaneo-texto-entra 320ms ease-out both;
+}
+
+@keyframes escaneo-barrido {
+  /* De fuera del cuadro por arriba (−100 % de su propia altura) a apoyado en el
+     borde de abajo: (100 − 22) / 22 = 354,55 % de su propia altura. */
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(354.55%);
+  }
+}
+
+@keyframes escaneo-foto-entra {
+  from {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes escaneo-reticula-entra {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes escaneo-texto-entra {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes escaneo-latido {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* El bloque global de más arriba aplasta TODA duración a 0,01 ms, y eso a una
+     animación infinita no la calma: la vuelve un parpadeo, que es peor que el
+     movimiento original. Por eso acá el escaneo no se acelera, se APAGA: el haz
+     desaparece y queda la foto con su retícula quieta y las esquinas fijas. El
+     progreso se sigue leyendo, porque nunca dependió del movimiento — lo dicen
+     los micro-textos y los tres tramos de la barra. */
+  .escaneo-haz {
+    display: none;
+  }
+  .escaneo-foto,
+  .escaneo-reticula,
+  .escaneo-texto,
+  .escaneo-esquinas--preparando {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+  .escaneo-marco {
+    --reticula-color: color-mix(in oklab, var(--color-accent) 30%, transparent);
   }
 }

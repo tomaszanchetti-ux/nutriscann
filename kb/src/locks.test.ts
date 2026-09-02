@@ -10,6 +10,7 @@ import test from "node:test";
 
 import type { BuildStats } from "./canonical";
 import {
+  CLAVES_DEL_CATALOGO,
   lockAtwater,
   lockGolden,
   lockIdempotence,
@@ -18,7 +19,7 @@ import {
   validateFood,
   MINIMUM_BY_SOURCE,
 } from "./locks";
-import type { CanonicalFood, Catalog, FoodSource } from "./types";
+import type { CanonicalFood, Catalog, FoodSource, VocabularyGuard } from "./types";
 
 function food(overrides: Partial<CanonicalFood> = {}): CanonicalFood {
   return {
@@ -46,10 +47,18 @@ function food(overrides: Partial<CanonicalFood> = {}): CanonicalFood {
   };
 }
 
-function catalog(foods: CanonicalFood[]): Catalog {
+/** Una guarda cualquiera, bien formada: el candado 1 exige que la lista no venga vacía. */
+const GUARDA_DE_PRUEBA: VocabularyGuard = {
+  termino: "chorizo",
+  prohibido_en: ["fdc-2705835"],
+  motivo: "el corte vacuno no se llama como el embutido",
+};
+
+function catalog(foods: CanonicalFood[], guardas: VocabularyGuard[] = [GUARDA_DE_PRUEBA]): Catalog {
   return {
     kb_version: "1.0.0+testtest",
     generated_from: { selection: "1.1-v2", sources: ["usda_sr_legacy"] },
+    guardas,
     foods,
   };
 }
@@ -78,7 +87,11 @@ function emptyStats(): BuildStats {
     manualOverrideFoods: 0,
     curatedPortions: 0,
     curatedPortionLabels: 0,
+    curatedPortionHints: 0,
     portionNeedsReview: [],
+    genericFoods: 0,
+    genericCaveats: 0,
+    guardViolations: [],
     descriptionMismatches: [],
     foodsWithoutPortions: [],
   };
@@ -166,7 +179,7 @@ test("candado 2: el catálogo completo pasa el piso por fuente", () => {
 test("candado 2: si las recetas desaparecen, el build explota", () => {
   // Mismo motivo que el piso de la curación manual: `recipes.foods.json` se lee
   // de forma tolerante, así que vaciarlo no lanza nada y el catálogo saldría sin
-  // ninguna ficha derivada, con los cinco candados en verde.
+  // ninguna ficha derivada, con todos los candados en verde.
   const result = lockPerSource(
     catalog([
       ...manyFoods("usda_fndds", MINIMUM_BY_SOURCE.usda_fndds),
@@ -259,4 +272,55 @@ test("candado 4: un valor fuera del ±15 % falla", () => {
 test("candado 5: dos corridas iguales pasan, distintas fallan", () => {
   assert.equal(lockIdempotence("{}", "{}").passed, true);
   assert.equal(lockIdempotence("{}", "{ }").passed, false);
+});
+
+// --- Candado 1 · el encabezado del catálogo (DT-32) --------------------------
+
+test("candado 1: el encabezado declara sus CUATRO claves y en su orden", () => {
+  // Sumar o sacar una clave del catálogo es un cambio de contrato —lo leen el
+  // seed, el motor y los tests que corren sin los CSVs— y tiene que ser un acto
+  // deliberado, con su versión escrita, no un efecto secundario de otra cosa.
+  assert.deepEqual(CLAVES_DEL_CATALOGO, ["kb_version", "generated_from", "guardas", "foods"]);
+  assert.equal(lockSchema(catalog([food()]), emptyStats()).passed, true);
+
+  const conClaveDeMas = { ...catalog([food()]), extra: 1 } as unknown as Catalog;
+  const r = lockSchema(conClaveDeMas, emptyStats());
+  assert.equal(r.passed, false);
+  assert.match(r.failures.join(" "), /cambio de\s+esquema/);
+});
+
+test("candado 1: un catálogo SIN guardas no se publica", () => {
+  // El escenario se construye porque no puede aparecer solo: hoy la curación
+  // declara veintiuna. Si un día el archivo se vacía o se renombra, el catálogo
+  // saldría con la lista vacía y el matcher se quedaría sin NINGUNA prohibición
+  // —`chorizo` volvería al bife— sin que nada explote. Esto explota.
+  const r = lockSchema(catalog([food()], []), emptyStats());
+  assert.equal(r.passed, false);
+  assert.match(r.failures.join(" "), /sin guardas de vocabulario/);
+});
+
+test("candado 1: una guarda a medio escribir no llega al catálogo", () => {
+  // Una prohibición rota no rompe nada VISIBLE —el matcher la recorre y no
+  // dispara nunca—, que es exactamente el modo de falla silencioso que las
+  // guardas existen para evitar. Por eso se verifica la forma acá y no solo en
+  // la curación: desde la DT-32 esta lista es la que corre en runtime.
+  const casos: [Partial<VocabularyGuard>, RegExp][] = [
+    [{ termino: "", prohibido_en: ["fdc-1"], motivo: "x" }, /el término está vacío/],
+    [{ termino: "x", prohibido_en: [], motivo: "x" }, /no prohíbe la palabra en ninguna ficha/],
+    [{ termino: "x", prohibido_en: ["fdc-1"], motivo: "" }, /falta el motivo/],
+    [{ termino: "x", prohibido_en: ["fdc-1"], salvo_si_contiene: [], motivo: "x" }, /excepción está vacía/],
+  ];
+  for (const [guarda, esperado] of casos) {
+    const r = lockSchema(catalog([food()], [guarda as VocabularyGuard]), emptyStats());
+    assert.equal(r.passed, false, JSON.stringify(guarda));
+    assert.match(r.failures.join(" "), esperado);
+  }
+});
+
+test("candado 1: el mismo término declarado dos veces se detecta", () => {
+  // Dos filas con el mismo término no suman: la segunda es o una copia muerta o
+  // una contradicción, y las dos formas se arreglan en la curación.
+  const r = lockSchema(catalog([food()], [GUARDA_DE_PRUEBA, { ...GUARDA_DE_PRUEBA }]), emptyStats());
+  assert.equal(r.passed, false);
+  assert.match(r.failures.join(" "), /declarado dos veces/);
 });

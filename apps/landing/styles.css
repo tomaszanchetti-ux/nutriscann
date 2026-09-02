@@ -1,0 +1,1068 @@
+/* ===========================================================================
+ * CALISCAN — SITIO DE MARKETING
+ *
+ * CSS plano, sin build y sin framework: el sitio se sirve tal cual desde
+ * Firebase Hosting. Tres archivos y ninguna dependencia salvo las fuentes.
+ *
+ * EL SISTEMA VISUAL NO ES NUEVO. Los colores y las tipografías son EXACTAMENTE
+ * los tokens de `apps/web/src/index.css`, copiados aquí como variables porque
+ * este sitio no compila Tailwind. Si un tono cambia en la app, cambia aquí; no
+ * hay un segundo criterio de marca.
+ *
+ * Oscuro siempre, no "oscuro si el sistema lo pide": la app es dark-first
+ * porque la comida fotografiada resalta sobre fondo oscuro, y la landing tiene
+ * que parecerse a lo que hay al otro lado del botón.
+ *
+ * Móvil primero: la mayoría de las visitas llegan desde el teléfono, así que
+ * la hoja base es la de móvil y las `@media` solo AÑADEN a partir de ahí.
+ * ======================================================================== */
+
+:root {
+  /* Superficies */
+  --ground: #12160f;
+  --surface: #1a2017;
+  --surface-2: #212820;
+  --line: #2d362b;
+
+  /* Texto */
+  --ink: #e8ece4;
+  --ink-soft: #b3bcae;
+  --ink-faint: #7d877c;
+
+  /* Marca */
+  --accent: #4fbe82;
+  --accent-deep: #2f9e63;
+  --accent-soft: #1e3328;
+
+  /* Macronutrientes: semánticos y fijos, los mismos que en la app */
+  --protein: #ec7b64;
+  --carbs: #e7b354;
+  --fat: #a98fe4;
+
+  --fuente-display: "Bricolage Grotesque", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --fuente-texto: "Instrument Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --fuente-mono: "Spline Sans Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --radio: 18px;
+  --radio-chico: 12px;
+  --ancho: 1120px;
+  --ancho-estrecho: 760px;
+  --margen: 20px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* La cabecera es fija: sin esto, un enlace de ancla deja el título tapado. */
+  scroll-padding-top: 84px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--ground);
+  color: var(--ink);
+  font-family: var(--fuente-texto);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--fuente-display);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* El foco se ve SIEMPRE, y con el verde de la marca: navegar con teclado no es
+   un modo degradado del sitio. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.salto-al-contenido {
+  position: absolute;
+  left: -9999px;
+  top: 8px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: var(--radio-chico);
+  background: var(--accent);
+  color: var(--ground);
+  font-weight: 600;
+}
+
+.salto-al-contenido:focus {
+  left: 12px;
+}
+
+/* --------------------------------------------------------------------------
+ * Rejilla y piezas repetidas
+ * ----------------------------------------------------------------------- */
+
+.envoltura {
+  width: 100%;
+  max-width: var(--ancho);
+  margin-inline: auto;
+  padding-inline: var(--margen);
+}
+
+.envoltura--estrecha {
+  max-width: var(--ancho-estrecho);
+}
+
+.wordmark {
+  font-family: var(--fuente-display);
+}
+
+.logotipo {
+  height: 30px;
+  width: auto;
+}
+
+.tarjeta {
+  position: relative;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radio);
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+}
+
+.tarjeta h3 {
+  font-size: 1.125rem;
+  margin-bottom: 8px;
+}
+
+.tarjeta p {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.icono {
+  width: 28px;
+  height: 28px;
+  color: var(--accent);
+  margin-bottom: 18px;
+}
+
+.antetitulo {
+  font-family: var(--fuente-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.titulo-seccion {
+  font-size: clamp(1.75rem, 1.15rem + 2.7vw, 2.6rem);
+}
+
+.seccion__bajada {
+  color: var(--ink-soft);
+  font-size: 1.02rem;
+  max-width: 58ch;
+  margin-top: 14px;
+}
+
+.letra-fina {
+  color: var(--ink-faint);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+ * Botones
+ * ----------------------------------------------------------------------- */
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--ground);
+  font-family: var(--fuente-texto);
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    transform 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.boton:hover {
+  background: #63d195;
+}
+
+.boton:active {
+  transform: scale(0.97);
+}
+
+.boton--grande {
+  padding: 16px 28px;
+  font-size: 1.05rem;
+}
+
+.boton--pequeno {
+  padding: 9px 16px;
+  font-size: 0.88rem;
+}
+
+.boton--fantasma {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.boton--fantasma:hover {
+  background: var(--surface-2);
+  border-color: var(--accent-deep);
+}
+
+.boton__flecha {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+/* --------------------------------------------------------------------------
+ * Cabecera
+ * ----------------------------------------------------------------------- */
+
+.cabecera {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--ground) 82%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+/* La línea inferior aparece solo cuando hay contenido pasando por debajo: la
+   pone `main.js` al bajar del pliegue. */
+.cabecera[data-desplazada="si"] {
+  border-bottom-color: var(--line);
+}
+
+.cabecera__fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 64px;
+}
+
+.cabecera__marca {
+  display: flex;
+  align-items: center;
+}
+
+.cabecera__nav {
+  display: none;
+  gap: 26px;
+}
+
+.cabecera__nav a {
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
+.cabecera__nav a:hover {
+  color: var(--ink);
+}
+
+@media (min-width: 860px) {
+  .cabecera__nav {
+    display: flex;
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * Hero
+ * ----------------------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  padding-top: 56px;
+  padding-bottom: 64px;
+  overflow: hidden;
+}
+
+/* El resplandor verde detrás del titular. Es un solo gradiente radial y no
+   pinta nada encima del texto: `pointer-events` fuera y z-index por debajo. */
+.hero__resplandor {
+  position: absolute;
+  inset: -20% -20% auto -20%;
+  height: 620px;
+  pointer-events: none;
+  background: radial-gradient(
+    58% 50% at 50% 32%,
+    color-mix(in srgb, var(--accent) 16%, transparent) 0%,
+    transparent 72%
+  );
+}
+
+.hero__rejilla {
+  position: relative;
+  display: grid;
+  gap: 44px;
+  align-items: center;
+}
+
+.insignia {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 14px 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent-soft) 55%, transparent);
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.35;
+  margin-bottom: 22px;
+}
+
+.insignia__punto {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.titular {
+  font-size: clamp(2.1rem, 1.25rem + 3.9vw, 3.5rem);
+  letter-spacing: -0.03em;
+}
+
+.titular em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.entradilla {
+  margin-top: 20px;
+  color: var(--ink-soft);
+  font-size: clamp(1rem, 0.94rem + 0.3vw, 1.12rem);
+  max-width: 54ch;
+}
+
+.hero__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 28px 0 16px;
+}
+
+.hero__figura {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hero__figura .letra-fina {
+  max-width: 46ch;
+}
+
+@media (min-width: 900px) {
+  .hero {
+    padding-top: 88px;
+    padding-bottom: 104px;
+  }
+
+  .hero__rejilla {
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 56px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * El visor: la ilustración del hero
+ *
+ * Es el encuadre del escáner de la app, quieto: retícula, haz de luz, cuatro
+ * esquinas y el anillo de macros. No es una captura de pantalla y el pie de
+ * figura lo dice; aquí no hay ni una cifra inventada porque no hay ninguna.
+ * ----------------------------------------------------------------------- */
+
+.visor {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  max-width: 420px;
+  width: 100%;
+  margin-inline: auto;
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background:
+    radial-gradient(70% 60% at 50% 40%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 70%),
+    linear-gradient(160deg, var(--surface) 0%, var(--ground) 100%);
+  overflow: hidden;
+}
+
+/* Retícula de 7×7 celdas SIEMPRE, en porcentaje y no en píxeles: el paso no
+   cambia entre un móvil pequeño y una pantalla grande. Igual que en la app. */
+.visor__reticula {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--accent) 12%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--accent) 12%, transparent) 1px, transparent 1px);
+  background-size: 14.2857% 14.2857%;
+  mask-image: radial-gradient(75% 75% at 50% 50%, #000 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(75% 75% at 50% 50%, #000 40%, transparent 100%);
+}
+
+/* EL BARRIDO. Se anima `background-position` de una banda de 120 px sobre un
+   elemento que ocupa todo el visor, y no `transform` de una banda suelta: el
+   visor es cuadrado y su alto depende del ancho de la pantalla, así que un
+   `translateY` tendría que saber cuántos píxeles mide — y no lo sabe sin JS ni
+   container queries. Con `background-position`, el 100 % ya significa «abajo
+   del todo» sea cual sea el tamaño. */
+.visor__haz {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    color-mix(in srgb, var(--accent) 10%, transparent) 55%,
+    color-mix(in srgb, var(--accent) 62%, transparent) 96%,
+    var(--accent) 100%
+  );
+  background-size: 100% 120px;
+  background-repeat: no-repeat;
+  background-position: 0 -120px;
+  animation: barrido 3.8s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+@keyframes barrido {
+  0% {
+    background-position: 0 -120px;
+    opacity: 0;
+  }
+  14% {
+    opacity: 1;
+  }
+  86% {
+    opacity: 1;
+  }
+  100% {
+    background-position: 0 calc(100% + 120px);
+    opacity: 0;
+  }
+}
+
+.visor__anillo {
+  position: relative;
+  width: 62%;
+  max-width: 230px;
+  height: auto;
+}
+
+.visor__esquinas span {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 2.5px solid var(--accent);
+  opacity: 0.75;
+}
+
+.visor__esquinas span:nth-child(1) {
+  top: 18px;
+  left: 18px;
+  border-right: 0;
+  border-bottom: 0;
+  border-top-left-radius: 10px;
+}
+
+.visor__esquinas span:nth-child(2) {
+  top: 18px;
+  right: 18px;
+  border-left: 0;
+  border-bottom: 0;
+  border-top-right-radius: 10px;
+}
+
+.visor__esquinas span:nth-child(3) {
+  bottom: 18px;
+  right: 18px;
+  border-left: 0;
+  border-top: 0;
+  border-bottom-right-radius: 10px;
+}
+
+.visor__esquinas span:nth-child(4) {
+  bottom: 18px;
+  left: 18px;
+  border-right: 0;
+  border-top: 0;
+  border-bottom-left-radius: 10px;
+}
+
+.leyenda {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 18px;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+.leyenda li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.punto {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.punto--proteina {
+  background: var(--protein);
+}
+.punto--hidratos {
+  background: var(--carbs);
+}
+.punto--grasas {
+  background: var(--fat);
+}
+
+/* --------------------------------------------------------------------------
+ * Secciones
+ * ----------------------------------------------------------------------- */
+
+.seccion {
+  padding-block: 64px;
+  border-top: 1px solid var(--line);
+}
+
+.seccion--alterna {
+  background: color-mix(in srgb, var(--surface) 45%, var(--ground));
+}
+
+.seccion__cabecera {
+  margin-bottom: 36px;
+  max-width: 62ch;
+}
+
+@media (min-width: 900px) {
+  .seccion {
+    padding-block: 96px;
+  }
+
+  .seccion__cabecera {
+    margin-bottom: 52px;
+  }
+}
+
+/* Pasos ------------------------------------------------------------------ */
+
+.pasos,
+.capacidades,
+.planes {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 900px) {
+  .pasos {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Cinco tarjetas en tres columnas dejarían un hueco feo en la segunda fila.
+     La rejilla se abre a seis columnas: tres tarjetas de dos y dos de tres.
+     3 + 2, las dos filas completas. */
+  .capacidades {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .capacidades li {
+    grid-column: span 2;
+  }
+
+  .capacidades li:nth-child(4),
+  .capacidades li:nth-child(5) {
+    grid-column: span 3;
+  }
+}
+
+.paso {
+  padding-top: 28px;
+}
+
+.paso__numero {
+  position: absolute;
+  top: 20px;
+  right: 22px;
+  font-family: var(--fuente-mono);
+  font-size: 2.1rem;
+  line-height: 1;
+  color: color-mix(in srgb, var(--accent) 26%, transparent);
+}
+
+/* Planes ----------------------------------------------------------------
+ *
+ * La misma tarjeta que dibuja `TarjetaDePlan` en la app, traducida de Tailwind
+ * a CSS plano: sello, nombre, precio grande con su periodo al lado, la píldora
+ * del cupo, la frase y las viñetas con su tilde. El destacado cambia de borde,
+ * de fondo y de color de sello, exactamente como allá.
+ * ----------------------------------------------------------------------- */
+
+.plan {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radio);
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+}
+
+.plan--destacado {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  background: linear-gradient(180deg, var(--accent-soft) 0%, var(--surface) 90%);
+}
+
+.plan__sello {
+  align-self: flex-start;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  /* `ink-soft` y no `ink-faint`: el gris tenue sobre `surface-2` se queda en
+     4,1:1 de contraste, por debajo del 4,5:1 que pide un texto de 11 px. */
+  color: var(--ink-soft);
+  font-family: var(--fuente-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.plan--destacado .plan__sello {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--ground);
+}
+
+.plan__nombre {
+  font-size: 1.4rem;
+}
+
+.plan__precio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 9px;
+}
+
+.plan__precio strong {
+  font-family: var(--fuente-display);
+  font-size: 2.1rem;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.plan__precio span {
+  color: var(--ink-faint);
+  font-size: 0.9rem;
+}
+
+/* El cupo, en su propio renglón y con el mismo formato en los tres: es la
+   comparación que esta sección existe para hacer posible. */
+.plan__cupo {
+  padding: 9px 12px;
+  border-radius: var(--radio-chico);
+  background: var(--surface-2);
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.plan--destacado .plan__cupo {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+}
+
+.plan__resumen {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.plan__incluye {
+  display: grid;
+  gap: 9px;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+}
+
+.plan__incluye li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.tilde {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  margin-top: 2px;
+  color: var(--accent);
+}
+
+/* El botón se pega abajo: con tres tarjetas de alto distinto, los tres CTA
+   tienen que quedar en la misma línea. */
+.plan__boton {
+  margin-top: auto;
+  width: 100%;
+}
+
+@media (min-width: 900px) {
+  .planes {
+    grid-template-columns: repeat(3, 1fr);
+    align-items: stretch;
+  }
+
+  /* El plan gratuito no lleva sello —tampoco en la app—, así que en fila se le
+     reserva el hueco para que los tres nombres arranquen a la misma altura. */
+  .plan--sin-sello .plan__nombre {
+    margin-top: 45px;
+  }
+}
+
+/* FAQ -------------------------------------------------------------------- */
+
+.faq {
+  display: grid;
+  gap: 10px;
+}
+
+.faq__item {
+  border: 1px solid var(--line);
+  border-radius: var(--radio-chico);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.faq__item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  cursor: pointer;
+  font-family: var(--fuente-display);
+  font-size: 1.02rem;
+  font-weight: 600;
+  list-style: none;
+}
+
+.faq__item summary::-webkit-details-marker {
+  display: none;
+}
+
+/* El signo «+» que gira hasta ser «×» al abrir. Dos trazos con `::after`, sin
+   un icono más que cargar. */
+.faq__item summary::after {
+  content: "";
+  flex: none;
+  width: 14px;
+  height: 14px;
+  background:
+    linear-gradient(var(--accent), var(--accent)) center / 14px 2px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) center / 2px 14px no-repeat;
+  transition: transform 0.2s ease;
+}
+
+.faq__item[open] summary::after {
+  transform: rotate(135deg);
+}
+
+.faq__item summary:hover {
+  background: var(--surface-2);
+}
+
+.faq__cuerpo {
+  padding: 0 20px 20px;
+  color: var(--ink-soft);
+  font-size: 0.96rem;
+  display: grid;
+  gap: 12px;
+}
+
+.faq__cuerpo strong {
+  color: var(--ink);
+}
+
+.faq__cuerpo ul {
+  display: grid;
+  gap: 8px;
+  padding-left: 18px;
+  list-style: disc;
+}
+
+/* Cierre ----------------------------------------------------------------- */
+
+.cierre {
+  padding-block: 72px 88px;
+  border-top: 1px solid var(--line);
+  background:
+    radial-gradient(60% 100% at 50% 100%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%),
+    var(--ground);
+}
+
+.cierre__caja {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 18px;
+}
+
+.cierre__marca {
+  width: 52px;
+  height: 52px;
+}
+
+.cierre__caja .seccion__bajada {
+  margin-top: 0;
+}
+
+/* Pie -------------------------------------------------------------------- */
+
+.pie {
+  border-top: 1px solid var(--line);
+  padding-block: 40px 28px;
+  background: var(--ground);
+}
+
+.pie__rejilla {
+  display: grid;
+  gap: 26px;
+  padding-bottom: 26px;
+}
+
+.logotipo--pie {
+  height: 26px;
+}
+
+.pie__dominio {
+  margin-top: 10px;
+  font-family: var(--fuente-mono);
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+}
+
+.pie__aviso {
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+  max-width: 52ch;
+}
+
+.pie__base {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-faint);
+  font-size: 0.84rem;
+}
+
+.pie__base p {
+  margin: 0;
+}
+
+.pie__enlaces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  align-items: center;
+}
+
+/* --------------------------------------------------------------------------
+ * Página legal (terminos.html)
+ *
+ * Una columna estrecha y nada más. Sin acordeones, sin "leer más" y sin scroll
+ * interno: una advertencia que hay que desplegar para leerla es una advertencia
+ * escondida. Mismo criterio que la pantalla de la app.
+ * ----------------------------------------------------------------------- */
+
+.legal {
+  padding-block: 48px 72px;
+}
+
+.legal__titulo {
+  font-size: clamp(1.9rem, 1.3rem + 2.4vw, 2.6rem);
+}
+
+/* La entrada va destacada a propósito: es el resumen de todo lo de abajo, para
+   quien no va a leer todo lo de abajo. */
+.legal__entrada {
+  margin-top: 20px;
+  padding: 18px 20px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: var(--radio);
+  background: color-mix(in srgb, var(--accent-soft) 55%, transparent);
+  color: var(--ink);
+  font-size: 1.02rem;
+}
+
+.legal__cuerpo {
+  display: grid;
+  gap: 34px;
+  margin-top: 36px;
+}
+
+.legal__cuerpo h2 {
+  font-size: 1.25rem;
+  margin-bottom: 12px;
+}
+
+.legal__cuerpo p + p {
+  margin-top: 12px;
+}
+
+.legal__cuerpo p {
+  color: var(--ink-soft);
+  font-size: 0.98rem;
+}
+
+.legal__actualizado {
+  margin-top: 36px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  font-family: var(--fuente-mono);
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+}
+
+.legal__volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 28px;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
+.legal__volver:hover {
+  color: var(--ink);
+}
+
+@media (min-width: 820px) {
+  .pie__rejilla {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: 40px;
+  }
+
+  .pie__aviso {
+    justify-self: end;
+    text-align: right;
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * Entrada de las secciones al hacer scroll.
+ *
+ * El estado inicial lo pone `main.js` (clase en <html>) y NO el CSS: si el
+ * JavaScript no llegara a cargar, el contenido tiene que verse igual. Nunca se
+ * esconde nada que dependa de un script para aparecer.
+ * ----------------------------------------------------------------------- */
+
+.js .aparece {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.js .aparece.visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .visor__haz {
+    display: none;
+  }
+
+  .js .aparece {
+    opacity: 1;
+    transform: none;
+  }
+}

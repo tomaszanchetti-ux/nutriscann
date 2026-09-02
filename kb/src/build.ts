@@ -3,7 +3,8 @@
  *
  * Orden deliberado: primero se verifican los hashes de las fuentes, después se
  * lee, después se arma, después se corren los candados y RECIÉN AHÍ se escribe.
- * Nada toca el disco hasta que los cinco candados dieron verde.
+ * Nada toca el disco hasta que los candados dieron verde — el 0 incluido, que
+ * exige que la política declarada esté antes de mirar un solo alimento.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -16,6 +17,7 @@ import {
   lockGolden,
   lockIdempotence,
   lockPerSource,
+  lockPolitica,
   lockSchema,
   type LockResult,
 } from "./locks";
@@ -109,13 +111,29 @@ export async function runPipeline(): Promise<PipelineResult> {
   };
 }
 
-/** Corre los cuatro candados que dependen del contenido del catálogo. */
+/**
+ * Corre el candado de la política y los cuatro que dependen del contenido.
+ *
+ * La `curation` viaja hasta acá —y no se lee de un archivo dentro del candado—
+ * porque los candados son funciones PURAS: así el de la DT-13 se puede probar
+ * con una regla construida a mano, sin tocar un solo archivo de curación.
+ *
+ * El candado 0 va primero porque es la precondición de los otros: sin la
+ * política declarada, el candado 1 no tiene con qué re-derivar las marcas.
+ */
 export function runContentLocks(
   catalog: Catalog,
   stats: BuildStats,
   alcohol: Map<string, number>,
+  curation: Curation | null = null,
 ): LockResult[] {
-  return [lockSchema(catalog, stats), lockPerSource(catalog), lockAtwater(catalog, alcohol), lockGolden(catalog)];
+  return [
+    lockPolitica(curation),
+    lockSchema(catalog, stats, curation?.genericRule ?? null),
+    lockPerSource(catalog),
+    lockAtwater(catalog, alcohol),
+    lockGolden(catalog),
+  ];
 }
 
 /** El archivo de pendientes: lo que la curación todavía no tradujo. */
@@ -157,7 +175,7 @@ export interface BuildOutcome {
 
 export async function runBuild(options: BuildOptions = {}): Promise<BuildOutcome> {
   const result = await runPipeline();
-  const locks = runContentLocks(result.catalog, result.stats, result.alcohol);
+  const locks = runContentLocks(result.catalog, result.stats, result.alcohol, result.curation);
 
   if (options.skipIdempotence !== true) {
     const second = await runPipeline();
