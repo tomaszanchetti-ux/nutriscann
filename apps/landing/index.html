@@ -95,6 +95,20 @@
           </g>
         </symbol>
 
+        <!-- El tilde de las viñetas de los planes. Es el mismo trazo que dibuja
+             `IconoTilde` en la vitrina de la app, y se instancia con <use> una
+             vez por viñeta. -->
+        <symbol id="tilde" viewBox="0 0 24 24">
+          <path
+            d="m5 12.5 4.5 4.5L19 7.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </symbol>
+
         <symbol id="logotipo" viewBox="0 0 252 64">
           <use href="#marca" width="64" height="64" />
           <text x="78" y="44.5" class="wordmark" font-size="37" font-weight="700" letter-spacing="-0.9">
@@ -114,8 +128,9 @@
 
         <nav class="cabecera__nav" aria-label="Secciones">
           <a href="#como-funciona">Cómo funciona</a>
-          <a href="#funcionalidades">Qué hace hoy</a>
-          <a href="#faq">Preguntas</a>
+          <a href="#valor-agregado">Valor agregado</a>
+          <a href="#premium">Premium</a>
+          <a href="#faq">FAQs</a>
         </nav>
 
         <a class="boton boton--pequeno" data-enlace-app href="#">Abrir CaliScan</a>
@@ -213,12 +228,9 @@
         <div class="envoltura">
           <header class="seccion__cabecera">
             <p class="antetitulo">Cómo funciona</p>
-            <h2 class="titulo-seccion">Tres pasos, y el tercero es el que importa</h2>
-            <p class="seccion__bajada">
-              El reparto de trabajo no es un detalle técnico: es lo que hace que las cifras se
-              sostengan. La inteligencia artificial mira y nombra; los números los pone una base de
-              datos pública.
-            </p>
+            <h2 class="titulo-seccion">
+              Tres simples pasos para saber el valor nutricional de tus comidas
+            </h2>
           </header>
 
           <ol class="pasos">
@@ -233,8 +245,8 @@
               </svg>
               <h3>Haz la foto</h3>
               <p>
-                Abres CaliScan en el navegador, tocas el botón y disparas con la cámara del móvil. No
-                hay que instalar nada ni crear una cuenta para probarlo.
+                Abres CaliScan en el navegador, tocas el botón y disparas con la cámara del móvil.
+                Del resto, nos encargamos nosotros.
               </p>
             </li>
 
@@ -251,8 +263,6 @@
               <h3>La IA identifica qué hay y cuánto</h3>
               <p>
                 Un modelo de visión reconoce los alimentos del plato y estima los gramos de cada uno.
-                Ahí termina su trabajo: no devuelve calorías ni macros, porque no se le pregunta por
-                ellos.
               </p>
             </li>
 
@@ -265,27 +275,24 @@
                   <path d="M6.5 16c0 2 4.25 3.6 9.5 3.6s9.5-1.6 9.5-3.6" />
                 </g>
               </svg>
-              <h3>La base nutricional pone los números</h3>
+              <h3>CaliScan arma un reporte completo</h3>
               <p>
                 Cada alimento se busca en el catálogo y sus valores por cada 100 g se multiplican por
-                los gramos estimados. Aritmética, no memoria: nada inventado, y cada cifra trazable
-                hasta su ficha del USDA.
+                los gramos estimados.
               </p>
             </li>
           </ol>
         </div>
       </section>
 
-      <!-- ======================= FUNCIONALIDADES ========================= -->
-      <section class="seccion seccion--alterna" id="funcionalidades">
+      <!-- ======================== VALOR AGREGADO ========================= -->
+      <section class="seccion seccion--alterna" id="valor-agregado">
         <div class="envoltura">
           <header class="seccion__cabecera">
-            <p class="antetitulo">Lo que hace hoy</p>
-            <h2 class="titulo-seccion">Esto ya funciona, y es todo lo que hay</h2>
-            <p class="seccion__bajada">
-              Cinco cosas. Ni una más. Lo que está en preparación tiene su propio apartado, más
-              abajo, y no se mezcla con esto.
-            </p>
+            <p class="antetitulo">Valor agregado</p>
+            <h2 class="titulo-seccion">
+              Pensado para quienes valoran la simpleza y el conocimiento
+            </h2>
           </header>
 
           <ul class="capacidades">
@@ -364,51 +371,115 @@
         </div>
       </section>
 
-      <!-- ========================= PRÓXIMAMENTE ========================== -->
-      <section class="seccion" id="proximamente">
+      <!-- ======================== PLANES PREMIUM ========================= -->
+      <!-- LA ESCALERA DE PLANES, ESPEJADA DE LA APP.
+           Los textos —sello, nombre, precio, periodo, cupo, resumen y viñetas—
+           son los de `PLANES` en `apps/web/src/lib/copy.premium.ts`, literales.
+           Si un precio o un cupo cambia allí, cambia aquí: no hay un segundo
+           criterio comercial. Y la forma es la misma que dibuja `TarjetaDePlan`
+           en `PantallaPremium.tsx`, con Gold destacado igual que allá.
+
+           LA ÚNICA DIFERENCIA A PROPÓSITO ES EL BOTÓN. En la app cada tarjeta
+           abre la lista de espera; aquí, en la landing, el destino de todos los
+           botones es siempre el mismo: abrir CaliScan. Quien quiera apuntarse lo
+           hace dentro de la app, que es donde vive ese formulario. -->
+      <section class="seccion" id="premium">
         <div class="envoltura">
           <header class="seccion__cabecera">
-            <p class="antetitulo antetitulo--espera">En preparación</p>
-            <h2 class="titulo-seccion">Lo que viene después</h2>
-            <p class="seccion__bajada">
-              Nada de esto está disponible todavía. Está aquí para que sepas hacia dónde va CaliScan,
-              no para que cuentes con ello hoy.
-            </p>
+            <p class="antetitulo">Premium</p>
+            <h2 class="titulo-seccion">Planes Premium</h2>
           </header>
 
-          <ul class="futuro">
-            <li class="tarjeta tarjeta--tenue">
-              <span class="sello">Próximamente</span>
-              <h3>Fichas de más de 1.000 alimentos</h3>
-              <p>Consultar el catálogo por tu cuenta, alimento por alimento, con sus valores y su fuente.</p>
+          <ul class="planes">
+            <li class="plan plan--sin-sello">
+              <h3 class="plan__nombre">Gratuito</h3>
+              <p class="plan__precio">
+                <strong>0 €</strong>
+                <span>para siempre</span>
+              </p>
+              <p class="plan__cupo">15 fotos al mes</p>
+              <p class="plan__resumen">El reporte completo de cada plato que fotografíes.</p>
+              <ul class="plan__incluye">
+                <li>
+                  <svg class="tilde" viewBox="0 0 24 24" aria-hidden="true"><use href="#tilde" /></svg>
+                  <span>Calorías, macros y el desglose de cada alimento</span>
+                </li>
+                <li>
+                  <svg class="tilde" viewBox="0 0 24 24" aria-hidden="true"><use href="#tilde" /></svg>
+                  <span>Cada número trazable a su fuente en la base nutricional</span>
+                </li>
+                <li>
+                  <svg class="tilde" viewBox="0 0 24 24" aria-hidden="true"><use href="#tilde" /></svg>
+                  <span>Sin publicidad</span>
+                </li>
+              </ul>
+              <a class="boton boton--fantasma plan__boton" data-enlace-app href="#">Abrir CaliScan</a>
             </li>
-            <li class="tarjeta tarjeta--tenue">
-              <span class="sello">Próximamente</span>
-              <h3>Recetas por categoría</h3>
-              <p>Ideas de comidas ordenadas por momento: antes de entrenar, después de entrenar, ligeras.</p>
+
+            <li class="plan">
+              <span class="plan__sello">Un pago al año</span>
+              <h3 class="plan__nombre">Premium</h3>
+              <p class="plan__precio">
+                <strong>12 €</strong>
+                <span>al año, en un solo pago</span>
+              </p>
+              <p class="plan__cupo">40 fotos al mes</p>
+              <p class="plan__resumen">
+                Casi tres veces el cupo, y nada de lo que escaneas se pierde.
+              </p>
+              <ul class="plan__incluye">
+                <li>
+                  <svg class="tilde" viewBox="0 0 24 24" aria-hidden="true"><use href="#tilde" /></svg>
+                  <span>Todo lo del plan Gratuito</span>
+                </li>
+                <li>
+                  <svg class="tilde" viewBox="0 0 24 24" aria-hidden="true"><use href="#tilde" /></svg>
+                  <span>40 fotos al mes</span>
+                </li>
+                <li>
+                  <svg class="tilde" viewBox="0 0 24 24" aria-hidden="true"><use href="#tilde" /></svg>
+                  <span>Historial completo</span>
+                </li>
+                <li>
+                  <svg class="tilde" viewBox="0 0 24 24" aria-hidden="true"><use href="#tilde" /></svg>
+                  <span>Fichas, recetas y tendencias</span>
+                </li>
+              </ul>
+              <a class="boton boton--fantasma plan__boton" data-enlace-app href="#">Abrir CaliScan</a>
             </li>
-            <li class="tarjeta tarjeta--tenue">
-              <span class="sello">Próximamente</span>
-              <h3>Tendencias semanales</h3>
-              <p>Cómo se mueven tus calorías y tus macros de una semana a la siguiente.</p>
-            </li>
-            <li class="tarjeta tarjeta--tenue">
-              <span class="sello">Próximamente</span>
-              <h3>Planes personalizados</h3>
-              <p>Sugerencias de comidas según tus datos y el objetivo que te marques.</p>
+
+            <li class="plan plan--destacado">
+              <span class="plan__sello">El plan completo</span>
+              <h3 class="plan__nombre">Premium Gold</h3>
+              <p class="plan__precio">
+                <strong>4,99 €</strong>
+                <span>al mes</span>
+              </p>
+              <p class="plan__cupo">150 fotos al mes</p>
+              <p class="plan__resumen">
+                Plan completo para alinear tus comidas con tu rutina diaria
+              </p>
+              <ul class="plan__incluye">
+                <li>
+                  <svg class="tilde" viewBox="0 0 24 24" aria-hidden="true"><use href="#tilde" /></svg>
+                  <span>Todo lo del Premium</span>
+                </li>
+                <li>
+                  <svg class="tilde" viewBox="0 0 24 24" aria-hidden="true"><use href="#tilde" /></svg>
+                  <span>150 fotos al mes</span>
+                </li>
+                <li>
+                  <svg class="tilde" viewBox="0 0 24 24" aria-hidden="true"><use href="#tilde" /></svg>
+                  <span>Sugerencia de dietas diarias según rutina</span>
+                </li>
+                <li>
+                  <svg class="tilde" viewBox="0 0 24 24" aria-hidden="true"><use href="#tilde" /></svg>
+                  <span>Armado de perfil personal completo</span>
+                </li>
+              </ul>
+              <a class="boton plan__boton" data-enlace-app href="#">Abrir CaliScan</a>
             </li>
           </ul>
-
-          <div class="llamada">
-            <div>
-              <h3 class="llamada__titulo">¿Quieres que te avisemos?</h3>
-              <p class="llamada__texto">
-                La lista de espera vive dentro de la app, en la sección Premium. Te pedimos un correo
-                para avisarte cuando esto abra: ni datos de pago, ni nada más.
-              </p>
-            </div>
-            <a class="boton boton--fantasma" data-enlace-app href="#">Apuntarme a la lista de espera</a>
-          </div>
         </div>
       </section>
 
@@ -536,7 +607,13 @@
 
       <div class="envoltura pie__base">
         <p>© CaliScan 2026</p>
-        <a data-enlace-app href="#">Abrir la app</a>
+        <!-- El mismo enlace que la app tiene en el pie de todas sus pantallas, y
+             con la misma etiqueta. Aquí lleva a una página propia porque la
+             landing no tiene navegación interna donde meterlo. -->
+        <nav class="pie__enlaces" aria-label="Legal">
+          <a href="terminos.html">Términos y condiciones</a>
+          <a data-enlace-app href="#">Abrir la app</a>
+        </nav>
       </div>
     </footer>
 

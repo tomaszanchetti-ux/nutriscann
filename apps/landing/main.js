@@ -10,8 +10,9 @@
 
 /**
  * A DÓNDE LLEVA CADA BOTÓN. Se declara UNA sola vez, aquí arriba, y de aquí
- * salen todos los enlaces del sitio (`data-enlace-app`): la cabecera, los dos
- * CTA del hero y del cierre, la lista de espera y el pie.
+ * salen TODOS los enlaces del sitio (`data-enlace-app`): la cabecera, los dos
+ * CTA del hero y del cierre, los tres botones de los planes y el pie. Un solo
+ * destino, sin excepciones ni ramas: a la app.
  *
  * ⚠️ ESTE VALOR ES PROVISIONAL. Hoy la app vive en el dominio por defecto de
  * Firebase Hosting. Cuando `caliscan.app` esté conectado, la app pasará a
@@ -21,14 +22,6 @@
  */
 const APP_URL = "https://nutriscann-f809e.web.app";
 
-/**
- * La lista de espera no tiene página propia: vive DENTRO de la app, en la
- * sección Premium. Mientras no haya un ancla a la que apuntar, su botón lleva
- * al mismo sitio que los demás. Se deja nombrado para que el día que exista
- * una ruta (`/premium`, pongamos) se cambie aquí y no en el HTML.
- */
-const URL_LISTA_DE_ESPERA = APP_URL;
-
 (function () {
   "use strict";
 
@@ -37,8 +30,7 @@ const URL_LISTA_DE_ESPERA = APP_URL;
   // -------------------------------------------------------------------------
   const enlaces = document.querySelectorAll("[data-enlace-app]");
   enlaces.forEach(function (enlace) {
-    const esListaDeEspera = enlace.textContent.toLowerCase().indexOf("lista de espera") !== -1;
-    enlace.href = esListaDeEspera ? URL_LISTA_DE_ESPERA : APP_URL;
+    enlace.href = APP_URL;
     // Se abre en la misma pestaña: la landing no es un sitio donde el visitante
     // esté haciendo algo que quiera conservar. `rel` por higiene, no por
     // seguridad — el destino es nuestro.
@@ -97,7 +89,7 @@ const URL_LISTA_DE_ESPERA = APP_URL;
   if (!menosMovimiento) {
     let pendientes = Array.prototype.slice.call(
       document.querySelectorAll(
-        ".seccion__cabecera, .paso, .capacidad, .futuro > li, .llamada, .faq__item, .cierre__caja, .hero__figura"
+        ".seccion__cabecera, .paso, .capacidad, .plan, .faq__item, .cierre__caja, .hero__figura"
       )
     );
 
