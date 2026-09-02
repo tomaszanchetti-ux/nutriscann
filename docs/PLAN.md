@@ -306,6 +306,51 @@ backend real, en producción.
 Firebase **App Check** (solo tu app puede llamar al endpoint) + **login real desde v1** (decisión 30/08, afinada el 02/09: **Google + magic link** vía Firebase Auth, como en Prode — SIN perfil ni configuración en v1; el registro existe para saber quiénes son los usuarios y que cada uno sea dueño de sus scans) + rate limit desde `config/` (ej. 10 scans/día por usuario — es tu API key la que paga) + logging estructurado + presupuesto de facturación GCP con alertas + QA E2E con el golden set.
 **Sale cuando:** URL pública, protegida, con costos acotados. **v1 VIVA.**
 
+#### Bloque 0 — medido el 02/09/2026 (WS09) ✅
+
+Medido contra las APIs de Google y contra la app viva, no contra el recuerdo:
+
+| Qué se midió | Resultado |
+|---|---|
+| Landing, PWA, `analyze` y `health` | Todo en pie: `caliscan.app` y `app.caliscan.app` responden 200, las dos funciones ACTIVE en europe-west1, catálogo **3.8.0+843ecb80** publicado y configuración leída de Firestore |
+| Reglas de `waitlist` | Desplegadas y **mordiendo**: un alta mal formada recibe 403 |
+| **Firebase Auth** | **No estaba ni encendido**: la configuración de Identity Platform respondía `CONFIGURATION_NOT_FOUND`. Cero proveedores |
+| **El endpoint `analyze`** | **Abierto al mundo**: invocador `allUsers`, CORS a cualquier origen, sin token y sin App Check |
+| **El cupo** | **Existe en el papel y no en el código**: `max_scans_per_day: 10` está publicado en `config/app` y declarado en `AppConfig`, pero ningún camino del handler lo consulta. Nada frena a nadie |
+| El dueño de un scan | Llega en el CUERPO del pedido con el valor provisorio `anon-dev`. Las reglas de Firestore ya exigen `request.auth.uid == ownerId` para leer, así que **la estructura definitiva ya existe: no hay migración, hay un valor distinto** |
+| El bundle del front | 85.536 bytes gzip antes de tocar nada (la vara para medir lo que engorda el login) |
+| `authDomain` | Apuntaba a `nutriscann-f809e.firebaseapp.com` mientras la app se sirve desde `app.caliscan.app`. Con dominios distintos, el login por redirección se rompe en Safari y en la PWA de iPhone (particionado de cookies de terceros). Verificado que `app.caliscan.app/__/auth/handler` responde 200 |
+
+**El hallazgo que ordenó la sesión:** la v1 está viva y **cualquiera con la URL puede
+gastar la API key de Tomás**. El login no es el objetivo en sí — es el mecanismo que
+permite contarle las fotos a alguien. Por eso las cards van juntas y en este orden.
+
+#### Las decisiones de Tomás (02/09/2026)
+
+1. **La WS09 ejecuta la Fase 4 completa**, no solo el login.
+2. **Login obligatorio**: sin cuenta no se escanea. Es lo único que hace que el cupo
+   signifique algo, y destraba historial y tendencias de la v2 (§8 de `PLAN_V2.md`).
+3. **Cupo de la v1: 15 escaneos por mes** (la garantía que se comunica, la misma
+   escalera 15/40/150 de §6.7) **y 3 por día** como freno anti-ráfaga interno. El
+   `max_scans_per_day: 10` publicado hoy baja a 3.
+
+#### Las cards de la Fase 4 (definidas sobre lo medido)
+
+| Card | Qué entrega | Estado |
+|---|---|---|
+| **4.0 — Encender la identidad** | Firebase Auth inicializado por API (no existía) · entrada por enlace de correo habilitada · dominios autorizados (`caliscan.app`, `app.caliscan.app`, `localhost`) · correos en español · ⚠️ **Google Sign-In necesita un click de Tomás en la consola**: crear su cliente OAuth es lo único que la API no autoaprovisiona | 🟢 hecho salvo el click |
+| **4.1 — La puerta** | Pantalla de entrada (Google + enlace por correo), sesión persistente, cierre de sesión en Perfil, el `authDomain` al dominio propio y el token viajando en cada llamada | ⏳ |
+| **4.2 — El backend deja de confiar en el cuerpo del pedido** | `analyze` verifica el token y saca el dueño de ahí; `DUEÑO_PROVISORIO` muere; 401 `no_autenticado` | ⏳ |
+| **4.3 — El cupo que muerde** | Conteo transaccional por usuario y mes, corte en Europe/Madrid, 429 `cupo_agotado` con lo que queda y cuándo se renueva; los dos límites en `config/`, editables sin desplegar | ⏳ |
+| **4.4 — App Check** | Que solo nuestra app pueda llamar al endpoint. Infraestructura ya creada en la WS09: clave de reCAPTCHA Enterprise acotada a nuestros dominios y app registrada con token de 24 h (para no gastar el free tier de 10.000 evaluaciones al mes). Se enciende en modo observación y se pasa a bloquear con un valor de `config/`, sin desplegar | ⏳ |
+| **4.5 — Las deudas y el E2E** | DT-40 (los errores del backend vosean) · DT-41 (umbral de sodio copiado, textos locales sin gobernar, claves huérfanas, maquinaria muerta del donut) · verificación de punta a punta en producción desde el teléfono de Tomás | ⏳ |
+
+**Nota de facturación (WS09):** inicializar Auth por API dejó el proyecto como
+**Identity Platform** (`subtype: IDENTITY_PLATFORM`), que tiene un umbral gratuito de
+**50.000 usuarios activos por mes** en lugar del "gratis e ilimitado" del Firebase Auth
+clásico. Para la escala de la v1 es indistinto —y el presupuesto de €10/mes con alertas
+sigue puesto—, pero queda escrito para que nadie lo descubra en una factura.
+
 **Total estimado: 6-8 sesiones de trabajo.**
 
 ---

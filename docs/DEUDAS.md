@@ -86,19 +86,27 @@ análisis, y eso se factura aparte.
 
 ---
 
-## DT-2 · API key de Anthropic en Secret Manager 🔴
+## DT-2 · API key de Anthropic en Secret Manager ✅ (02/09/2026)
 
-El código ya la declara (`ANTHROPIC_API_KEY` en `functions/src/runtime.ts`) y ninguna
-función la usa todavía. Se carga con `firebase functions:secrets:set ANTHROPIC_API_KEY`.
-Depende de DT-1.
+**Cerrada en la WS08 y verificada de nuevo en el Bloque 0 de la WS09**, esta vez
+contra la API de GCP y no contra el recuerdo: el secreto `ANTHROPIC_API_KEY` existe
+en el proyecto (creado el 02/09 a las 06:57), la función `analyze` lo declara en su
+`onRequest` y `health` responde en producción con el catálogo publicado. El valor
+nunca pasó por el orquestador: lo cargó Tomás.
 
 ---
 
-## DT-3 · Inicializar Cloud Storage 🔴
+## DT-3 · Inicializar Cloud Storage ✅ (02/09/2026)
 
-`storage.rules` está escrito y verificado en revisión, pero nunca se desplegó: el bucket
-no existe. Se inicializa una vez desde la consola de Firebase. Depende de DT-1.
-Hasta entonces, el pipeline no incluye `storage` entre sus objetivos.
+**Cerrada en la WS08 y verificada de nuevo en el Bloque 0 de la WS09:** el bucket
+`nutriscann-f809e.firebasestorage.app` existe **en europe-west1** (la misma región que
+las funciones) y el CI incluye `storage` entre sus objetivos de despliegue, así que
+`storage.rules` sale con cada merge a `main`.
+
+⚠️ La lección de la WS08 vale para cualquier recurso nuevo: el "Comenzar" de la consola
+creó el bucket en **US-WEST1** porque el selector viene con EE.UU. por defecto. Se
+detectó recién creado y vacío y se recreó por API en la región correcta. Un bucket de
+fotos al otro lado del Atlántico de las funciones que las leen es latencia y es factura.
 
 ---
 
