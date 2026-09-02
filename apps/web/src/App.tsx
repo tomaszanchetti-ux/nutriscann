@@ -227,8 +227,8 @@ export default function App() {
         )}
 
         {/* La vitrina recibe los textos publicados desde la WS08: la sección
-            «Lo que llega después» los lee de `config/app`, como el resto de la
-            app, y se edita sin desplegar. */}
+            «Funcionalidades Premium» los lee de `config/app`, como el resto de
+            la app, y se edita sin desplegar. */}
         {seccion === "premium" && (
           <PantallaPremium copy={config.copy} onVolver={() => setSeccion("escaneo")} />
         )}

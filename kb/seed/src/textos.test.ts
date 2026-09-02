@@ -120,15 +120,24 @@ test("los pasos se parten y se recortan igual que en el front", () => {
 // ── El archivo real del repo: es lo que se publica ───────────────────────────
 
 /**
- * Las 64 claves del contrato, al 02/09/2026.
+ * Las 61 claves del contrato, al 02/09/2026.
  *
  * Eran 18 (DT-18, card 2.5). La card 3.1 sumó las 29 de la DT-22: los textos
  * que el usuario leía y estaban escritos adentro de los componentes del front
  * —los cinco sellos de match con su explicación, los nombres de los
  * nutrientes, las etiquetas de la card de ítem y los títulos de los dos
  * recuadros del reporte—. Cambiar cualquiera de esos exigía desplegar la PWA.
- * La WS08 sumó las 17 `v2_*` de la sección «Lo que llega después» de la
+ * La WS08 sumó las 17 `v2_*` de la sección «Funcionalidades Premium» de la
  * vitrina: nacieron ya gobernadas en vez de nacer en deuda.
+ *
+ * Y LA WS08 TAMBIÉN QUITÓ TRES, en el Q/A visual de Tomás (02/09/2026), que es
+ * la primera vez que este contrato encoge: `v2_intro` (el párrafo de entrada de
+ * esa sección) y `v2_nota` (su pie) salieron de la pantalla, y `v2_badge` dejó
+ * de ser texto — el sello de cada tarjeta es ahora el NOMBRE DE SU PLAN, que ya
+ * vive en `PLANES` (apps/web/src/lib/copy.premium.ts). 64 − 3 = 61. Quitar una
+ * clave es el mismo cambio de las dos puntas que agregarla: se va de
+ * `config/copy.json` (de `keys` y de `copy`), se va de `CopyDeLaApp` y se va de
+ * esta lista, en el mismo commit.
  *
  * La lista está en orden alfabético porque `cargarTextos` devuelve las claves
  * ordenadas: es el orden del contrato, no el del archivo.
@@ -181,7 +190,6 @@ const CLAVES_ESPERADAS = [
   "report_weight_label",
   "scanning_steps",
   "scanning_title",
-  "v2_badge",
   "v2_cta",
   "v2_gold_punto_1",
   "v2_gold_punto_2",
@@ -189,8 +197,6 @@ const CLAVES_ESPERADAS = [
   "v2_gold_resumen",
   "v2_gold_titulo",
   "v2_gold_vinculo",
-  "v2_intro",
-  "v2_nota",
   "v2_premium_punto_1",
   "v2_premium_punto_2",
   "v2_premium_punto_3",
@@ -200,7 +206,7 @@ const CLAVES_ESPERADAS = [
   "v2_title",
 ];
 
-test("config/copy.json valida y trae las 64 claves del contrato", () => {
+test("config/copy.json valida y trae las 61 claves del contrato", () => {
   const textos = cargarTextos(TEXTOS_DEL_REPO);
   assert.deepEqual(textos.claves, CLAVES_ESPERADAS);
   assert.equal(textos.pasos.length, 3, "la pantalla de espera muestra tres pasos");

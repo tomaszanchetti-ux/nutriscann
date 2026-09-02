@@ -61,12 +61,16 @@
  * `dt21_note` de `config/copy.json`; los dos archivos siguen espejados byte a
  * byte.
  *
- * WS08 — 17 CLAVES NUEVAS (`v2_*`): la sección «Lo que llega después» de la
+ * WS08 — 14 CLAVES NUEVAS (`v2_*`): la sección «Funcionalidades Premium» de la
  * vitrina premium. Es la primera parte de esa pantalla cuyos textos viven acá y
  * no en `copy.premium.ts`, porque son todas frases fijas. Lo que dicen —y las
- * tres reglas que no se pueden romper al editarlas: sin precio, objetivos solo
- * de forma física, y CaliScan como nombre— está en `v2_note` de
- * `config/copy.json`.
+ * reglas que no se pueden romper al editarlas: sin precio y objetivos solo de
+ * forma física— está en `v2_note` de `config/copy.json`.
+ *
+ * Nacieron 17 y quedaron 14: el Q/A de Tomás (02/09/2026) sacó el párrafo de
+ * entrada (`v2_intro`) y el pie de la sección (`v2_nota`), y convirtió el sello
+ * (`v2_badge`) en estructura — cada tarjeta muestra el NOMBRE DE SU PLAN, que
+ * sale de `PLANES` en `copy.premium.ts` y no de un texto publicado.
  * ------------------------------------------------------------------------- */
 import { firestoreDocUrl } from "./firebase";
 
@@ -133,7 +137,7 @@ export interface CopyDeLaApp {
   report_others_title: string;
   report_weight_label: string;
 
-  // — Nuevas de la WS08: la sección «Lo que llega después» de la vitrina —
+  // — Nuevas de la WS08: la sección «Funcionalidades Premium» de la vitrina —
   //
   // Son los PRIMEROS textos de la vitrina premium que viajan por acá. El resto
   // sigue en `copy.premium.ts` hasta la card 3.5 (ver la cabecera de ese
@@ -144,9 +148,11 @@ export interface CopyDeLaApp {
   // escalones de la v2 se muestran SIN precio. La escalera que sí lo tiene
   // —0 € / 12 € al año / 4,99 € al mes, con 15 / 40 / 150 fotos al mes— es la de
   // los tres planes de `PLANES`, y esta sección no la toca.
+  //
+  // TAMPOCO lleva el sello de cada tarjeta: desde el Q/A del 02/09/2026 es el
+  // nombre del plan al que apunta, y ese nombre ya vive en `PLANES`. Un texto
+  // que se puede deducir de otro no se publica dos veces.
   v2_title: string;
-  v2_intro: string;
-  v2_badge: string;
 
   v2_premium_titulo: string;
   v2_premium_vinculo: string;
@@ -163,7 +169,6 @@ export interface CopyDeLaApp {
   v2_gold_punto_3: string;
 
   v2_cta: string;
-  v2_nota: string;
 }
 
 export type ClaveDeCopy = keyof CopyDeLaApp;
@@ -241,10 +246,7 @@ export const COPY_DE_ARRANQUE: CopyDeLaApp = {
   report_others_title: "Del resto del análisis",
   report_weight_label: "Peso identificado",
 
-  v2_title: "Lo que llega después",
-  v2_intro:
-    "Ya estamos construyendo el siguiente paso de CaliScan. Apúntate a la lista de espera y serás de los primeros en probarlo.",
-  v2_badge: "Próximamente",
+  v2_title: "Funcionalidades Premium",
 
   v2_premium_titulo: "Fichas, recetas y tendencias",
   v2_premium_vinculo: "Llega al plan Premium",
@@ -261,9 +263,7 @@ export const COPY_DE_ARRANQUE: CopyDeLaApp = {
   v2_gold_punto_2: "Según tu objetivo: bajar de peso, tonificar o ganar masa muscular.",
   v2_gold_punto_3: "Ajustados a tu entrenamiento y a tu perfil.",
 
-  v2_cta: "Avísame cuando esté",
-  v2_nota:
-    "Estas funciones todavía no están disponibles y no tienen precio publicado. Apuntarte no cuesta nada ni te compromete a nada.",
+  v2_cta: "Lista de espera",
 };
 
 /**

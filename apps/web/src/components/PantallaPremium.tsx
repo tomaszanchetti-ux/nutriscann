@@ -28,23 +28,28 @@
  * tarjeta. Es la razón entera por la que Gold existe.
  *
  * ---------------------------------------------------------------------------
- * WS08 — «LO QUE LLEGA DESPUÉS»: la segunda mitad de la pantalla.
+ * WS08 — «FUNCIONALIDADES PREMIUM»: la segunda mitad de la pantalla.
  *
  * Debajo de los tres planes hay ahora dos tarjetas que muestran los escalones de
  * la v2 —el accesible (fichas con fuente USDA, recetas por categoría,
- * tendencias) y el alto (el plan personalizado de 1 semana, 15 días o 1 mes)—
- * como PRÓXIMAMENTE. El motivo es de venta: la vitrina explicaba muy bien el
- * cupo de fotos y no decía en voz alta hacia dónde va la app, que es lo que
- * hace que alguien deje su correo hoy.
+ * tendencias) y el alto (el plan personalizado de 1 semana, 15 días o 1 mes)—.
+ * El motivo es de venta: la vitrina explicaba muy bien el cupo de fotos y no
+ * decía en voz alta hacia dónde va la app, que es lo que hace que alguien deje
+ * su correo hoy.
  *
  * SE DIBUJAN DISTINTO A PROPÓSITO —borde punteado y fondo apagado— porque son
  * otra cosa: los de arriba son planes con precio, y estos todavía no existen. La
- * forma lo dice antes que el sello. Ninguno lleva número: donde iría el precio
- * va a qué plan se sumará, así la escalera 15 → 40 → 150 sigue siendo la única
- * de la pantalla.
+ * forma lo dice sin necesidad de un cartel. Ninguno lleva número: donde iría el
+ * precio va a qué plan se sumará, así la escalera 15 → 40 → 150 sigue siendo la
+ * única de la pantalla.
  *
  * Y los dos botones abren EL MISMO formulario de lista de espera que los planes,
  * con la misma etiqueta: la conversión de esta pantalla es una sola.
+ *
+ * EL Q/A DEL 02/09/2026 LA DEJÓ EN HUESO: título, las dos tarjetas y nada más.
+ * Se fueron el párrafo de entrada y el pie de la sección —lo que decía el pie ya
+ * estaba dicho en `nota_pagos`, unos centímetros más abajo—, y el sello común
+ * («Próximamente») se convirtió en el nombre del plan de cada tarjeta.
  * ---------------------------------------------------------------------------
  */
 import { useState } from "react";
@@ -62,7 +67,7 @@ import {
 import type { CopyDeLaApp } from "../lib/config";
 
 export interface PantallaPremiumProps {
-  /** Los textos publicados. La sección «Lo que llega después» los lee de acá. */
+  /** Los textos publicados. La sección «Funcionalidades Premium» los lee de acá. */
   copy: CopyDeLaApp;
   onVolver: () => void;
 }
@@ -102,15 +107,17 @@ export function PantallaPremium({ copy, onVolver }: PantallaPremiumProps) {
         })}
       </ul>
 
-      {/* LO QUE LLEGA DESPUÉS. Va DEBAJO de los planes y no arriba: primero se
-          ve lo que hoy se puede tener, y recién después hacia dónde va. Al
-          revés, la pantalla empezaría prometiendo lo que todavía no existe. */}
+      {/* FUNCIONALIDADES PREMIUM. Va DEBAJO de los planes y no arriba: primero
+          se ve lo que hoy se puede tener, y recién después hacia dónde va. Al
+          revés, la pantalla empezaría prometiendo lo que todavía no existe.
+
+          El título va solo, sin párrafo debajo y sin nota al pie (Q/A del
+          02/09/2026): lo que hay que leer son las dos tarjetas. */}
       <section className="flex flex-col gap-4">
-        <header className="flex flex-col gap-1.5">
+        <header>
           <h2 className="font-display text-2xl leading-tight font-bold text-balance text-ink">
             {copy.v2_title}
           </h2>
-          <p className="text-sm leading-relaxed text-pretty text-ink-soft">{copy.v2_intro}</p>
         </header>
 
         <ul className="flex flex-col gap-4">
@@ -124,8 +131,6 @@ export function PantallaPremium({ copy, onVolver }: PantallaPremiumProps) {
             </li>
           ))}
         </ul>
-
-        <p className="text-xs leading-relaxed text-pretty text-ink-faint">{copy.v2_nota}</p>
       </section>
 
       <section className="flex flex-col gap-2 rounded-2xl border border-line bg-surface p-4 text-xs leading-relaxed text-ink-faint">
@@ -249,13 +254,16 @@ function BotonDePlan({
 }
 
 /**
- * Una tarjeta de «Lo que llega después».
+ * Una tarjeta de «Funcionalidades Premium».
  *
  * Es hermana de `TarjetaDePlan` —mismo radio, mismo cuerpo, mismas viñetas con
- * su tilde— y se diferencia en tres cosas, las tres con intención:
+ * su tilde— y se diferencia en cuatro cosas, las cuatro con intención:
  *
  *   · BORDE PUNTEADO Y FONDO APAGADO: esto todavía no se puede comprar. La
- *     diferencia se ve antes de leer el sello.
+ *     diferencia se ve sin leer una palabra.
+ *   · EL SELLO ES EL NOMBRE DE SU PLAN («Premium», «Premium Gold»), el mismo que
+ *     encabeza su tarjeta en la escalera de precios de arriba: se lee de `PLANES`
+ *     y no de un texto publicado (Q/A del 02/09/2026).
  *   · DONDE IRÍA EL PRECIO va el plan al que se sumará. No hay número, y no es
  *     un descuido: estos escalones no tienen precio publicado.
  *   · EL DISCLAIMER, pegado, en la que habla de objetivos. Es el MISMO texto del

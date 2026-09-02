@@ -35,13 +35,13 @@
  * Español de España, sin voseo (DT-21).
  *
  * ---------------------------------------------------------------------------
- * WS08 — LA EXCEPCIÓN, Y ES A PROPÓSITO: la sección «Lo que llega después»
+ * WS08 — LA EXCEPCIÓN, Y ES A PROPÓSITO: la sección «Funcionalidades Premium»
  * (`escalonesV2`, al final de este archivo) NO trae sus textos escritos acá. Los
  * LEE de `config/copy.json` a través de `CopyDeLaApp`, como el resto de la app,
  * porque son todas frases fijas y no había motivo para nacer ya en deuda. Este
  * archivo se queda con la ESTRUCTURA de esa sección —qué tarjeta es cuál, cuál
  * va destacada, cuál lleva el disclaimer, a qué etiqueta de la lista de espera
- * apunta cada botón—, que es lo que no es texto.
+ * apunta cada botón y qué plan sella cada tarjeta—, que es lo que no es texto.
  * ---------------------------------------------------------------------------
  */
 import type { CopyDeLaApp } from "./config";
@@ -262,7 +262,17 @@ export const PLANES: readonly PlanPremium[] = [
     periodo: "al año, en un solo pago",
     cupo: "40 fotos al mes",
     resumen: "Casi tres veces el cupo, y nada de lo que escaneas se pierde.",
-    incluye: ["Todo lo del plan Gratuito", "40 fotos al mes", "Historial completo"],
+    // La cuarta viñeta dice LO MISMO, letra por letra, que el título de la
+    // tarjeta de «Funcionalidades Premium» que hay más abajo en la pantalla
+    // (`v2_premium_titulo`). Es a propósito: quien lee el plan aquí arriba y
+    // luego ve el recuadro de abajo tiene que reconocerlo, no descubrir algo
+    // nuevo. Si ese título cambia, esta línea cambia con él (Q/A, 02/09/2026).
+    incluye: [
+      "Todo lo del plan Gratuito",
+      "40 fotos al mes",
+      "Historial completo",
+      "Fichas, recetas y tendencias",
+    ],
     cta: "Lista de espera",
     listaDeEspera: "premium",
     sello: "Un pago al año",
@@ -340,7 +350,7 @@ export const COPY_LISTA_DE_ESPERA = {
 export type PlanDeListaDeEspera = "premium" | "gold" | "perfil";
 
 // ---------------------------------------------------------------------------
-// «Lo que llega después» — los dos escalones de la v2 (WS08)
+// «Funcionalidades Premium» — los dos escalones de la v2 (WS08)
 // ---------------------------------------------------------------------------
 
 /**
@@ -376,7 +386,11 @@ export type PlanDeListaDeEspera = "premium" | "gold" | "perfil";
 export interface EscalonV2 {
   /** Clave estable, para las `key` de React y para el Q/A. */
   id: string;
-  /** El sello de arriba. Una palabra: todavía no existe y se dice. */
+  /**
+   * El sello de arriba: el NOMBRE DEL PLAN al que se sumará esta funcionalidad
+   * —el mismo que muestra su tarjeta en la escalera de precios—. No es un texto
+   * publicado: sale de `PLANES` (ver `nombreDelPlan`).
+   */
   sello: string;
   /** Qué trae, no cómo se llama el plan: es lo que se compra. */
   titulo: string;
@@ -394,6 +408,24 @@ export interface EscalonV2 {
 }
 
 /**
+ * El nombre del plan que abre un escalón, leído de `PLANES` por la MISMA
+ * etiqueta con la que el botón da el alta en la lista de espera.
+ *
+ * Hasta el Q/A del 02/09/2026 las dos tarjetas compartían un sello publicado
+ * («Próximamente», la clave `v2_badge`). Ahora cada una lleva el nombre de su
+ * plan —«Premium» y «Premium Gold»—, así que el sello dejó de ser texto y pasó a
+ * ser estructura: no se escribe dos veces algo que ya está en `PLANES`, y el
+ * sello no puede quedar diciendo un plan distinto del que el botón apunta.
+ */
+function nombreDelPlan(etiqueta: PlanDeListaDeEspera): string {
+  const plan = PLANES.find((candidato) => candidato.listaDeEspera === etiqueta);
+  // Los dos escalones apuntan a planes que existen en `PLANES`. Si alguien
+  // borrara uno, la tarjeta muestra la etiqueta cruda —fea y a la vista— antes
+  // que inventar el nombre de un plan que ya no está.
+  return plan === undefined ? etiqueta : plan.nombre;
+}
+
+/**
  * Arma los dos escalones con los textos ya publicados. Es una función y no una
  * constante porque `copy` llega de Firestore en tiempo de ejecución: congelarla
  * al importar el módulo dejaría la sección con el arranque en frío para siempre.
@@ -402,7 +434,7 @@ export function escalonesV2(copy: CopyDeLaApp): readonly EscalonV2[] {
   return [
     {
       id: "v2_premium",
-      sello: copy.v2_badge,
+      sello: nombreDelPlan("premium"),
       titulo: copy.v2_premium_titulo,
       vinculo: copy.v2_premium_vinculo,
       resumen: copy.v2_premium_resumen,
@@ -412,7 +444,7 @@ export function escalonesV2(copy: CopyDeLaApp): readonly EscalonV2[] {
     },
     {
       id: "v2_gold",
-      sello: copy.v2_badge,
+      sello: nombreDelPlan("gold"),
       titulo: copy.v2_gold_titulo,
       vinculo: copy.v2_gold_vinculo,
       resumen: copy.v2_gold_resumen,
