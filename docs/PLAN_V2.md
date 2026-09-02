@@ -7,8 +7,10 @@
 >
 > **Estado:** borrador del 02/09/2026. Recoge las decisiones que tomó Tomás ese
 > día (nombre, split de tiers, línea roja médica) y deja explícito lo que
-> todavía no está decidido (§9). **Nada de acá está implementado**: la v1
-> todavía no está desplegada (queda la card 3.5).
+> todavía no está decidido (§9). **Nada de acá está implementado.** La v1 sí:
+> quedó **desplegada y cerrada con llave el 02/09/2026** (Fase 4 mergeada — login
+> obligatorio, cupo que muerde, `analyze` devolviendo 401 sin token). El §10
+> recoge las decisiones de comunidad que Tomás cerró ese mismo día.
 >
 > **Mecánica:** igual que siempre — la v2 abre con su propio Bloque 0 que MIDE
 > antes de definir cards (ver `CLAUDE.md`). Las mediciones que ya se hicieron
@@ -101,6 +103,17 @@ encima de las de USDA — trabajo de curación declarativa, del mismo tipo que y
 se hizo con nombres y aliases, y por la misma puerta (`kb/curation/`).
 
 ### 3.b. Recetas por categoría
+
+> **⚠️ Movida a la v1.5 por decisión de Tomás (02/09/2026, WS10), y sacada del
+> muro de pago.** Esta sección se escribió cuando las recetas eran una
+> funcionalidad de Premium anual. Ya no: las recetas **nuestras** se construyen
+> en una **v1.5**, recién después de medir el tráfico real de la v1 —hoy no hay
+> usuarios, y escribir veinte recetas para nadie es trabajo tirado—, y cuando
+> lleguen **se ven gratis**, porque son el contenido que hace que alguien abra la
+> app los días que no saca fotos. Las recetas **de usuarios** son otra cosa y
+> viven en el §10. Lo de abajo sigue siendo válido como descripción del
+> mecanismo y de lo que cuesta.
+
 
 **Qué es:** recetas curadas y agrupadas por momento — antes de entrenar, después
 de entrenar, cena ligera, desayuno, etc. — con sus valores nutricionales
@@ -300,10 +313,157 @@ justamente porque sin recomendaciones no había nada que calibrar.
 | A6 | **Las tres candidatas del §6** (lista de la compra, calendario de colores, score por plato): ¿alguna entra en la v2? | El calendario de colores es probablemente el mayor gancho visual, y también el que más juicio nuestro carga |
 | A7 | **Cuándo se ejecuta el renombrado a CaliScan** y si el dominio se conecta antes o después de la card 3.5 (el despliegue de la v1) | Desplegar con un nombre y renombrar después significa hacer el despliegue dos veces |
 | A8 | **Qué se hace con la lista de espera ya recogida** cuando los pagos se abran | Es la única señal de demanda que tenemos antes de cobrar |
+| A9 | **Crudo o cocido en el wizard de recetas** (§10): ¿el wizard pregunta el estado por ingrediente —y el catálogo carga los dos— o la primera versión acepta solo ingredientes como se compran, más comensales? | Es la diferencia entre una receta con números correctos y una con números tres veces mal. Ordena la funcionalidad entera |
+| A10 | **¿Entra la cláusula de ascenso de recetas en los términos?** (§10) La decisión D2 dice que no ascendemos recetas de usuarios a la sección oficial; la cláusula es solo por si algún día cambia | Es de las que caducan: el párrafo cuesta nada hoy y es imposible de conseguir después, porque habría que pedírselo a cada usuario de a uno |
+| A11 | **¿Qué dispara la v1.5?** (§10, D1) Las recetas nuestras esperan a «medir el tráfico real»: falta el número que abre la puerta — usuarios activos, escaneos por semana, o lo que se decida en el Bloque 0 | Sin un umbral escrito, «medimos y vemos» se convierte en no hacerlo nunca, o en hacerlo por impulso |
+| A12 | **¿Cómo se elige el idioma?** (§10, v1.5) ¿Se detecta del navegador con un selector para cambiarlo, o se pregunta al entrar? ¿Y qué pasa con quien ya tiene cuenta — se le guarda la preferencia en el perfil? | Detectar y no dejar cambiar es el error clásico: un español con el móvil en inglés queda atrapado. Y si la preferencia no se guarda en el perfil, se pierde cada vez que cambia de teléfono |
 
 ---
 
-## 10. Cómo sigue
+## 10. La comunidad — decisiones de Tomás (02/09/2026, WS10)
+
+La idea la trajo Tomás el día que se desplegó la v1: que la app tenga comunidad,
+porque la comunidad engancha. Se discutió entera y quedó cerrada abajo.
+
+**El argumento por el que entra no es el enganche, es el volante.** Cuando un
+usuario arma una receta con nuestras fichas nos está diciendo dos cosas gratis:
+qué alimentos come junta la gente de verdad, y **qué ingredientes le faltan a
+nuestro catálogo** — cada búsqueda sin resultado es un pedido de curación con
+nombre y apellido. La comunidad mejora la base de datos, y la base de datos
+mejora el escaneo por foto, que es el producto. Ese ciclo se sostiene solo, y
+sobrevive intacto a la decisión de que las recetas no se publiquen: el hueco del
+catálogo lo aprendemos igual, sea la receta pública o privada.
+
+### Las decisiones
+
+| # | Decisión | Detalle |
+|---|---|---|
+| **D1** | **Recetas nuestras → v1.5**, no v2, y **fuera del muro de pago** | Se construyen recién después de medir el tráfico real de la v1. Hoy no hay usuarios: escribir veinte recetas para nadie es trabajo tirado. Cuando lleguen, se ven gratis (§3.b) |
+| **D2** | **Recetas de usuarios → v2**, y **nosotros no las publicamos** | No hay un muro público de recetas curado por CaliScan. Una receta de usuario vive **dentro del perfil de su autor**, y llega hasta donde el autor decida |
+| **D3** | **Entrenamientos: descartados** | No reutilizan nada nuestro —no hay base de ejercicios, ni gasto calórico, ni forma de cuantificar— y duplican la superficie sin profundizar la ventaja. El dato de entrenamiento que **sí** cambia lo que la app responde ya está planificado en el perfil (§2 de `PLAN.md`: deporte, frecuencia, objetivo → calorías objetivo) |
+| **D4** | **El perfil tiene dos interruptores, separados** | Historial de comidas: público o privado. Recetas: público o privado. Se puede tener una cosa pública y la otra no. **Por defecto, las dos privadas** |
+| **D5** | **Buscador de perfiles** | Para encontrar a otra gente. Va **último** de todo (ver el orden, abajo) |
+| **D6** | **Compartir a Instagram y WhatsApp** | Una imagen linda con los números y un enlace de vuelta a la app. Instagram **no admite publicar desde una PWA por API**: lo que se hace es generar la imagen (1080×1920) y abrir el menú de compartir del teléfono, desde donde el usuario elige Stories o WhatsApp. WhatsApp es directo |
+| **D7** | **Compartir es libre para todos**, en cualquier plan | Compartir es el canal de captación: cobrarlo es cobrarnos nuestro propio marketing. El muro va en *crear más recetas de la cuenta* y en lo personalizado, nunca en difundir |
+
+**El cupo gratuito de creación:** la idea de Tomás es **una receta al mes** en el
+plan gratuito. El mecanismo ya existe y está probado: es el mismo contador
+transaccional de la Fase 4 (`owners/{uid}/usage/{YYYY-MM}`, un campo más), con
+su corte en Europe/Madrid y su reserva antes de escribir. No hay que construirlo,
+hay que sumarle un campo.
+
+### Las tres cosas que hay que resolver ANTES, no después
+
+**1. Crudo o cocido — la trampa técnica.** El motor de receta compuesta que ya
+tenemos (`kb/src/transforms.ts`, 53 fichas del catálogo salieron de él) necesita
+un **rendimiento de cocción declarado**: un número que en nuestro catálogo *midió
+una persona* durante la curación. Un usuario que escribe «200 g de arroz» no sabe
+si eso es crudo o cocido, y la diferencia son **tres veces** las calorías por
+gramo. Sin resolverlo, el wizard devuelve números con toda confianza y
+equivocados — exactamente lo que la arquitectura entera («el modelo identifica,
+la base cuantifica») existe para impedir. Las dos salidas posibles: que el wizard
+pregunte el estado por ingrediente y el catálogo tenga los dos, o que la primera
+versión acepte solo ingredientes *como se compran* más el número de comensales.
+**Es la decisión de diseño que ordena la funcionalidad, no un detalle de
+implementación.**
+
+**2. Que el perfil sea del usuario no nos saca de encima la plataforma.** La
+decisión D2 es buena de producto —dejamos de *avalar* el contenido, que es real y
+vale—, pero si un perfil puede hacerse público y además hay un buscador que lo
+encuentra, estamos **alojando y distribuyendo contenido de terceros**: eso es una
+plataforma, la curemos o no. Lo que protege de verdad es otra cosa, y es barata:
+**privado por defecto** (D4), un **botón de denuncia con un camino de bajada**, y
+términos que digan que el contenido es del autor y que podemos retirarlo. Media
+card de trabajo. **Tiene que existir antes del primer perfil público**, no
+después del primer problema.
+
+**3. El permiso que caduca.** Con D2, una receta de usuario nunca engorda nuestra
+sección: son dos mundos separados y así se decidió. Pero si algún día quisiéramos
+**ascender** una receta buena de un usuario a la sección oficial, ese permiso
+**tiene que estar en los términos desde el día uno**. Si no está, después hay que
+volver a pedírselo a cada usuario de a uno, y eso no se hace nunca. Cuesta un
+párrafo hoy y es imposible más adelante: **se escribe la cláusula aunque no se
+use jamás.**
+
+**Y una advertencia sobre el historial:** lo que come alguien todos los días es
+dato cercano a la salud, más delicado que una receta. Público está bien si es una
+decisión explícita del usuario, pero apagar el interruptor tiene que **borrar de
+verdad la copia pública**, no esconderla.
+
+### El orden, y por qué
+
+**Compartir → perfiles públicos → buscador.** Compartir funciona con un solo
+usuario y es lo que trae gente; un buscador de perfiles con cincuenta usuarios es
+una sala vacía y solo paga cuando hay densidad. Por eso el buscador (D5) va
+último, y por eso **compartir el reporte de un escaneo es lo único de todo este
+capítulo que se podría adelantar**: es una sesión, no depende de nada de lo
+anterior, y empieza a traer a la gente que después va a querer cargar recetas.
+
+### Lo que cuesta, medido contra lo que ya existe
+
+| Pieza | Ya está pago | Falta | Tamaño |
+|---|---|---|---|
+| Cupo de creación (1/mes) | El contador transaccional de la Fase 4, entero | Un campo más | ~0 |
+| Cálculo nutricional de la receta | El motor de receta compuesta + las 1.115 fichas | La decisión de crudo/cocido | incluido abajo |
+| Wizard de receta | — | Pantallas, validación, el estado de cocción | ~1,5 sesiones |
+| Buscador de ingredientes + taxonomía en español | Las 1.115 fichas, ya publicadas | El buscador y traducir las 179 categorías de USDA | ~1 sesión, **compartida con §3.a** |
+| Perfil público/privado | La estructura por dueño y las reglas de Firestore | Los dos interruptores, la vista pública, el borrado real | ~1 sesión |
+| Compartir (imagen + menú del teléfono) | — | La imagen generada y el enlace de vuelta | ~1 sesión |
+| Denuncia, retirada y términos | La cola de curación sirve de molde | El botón, el camino de bajada, el texto legal | ~0,5 sesión |
+| Buscador de perfiles | — | Todo | ~0,5 sesión |
+
+**Total: unas 5,5 sesiones**, de las cuales una se comparte con las fichas de
+alimentos (§3.a) y se paga una sola vez. Es dos tercios de lo que costó la v1
+entera. **No es una funcionalidad: es un producto**, y por eso entra después del
+Bloque 0 de la v2 y no antes.
+
+### Lo que estas decisiones cambian de este documento
+
+1. **§3.b deja de estar dentro de Premium anual.** Las recetas nuestras pasan a
+   v1.5 y se ven gratis. El reparto de la v2 queda: **ver recetas = gratis ·
+   crear recetas = con cupo · plan personalizado = Gold**.
+2. **El escalón anual pierde una de sus tres funcionalidades** (§3). Hay que
+   rehacer el argumento de venta de ese tier, o moverle otra cosa. Se suma al
+   abierto **A1** (los precios).
+3. **Aparece una v1.5** que antes no existía en el mapa: recetas nuestras, sin
+   comunidad, disparada por lo que muestre el tráfico real de la v1. Y desde el
+   02/09 tiene una segunda pieza — los dos idiomas. Va abajo.
+
+### La v1.5, ahora que existe
+
+Dos cosas, ninguna con comunidad, las dos disparadas por lo que muestre el
+tráfico real de la v1:
+
+**(a) Las recetas nuestras** (§3.b), fuera del muro de pago.
+
+**(b) Español e inglés, seleccionable por el usuario** — decisión de Tomás del
+02/09/2026. Medido contra el catálogo y el repo, no supuesto:
+
+| Pieza | Estado hoy | Qué falta |
+|---|---|---|
+| **Nombres de los 1.115 alimentos** | ✅ **bilingües, 1.115 de 1.115** con `names.es` y `names.en` | Nada. La mitad cara ya está pagada desde la Fase 1 |
+| **Las 179 categorías** | ❌ solo inglés, tal como vienen de USDA (`"Fats and Oils"`, `"Bagels and English muffins"`) | Traducirlas y curarlas. Es el mismo trabajo que ya pedía el §7 para las fichas de alimentos: **se paga una vez y sirve para las dos cosas** |
+| **Las etiquetas de porción** | 🟡 `label_en` lleno (`"1 tbsp"`, `"1 cup"`) y **`label_es` en `null`** — estado **documentado y esperado**: el tipo (`functions/src/kb/types.ts:77`) dice que el español sale de la curación y arranca vacío. **Hoy no lo lee nadie en runtime**, así que ningún usuario lo ve | Cuando alguna pantalla las muestre, el español hay que curarlo. Es deuda de datos latente, no un fallo en producción — pero el día del bilingüe deja de ser latente |
+| **Los 106 textos de la interfaz** | ❌ un solo idioma, en `config/app.copy` | Duplicar la lista por idioma. ⚠️ Toca la **máscara del seed** y su candado de lista cerrada (`textos.test.ts`), que hoy compara contra los dos lectores: el candado tiene que aprender a exigir las claves **en los dos idiomas**, o el inglés se puede publicar a medias sin que nadie se entere |
+| **La landing y los T&C** | ❌ solo español, ~3.800 palabras en HTML estático | Traducirlas. ⚠️ Y los T&C están **duplicados** entre la app y la landing (**DT-42**): con dos idiomas pasan a ser **cuatro copias del mismo texto legal** sin ningún candado que avise si divergen. Conviene saldar la DT-42 **antes** de traducir, no después |
+| **Los correos de entrada** | ❌ solo español, y **los gestiona la consola** | Firebase Auth manda la plantilla según el idioma, pero personalizarlas **la API las rechaza** (`EMAIL_TEMPLATE_UPDATE_NOT_ALLOWED`, medido en la WS09): la versión en inglés se carga a mano en la consola. Es trabajo de Tomás, no de código |
+| **Lo que el modelo redacta** | — | En la v1 el modelo no redacta nada (solo identifica), así que **no hay nada que traducir**. Cuando el paso 3 despierte en la v2, el idioma tendrá que viajar en la llamada |
+
+**El resumen honesto:** lo caro —los 1.115 nombres— ya está hecho. Lo que queda
+es **una sesión y media**, y la mitad de eso (las categorías) es trabajo que el
+plan ya debía igual. Pero hay dos trampas que no se ven: **el candado del seed
+tiene que crecer** para que el inglés no se pueda publicar a medias, y **los T&C
+duplicados se multiplican por dos** — la DT-42 deja de ser cosmética el día que
+se decide el bilingüe.
+
+**Y una advertencia de método:** el bilingüe no es «pasar los textos por un
+traductor». La pasada de español de la card 3.4 se hizo **como corrección y con
+antes/después por cada cambio** (DT-21), y el inglés merece lo mismo: es una
+lista cerrada con candado, no un archivo de recursos suelto.
+
+---
+
+## 11. Cómo sigue
 
 Este documento **no define cards todavía**, a propósito. Cuando la v1 esté viva y
 Tomás cierre los abiertos del §9, la v2 abre con su **Bloque 0**: medir el uso

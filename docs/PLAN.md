@@ -345,16 +345,36 @@ permite contarle las fotos a alguien. Por eso las cards van juntas y en este ord
 | **4.4 — App Check** | Clave de reCAPTCHA Enterprise acotada a nuestros dominios, app registrada con token de 24 h (para no gastar las 10.000 evaluaciones gratuitas al mes) y verificación en `analyze` **en modo observación**: mira de dónde viene cada foto y lo anota, sin echar a nadie. El interruptor `app_check_enforced` vive en `config/app` — se enciende sin desplegar y la **marcha atrás está medida en 60 s** · un fallo NUESTRO nunca bloquea (cuatro estados, no dos) · +4,8 kB · 455 tests | ✅ 02/09 · bloqueo pendiente (DT-44) |
 | **4.5 — Las deudas** | DT-40 (a) ✅ los 8 textos de error entran a la lista cerrada y dejan de vosear —y el candado ahora compara contra los DOS lectores, front y backend— · DT-41 (a) ✅ el umbral de sodio se publica y un test lo ata a la curación · DT-41 (b) 🟢 39 claves mudadas byte a byte, **la pantalla de planes entera: cambiar 12 € por 15 € ya no exige desplegar** · DT-41 (c) ✅ 5 claves huérfanas (2 más de las declaradas) · DT-41 (f) ✅ el anillo muerto podado (456 → 271 líneas) · **DT-40 (b) NO, con el motivo medido**: tiene tres puntas y mover la versión del catálogo obligaría a reescribir los 1.115 documentos de producción por un cambio de palabras | ✅ 02/09 |
 
-**Lo que queda de la Fase 4 (WS10):** el **merge a `main`, que ES el despliegue**
-(el CI despliega con cada merge, así que las dos cosas son un solo movimiento) y,
-recién después, el **E2E desde el teléfono de Tomás** — que es donde se prueban las
-dos únicas cosas que nadie pudo probar todavía: el login con Google en Safari y en
-la PWA instalada (el arnés convierte las ventanas emergentes en pestañas y el
-traspaso muere ahí) y un token de App Check real (no existe emulador de App Check).
-Antes del merge hay que **sembrar `config/app`** con el OK de Tomás: publica los
-106 textos y el umbral de sodio. Hasta que se siembre, producción muestra los
-mismos textos desde el arranque en frío, así que no se ve nada raro.
-**La v1 no está cerrada hasta ese E2E: el merge la despliega, el teléfono la certifica.**
+**La Fase 4, cerrada el 02/09/2026 (WS10).** Los dos movimientos que quedaban se
+hicieron en este orden:
+
+1. **`config/app` sembrada en producción**: de 64 a **106 textos** y el umbral de
+   sodio (400 mg/100 g) publicado. Los cupos (15/mes, 3/día) quedaron intactos
+   porque están fuera de la máscara del seed, y la `kb_version` no se movió, así
+   que **no se reescribió ni una de las 1.115 fichas**. De las 5 claves huérfanas
+   que se retiraron, una —`donut_rest`— la leía todavía el front desplegado: se
+   verificó que `fusionarCopy` parte de los textos del código y solo los pisa con
+   lo que llega, así que cayó a su valor por defecto y no se vio nada.
+2. **Merge a `main` (`7ed3b11`), que ES el despliegue.** Antes del merge:
+   **756 tests en verde** (455 functions + 175 catálogo + 126 seed), tipos
+   limpios, curación verificada y build OK. El despliegue salió en verde y se
+   comprobó en vivo: la **puerta se ve en `app.caliscan.app`** (Google + enlace
+   por correo, con el logotipo y el eslogan) y **`analyze` sin token devuelve
+   401** — la v1 dejó de estar abierta al mundo.
+
+**Lo que la WS10 encontró y no estaba escrito:** el CI **nunca corrió los tests de
+`functions`** — 455 de los 756, justo los que cubren la Fase 4 entera. Hoy se
+corrieron a mano; el candado que falta es **DT-48**. Y el bundle real quedó en
+116,65 kB gzip contra los 114,2 declarados, por los dos commits visuales del
+final: **DT-49**.
+
+**Lo único que falta para cerrar la v1: el E2E desde el teléfono de Tomás** — el
+login con Google en **Safari y en la PWA instalada** (el arnés convierte las
+ventanas emergentes en pestañas y el traspaso muere ahí) y **un token de App Check
+real** (no existe emulador). Verificado por API que la puerta está abierta del
+lado de Google: `google.com` habilitado con su cliente OAuth, enlace por correo
+habilitado y los dominios autorizados incluyen `caliscan.app` y `app.caliscan.app`.
+**El merge la desplegó; el teléfono la certifica.**
 
 **Nota de facturación (WS09):** inicializar Auth por API dejó el proyecto como
 **Identity Platform** (`subtype: IDENTITY_PLATFORM`), que tiene un umbral gratuito de
