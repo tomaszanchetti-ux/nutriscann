@@ -26,6 +26,26 @@
  * El diferenciador de Gold —el plan de dieta diario, lo único que el plan anual
  * no tiene— sale de la lista de viñetas y ocupa su propio bloque dentro de esa
  * tarjeta. Es la razón entera por la que Gold existe.
+ *
+ * ---------------------------------------------------------------------------
+ * WS08 — «LO QUE LLEGA DESPUÉS»: la segunda mitad de la pantalla.
+ *
+ * Debajo de los tres planes hay ahora dos tarjetas que muestran los escalones de
+ * la v2 —el accesible (fichas con fuente USDA, recetas por categoría,
+ * tendencias) y el alto (el plan personalizado de 1 semana, 15 días o 1 mes)—
+ * como PRÓXIMAMENTE. El motivo es de venta: la vitrina explicaba muy bien el
+ * cupo de fotos y no decía en voz alta hacia dónde va la app, que es lo que
+ * hace que alguien deje su correo hoy.
+ *
+ * SE DIBUJAN DISTINTO A PROPÓSITO —borde punteado y fondo apagado— porque son
+ * otra cosa: los de arriba son planes con precio, y estos todavía no existen. La
+ * forma lo dice antes que el sello. Ninguno lleva número: donde iría el precio
+ * va a qué plan se sumará, así la escalera 15 → 40 → 150 sigue siendo la única
+ * de la pantalla.
+ *
+ * Y los dos botones abren EL MISMO formulario de lista de espera que los planes,
+ * con la misma etiqueta: la conversión de esta pantalla es una sola.
+ * ---------------------------------------------------------------------------
  */
 import { useState } from "react";
 
@@ -33,16 +53,21 @@ import { ModalListaDeEspera } from "./ModalListaDeEspera";
 import { BotonVolver } from "./PantallaPerfil";
 import {
   COPY_PREMIUM,
+  escalonesV2,
   PLANES,
+  type EscalonV2,
   type PlanDeListaDeEspera,
   type PlanPremium,
 } from "../lib/copy.premium";
+import type { CopyDeLaApp } from "../lib/config";
 
 export interface PantallaPremiumProps {
+  /** Los textos publicados. La sección «Lo que llega después» los lee de acá. */
+  copy: CopyDeLaApp;
   onVolver: () => void;
 }
 
-export function PantallaPremium({ onVolver }: PantallaPremiumProps) {
+export function PantallaPremium({ copy, onVolver }: PantallaPremiumProps) {
   /** `null` = el formulario está cerrado. Si no, guarda desde qué plan se abrió. */
   const [listaAbierta, setListaAbierta] = useState<PlanDeListaDeEspera | null>(null);
 
@@ -76,6 +101,32 @@ export function PantallaPremium({ onVolver }: PantallaPremiumProps) {
           );
         })}
       </ul>
+
+      {/* LO QUE LLEGA DESPUÉS. Va DEBAJO de los planes y no arriba: primero se
+          ve lo que hoy se puede tener, y recién después hacia dónde va. Al
+          revés, la pantalla empezaría prometiendo lo que todavía no existe. */}
+      <section className="flex flex-col gap-4">
+        <header className="flex flex-col gap-1.5">
+          <h2 className="font-display text-2xl leading-tight font-bold text-balance text-ink">
+            {copy.v2_title}
+          </h2>
+          <p className="text-sm leading-relaxed text-pretty text-ink-soft">{copy.v2_intro}</p>
+        </header>
+
+        <ul className="flex flex-col gap-4">
+          {escalonesV2(copy).map((escalon) => (
+            <li key={escalon.id}>
+              <TarjetaEscalonV2
+                escalon={escalon}
+                disclaimer={copy.disclaimer}
+                onListaDeEspera={() => setListaAbierta(escalon.listaDeEspera)}
+              />
+            </li>
+          ))}
+        </ul>
+
+        <p className="text-xs leading-relaxed text-pretty text-ink-faint">{copy.v2_nota}</p>
+      </section>
 
       <section className="flex flex-col gap-2 rounded-2xl border border-line bg-surface p-4 text-xs leading-relaxed text-ink-faint">
         <p>{COPY_PREMIUM.nota_cupo}</p>
@@ -194,6 +245,79 @@ function BotonDePlan({
     >
       {plan.cta}
     </button>
+  );
+}
+
+/**
+ * Una tarjeta de «Lo que llega después».
+ *
+ * Es hermana de `TarjetaDePlan` —mismo radio, mismo cuerpo, mismas viñetas con
+ * su tilde— y se diferencia en tres cosas, las tres con intención:
+ *
+ *   · BORDE PUNTEADO Y FONDO APAGADO: esto todavía no se puede comprar. La
+ *     diferencia se ve antes de leer el sello.
+ *   · DONDE IRÍA EL PRECIO va el plan al que se sumará. No hay número, y no es
+ *     un descuido: estos escalones no tienen precio publicado.
+ *   · EL DISCLAIMER, pegado, en la que habla de objetivos. Es el MISMO texto del
+ *     pie de la app (`copy.disclaimer`), no uno nuevo: donde se promete un plan
+ *     personalizado, "orientativo y no consejo médico" tiene que estar a la
+ *     vista y no dos pantallas más allá.
+ */
+function TarjetaEscalonV2({
+  escalon,
+  disclaimer,
+  onListaDeEspera,
+}: {
+  escalon: EscalonV2;
+  disclaimer: string;
+  onListaDeEspera: () => void;
+}) {
+  const destacado = escalon.destacado === true;
+
+  return (
+    <article
+      className={`flex flex-col gap-4 rounded-2xl border border-dashed p-5 ${
+        destacado ? "border-accent/45 bg-accent-soft/25" : "border-line bg-surface/60"
+      }`}
+    >
+      <header className="flex flex-col gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-full bg-accent-soft px-2.5 py-1 text-[0.6875rem] font-semibold tracking-wide text-accent uppercase">
+            {escalon.sello}
+          </span>
+          <span className="text-[0.6875rem] font-semibold tracking-wide text-ink-faint uppercase">
+            {escalon.vinculo}
+          </span>
+        </div>
+        <h3 className="font-display text-xl leading-tight font-bold text-ink">{escalon.titulo}</h3>
+        <p className="text-sm leading-relaxed text-pretty text-ink-soft">{escalon.resumen}</p>
+      </header>
+
+      <ul className="flex flex-col gap-2">
+        {escalon.puntos.map((punto) => (
+          <li key={punto} className="flex items-start gap-2 text-sm leading-relaxed text-ink-soft">
+            <IconoTilde />
+            <span>{punto}</span>
+          </li>
+        ))}
+      </ul>
+
+      {escalon.conDisclaimer === true && (
+        <p className="border-t border-line pt-3 text-xs leading-relaxed text-pretty text-ink-faint">
+          {disclaimer}
+        </p>
+      )}
+
+      <button
+        type="button"
+        onClick={onListaDeEspera}
+        className={`w-full rounded-2xl px-6 py-3.5 text-base font-semibold transition-transform active:scale-[0.98] ${
+          destacado ? "bg-accent text-ground" : "border border-accent/45 bg-accent-soft text-accent"
+        }`}
+      >
+        {escalon.cta}
+      </button>
+    </article>
   );
 }
 

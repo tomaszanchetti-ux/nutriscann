@@ -60,6 +60,13 @@
  * pasos de la espera. El detalle de qué se cambió y qué quedó pendiente vive en
  * `dt21_note` de `config/copy.json`; los dos archivos siguen espejados byte a
  * byte.
+ *
+ * WS08 — 17 CLAVES NUEVAS (`v2_*`): la sección «Lo que llega después» de la
+ * vitrina premium. Es la primera parte de esa pantalla cuyos textos viven acá y
+ * no en `copy.premium.ts`, porque son todas frases fijas. Lo que dicen —y las
+ * tres reglas que no se pueden romper al editarlas: sin precio, objetivos solo
+ * de forma física, y CaliScan como nombre— está en `v2_note` de
+ * `config/copy.json`.
  * ------------------------------------------------------------------------- */
 import { firestoreDocUrl } from "./firebase";
 
@@ -125,6 +132,38 @@ export interface CopyDeLaApp {
   report_no_totals_body: string;
   report_others_title: string;
   report_weight_label: string;
+
+  // — Nuevas de la WS08: la sección «Lo que llega después» de la vitrina —
+  //
+  // Son los PRIMEROS textos de la vitrina premium que viajan por acá. El resto
+  // sigue en `copy.premium.ts` hasta la card 3.5 (ver la cabecera de ese
+  // archivo): esta sección entra bien porque es toda frases fijas, sin un solo
+  // número armado con datos.
+  //
+  // NINGUNA de estas claves lleva un precio, y no es un olvido: los dos
+  // escalones de la v2 se muestran SIN precio. La escalera que sí lo tiene
+  // —0 € / 12 € al año / 4,99 € al mes, con 15 / 40 / 150 fotos al mes— es la de
+  // los tres planes de `PLANES`, y esta sección no la toca.
+  v2_title: string;
+  v2_intro: string;
+  v2_badge: string;
+
+  v2_premium_titulo: string;
+  v2_premium_vinculo: string;
+  v2_premium_resumen: string;
+  v2_premium_punto_1: string;
+  v2_premium_punto_2: string;
+  v2_premium_punto_3: string;
+
+  v2_gold_titulo: string;
+  v2_gold_vinculo: string;
+  v2_gold_resumen: string;
+  v2_gold_punto_1: string;
+  v2_gold_punto_2: string;
+  v2_gold_punto_3: string;
+
+  v2_cta: string;
+  v2_nota: string;
 }
 
 export type ClaveDeCopy = keyof CopyDeLaApp;
@@ -201,6 +240,30 @@ export const COPY_DE_ARRANQUE: CopyDeLaApp = {
     "Ninguno de los alimentos identificados está en la base nutricional, así que no hay nada que sumar. Abajo está lo que sí se reconoció.",
   report_others_title: "Del resto del análisis",
   report_weight_label: "Peso identificado",
+
+  v2_title: "Lo que llega después",
+  v2_intro:
+    "Ya estamos construyendo el siguiente paso de CaliScan. Apúntate a la lista de espera y serás de los primeros en probarlo.",
+  v2_badge: "Próximamente",
+
+  v2_premium_titulo: "Fichas, recetas y tendencias",
+  v2_premium_vinculo: "Llega al plan Premium",
+  v2_premium_resumen: "Más contexto en cada plato, y la foto completa de cómo comes.",
+  v2_premium_punto_1: "Fichas de alimentos con su fuente USDA, dato a dato.",
+  v2_premium_punto_2: "Recetas por categoría: qué comer antes y después de entrenar.",
+  v2_premium_punto_3: "Tendencias de tus comidas, por semana y por mes.",
+
+  v2_gold_titulo: "Tu plan personalizado",
+  v2_gold_vinculo: "Llega a Premium Gold",
+  v2_gold_resumen:
+    "Deja de improvisar: qué comer cada día, según lo que entrenas y hacia dónde vas.",
+  v2_gold_punto_1: "Planes de 1 semana, 15 días o 1 mes.",
+  v2_gold_punto_2: "Según tu objetivo: bajar de peso, tonificar o ganar masa muscular.",
+  v2_gold_punto_3: "Ajustados a tu entrenamiento y a tu perfil.",
+
+  v2_cta: "Avísame cuando esté",
+  v2_nota:
+    "Estas funciones todavía no están disponibles y no tienen precio publicado. Apuntarte no cuesta nada ni te compromete a nada.",
 };
 
 /**

@@ -226,7 +226,12 @@ export default function App() {
           />
         )}
 
-        {seccion === "premium" && <PantallaPremium onVolver={() => setSeccion("escaneo")} />}
+        {/* La vitrina recibe los textos publicados desde la WS08: la sección
+            «Lo que llega después» los lee de `config/app`, como el resto de la
+            app, y se edita sin desplegar. */}
+        {seccion === "premium" && (
+          <PantallaPremium copy={config.copy} onVolver={() => setSeccion("escaneo")} />
+        )}
 
         {seccion === "terminos" && (
           <PantallaTerminos onVolver={() => setSeccion(seccionDeVuelta.current)} />

@@ -8,6 +8,8 @@
 
   "dt22_note": "LAS 29 CLAVES NUEVAS DE LA CARD 3.1 (prefijos nutrient_, donut_, match_, item_ y las cuatro report_ del final) SON LA DT-22: textos que el usuario leía y estaban escritos adentro de los componentes. Cambiar «Coincidencia aproximada» exigía desplegar la PWA — la regla dura n.º 1 rota fuera de 'copy'. NO entró todo lo que se lee en pantalla, y la línea está declarada: viaja acá lo que es una FRASE FIJA; se queda en el código lo que se ARMA CON DATOS (el aviso de total parcial cuenta ítems y gramos, la letra chica de un compuesto enumera sus ingredientes, la nota del donut inyecta el porcentaje sin explicar). config/app.copy es un mapa de texto a texto y no tiene convención de placeholders: partir una frase y pegarle un número al lado se rompe apenas alguien la edita. Cuando haga falta se agrega la convención y se mudan; hoy sería inventar un motor de plantillas para cuatro frases. Los textos de la vitrina premium (apps/web/src/lib/copy.premium.ts) tampoco entraron: su mudanza es de la card 3.5, junto con el seed real.",
 
+  "v2_note": "LAS 17 CLAVES 'v2_' SON LA SECCIÓN «Lo que llega después» DE LA VITRINA (card 3.3, retomada en la WS08): los dos escalones de la v2 —el accesible (fichas con fuente USDA, recetas por categoría, tendencias) y el alto (planes personalizados de 1 semana / 15 días / 1 mes)— mostrados como PRÓXIMAMENTE, sin precio y empujando a la lista de espera, que es la única conversión que esta pantalla puede tener antes de que existan los pagos. Son los PRIMEROS textos de la vitrina que viven acá y no en apps/web/src/lib/copy.premium.ts: la mudanza del resto sigue siendo de la card 3.5, junto con el seed real. Tres reglas que no se tocan al editarlos: (1) NINGÚN precio — la escalera 15/40/150 con sus 0 €/12 €/4,99 € es la de los tres planes de arriba y estos escalones no inventan uno; (2) los objetivos son SOLO de forma física (bajar de peso, tonificar, ganar masa muscular) — ninguna condición médica se nombra, y el bloque del plan personalizado lleva pegado el 'disclaimer' que ya existe; (3) el nombre de la app en estos textos es CaliScan (rename del 02/09/2026), y los textos viejos se quedan como están hasta que el rename se haga entero, en su propio movimiento.",
+
   "keys_note": "Lista CERRADA de claves válidas, y el seed rechaza el archivo si 'copy' no tiene exactamente estas — ni una de menos ni una de más. No es burocracia: el front lee cada clave POR SU NOMBRE contra la interfaz CopyDeLaApp (apps/web/src/lib/config.ts). Una clave mal tipeada no rompe nada visible — la pantalla cae al arranque en frío y se ve bien —, así que el error se degrada en silencio y hay que cazarlo antes de publicar. Agregar un texto nuevo es un cambio de las dos puntas: la clave acá y el campo en CopyDeLaApp.",
 
   "keys": {
@@ -196,6 +198,75 @@
       "since": "card-3.1",
       "used_in": "SIN USO desde el Q/A de la WS08 (huérfana declarada)",
       "huerfana": "Era la etiqueta del peso identificado, al pie del segundo recuadro, y se fue con él. La clave se queda por el candado de claves cerradas (ver donut_detail_title)."
+    },
+
+    "v2_title": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — el título de la sección «Lo que llega después», debajo de los tres planes"
+    },
+    "v2_intro": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — la línea de entrada de esa sección. Es la que manda a la lista de espera: la sección entera existe para eso."
+    },
+    "v2_badge": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — el sello de las dos tarjetas de lo que viene. Una sola palabra y honesta: todavía no existe."
+    },
+    "v2_premium_titulo": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — el título de la tarjeta del escalón accesible. NO repite el nombre del plan (eso lo dice 'v2_premium_vinculo'): dice QUÉ trae, que es lo que se compra."
+    },
+    "v2_premium_vinculo": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — a qué plan de la escalera de arriba se suma. Ocupa el lugar donde iría un precio, y por eso NO hay precio: estos escalones no lo tienen."
+    },
+    "v2_premium_resumen": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — la línea que resume el escalón accesible"
+    },
+    "v2_premium_punto_1": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — primera viñeta del escalón accesible (las fichas con su fuente USDA)"
+    },
+    "v2_premium_punto_2": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — segunda viñeta del escalón accesible (las recetas por categoría)"
+    },
+    "v2_premium_punto_3": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — tercera viñeta del escalón accesible (las tendencias)"
+    },
+    "v2_gold_titulo": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — el título de la tarjeta del escalón alto"
+    },
+    "v2_gold_vinculo": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — a qué plan de la escalera se suma el escalón alto. Sin precio, igual que el otro."
+    },
+    "v2_gold_resumen": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — la línea que resume el escalón alto"
+    },
+    "v2_gold_punto_1": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — primera viñeta del escalón alto (la duración del plan)"
+    },
+    "v2_gold_punto_2": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — segunda viñeta del escalón alto (los tres objetivos). SOLO objetivos de forma física: bajar de peso, tonificar, ganar masa muscular. Ninguna condición médica entra acá, ni ahora ni cuando la v2 encienda esto."
+    },
+    "v2_gold_punto_3": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — tercera viñeta del escalón alto (entrenamiento y perfil)"
+    },
+    "v2_cta": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — el botón de las dos tarjetas de lo que viene. Abre el MISMO formulario de lista de espera que los planes de arriba y guarda la misma etiqueta ('premium' o 'gold'): no hay un segundo circuito."
+    },
+    "v2_nota": {
+      "since": "card-3.3 (WS08)",
+      "used_in": "PantallaPremium — el pie de la sección. Dice las dos cosas que la sección no puede callar: no hay precio publicado y apuntarse no compromete a nada."
     }
   },
 
@@ -260,6 +331,27 @@
     "report_no_totals_title": "Sin números para este plato",
     "report_no_totals_body": "Ninguno de los alimentos identificados está en la base nutricional, así que no hay nada que sumar. Abajo está lo que sí se reconoció.",
     "report_others_title": "Del resto del análisis",
-    "report_weight_label": "Peso identificado"
+    "report_weight_label": "Peso identificado",
+
+    "v2_title": "Lo que llega después",
+    "v2_intro": "Ya estamos construyendo el siguiente paso de CaliScan. Apúntate a la lista de espera y serás de los primeros en probarlo.",
+    "v2_badge": "Próximamente",
+
+    "v2_premium_titulo": "Fichas, recetas y tendencias",
+    "v2_premium_vinculo": "Llega al plan Premium",
+    "v2_premium_resumen": "Más contexto en cada plato, y la foto completa de cómo comes.",
+    "v2_premium_punto_1": "Fichas de alimentos con su fuente USDA, dato a dato.",
+    "v2_premium_punto_2": "Recetas por categoría: qué comer antes y después de entrenar.",
+    "v2_premium_punto_3": "Tendencias de tus comidas, por semana y por mes.",
+
+    "v2_gold_titulo": "Tu plan personalizado",
+    "v2_gold_vinculo": "Llega a Premium Gold",
+    "v2_gold_resumen": "Deja de improvisar: qué comer cada día, según lo que entrenas y hacia dónde vas.",
+    "v2_gold_punto_1": "Planes de 1 semana, 15 días o 1 mes.",
+    "v2_gold_punto_2": "Según tu objetivo: bajar de peso, tonificar o ganar masa muscular.",
+    "v2_gold_punto_3": "Ajustados a tu entrenamiento y a tu perfil.",
+
+    "v2_cta": "Avísame cuando esté",
+    "v2_nota": "Estas funciones todavía no están disponibles y no tienen precio publicado. Apuntarte no cuesta nada ni te compromete a nada."
   }
 }

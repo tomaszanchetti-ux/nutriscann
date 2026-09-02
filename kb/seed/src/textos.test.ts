@@ -120,13 +120,15 @@ test("los pasos se parten y se recortan igual que en el front", () => {
 // ── El archivo real del repo: es lo que se publica ───────────────────────────
 
 /**
- * Las 47 claves del contrato, al 01/09/2026.
+ * Las 64 claves del contrato, al 02/09/2026.
  *
  * Eran 18 (DT-18, card 2.5). La card 3.1 sumó las 29 de la DT-22: los textos
  * que el usuario leía y estaban escritos adentro de los componentes del front
  * —los cinco sellos de match con su explicación, los nombres de los
  * nutrientes, las etiquetas de la card de ítem y los títulos de los dos
  * recuadros del reporte—. Cambiar cualquiera de esos exigía desplegar la PWA.
+ * La WS08 sumó las 17 `v2_*` de la sección «Lo que llega después» de la
+ * vitrina: nacieron ya gobernadas en vez de nacer en deuda.
  *
  * La lista está en orden alfabético porque `cargarTextos` devuelve las claves
  * ordenadas: es el orden del contrato, no el del archivo.
@@ -179,9 +181,26 @@ const CLAVES_ESPERADAS = [
   "report_weight_label",
   "scanning_steps",
   "scanning_title",
+  "v2_badge",
+  "v2_cta",
+  "v2_gold_punto_1",
+  "v2_gold_punto_2",
+  "v2_gold_punto_3",
+  "v2_gold_resumen",
+  "v2_gold_titulo",
+  "v2_gold_vinculo",
+  "v2_intro",
+  "v2_nota",
+  "v2_premium_punto_1",
+  "v2_premium_punto_2",
+  "v2_premium_punto_3",
+  "v2_premium_resumen",
+  "v2_premium_titulo",
+  "v2_premium_vinculo",
+  "v2_title",
 ];
 
-test("config/copy.json valida y trae las 47 claves del contrato", () => {
+test("config/copy.json valida y trae las 64 claves del contrato", () => {
   const textos = cargarTextos(TEXTOS_DEL_REPO);
   assert.deepEqual(textos.claves, CLAVES_ESPERADAS);
   assert.equal(textos.pasos.length, 3, "la pantalla de espera muestra tres pasos");

@@ -33,7 +33,18 @@
  * la app, no como un beneficio de pagar.
  *
  * Español de España, sin voseo (DT-21).
+ *
+ * ---------------------------------------------------------------------------
+ * WS08 — LA EXCEPCIÓN, Y ES A PROPÓSITO: la sección «Lo que llega después»
+ * (`escalonesV2`, al final de este archivo) NO trae sus textos escritos acá. Los
+ * LEE de `config/copy.json` a través de `CopyDeLaApp`, como el resto de la app,
+ * porque son todas frases fijas y no había motivo para nacer ya en deuda. Este
+ * archivo se queda con la ESTRUCTURA de esa sección —qué tarjeta es cuál, cuál
+ * va destacada, cuál lleva el disclaimer, a qué etiqueta de la lista de espera
+ * apunta cada botón—, que es lo que no es texto.
+ * ---------------------------------------------------------------------------
  */
+import type { CopyDeLaApp } from "./config";
 
 // ---------------------------------------------------------------------------
 // La navegación
@@ -139,7 +150,12 @@ export const FUNCIONALIDADES_BLOQUEADAS: readonly FuncionalidadBloqueada[] = [
     id: "tendencias",
     titulo: "Tendencias",
     descripcion: "Cómo se mueven tus calorías y tus macros semana a semana.",
-    plan: "Premium Gold",
+    // WS08: pasa de "Premium Gold" a "Premium". Las tendencias son parte del
+    // escalón ACCESIBLE de la v2 (ver `escalonesV2`), y Gold las sigue teniendo
+    // porque incluye todo lo del Premium: nadie pierde nada y la app deja de
+    // decir dos cosas distintas en dos pantallas. Decisión de producto: si se
+    // revierte, se revierte también la viñeta `v2_premium_punto_3`.
+    plan: "Premium",
   },
   {
     id: "plan_diario",
@@ -322,3 +338,91 @@ export const COPY_LISTA_DE_ESPERA = {
  *   `perfil`            — el CTA de la sección Perfil, que no elige plan.
  */
 export type PlanDeListaDeEspera = "premium" | "gold" | "perfil";
+
+// ---------------------------------------------------------------------------
+// «Lo que llega después» — los dos escalones de la v2 (WS08)
+// ---------------------------------------------------------------------------
+
+/**
+ * QUÉ ES ESTA SECCIÓN Y POR QUÉ EXISTE.
+ *
+ * La vitrina vendía bien lo que la v1 ya hace —el cupo de fotos y el historial—
+ * y callaba lo único que de verdad separa a un plan de pago de una app gratis
+ * de calorías: lo que viene después. Se muestran los dos escalones, en el orden
+ * en que se suben:
+ *
+ *   1. EL ACCESIBLE — fichas con su fuente USDA, recetas por categoría
+ *      (antes / después de entrenar) y tendencias por semana y por mes.
+ *   2. EL ALTO — el plan personalizado de 1 semana, 15 días o 1 mes, según el
+ *      objetivo, el entrenamiento y el perfil.
+ *
+ * TRES REGLAS DURAS, y las tres se ven en el código de abajo:
+ *
+ *   · SIN PRECIO. Ninguno de los dos trae un número. La escalera de precios es
+ *     la de `PLANES` (0 € · 12 €/año · 4,99 €/mes, con 15 · 40 · 150 fotos AL
+ *     MES) y esta sección no la toca ni la duplica: cada tarjeta dice a cuál de
+ *     esos planes se sumará, y eso ocupa el lugar donde iría el precio.
+ *   · LA CONVERSIÓN ES LA LISTA DE ESPERA. Los dos botones abren el MISMO
+ *     formulario que los planes de arriba y guardan la misma etiqueta
+ *     (`premium` / `gold`): no hay un segundo circuito ni un segundo evento.
+ *   · OBJETIVOS DE FORMA FÍSICA Y NADA MÁS: bajar de peso, tonificar, ganar masa
+ *     muscular. Ninguna condición médica se nombra —ni como ejemplo—, y la
+ *     tarjeta que habla de objetivos lleva pegado el `disclaimer` que ya existe
+ *     ("no es consejo médico"), que es el mismo del pie y no un texto nuevo.
+ *
+ * Los TEXTOS salen de `config/copy.json` (claves `v2_*`): se cambian sin
+ * desplegar. Acá vive solo la forma.
+ */
+export interface EscalonV2 {
+  /** Clave estable, para las `key` de React y para el Q/A. */
+  id: string;
+  /** El sello de arriba. Una palabra: todavía no existe y se dice. */
+  sello: string;
+  /** Qué trae, no cómo se llama el plan: es lo que se compra. */
+  titulo: string;
+  /** A qué plan de la escalera se suma. Ocupa el lugar del precio. */
+  vinculo: string;
+  resumen: string;
+  puntos: readonly string[];
+  cta: string;
+  /** La etiqueta con la que se guarda el alta. La misma de `PLANES`. */
+  listaDeEspera: PlanDeListaDeEspera;
+  /** `true` = el escalón alto: se dibuja destacado, como Gold arriba. */
+  destacado?: boolean;
+  /** `true` = habla de objetivos personales, así que lleva el disclaimer. */
+  conDisclaimer?: boolean;
+}
+
+/**
+ * Arma los dos escalones con los textos ya publicados. Es una función y no una
+ * constante porque `copy` llega de Firestore en tiempo de ejecución: congelarla
+ * al importar el módulo dejaría la sección con el arranque en frío para siempre.
+ */
+export function escalonesV2(copy: CopyDeLaApp): readonly EscalonV2[] {
+  return [
+    {
+      id: "v2_premium",
+      sello: copy.v2_badge,
+      titulo: copy.v2_premium_titulo,
+      vinculo: copy.v2_premium_vinculo,
+      resumen: copy.v2_premium_resumen,
+      puntos: [copy.v2_premium_punto_1, copy.v2_premium_punto_2, copy.v2_premium_punto_3],
+      cta: copy.v2_cta,
+      listaDeEspera: "premium",
+    },
+    {
+      id: "v2_gold",
+      sello: copy.v2_badge,
+      titulo: copy.v2_gold_titulo,
+      vinculo: copy.v2_gold_vinculo,
+      resumen: copy.v2_gold_resumen,
+      puntos: [copy.v2_gold_punto_1, copy.v2_gold_punto_2, copy.v2_gold_punto_3],
+      cta: copy.v2_cta,
+      listaDeEspera: "gold",
+      destacado: true,
+      // Habla de objetivos personales: acá el disclaimer no es letra chica de
+      // relleno, es la frase que dice que esto orienta y no prescribe.
+      conDisclaimer: true,
+    },
+  ];
+}
