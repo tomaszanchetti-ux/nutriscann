@@ -93,17 +93,18 @@ export function ItemDelPlato({ copy, item }: { copy: CopyDeLaApp; item: EngineIt
 
   return (
     <li className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-4">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 flex-col gap-1">
-          <h3 className="text-lg leading-tight font-medium text-ink">
-            {nombre}
-            {item.generic && (
-              <span className="ml-2 align-middle text-xs font-normal text-carbs">
-                {copy.item_generic_badge}
-              </span>
-            )}
-          </h3>
-        </div>
+      {/* El badge va DEBAJO del nombre, no al costado (Q/A de Tomás, 02/09/2026):
+          compartiendo renglón, "Coincidencia aproximada" le comía la mitad del
+          ancho al título y un nombre de tres palabras se partía en tres líneas. */}
+      <div className="flex flex-col items-start gap-2">
+        <h3 className="text-lg leading-tight font-medium text-ink">
+          {nombre}
+          {item.generic && (
+            <span className="ml-2 align-middle text-xs font-normal text-carbs">
+              {copy.item_generic_badge}
+            </span>
+          )}
+        </h3>
         <BadgeDeMatch copy={copy} tipo={item.match} />
       </div>
 
@@ -124,10 +125,16 @@ export function ItemDelPlato({ copy, item }: { copy: CopyDeLaApp; item: EngineIt
               `whitespace-nowrap` en cada uno: la línea entra de un renglón en un
               móvil normal, y cuando no entra baja ENTERO el valor que sobra. Lo
               que nunca puede pasar es que "812" quede en un renglón y "mg" en el
-              siguiente. */}
-          <span className="whitespace-nowrap text-protein">P {gramos(nutrientes.protein_g)} g</span>
-          <span className="whitespace-nowrap text-carbs">C {gramos(nutrientes.carbs_g)} g</span>
-          <span className="whitespace-nowrap text-fat">G {gramos(nutrientes.fat_g)} g</span>
+              siguiente.
+
+              ENTEROS, sin coma (Q/A de Tomás, 02/09/2026): la misma razón que
+              `porcentajeEntero` — "23,3" y "63,4" tienen anchos que bailan y en
+              el móvil la línea se veía desalineada. El decimal de un gramo no
+              cambia ninguna decisión; donde sí importa (el aceite absorbido de
+              la letra chica) sigue `gramos()` con su decimal. */}
+          <span className="whitespace-nowrap text-protein">P {gramosEnteros(nutrientes.protein_g)} g</span>
+          <span className="whitespace-nowrap text-carbs">C {gramosEnteros(nutrientes.carbs_g)} g</span>
+          <span className="whitespace-nowrap text-fat">G {gramosEnteros(nutrientes.fat_g)} g</span>
           <Sodio escalado={nutrientes.sodium_mg} por100g={item.per_100g?.sodium_mg ?? null} />
         </div>
       )}

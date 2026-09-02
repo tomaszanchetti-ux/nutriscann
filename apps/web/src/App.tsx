@@ -96,6 +96,20 @@ export default function App() {
    * valor, así que no hace falta un re-render cuando cambia.
    */
   const seccionDeVuelta = useRef<Seccion>("escaneo");
+
+  /**
+   * TODA PANTALLA NUEVA ARRANCA ARRIBA (Q/A de Tomás, 02/09/2026).
+   *
+   * Las cuatro secciones y las fases del circuito comparten el scroll del
+   * documento: sin esto, entrar a Premium después de leer la letra chica del
+   * reporte te dejaba en la mitad de los planes, y volver a Escanear te
+   * devolvía al fondo. El salto es instantáneo a propósito — animarlo haría
+   * notar que es la misma página; instantáneo se lee como una página nueva.
+   */
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [seccion, estado.fase]);
+
   const [vistaPrevia, setVistaPrevia] = useState<string | null>(null);
   /** La URL `blob:` viva, para revocarla y no dejar la foto colgada en memoria. */
   const blobActual = useRef<string | null>(null);
