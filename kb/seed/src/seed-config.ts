@@ -5,8 +5,8 @@
  *   node dist/seed-config.js --project nutriscann-f809e --token "$(gcloud auth print-access-token)"
  *   node dist/seed-config.js --project nutriscann-f809e --emulator --dry-run
  *
- * Publica en `config/app` las reglas de recomendación del repo, los textos de
- * la interfaz y la versión del catálogo. Es el hermano del seed de alimentos:
+ * Publica en `config/app` las reglas de recomendación del repo, los textos y
+ * los umbrales de la interfaz y la versión del catálogo. Es el hermano del seed de alimentos:
  * mismo cliente REST, misma idempotencia por comparación, mismos flags. Lo que
  * cambia es el destino —un único documento compartido en vez de una colección—
  * y por eso escribe con MERGE: los campos de otra mano (`max_scans_per_day`) no
@@ -28,15 +28,18 @@ import {
 import { crearDestino, ClienteFirestore } from "./firestore";
 import { cargarReglas, type Reglas } from "./reglas";
 import { cargarTextos, type Textos } from "./textos";
+import { cargarUmbrales, type Umbrales } from "./umbrales";
 
 const RAIZ = resolve(__dirname, "..", "..", "..");
 const REGLAS_POR_DEFECTO = resolve(RAIZ, "config", "recommendation_rules.json");
 const TEXTOS_POR_DEFECTO = resolve(RAIZ, "config", "copy.json");
+const UMBRALES_POR_DEFECTO = resolve(RAIZ, "config", "thresholds.json");
 const CATALOGO_POR_DEFECTO = resolve(__dirname, "..", "..", "build", "foods.canonical.json");
 
 interface Opciones {
   reglas: string;
   textos: string;
+  umbrales: string;
   catalogo: string;
   proyecto: string;
   emulador: boolean;
@@ -58,6 +61,8 @@ Opciones
                        Por defecto: config/recommendation_rules.json
   --copy <ruta>        Documento de textos de la interfaz a publicar.
                        Por defecto: config/copy.json
+  --thresholds <ruta>  Documento de umbrales numéricos de la interfaz.
+                       Por defecto: config/thresholds.json
   --catalog <ruta>     De dónde sale la kb_version que se estampa. Es el MISMO
                        archivo que publica el seed de alimentos, para que la
                        versión del documento y la de foods/ no puedan divergir.
@@ -83,9 +88,13 @@ Qué hace
               una de menos ni una de más— y que ninguna esté vacía. Una clave
               mal tipeada no rompe nada visible: la pantalla cae al arranque en
               frío del front y el error se degrada en silencio.
+      umbrales  lo mismo para 'thresholds', y además que cada valor sea un
+              número finito: config/app.thresholds es un mapa de texto a NÚMERO
+              y un "400" entre comillas se descartaría sin avisar.
   - Escribe en config/app, con MERGE de cinco campos:
       recommendation_rules  el documento de reglas entero, tal cual el repo
       copy                  el mapa de textos de la interfaz, entero
+      thresholds            el mapa de umbrales numéricos de la interfaz
       kb_version            la versión del catálogo canónico
       updated_by            "seed-config"
       updated_at            cuándo cambió por última vez lo publicado
@@ -101,6 +110,7 @@ function parsearArgumentos(argv: string[]): Opciones {
   const opciones: Opciones = {
     reglas: REGLAS_POR_DEFECTO,
     textos: TEXTOS_POR_DEFECTO,
+    umbrales: UMBRALES_POR_DEFECTO,
     catalogo: CATALOGO_POR_DEFECTO,
     proyecto: "",
     emulador: false,
@@ -132,6 +142,10 @@ function parsearArgumentos(argv: string[]): Opciones {
       case "--copy":
       case "--textos":
         opciones.textos = resolve(process.cwd(), siguiente());
+        break;
+      case "--thresholds":
+      case "--umbrales":
+        opciones.umbrales = resolve(process.cwd(), siguiente());
         break;
       case "--catalog":
       case "--catalogo":
@@ -173,10 +187,12 @@ function reportar(
   resultado: ResultadoConfig,
   reglas: Reglas,
   textos: Textos,
+  umbrales: Umbrales,
   version: string,
   destino: string,
   rutaReglas: string,
   rutaTextos: string,
+  rutaUmbrales: string,
 ): void {
   const { plan } = resultado;
   console.log(`\n== Seed de configuración ==${resultado.seco ? " SIMULACRO: no se escribió nada" : ""}`);
@@ -184,6 +200,7 @@ function reportar(
   linea("documento", `${COLECCION_CONFIG}/${DOCUMENTO_APP}`);
   linea("reglas", rutaReglas);
   linea("textos", rutaTextos);
+  linea("umbrales", rutaUmbrales);
   linea("kb_version", version);
 
   console.log("\n== Resultado ==");
@@ -192,6 +209,10 @@ function reportar(
   linea("tags declarados", `${reglas.tags.length}: ${reglas.tags.join(", ")}`);
   linea("textos publicados", `${textos.claves.length} claves`);
   linea("pasos de la espera", `${textos.pasos.length}: ${textos.pasos.join(" · ")}`);
+  linea(
+    "umbrales publicados",
+    umbrales.claves.map((clave) => `${clave}=${umbrales.documento[clave]}`).join(", "),
+  );
   linea("campos que cambian", plan.campos.length === 0 ? "ninguno" : plan.campos.join(", "));
   linea("campos preservados", plan.preservados.length === 0 ? "ninguno" : plan.preservados.join(", "));
   linea("escrituras", resultado.seco ? `${resultado.escrituras} (simuladas)` : resultado.escrituras);
@@ -225,11 +246,12 @@ async function principal(): Promise<void> {
     );
   }
 
-  // Las tres lecturas de disco van ANTES que la red: un documento inválido
-  // —reglas o textos— tiene que frenar la corrida sin haber abierto una
-  // conexión.
+  // Las cuatro lecturas de disco van ANTES que la red: un documento inválido
+  // —reglas, textos o umbrales— tiene que frenar la corrida sin haber abierto
+  // una conexión.
   const reglas = cargarReglas(opciones.reglas);
   const textos = cargarTextos(opciones.textos);
+  const umbrales = cargarUmbrales(opciones.umbrales);
   const catalogo = cargarCatalogo(opciones.catalogo);
 
   const destino = crearDestino({
@@ -245,17 +267,24 @@ async function principal(): Promise<void> {
   }
 
   const cliente = new ClienteFirestore(destino);
-  const resultado = await correrSeedConfig(cliente, reglas, textos, catalogo.kb_version, {
-    seco: opciones.seco,
-  });
+  const resultado = await correrSeedConfig(
+    cliente,
+    reglas,
+    textos,
+    umbrales,
+    catalogo.kb_version,
+    { seco: opciones.seco },
+  );
   reportar(
     resultado,
     reglas,
     textos,
+    umbrales,
     catalogo.kb_version,
     destino.descripcion,
     opciones.reglas,
     opciones.textos,
+    opciones.umbrales,
   );
 }
 

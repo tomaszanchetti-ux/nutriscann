@@ -3,6 +3,7 @@
  *
  * Toda llamada al servidor pasa por acá — la app nunca arma URLs sueltas.
  */
+import { cabeceraDeAppCheck } from "./appcheck";
 import { obtenerIdToken, usuarioActual } from "./auth";
 import { COPY_SESION } from "./copy.auth";
 import { functionUrl } from "./firebase";
@@ -217,8 +218,13 @@ export interface OpcionesDeAnalisis {
  *
  * El contrato (WS04, actualizado por el de la WS09 §1):
  *   POST { image_base64, media_type }  ·  Authorization: Bearer <idToken>
+ *                                      ·  X-Firebase-AppCheck: <token>
  *   200  { scan_id, is_food, items, totals, meta }
  *   ≠200 { error: { code, message_es, quota? } }
+ *
+ * La cabecera de App Check (card 4.4) PUEDE FALTAR y el pedido sale igual: en
+ * local está apagada y en producción reCAPTCHA puede fallar. Qué hace el backend
+ * cuando falta lo decide un interruptor de `config/app`; hoy solo lo anota.
  *
  * `owner_id` YA NO VIAJA. Hasta la Fase 3 el dueño del scan era un literal que
  * mandaba el navegador —y que el navegador podía inventarse—; desde la card 4.1
@@ -247,7 +253,7 @@ export async function analizarFoto(
       // de `config/copy.json`. Declarado, no olvidado.
       throw new ErrorDeAnalisis(
         "modelo_no_disponible",
-        "El servicio de análisis está ocupado. Probá de nuevo en un momento.",
+        "El servicio de análisis está ocupado. Prueba de nuevo en un momento.",
       );
     }
 
@@ -271,7 +277,7 @@ export async function analizarFoto(
       // texto solo aproximado.
       throw new ErrorDeAnalisis(
         "cupo_agotado",
-        "Has agotado tu cupo de fotos de este mes.",
+        "Has agotado tu cupo de análisis. Espera a que se renueve para analizar más fotos.",
         { ambito: "mes", usados: 15, limite: 15, se_renueva: "2026-10-01" },
       );
     }
@@ -292,7 +298,7 @@ export async function analizarFoto(
         is_food: false,
         items: [],
         totals: null,
-        message_es: "Eso no parece un plato de comida. Probá con una foto de lo que estás por comer.",
+        message_es: "Eso no parece un plato de comida. ¿Probamos con otra foto?",
         persisted: false,
       };
     }
@@ -336,6 +342,24 @@ async function mandarAlBackend(
     throw new ErrorDeAnalisis("no_autenticado", COPY_SESION.caducada);
   }
 
+  /**
+   * LA PROCEDENCIA, QUE ES OTRA COSA QUE EL TOKEN (card 4.4).
+   *
+   * El `Authorization` de arriba dice QUIÉN llama; esta cabecera dice DESDE
+   * DÓNDE: que el pedido sale de nuestra PWA en un navegador de verdad y no de
+   * un script con una cuenta gratis.
+   *
+   * Se pide DESPUÉS del token y justo antes del `fetch` a propósito: es lo
+   * último que puede tardar, y así el corte por falta de sesión —que no gasta
+   * datos del móvil— ya ocurrió.
+   *
+   * Puede venir vacía y eso NO es un error: en local está apagada, y en
+   * producción puede fallar reCAPTCHA. `cabeceraDeAppCheck` no lanza nunca. Qué
+   * pasa entonces lo decide el backend, con un interruptor que vive en
+   * `config/app` y no en este código.
+   */
+  const procedencia = await cabeceraDeAppCheck();
+
   let res: Response;
   try {
     res = await fetch(functionUrl("analyze"), {
@@ -343,6 +367,7 @@ async function mandarAlBackend(
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
+        ...procedencia,
       },
       body: JSON.stringify({
         image_base64: imagen.image_base64,

@@ -20,7 +20,8 @@
  *     en pantalla y muy útiles. Los cuatro valores SIGUEN VIAJANDO en el payload
  *     del motor y siguen en el expediente — salieron de la pantalla, no del
  *     contrato. Sus claves de copy (`report_others_title`, `report_weight_label`)
- *     quedan huérfanas y declaradas en `config/copy.json`.
+ *     quedaron sin lector y la card 4.5 las sacó de `config/copy.json`: una
+ *     clave que nadie lee promete que editarla cambia algo, y no cambia nada.
  *   · LA LÍNEA DE META del pie (catálogo, modelo, latencia, tokens, scan id).
  *     Es diagnóstico técnico, igual que el pie de la app: se muestra SOLO en
  *     desarrollo, con la misma regla y por el mismo motivo.
@@ -33,8 +34,7 @@
 import { AvisoParcial } from "./AvisoParcial";
 import { DonutMacros } from "./DonutMacros";
 import { ItemDelPlato } from "./ItemDelPlato";
-import type { CopyDeLaApp } from "../lib/config";
-import { COPY_CTA_PREMIUM } from "../lib/copy.premium";
+import { umbralesPublicados, type CopyDeLaApp } from "../lib/config";
 import { kcal } from "../lib/formato";
 import type { EngineTotals, RespuestaDeAnalisis } from "../lib/types";
 
@@ -79,6 +79,9 @@ export function PantallaReporte({
 }: PantallaReporteProps) {
   const { totals, items } = reporte;
   const conTotal = hayTotalDibujable(totals);
+  // Los umbrales publicados, leídos una vez para toda la lista: el único que hay
+  // hoy lo usa la línea de sodio de cada ítem (DT-41 a).
+  const umbrales = umbralesPublicados();
 
   return (
     <div className="flex flex-col gap-8 py-8">
@@ -117,7 +120,12 @@ export function PantallaReporte({
         </h2>
         <ul className="flex flex-col gap-3">
           {items.map((item, i) => (
-            <ItemDelPlato key={`${item.termino_en}-${i}`} copy={copy} item={item} />
+            <ItemDelPlato
+              key={`${item.termino_en}-${i}`}
+              copy={copy}
+              umbrales={umbrales}
+              item={item}
+            />
           ))}
         </ul>
       </section>
@@ -145,7 +153,7 @@ export function PantallaReporte({
           onClick={onPasarseAPremium}
           className="w-full rounded-2xl border border-accent/45 bg-accent-soft px-6 py-4 text-base font-semibold text-accent transition-transform active:scale-[0.98]"
         >
-          {COPY_CTA_PREMIUM.etiqueta}
+          {copy.report_cta_premium}
         </button>
       </div>
 

@@ -22,6 +22,7 @@ import {
 import type { DocumentoJson } from "./firestore";
 import { interpretarReglas, type Reglas } from "./reglas";
 import { interpretarTextos, type Textos } from "./textos";
+import { interpretarUmbrales, type Umbrales } from "./umbrales";
 import type { ValorJson } from "./valores";
 
 const VERSION = "2.1.0+abc123";
@@ -52,11 +53,23 @@ function textos(titulo = "Mirando tu plato"): Textos {
   );
 }
 
+/** Un juego de umbrales mínimo, construido: uno solo, el que hay hoy. */
+function umbrales(sodio = 400): Umbrales {
+  return interpretarUmbrales(
+    {
+      keys: { sodium_high_mg_per_100g: {} },
+      thresholds: { sodium_high_mg_per_100g: sodio },
+    },
+    "test",
+  );
+}
+
 /** Lo que Firestore devolvería si el seed ya hubiera publicado esto. */
 function publicado(extra: Record<string, ValorJson> = {}, version = VERSION): DocumentoJson {
   return {
     recommendation_rules: reglas().documento,
     copy: { ...textos().documento },
+    thresholds: { ...umbrales().documento },
     kb_version: version,
     updated_by: AUTOR,
     [CAMPO_FECHA]: "2026-08-31T10:00:00.000Z",
@@ -64,34 +77,40 @@ function publicado(extra: Record<string, ValorJson> = {}, version = VERSION): Do
   };
 }
 
-test("el documento no existe: se escriben los cuatro campos gobernados", () => {
-  const plan = planificarConfig(null, reglas(), textos(), VERSION);
+test("el documento no existe: se escriben los cinco campos gobernados", () => {
+  const plan = planificarConfig(null, reglas(), textos(), umbrales(), VERSION);
   assert.equal(plan.existe, false);
-  assert.deepEqual(plan.campos, ["recommendation_rules", "copy", "kb_version", "updated_by"]);
+  assert.deepEqual(plan.campos, [
+    "recommendation_rules",
+    "copy",
+    "thresholds",
+    "kb_version",
+    "updated_by",
+  ]);
   assert.equal(escriturasDelPlanConfig(plan), 1);
   assert.deepEqual(plan.preservados, []);
 });
 
 test("segunda corrida sobre lo mismo: cero escrituras", () => {
-  const plan = planificarConfig(publicado(), reglas(), textos(), VERSION);
+  const plan = planificarConfig(publicado(), reglas(), textos(), umbrales(), VERSION);
   assert.deepEqual(plan.campos, []);
   assert.equal(escriturasDelPlanConfig(plan), 0);
 });
 
 test("cambió la kb_version: se escribe solo ese campo", () => {
-  const plan = planificarConfig(publicado({}, "2.0.0+viejo"), reglas(), textos(), VERSION);
+  const plan = planificarConfig(publicado({}, "2.0.0+viejo"), reglas(), textos(), umbrales(), VERSION);
   assert.deepEqual(plan.campos, ["kb_version"]);
 });
 
 test("cambió una regla: se escribe solo recommendation_rules", () => {
-  const plan = planificarConfig(publicado(), reglas("entrenamiento"), textos(), VERSION);
+  const plan = planificarConfig(publicado(), reglas("entrenamiento"), textos(), umbrales(), VERSION);
   assert.deepEqual(plan.campos, ["recommendation_rules"]);
 });
 
 test("alguien editó el documento a mano en la consola: la corrida lo repara", () => {
   const aMano = publicado();
   (aMano["recommendation_rules"] as Record<string, ValorJson>)["fallback_tag"] = "aprobado";
-  const plan = planificarConfig(aMano, reglas(), textos(), VERSION);
+  const plan = planificarConfig(aMano, reglas(), textos(), umbrales(), VERSION);
   assert.deepEqual(plan.campos, ["recommendation_rules"]);
   assert.equal(
     (plan.deseado["recommendation_rules"] as Record<string, ValorJson>)["fallback_tag"],
@@ -100,7 +119,7 @@ test("alguien editó el documento a mano en la consola: la corrida lo repara", (
 });
 
 test("updated_by pisado por otra mano vuelve a decir quién escribió", () => {
-  const plan = planificarConfig(publicado({ updated_by: "consola" }), reglas(), textos(), VERSION);
+  const plan = planificarConfig(publicado({ updated_by: "consola" }), reglas(), textos(), umbrales(), VERSION);
   assert.deepEqual(plan.campos, ["updated_by"]);
   assert.equal(plan.deseado["updated_by"], AUTOR);
 });
@@ -110,7 +129,7 @@ test("updated_by pisado por otra mano vuelve a decir quién escribió", () => {
 // fuente de verdad es config/copy.json, igual que las reglas.
 
 test("cambió un texto: se escribe solo copy", () => {
-  const plan = planificarConfig(publicado(), reglas(), textos("Analizando tu plato"), VERSION);
+  const plan = planificarConfig(publicado(), reglas(), textos("Analizando tu plato"), umbrales(), VERSION);
   assert.deepEqual(plan.campos, ["copy"]);
   assert.equal(
     (plan.deseado["copy"] as Record<string, ValorJson>)["scanning_title"],
@@ -121,7 +140,7 @@ test("cambió un texto: se escribe solo copy", () => {
 test("un texto editado a mano en la consola se repara con el del repo", () => {
   const aMano = publicado();
   (aMano["copy"] as Record<string, ValorJson>)["scanning_title"] = "Escaneando…";
-  const plan = planificarConfig(aMano, reglas(), textos(), VERSION);
+  const plan = planificarConfig(aMano, reglas(), textos(), umbrales(), VERSION);
   assert.deepEqual(plan.campos, ["copy"]);
   assert.equal(
     (plan.deseado["copy"] as Record<string, ValorJson>)["scanning_title"],
@@ -135,13 +154,13 @@ test("una clave agregada a mano NO sobrevive: copy se publica entero", () => {
   // se puede revisar en un PR y por eso no se conserva.
   const aMano = publicado();
   (aMano["copy"] as Record<string, ValorJson>)["clave_de_la_consola"] = "texto suelto";
-  const plan = planificarConfig(aMano, reglas(), textos(), VERSION);
+  const plan = planificarConfig(aMano, reglas(), textos(), umbrales(), VERSION);
   assert.deepEqual(plan.campos, ["copy"]);
   assert.ok(!("clave_de_la_consola" in (plan.deseado["copy"] as Record<string, ValorJson>)));
 });
 
 test("copy ya no se reporta como preservado: ahora lo gobierna el seed", () => {
-  const plan = planificarConfig(publicado(), reglas(), textos(), VERSION);
+  const plan = planificarConfig(publicado(), reglas(), textos(), umbrales(), VERSION);
   assert.ok(!plan.preservados.includes("copy"));
   assert.ok(CAMPOS_DE_LA_MASCARA.includes("copy"));
 });
@@ -155,7 +174,7 @@ test("los campos de otra mano se preservan y se reportan", () => {
     max_scans_per_day: 10,
     feature_flags: { beta: true },
   });
-  const plan = planificarConfig(conOtrosCampos, reglas(), textos(), VERSION);
+  const plan = planificarConfig(conOtrosCampos, reglas(), textos(), umbrales(), VERSION);
   assert.deepEqual(plan.campos, [], "nada que escribir");
   assert.deepEqual(plan.preservados, ["feature_flags", "max_scans_per_day"]);
 });
@@ -165,6 +184,7 @@ test("un campo de otra mano nunca entra en la máscara de escritura", () => {
     publicado({ max_scans_per_day: 10 }),
     reglas("entrenamiento"),
     textos(),
+    umbrales(),
     VERSION,
   );
   assert.deepEqual(plan.campos, ["recommendation_rules"]);
@@ -176,11 +196,11 @@ test("un campo de otra mano nunca entra en la máscara de escritura", () => {
 
 test("la máscara son los campos gobernados más la fecha, y nada más", () => {
   assert.deepEqual(CAMPOS_DE_LA_MASCARA, [...CAMPOS_GOBERNADOS, CAMPO_FECHA]);
-  assert.equal(CAMPOS_DE_LA_MASCARA.length, 5);
+  assert.equal(CAMPOS_DE_LA_MASCARA.length, 6);
 });
 
 test("la fecha no es un campo de otra mano: no se reporta como preservada", () => {
-  const plan = planificarConfig(publicado(), reglas(), textos(), VERSION);
+  const plan = planificarConfig(publicado(), reglas(), textos(), umbrales(), VERSION);
   assert.ok(!plan.preservados.includes(CAMPO_FECHA));
 });
 
@@ -192,7 +212,7 @@ test("el orden de las claves no es un cambio: Firestore no lo conserva", () => {
   desordenado["recommendation_rules"] = Object.fromEntries(
     Object.entries(original).reverse(),
   ) as ValorJson;
-  const plan = planificarConfig(desordenado, reglas(), textos(), VERSION);
+  const plan = planificarConfig(desordenado, reglas(), textos(), umbrales(), VERSION);
   assert.deepEqual(plan.campos, [], "el reordenamiento de claves disparó una escritura");
 });
 
@@ -200,7 +220,7 @@ test("el orden de las claves de copy tampoco es un cambio", () => {
   const desordenado = publicado();
   const original = desordenado["copy"] as Record<string, ValorJson>;
   desordenado["copy"] = Object.fromEntries(Object.entries(original).reverse()) as ValorJson;
-  const plan = planificarConfig(desordenado, reglas(), textos(), VERSION);
+  const plan = planificarConfig(desordenado, reglas(), textos(), umbrales(), VERSION);
   assert.deepEqual(plan.campos, [], "reordenar los textos disparó una escritura");
 });
 
@@ -226,11 +246,13 @@ test("el orden de un array SÍ es un cambio: las reglas se leen en orden", () =>
     {
       recommendation_rules: alReves,
       copy: { ...textos().documento },
+      thresholds: { ...umbrales().documento },
       kb_version: VERSION,
       updated_by: AUTOR,
     },
     dosReglas,
     textos(),
+    umbrales(),
     VERSION,
   );
   assert.deepEqual(plan.campos, ["recommendation_rules"]);

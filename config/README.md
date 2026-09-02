@@ -12,8 +12,10 @@ base y se cambian **sin desplegar**.
 |---|---|
 | `recommendation_rules.json` | Las reglas con las que el motor elige qué recomendación mostrar. Se siembra en el campo `recommendation_rules` de `config/app`. |
 | `copy.json` | Los textos que el usuario lee. Su objeto `copy` se siembra en el campo `copy` de `config/app`. Ver §8. |
+| `thresholds.json` | Los umbrales NUMÉRICOS de la interfaz. Su objeto `thresholds` se siembra en el campo `thresholds` de `config/app`. Ver §9. |
 
-Las secciones 1 a 7 son sobre `recommendation_rules.json`; la 8, sobre `copy.json`.
+Las secciones 1 a 7 son sobre `recommendation_rules.json`; la 8, sobre
+`copy.json`; la 9, sobre `thresholds.json`.
 
 ---
 
@@ -302,7 +304,10 @@ código. Nadie abre un ticket por una pantalla que se ve bien.
 
 Por eso `keys` es una lista **cerrada** y el seed rechaza el archivo si `copy` no
 tiene exactamente esas claves. Y por eso los tests de `kb/seed` comparan esa
-lista con la interfaz `CopyDeLaApp` del front, que es quien las lee.
+lista con **sus dos lectores**: la interfaz `CopyDeLaApp` del front
+(`apps/web/src/lib/config.ts`) y las `clave_copy` que declara el backend
+(`functions/src/analyze/errores.ts`, los mensajes de error del endpoint). La
+lista publicada tiene que ser exactamente la unión de las dos.
 
 ### Cómo se cambia un texto
 
@@ -316,12 +321,14 @@ lista con la interfaz `CopyDeLaApp` del front, que es quien las lee.
 **Cómo se agrega un texto nuevo** — son las dos puntas, siempre:
 
 ```
-1. El campo en CopyDeLaApp y su valor de arranque en frío, en apps/web.
+1. El campo en CopyDeLaApp y su valor de arranque en frío, en apps/web
+   (o, si el texto es del backend, la clave_copy y su texto_en_frio en
+   functions/src/analyze/errores.ts).
 2. La clave en `keys` (con dónde se usa) y su texto en `copy`, acá.
 ```
 
 Falta una de las dos y el seed o el test lo frenan: una clave que nadie declara
-no se publica, y un campo del front que nadie sembró se denuncia en
+no se publica, y un campo del front o del backend que nadie sembró se denuncia en
 `textos.test.ts`.
 
 **Lo que no se hace nunca:**
@@ -334,3 +341,49 @@ no se publica, y un campo del front que nadie sembró se denuncia en
   deploy para cambiar una coma.
 - Dejar una clave vacía para "sacar" un texto de la interfaz. El front descarta
   los vacíos y muestra el del arranque en frío: no se saca nada, se tapa.
+
+---
+
+## 9. `thresholds.json` — los umbrales numéricos de la interfaz
+
+Los **números** que la pantalla usa para decidir cómo se ve algo. Hoy hay uno:
+desde qué sodio por 100 g un alimento se pinta como salado en la card de ítem.
+
+### Por qué no viven en `copy.json`
+
+`config/app.copy` es un mapa de **texto a texto** —así lo lee
+`functions/src/config.ts` y así lo desenvuelve el navegador, clave por clave,
+como `stringValue`—. Un número ahí adentro rompe el tipo del campo, y publicarlo
+como `"400"` entre comillas es peor: el front lo descartaría sin avisar y la
+pantalla se quedaría con el valor del arranque en frío. Por eso los umbrales
+viajan en su propio campo del documento.
+
+### Por qué no viven en `recommendation_rules.json`
+
+Ahí también hay umbrales, pero son de **otra pregunta**: los de la OPS miran el
+plato entero (1 mg de sodio por kcal, §4) y estos miran **un alimento suelto, por
+100 g**. Meterlos en aquel documento haría que una cita de la OPS pareciera
+respaldar un número que la OPS no dice.
+
+### El umbral de sodio y la curación
+
+`sodium_high_mg_per_100g` es **el mismo número** que el `umbral_sodio_mg` de
+`kb/curation/genericos.dt13.json`, con el que la curación decide a qué ficha
+genérica le escribe su caveat de sodio. Tienen que ser uno solo: si el catálogo
+avisa por un alimento, la pantalla lo pinta, y al revés.
+
+Hasta la card 4.5 estaba **copiado a mano** en `ItemDelPlato.tsx`, así que subirlo
+en la curación no cambiaba la pantalla y nadie se enteraba (era la **DT-41 a**).
+Ahora `kb/seed/src/umbrales.test.ts` compara los dos archivos en cada corrida:
+subir el umbral en la curación **rompe el test** hasta que se publique también
+acá.
+
+### Cómo se cambia
+
+Igual que un texto: se edita el valor, PR, merge, el seed publica y la app lo
+toma sin desplegar. Con **una condición extra**: si el umbral que se cambia
+también lo usa la curación, se cambian los dos en el mismo commit — el test lo
+exige.
+
+**Lo que no se hace nunca:** escribir el número entre comillas. `400` es un
+umbral; `"400"` es un texto que el front tira a la basura sin decir nada.

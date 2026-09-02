@@ -32,7 +32,7 @@
  *     valores por 100 g de la ficha y sigue en el expediente — no se muestra.
  *     Las kcal y el P/C/G del ítem se quedan.
  * ------------------------------------------------------------------------- */
-import type { CopyDeLaApp } from "../lib/config";
+import type { CopyDeLaApp, UmbralesDeLaApp } from "../lib/config";
 import { confianza, gramos, gramosEnteros, kcal, nivelDeConfianza } from "../lib/formato";
 import type { EngineItem } from "../lib/types";
 import { BadgeDeMatch } from "./BadgeDeMatch";
@@ -44,27 +44,24 @@ const COLOR_DE_CONFIANZA = {
 } as const;
 
 /**
- * DESDE QUÉ SODIO UN ALIMENTO ES "SALADO": 400 mg por 100 g.
+ * DESDE QUÉ SODIO UN ALIMENTO ES "SALADO" (DT-41 a, card 4.5).
  *
- * NO ES UN NÚMERO NUEVO. Es el `umbral_sodio_mg` de la DT-13
- * (`kb/curation/genericos.dt13.json`), el mismo con el que la curación decide a
- * qué ficha genérica le escribe su caveat de sodio. Se usa el mismo para que la
- * app no tenga dos ideas distintas de qué es mucha sal: si el catálogo avisa por
- * un alimento, la pantalla lo pinta, y al revés.
+ * El número YA NO ESTÁ ACÁ: llega en `umbrales.sodium_high_mg_per_100g`, que
+ * sale de `config/app` y se cambia sin desplegar. Hasta esta card era un `400`
+ * escrito en este archivo, copiado a mano del `umbral_sodio_mg` de la DT-13
+ * (`kb/curation/genericos.dt13.json`), que es el mismo con el que la curación
+ * decide a qué ficha genérica le escribe su caveat de sodio. Copiado quería
+ * decir que subirlo a 500 en la curación NO cambiaba la pantalla: el catálogo
+ * avisaba por un alimento que la app no pintaba. Ahora los dos números son uno
+ * solo y `kb/seed/src/umbrales.test.ts` lo verifica en cada corrida.
  *
- * ⚠️ ESTÁ COPIADO, NO IMPORTADO, y eso es una deuda declarada: `apps/web` no
- * compila contra `kb/`, así que subir el umbral a 500 en la curación NO cambia
- * esta constante. Si ese archivo cambia, este número cambia a mano. La alternativa
- * —publicarlo en `config/app`— es la misma mudanza de la DT-22.
- *
- * ⚠️ Y SE MIDE SOBRE `per_100g`, NUNCA SOBRE EL VALOR ESCALADO. Es la diferencia
+ * ⚠️ SE MIDE SOBRE `per_100g`, NUNCA SOBRE EL VALOR ESCALADO. Es la diferencia
  * entre "este alimento es salado" y "de este alimento hay mucho en el plato", y
  * el propio fixture tiene el caso que lo demuestra: la brocheta aporta 448 mg al
  * plato y el queso solo 289, pero el salado es el queso (964 mg/100 g contra
  * 312). Juzgar por el valor escalado premiaría a las porciones grandes y dejaría
  * pasar la cucharada de algo muy salado.
  */
-const SODIO_ALTO_MG_POR_100G = 400;
 
 /** Primera letra en mayúscula, sin tocar el resto (los nombres traen siglas). */
 function enMayuscula(texto: string): string {
@@ -86,7 +83,15 @@ function nombreDelItem(item: EngineItem): string {
   return enMayuscula(enEspañol !== "" ? enEspañol : item.termino_en);
 }
 
-export function ItemDelPlato({ copy, item }: { copy: CopyDeLaApp; item: EngineItem }) {
+export function ItemDelPlato({
+  copy,
+  umbrales,
+  item,
+}: {
+  copy: CopyDeLaApp;
+  umbrales: UmbralesDeLaApp;
+  item: EngineItem;
+}) {
   const nombre = nombreDelItem(item);
   const nivel = nivelDeConfianza(item.confidence);
   const nutrientes = item.nutrients;
@@ -135,7 +140,11 @@ export function ItemDelPlato({ copy, item }: { copy: CopyDeLaApp; item: EngineIt
           <span className="whitespace-nowrap text-protein">P {gramosEnteros(nutrientes.protein_g)} g</span>
           <span className="whitespace-nowrap text-carbs">C {gramosEnteros(nutrientes.carbs_g)} g</span>
           <span className="whitespace-nowrap text-fat">G {gramosEnteros(nutrientes.fat_g)} g</span>
-          <Sodio escalado={nutrientes.sodium_mg} por100g={item.per_100g?.sodium_mg ?? null} />
+          <Sodio
+            escalado={nutrientes.sodium_mg}
+            por100g={item.per_100g?.sodium_mg ?? null}
+            umbral={umbrales.sodium_high_mg_per_100g}
+          />
         </div>
       )}
 
@@ -165,8 +174,16 @@ export function ItemDelPlato({ copy, item }: { copy: CopyDeLaApp; item: EngineIt
   );
 }
 
-/** El aviso del ámbar, local al componente. Español de España. */
-const AYUDA_SODIO_ALTO = `Alto en sodio: más de ${SODIO_ALTO_MG_POR_100G} mg por cada 100 g de este alimento.`;
+/**
+ * El aviso del ámbar. Se queda en el código —y no en `config/app`— porque se
+ * ARMA CON DATOS: inyecta el umbral vigente. Es la misma línea que declara
+ * `dt22_note` en `config/copy.json` para el aviso de total parcial y la letra
+ * chica de un compuesto: viaja al copy lo que es una frase fija; se queda acá lo
+ * que lleva un número adentro.
+ */
+function ayudaDeSodioAlto(umbral: number): string {
+  return `Alto en sodio: más de ${umbral} mg por cada 100 g de este alimento.`;
+}
 
 /**
  * EL SODIO DEL ÍTEM, al final de la misma línea de nutrientes.
@@ -175,6 +192,7 @@ const AYUDA_SODIO_ALTO = `Alto en sodio: más de ${SODIO_ALTO_MG_POR_100G} mg po
  *   · `escalado`  — lo que ESTE plato aporta. Es lo que se muestra, y sale del
  *     mismo sitio que las kcal y el P/C/G de al lado.
  *   · `por100g`   — lo que el alimento ES. Es lo único que decide el color.
+ *   · `umbral`    — desde dónde ese "lo que es" cuenta como salado. Publicado.
  *
  * UN `null` NO ES UN CERO, la regla de siempre: si la ficha no declara sodio, no
  * se dibuja nada. No hay "0 mg" ni "sin dato" — en una línea de cinco valores,
@@ -187,14 +205,22 @@ const AYUDA_SODIO_ALTO = `Alto en sodio: más de ${SODIO_ALTO_MG_POR_100G} mg po
  * identidad la da el "Na", que está siempre). Sin recuadro, sin ícono y sin
  * leyenda: quien quiera el porqué lo tiene en el `title`.
  */
-function Sodio({ escalado, por100g }: { escalado: number | null; por100g: number | null }) {
+function Sodio({
+  escalado,
+  por100g,
+  umbral,
+}: {
+  escalado: number | null;
+  por100g: number | null;
+  umbral: number;
+}) {
   if (escalado === null) return null;
 
-  const alto = por100g !== null && por100g >= SODIO_ALTO_MG_POR_100G;
+  const alto = por100g !== null && por100g >= umbral;
 
   return (
     <span
-      title={alto ? AYUDA_SODIO_ALTO : undefined}
+      title={alto ? ayudaDeSodioAlto(umbral) : undefined}
       className={`whitespace-nowrap ${alto ? "font-semibold text-carbs" : "text-ink-faint"}`}
     >
       Na {gramosEnteros(escalado)} mg

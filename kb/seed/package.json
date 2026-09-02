@@ -12,7 +12,7 @@
     "compile": "tsc",
     "lint": "tsc --noEmit",
     "$comment_test": "El circuito contra el emulador se corre aparte a propósito: 'test' tiene que poder correr sin nada levantado (CI), y 'test:emulator' exige el emulador y falla fuerte si no está.",
-    "test": "npm run compile && node --test dist/valores.test.js dist/comparacion.test.js dist/firestore.test.js dist/seed.test.js dist/reglas.test.js dist/textos.test.js dist/configuracion.test.js dist/contrato-front.test.js",
+    "test": "npm run compile && node --test dist/valores.test.js dist/comparacion.test.js dist/firestore.test.js dist/seed.test.js dist/reglas.test.js dist/textos.test.js dist/umbrales.test.js dist/configuracion.test.js dist/contrato-front.test.js",
     "test:emulator": "npm run compile && node --test dist/emulador.test.js dist/emulador-config.test.js",
     "$comment_test_config": "El circuito de configuración solo: no depende de kb/build, así que corre aunque el catálogo se esté recompilando.",
     "test:emulator:config": "npm run compile && node --test dist/emulador-config.test.js",

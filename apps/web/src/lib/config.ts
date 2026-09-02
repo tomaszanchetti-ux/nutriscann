@@ -70,7 +70,29 @@
  * Nacieron 17 y quedaron 14: el Q/A de Tomás (02/09/2026) sacó el párrafo de
  * entrada (`v2_intro`) y el pie de la sección (`v2_nota`), y convirtió el sello
  * (`v2_badge`) en estructura — cada tarjeta muestra el NOMBRE DE SU PLAN, que
- * sale de `PLANES` en `copy.premium.ts` y no de un texto publicado.
+ * sale de los planes de `copy.premium.ts` y no de un texto publicado.
+ *
+ * CARD 4.5 — 39 CLAVES NUEVAS Y 5 QUE SE VAN (DT-41 b y c), y el contrato deja
+ * de ser solo de este archivo.
+ *
+ * ENTRARON `capture_tagline`, `report_cta_premium` y LA PANTALLA DE PLANES
+ * ENTERA (`plans_*` y `plan_*`): los tres planes con su precio, su cupo y sus
+ * viñetas vivían escritos en `copy.premium.ts`, así que cambiar 12 € por 15 €
+ * exigía desplegar la PWA. Ahora el texto sale de acá y en aquel módulo se queda
+ * la estructura — qué plan es el actual, cuál va destacado, a qué etiqueta de la
+ * lista de espera apunta cada botón.
+ *
+ * SALIERON CINCO HUÉRFANAS: `donut_detail_title`, `report_others_title` y
+ * `report_weight_label`, que el Q/A del 01/09 dejó sin pantalla, y
+ * `donut_unexplained` y `donut_rest`, que se quedaron sin lector cuando el donut
+ * volvió al anillo simple. Una clave que nadie lee no es inofensiva: promete que
+ * editarla cambia algo.
+ *
+ * Y OJO CON EL CONTRATO: desde esta card `config/copy.json` tiene OCHO CLAVES
+ * MÁS que esta interfaz —los mensajes de error del backend, que lee
+ * `functions/src/analyze/errores.ts`—. El candado de `kb/seed/src/textos.test.ts`
+ * ya no compara contra `CopyDeLaApp` a secas, sino contra la UNIÓN de los dos
+ * lectores. Agregar acá un campo que nadie siembra sigue fallando igual.
  * ------------------------------------------------------------------------- */
 import { firestoreDocUrl } from "./firebase";
 
@@ -84,6 +106,8 @@ export interface CopyDeLaApp {
 
   // — Nuevas de la card 2.3: hoy salen del arranque en frío —
   capture_help: string;
+  /** La línea que cierra la promesa, debajo del círculo de la captura. */
+  capture_tagline: string;
   // — El aviso de instalación de la PWA (Q/A del 02/09, card 3.5) —
   install_title: string;
   install_ios_help: string;
@@ -94,6 +118,8 @@ export interface CopyDeLaApp {
   report_items_title: string;
   report_partial_title: string;
   report_cta: string;
+  /** El segundo botón del reporte: el que lleva a la vitrina. */
+  report_cta_premium: string;
   not_food_title: string;
   error_title: string;
   error_network: string;
@@ -116,10 +142,6 @@ export interface CopyDeLaApp {
   /** Lo que va donde iría un número que la fuente no declara. NUNCA un cero. */
   nutrient_no_data: string;
 
-  donut_unexplained: string;
-  donut_detail_title: string;
-  donut_rest: string;
-
   match_exacto: string;
   match_exacto_ayuda: string;
   match_alias: string;
@@ -138,8 +160,6 @@ export interface CopyDeLaApp {
 
   report_no_totals_title: string;
   report_no_totals_body: string;
-  report_others_title: string;
-  report_weight_label: string;
 
   // — Nuevas de la WS08: la sección «Funcionalidades Premium» de la vitrina —
   //
@@ -173,6 +193,60 @@ export interface CopyDeLaApp {
   v2_gold_punto_3: string;
 
   v2_cta: string;
+
+  // — Nuevas de la card 4.5 (DT-41 b): LA PANTALLA DE PLANES ENTERA —
+  //
+  // Los tres planes vivían escritos en `PLANES` (`copy.premium.ts`), o sea que
+  // cambiar 12 € por 15 € exigía desplegar la PWA. Ahora el TEXTO sale de acá y
+  // en ese módulo se queda solo la ESTRUCTURA: cuál es el plan actual, cuál va
+  // destacado y a qué etiqueta de la lista de espera apunta cada botón. Es el
+  // mismo reparto que la sección `v2_` ya usaba desde la WS08.
+  //
+  // LA REGLA DE LOS CUPOS NO SE PUEDE ROMPER AL EDITARLOS (Tomás, 01/09/2026,
+  // `docs/PLAN.md` §6.7): el cupo que se comunica es SIEMPRE el mensual, nunca
+  // un "X al día". Y la publicidad se nombra como un hecho de la app —no la hay
+  // en ningún plan—, jamás como un beneficio de pagar.
+  plans_title: string;
+  plans_note_quota: string;
+  plans_note_ads: string;
+  plans_note_payments: string;
+  plans_gold_highlight_title: string;
+  plans_gold_highlight_body: string;
+
+  plan_free_name: string;
+  plan_free_price: string;
+  plan_free_period: string;
+  plan_free_quota: string;
+  plan_free_summary: string;
+  plan_free_point_1: string;
+  plan_free_point_2: string;
+  plan_free_point_3: string;
+  plan_free_cta: string;
+
+  plan_premium_name: string;
+  plan_premium_price: string;
+  plan_premium_period: string;
+  plan_premium_quota: string;
+  plan_premium_summary: string;
+  plan_premium_point_1: string;
+  plan_premium_point_2: string;
+  plan_premium_point_3: string;
+  /** ⚠️ Dice lo mismo, letra por letra, que `v2_premium_titulo`. A propósito. */
+  plan_premium_point_4: string;
+  plan_premium_cta: string;
+  plan_premium_badge: string;
+
+  plan_gold_name: string;
+  plan_gold_price: string;
+  plan_gold_period: string;
+  plan_gold_quota: string;
+  plan_gold_summary: string;
+  plan_gold_point_1: string;
+  plan_gold_point_2: string;
+  plan_gold_point_3: string;
+  plan_gold_point_4: string;
+  plan_gold_cta: string;
+  plan_gold_badge: string;
 }
 
 export type ClaveDeCopy = keyof CopyDeLaApp;
@@ -195,6 +269,7 @@ export const COPY_DE_ARRANQUE: CopyDeLaApp = {
   error_unreadable: "No pude reconocer el plato. Prueba con más luz.",
 
   capture_help: "Haz la foto desde arriba, con el plato entero y buena luz.",
+  capture_tagline: "Y obtén el detalle nutricional de tu comida",
   install_title: "Lleva CaliScan en tu pantalla de inicio",
   install_ios_help: "En Safari: toca Compartir y elige «Añadir a pantalla de inicio».",
   install_android_cta: "Instalar aplicación",
@@ -204,6 +279,7 @@ export const COPY_DE_ARRANQUE: CopyDeLaApp = {
   report_items_title: "Qué hay en el plato",
   report_partial_title: "Este total es parcial",
   report_cta: "Escanear otro plato",
+  report_cta_premium: "Pasarte a Premium",
   not_food_title: "Aquí no veo comida",
   error_title: "No pude analizar la foto",
   error_network: "No hay respuesta del servidor. Revisa tu conexión y prueba de nuevo.",
@@ -220,10 +296,6 @@ export const COPY_DE_ARRANQUE: CopyDeLaApp = {
   nutrient_sugars: "Azúcares",
   nutrient_sodium: "Sodio",
   nutrient_no_data: "sin dato",
-
-  donut_unexplained: "Sin explicar",
-  donut_detail_title: "Dentro de cada macronutriente",
-  donut_rest: "El resto",
 
   match_exacto: "Coincidencia exacta",
   match_exacto_ayuda:
@@ -250,8 +322,6 @@ export const COPY_DE_ARRANQUE: CopyDeLaApp = {
   report_no_totals_title: "Sin números para este plato",
   report_no_totals_body:
     "Ninguno de los alimentos identificados está en la base nutricional, así que no hay nada que sumar. Abajo está lo que sí se reconoció.",
-  report_others_title: "Del resto del análisis",
-  report_weight_label: "Peso identificado",
 
   v2_title: "Funcionalidades Premium",
 
@@ -271,6 +341,50 @@ export const COPY_DE_ARRANQUE: CopyDeLaApp = {
   v2_gold_punto_3: "Ajustados a tu entrenamiento y a tu perfil.",
 
   v2_cta: "Lista de espera",
+
+  plans_title: "Nuestros Planes",
+  plans_note_quota:
+    "Todos los cupos son mensuales: el número que ves es el que tienes cada mes. Hay un límite diario interno para evitar ráfagas, pero lo que se te garantiza es el mensual.",
+  plans_note_ads: "En CaliScan no hay publicidad. En ningún plan, tampoco en el gratuito.",
+  plans_note_payments:
+    "Los pagos todavía no están abiertos. Esta pantalla es la vitrina de lo que viene: no se te va a cobrar nada ni se te van a pedir datos de pago.",
+  plans_gold_highlight_title: "Plan de dieta diario según tu rutina",
+  plans_gold_highlight_body:
+    "Carga tus datos personales y rutina diaria para obtener sugerencias alimentarias customizadas según tu perfil",
+
+  plan_free_name: "Gratuito",
+  plan_free_price: "0 €",
+  plan_free_period: "para siempre",
+  plan_free_quota: "15 fotos al mes",
+  plan_free_summary: "El reporte completo de cada plato que fotografíes.",
+  plan_free_point_1: "Calorías, macros y el desglose de cada alimento",
+  plan_free_point_2: "Cada número trazable a su fuente en la base nutricional",
+  plan_free_point_3: "Sin publicidad",
+  plan_free_cta: "Tu plan actual",
+
+  plan_premium_name: "Premium",
+  plan_premium_price: "12 €",
+  plan_premium_period: "al año, en un solo pago",
+  plan_premium_quota: "40 fotos al mes",
+  plan_premium_summary: "Casi tres veces el cupo, y nada de lo que escaneas se pierde.",
+  plan_premium_point_1: "Todo lo del plan Gratuito",
+  plan_premium_point_2: "40 fotos al mes",
+  plan_premium_point_3: "Historial completo",
+  plan_premium_point_4: "Fichas, recetas y tendencias",
+  plan_premium_cta: "Lista de espera",
+  plan_premium_badge: "Un pago al año",
+
+  plan_gold_name: "Premium Gold",
+  plan_gold_price: "4,99 €",
+  plan_gold_period: "al mes",
+  plan_gold_quota: "150 fotos al mes",
+  plan_gold_summary: "Plan completo para alinear tus comidas con tu rutina diaria",
+  plan_gold_point_1: "Todo lo del Premium",
+  plan_gold_point_2: "150 fotos al mes",
+  plan_gold_point_3: "Sugerencia de dietas diarias según rutina",
+  plan_gold_point_4: "Armado de perfil personal completo",
+  plan_gold_cta: "Lista de espera",
+  plan_gold_badge: "El plan completo",
 };
 
 /**
@@ -297,10 +411,43 @@ export const PASOS_DE_ESCANEO_DE_ARRANQUE: string[] = [
   "Calculando calorías y macros con esos gramos…",
 ];
 
+/**
+ * LOS UMBRALES NUMÉRICOS DE LA INTERFAZ (DT-41 a, card 4.5).
+ *
+ * Hermanos del `copy` y por el mismo motivo: son decisiones de producto que la
+ * pantalla aplica, no constantes de programa, así que viven en `config/app` y se
+ * cambian sin desplegar. Viajan en su PROPIO campo (`config/app.thresholds`) y
+ * no dentro de `copy`, porque `copy` es un mapa de texto a texto y un número ahí
+ * adentro rompería su contrato.
+ *
+ * La fuente de verdad es `config/thresholds.json`; esto es el ARRANQUE EN FRÍO,
+ * espejado byte a byte con ese archivo. Y hay un tercer espejo, que es el que da
+ * sentido a todo esto: `kb/seed/src/umbrales.test.ts` verifica que
+ * `sodium_high_mg_per_100g` sea EXACTAMENTE el `umbral_sodio_mg` de la DT-13
+ * (`kb/curation/genericos.dt13.json`). Hasta esta card el número estaba copiado
+ * a mano en `ItemDelPlato.tsx` y subirlo en la curación no cambiaba la pantalla:
+ * el catálogo avisaba por un alimento que la app no pintaba.
+ */
+export interface UmbralesDeLaApp {
+  /**
+   * Desde qué sodio POR 100 g un alimento se pinta como salado.
+   *
+   * Se mide sobre `per_100g` y NUNCA sobre el valor escalado: es la diferencia
+   * entre "este alimento es salado" y "de este alimento hay mucho en el plato".
+   */
+  sodium_high_mg_per_100g: number;
+}
+
+/** Arranque en frío de los umbrales. Espejo de `config/thresholds.json`. */
+export const UMBRALES_DE_ARRANQUE: UmbralesDeLaApp = {
+  sodium_high_mg_per_100g: 400,
+};
+
 export type OrigenDeConfig = "firestore" | "arranque-en-frio";
 
 export interface ConfigDeLaApp {
   copy: CopyDeLaApp;
+  umbrales: UmbralesDeLaApp;
   scanning_steps: string[];
   origen: OrigenDeConfig;
   /** Qué pasó, cuando el origen es el arranque en frío. */
@@ -309,17 +456,41 @@ export interface ConfigDeLaApp {
 
 export const CONFIG_DE_ARRANQUE: ConfigDeLaApp = {
   copy: COPY_DE_ARRANQUE,
+  umbrales: UMBRALES_DE_ARRANQUE,
   scanning_steps: PASOS_DE_ESCANEO_DE_ARRANQUE,
   origen: "arranque-en-frio",
   detalle: null,
 };
 
+/**
+ * LOS UMBRALES VIGENTES, para quien no los recibe por props.
+ *
+ * `cargarConfig()` corre UNA vez, al montar la app, y deja acá lo que leyó. Es
+ * una copia de lectura, no un segundo estado: nadie más la escribe, y todo lo
+ * que la lee se dibuja mucho después (el reporte necesita una foto y un
+ * escaneo). No reemplaza al paso por props —`ConfigDeLaApp.umbrales` está ahí
+ * para eso, y es el camino preferido— sino que le da salida a los componentes
+ * que quedan lejos del punto donde la configuración entra al árbol.
+ *
+ * Por qué existe: el umbral lo usa `ItemDelPlato`, que está tres niveles por
+ * debajo de donde vive la configuración, y hacer bajar un valor tres pisos por
+ * props para un único consumidor cuesta más de lo que aclara. El día que haya
+ * varios, el paso por props ya está declarado y esta salida se retira.
+ */
+let umbralesVigentes: UmbralesDeLaApp = UMBRALES_DE_ARRANQUE;
+
+/** Los umbrales que la app está usando: los publicados, o los de arranque. */
+export function umbralesPublicados(): UmbralesDeLaApp {
+  return umbralesVigentes;
+}
+
 // ---------------------------------------------------------------------------
 // La API REST de Firestore envuelve cada valor en su tipo: un texto llega como
-// `{ stringValue: "…" }` y un mapa como `{ mapValue: { fields: {…} } }`. Estas
-// dos funciones desenvuelven SOLO lo que este archivo necesita —texto y mapa de
-// textos— y devuelven `null` ante cualquier otra forma. No es un decodificador
-// general de Firestore y no pretende serlo.
+// `{ stringValue: "…" }`, un mapa como `{ mapValue: { fields: {…} } }` y un
+// número como `{ integerValue: "400" }` o `{ doubleValue: 1.5 }` según cómo se
+// escribió. Estas tres funciones desenvuelven SOLO lo que este archivo necesita
+// —texto, número y mapa— y devuelven `null` ante cualquier otra forma. No es un
+// decodificador general de Firestore y no pretende serlo.
 // ---------------------------------------------------------------------------
 
 type ValorRest = Record<string, unknown>;
@@ -328,6 +499,21 @@ function comoTexto(valor: unknown): string | null {
   if (typeof valor !== "object" || valor === null) return null;
   const texto = (valor as ValorRest).stringValue;
   return typeof texto === "string" ? texto : null;
+}
+
+/**
+ * Un número, venga como `integerValue` (que Firestore manda COMO TEXTO, porque
+ * un int64 no entra en un `number` de JSON) o como `doubleValue`.
+ *
+ * Se rechaza lo que no sea finito: un `NaN` o un infinito publicados dejarían la
+ * comparación del umbral siempre en falso y nadie se enteraría.
+ */
+function comoNumero(valor: unknown): number | null {
+  if (typeof valor !== "object" || valor === null) return null;
+  const crudo = (valor as ValorRest).integerValue ?? (valor as ValorRest).doubleValue;
+  if (typeof crudo !== "string" && typeof crudo !== "number") return null;
+  const numero = Number(crudo);
+  return Number.isFinite(numero) ? numero : null;
 }
 
 function comoMapa(valor: unknown): Record<string, unknown> | null {
@@ -357,6 +543,25 @@ function fusionarCopy(publicado: Record<string, unknown> | null): {
   return { copy, leidas };
 }
 
+/** Se queda solo con los umbrales del contrato que llegaron como número finito. */
+function fusionarUmbrales(publicado: Record<string, unknown> | null): {
+  umbrales: UmbralesDeLaApp;
+  leidos: number;
+} {
+  const umbrales = { ...UMBRALES_DE_ARRANQUE };
+  if (publicado === null) return { umbrales, leidos: 0 };
+
+  let leidos = 0;
+  for (const clave of Object.keys(UMBRALES_DE_ARRANQUE) as (keyof UmbralesDeLaApp)[]) {
+    const numero = comoNumero(publicado[clave]);
+    if (numero !== null) {
+      umbrales[clave] = numero;
+      leidos += 1;
+    }
+  }
+  return { umbrales, leidos };
+}
+
 /** Parte `"uno|dos|tres"` en tres pasos. Vacío ⇒ `null`, y mandan los de arranque. */
 function leerPasos(publicado: Record<string, unknown> | null): string[] | null {
   if (publicado === null) return null;
@@ -373,6 +578,11 @@ function leerPasos(publicado: Record<string, unknown> | null): string[] | null {
  * Lee `config/app`. Nunca rechaza: si Firestore no contesta, la app arranca con
  * los textos de arriba y lo dice. Un texto que no llegó no puede dejar al
  * usuario mirando una pantalla en blanco.
+ *
+ * EL `origen` LO DECIDEN LOS TEXTOS, no los umbrales, y es a propósito: es lo
+ * que muestra el pie de diagnóstico, y ahí "está usando defaults" significa que
+ * lo que se LEE en pantalla no salió de la configuración. Un umbral que no llegó
+ * cambia un color, no una palabra.
  */
 export async function cargarConfig(signal?: AbortSignal): Promise<ConfigDeLaApp> {
   try {
@@ -387,10 +597,16 @@ export async function cargarConfig(signal?: AbortSignal): Promise<ConfigDeLaApp>
     const documento = (await res.json()) as { fields?: Record<string, unknown> };
     const publicado = comoMapa(documento.fields?.copy);
     const { copy, leidas } = fusionarCopy(publicado);
+    const { umbrales } = fusionarUmbrales(comoMapa(documento.fields?.thresholds));
     const pasos = leerPasos(publicado);
+
+    // La copia de lectura, para quien no recibe los umbrales por props. Se
+    // escribe UNA vez, acá, y antes de que se dibuje cualquier reporte.
+    umbralesVigentes = umbrales;
 
     return {
       copy,
+      umbrales,
       scanning_steps: pasos ?? PASOS_DE_ESCANEO_DE_ARRANQUE,
       origen: leidas > 0 ? "firestore" : "arranque-en-frio",
       detalle:

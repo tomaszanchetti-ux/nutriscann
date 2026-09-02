@@ -11,11 +11,18 @@
  * Lo que este seed gobierna y lo que NO
  * ------------------------------------
  * `config/app` es un documento COMPARTIDO: acá se publican las reglas, los
- * textos de la interfaz y la versión del catálogo, pero el mismo documento
- * tiene el tope de análisis por día (`max_scans_per_day`), que es de otra mano.
- * Por eso la escritura es un MERGE con máscara de campos: el seed toca sus
- * cinco campos y **no puede** pisar el resto ni por accidente — no es una
+ * textos y los umbrales de la interfaz y la versión del catálogo, pero el mismo
+ * documento tiene el tope de análisis por día (`max_scans_per_day`), que es de
+ * otra mano. Por eso la escritura es un MERGE con máscara de campos: el seed
+ * toca sus campos y **no puede** pisar el resto ni por accidente — no es una
  * promesa del código, es lo que permite la máscara.
+ *
+ * `thresholds` entró con la DT-41 (a) (card 4.5): el umbral de sodio con el que
+ * la pantalla decide si un alimento está salado estaba COPIADO a mano en
+ * `ItemDelPlato.tsx`, y el mismo número lo tiene la curación (DT-13). Si la
+ * curación lo subía, el front no se enteraba. Ahora lo publica el repo, y como
+ * es un NÚMERO no puede viajar en `copy` —que es un mapa de texto a texto— y
+ * tiene su propio campo.
  *
  * `copy` entró acá con la DT-18 (card 2.5). Antes lo había sembrado la Fase 0 a
  * mano en la consola y su fuente de verdad no estaba en ningún lado: cinco
@@ -39,6 +46,7 @@ import { iguales } from "./comparacion";
 import { ClienteFirestore, type DocumentoJson } from "./firestore";
 import type { Reglas } from "./reglas";
 import type { Textos } from "./textos";
+import type { Umbrales } from "./umbrales";
 import type { ValorJson } from "./valores";
 
 export const COLECCION_CONFIG = "config";
@@ -57,6 +65,7 @@ export const CAMPO_FECHA = "updated_at";
 export const CAMPOS_GOBERNADOS = [
   "recommendation_rules",
   "copy",
+  "thresholds",
   "kb_version",
   "updated_by",
 ] as const;
@@ -83,11 +92,13 @@ export function planificarConfig(
   publicado: DocumentoJson | null,
   reglas: Reglas,
   textos: Textos,
+  umbrales: Umbrales,
   kbVersion: string,
 ): PlanConfig {
   const deseado: Record<string, ValorJson> = {
     recommendation_rules: reglas.documento,
     copy: textos.documento,
+    thresholds: umbrales.documento,
     kb_version: kbVersion,
     updated_by: AUTOR,
   };
@@ -133,12 +144,13 @@ export async function correrSeedConfig(
   cliente: ClienteFirestore,
   reglas: Reglas,
   textos: Textos,
+  umbrales: Umbrales,
   kbVersion: string,
   opciones: OpcionesConfig = {},
 ): Promise<ResultadoConfig> {
   const seco = opciones.seco === true;
   const publicado = await cliente.obtenerDocumento(COLECCION_CONFIG, DOCUMENTO_APP);
-  const plan = planificarConfig(publicado, reglas, textos, kbVersion);
+  const plan = planificarConfig(publicado, reglas, textos, umbrales, kbVersion);
   const escrituras = escriturasDelPlanConfig(plan);
 
   if (seco || escrituras === 0) return { plan, escrituras, seco };

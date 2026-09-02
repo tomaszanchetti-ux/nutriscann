@@ -57,9 +57,8 @@ import { useState } from "react";
 import { ModalListaDeEspera } from "./ModalListaDeEspera";
 import { BotonVolver } from "./PantallaPerfil";
 import {
-  COPY_PREMIUM,
   escalonesV2,
-  PLANES,
+  planes,
   type EscalonV2,
   type PlanDeListaDeEspera,
   type PlanPremium,
@@ -67,7 +66,7 @@ import {
 import type { CopyDeLaApp } from "../lib/config";
 
 export interface PantallaPremiumProps {
-  /** Los textos publicados. La sección «Funcionalidades Premium» los lee de acá. */
+  /** Los textos publicados. Desde la card 4.5, TODA esta pantalla sale de acá. */
   copy: CopyDeLaApp;
   onVolver: () => void;
 }
@@ -85,18 +84,19 @@ export function PantallaPremium({ copy, onVolver }: PantallaPremiumProps) {
           el cupo separa un plan del siguiente sigue dicho, al pie, en su nota. */}
       <header>
         <h1 className="font-display text-3xl leading-tight font-bold text-balance text-ink">
-          {COPY_PREMIUM.titulo}
+          {copy.plans_title}
         </h1>
       </header>
 
       <ul className="flex flex-col gap-4">
-        {PLANES.map((plan) => {
+        {planes(copy).map((plan) => {
           // El plan gratuito no tiene etiqueta de lista de espera —ya lo tienes—
           // y por eso su tarjeta recibe `null` y sigue mostrando su rótulo.
           const etiqueta = plan.listaDeEspera;
           return (
             <li key={plan.id}>
               <TarjetaDePlan
+                copy={copy}
                 plan={plan}
                 onListaDeEspera={
                   etiqueta === undefined ? null : () => setListaAbierta(etiqueta)
@@ -134,9 +134,9 @@ export function PantallaPremium({ copy, onVolver }: PantallaPremiumProps) {
       </section>
 
       <section className="flex flex-col gap-2 rounded-2xl border border-line bg-surface p-4 text-xs leading-relaxed text-ink-faint">
-        <p>{COPY_PREMIUM.nota_cupo}</p>
-        <p>{COPY_PREMIUM.nota_ads}</p>
-        <p className="text-ink-soft">{COPY_PREMIUM.nota_pagos}</p>
+        <p>{copy.plans_note_quota}</p>
+        <p>{copy.plans_note_ads}</p>
+        <p className="text-ink-soft">{copy.plans_note_payments}</p>
       </section>
 
       {listaAbierta !== null && (
@@ -147,9 +147,11 @@ export function PantallaPremium({ copy, onVolver }: PantallaPremiumProps) {
 }
 
 function TarjetaDePlan({
+  copy,
   plan,
   onListaDeEspera,
 }: {
+  copy: CopyDeLaApp;
   plan: PlanPremium;
   /** `null` = este plan no se apunta a nada (el gratuito ya lo tiene). */
   onListaDeEspera: (() => void) | null;
@@ -204,9 +206,9 @@ function TarjetaDePlan({
 
       {destacado && (
         <div className="flex flex-col gap-1 rounded-xl border border-accent/30 bg-ground/40 p-3">
-          <p className="text-sm font-semibold text-accent">{COPY_PREMIUM.diferenciador.titulo}</p>
+          <p className="text-sm font-semibold text-accent">{copy.plans_gold_highlight_title}</p>
           <p className="text-xs leading-relaxed text-pretty text-ink-soft">
-            {COPY_PREMIUM.diferenciador.detalle}
+            {copy.plans_gold_highlight_body}
           </p>
         </div>
       )}
@@ -262,7 +264,7 @@ function BotonDePlan({
  *   · BORDE PUNTEADO Y FONDO APAGADO: esto todavía no se puede comprar. La
  *     diferencia se ve sin leer una palabra.
  *   · EL SELLO ES EL NOMBRE DE SU PLAN («Premium», «Premium Gold»), el mismo que
- *     encabeza su tarjeta en la escalera de precios de arriba: se lee de `PLANES`
+ *     encabeza su tarjeta en la escalera de precios de arriba: se lee de `planes(copy)`
  *     y no de un texto publicado (Q/A del 02/09/2026).
  *   · DONDE IRÍA EL PRECIO va el plan al que se sumará. No hay número, y no es
  *     un descuido: estos escalones no tienen precio publicado.
