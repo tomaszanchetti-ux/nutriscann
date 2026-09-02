@@ -12,6 +12,8 @@
 import { getFirestore } from "firebase-admin/firestore";
 import { logger } from "firebase-functions/v2";
 
+import { LIMITES_EN_FRIO, normalizarLimites, type LimitesDeCupo } from "./cupo/decision";
+
 /**
  * El documento de reglas de recomendación, tal como lo publica el seed.
  *
@@ -54,19 +56,61 @@ export interface ReglasDeRecomendacion {
 export interface AppConfig {
   /** Versión del catálogo nutricional que la app espera encontrar. */
   kb_version: string | null;
-  /** Máximo de análisis por dueño y por día. Tu API key es la que paga. */
+  /**
+   * Máximo de análisis por dueño y por MES: la garantía que se le comunica al
+   * usuario (§3 del contrato de la WS09). Tu API key es la que paga.
+   */
+  max_scans_per_month: number;
+  /**
+   * Máximo por dueño y por DÍA: el freno anti-ráfaga. No es una promesa de
+   * producto, es lo que evita que una tarde se lleve el mes entero.
+   *
+   * ⚠️ Este campo y `max_scans_per_month` NO los escribe el seed del catálogo:
+   * `kb/seed/src/configuracion.ts` gobierna cinco campos con una máscara y estos
+   * dos quedan explícitamente fuera («son de otra mano»). Se publican aparte.
+   */
   max_scans_per_day: number;
   /** Textos de la interfaz, editables sin deploy. */
   copy: Record<string, string>;
   /** El documento de reglas publicado. `null` mientras no se haya sembrado. */
   recommendation_rules: ReglasDeRecomendacion | null;
+  /**
+   * EL INTERRUPTOR DE APP CHECK (card 4.4). `false` = observación, `true` = bloqueo.
+   *
+   * Es OPCIONAL en el tipo y no obligatorio, y no es pereza: `config/app` es un
+   * documento que ya está publicado en producción y no tiene este campo. Un campo
+   * obligatorio obligaría a escribirlo antes de desplegar, y hasta que alguien lo
+   * escribiera la app leería `undefined` donde el tipo promete un booleano. Con
+   * `?` la ausencia es un estado legítimo y significa lo más seguro: observar.
+   *
+   * ⚠️ El seed de `kb/seed` NO lo toca: su máscara nombra cinco campos
+   * (`recommendation_rules`, `copy`, `kb_version`, `updated_by`, `updated_at`) y
+   * este no está entre ellos, así que una corrida del seed no lo pisa. Es «de
+   * otra mano», igual que los dos topes del cupo.
+   */
+  app_check_enforced?: boolean;
 }
 
-const COLD_START_DEFAULTS: AppConfig = {
+/**
+ * El arranque en frío. NO es la configuración: es lo mínimo para que la app
+ * responda algo sensato el día que `config/app` no exista o Firestore no
+ * conteste, y `source` declara cuál de los dos casos ocurrió.
+ *
+ * Los dos topes salen de `LIMITES_EN_FRIO` (15 al mes, 3 al día) y no de dos
+ * números escritos acá: el mismo par que usa la decisión del cupo cuando la
+ * configuración no llega, en un solo lugar. `max_scans_per_day` valía 10 y pasa
+ * a 3 por la decisión de Tomás del 02/09 (§3 del contrato de la WS09).
+ */
+export const COLD_START_DEFAULTS: AppConfig = {
   kb_version: null,
-  max_scans_per_day: 10,
+  max_scans_per_month: LIMITES_EN_FRIO.por_mes,
+  max_scans_per_day: LIMITES_EN_FRIO.por_dia,
   copy: {},
   recommendation_rules: null,
+  // ARRANCA EN FRÍO APAGADO, y esa es la decisión de la card 4.4: el bloqueo se
+  // enciende MIRANDO una semana de logs, no el día que se despliega. Ver
+  // `appcheck/procedencia.ts`.
+  app_check_enforced: false,
 };
 
 const CACHE_TTL_MS = 60_000;
@@ -105,4 +149,38 @@ export async function loadConfig(): Promise<ConfigResult> {
   }
 
   return { config: cached.value, source: cached.source };
+}
+
+/**
+ * Los dos topes del cupo, resueltos: lo publicado en `config/app` y, detrás, el
+ * arranque en frío.
+ *
+ * Acepta `null` porque el handler llama a esto incluso cuando `loadConfig` falló
+ * —ahí la configuración no llegó y rige el arranque en frío—, y así el camino
+ * del cupo no tiene una rama «sin configuración» que después nadie prueba.
+ */
+export function limitesDeCupo(config: AppConfig | null): LimitesDeCupo {
+  return normalizarLimites(
+    { por_mes: config?.max_scans_per_month, por_dia: config?.max_scans_per_day },
+    { por_mes: COLD_START_DEFAULTS.max_scans_per_month, por_dia: COLD_START_DEFAULTS.max_scans_per_day },
+  );
+}
+
+/**
+ * ¿Está encendido el BLOQUEO de App Check? (card 4.4)
+ *
+ * Acepta `null` por el mismo motivo que `limitesDeCupo`: el handler pregunta
+ * esto incluso cuando `loadConfig` falló, y ahí rige el arranque en frío. Un
+ * Firestore caído NO puede encender un candado que nadie encendió.
+ *
+ * SOLO DOS VALORES ENCIENDEN, y todo lo demás apaga. La asimetría es deliberada
+ * y va en la dirección segura: este campo se edita a mano en la consola de
+ * Firebase, donde es fácil escribir el texto `"true"` en vez del booleano, así
+ * que las dos formas de decir que sí valen. Cualquier otra cosa —un `"si"`, un
+ * `1`, un campo a medio escribir— se lee como «no bloquear», que es el estado
+ * del que siempre se puede volver. Al revés, un dedazo apagaría la app.
+ */
+export function appCheckExigido(config: AppConfig | null): boolean {
+  const valor: unknown = config?.app_check_enforced;
+  return valor === true || valor === "true";
 }

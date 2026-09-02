@@ -11,7 +11,9 @@ import type Anthropic from "@anthropic-ai/sdk";
 
 import { indiceReal } from "../engine/testing";
 import type { AppConfig } from "../config";
-import { DUEÑO_PROVISORIO, MAX_BASE64_CHARS, manejarAnalyze, validarEntrada, type CuerpoDeAnalisis, type DatosAPersistir, type Dependencias } from "./handler";
+import { momentoDelCupo } from "../cupo/calendario";
+import { CONSUMO_EN_CERO, decidirCupo, revertirConsumo, type EstadoDeConsumo, type LimitesDeCupo } from "../cupo/decision";
+import { CODIGOS_QUE_DEVUELVEN_EL_CREDITO, MAX_BASE64_CHARS, manejarAnalyze, validarEntrada, type CuerpoDeAnalisis, type DatosAPersistir, type Dependencias, type PedidoDeAnalisis } from "./handler";
 import type { CuerpoDeError } from "./errores";
 import { ErrorDeAnalisis } from "./errores";
 import { MODELO_VISION, type ClienteDeVision } from "./vision";
@@ -56,34 +58,103 @@ function clienteQueDice(respuesta: Anthropic.Message | Error): ClienteDeVision {
 
 const CONFIG_VACIA: AppConfig = {
   kb_version: null,
+  max_scans_per_month: 15,
   max_scans_per_day: 3,
   copy: {},
   recommendation_rules: null,
 };
 
+/** El dueño de casi todos los tests. Sale del token, nunca del cuerpo. */
+const UID = "uid-de-tomas";
+
+/**
+ * El verificador falso: `token-de:<uid>` verifica y devuelve ese uid; cualquier
+ * otra cosa revienta, igual que un token con firma mala o vencido.
+ *
+ * Es lo que permite que el test del camino completo siga corriendo SIN RED: el
+ * IO de Auth entra por `Dependencias` como todo el resto del IO de este repo.
+ * El circuito con el Admin SDK de verdad se prueba contra el emulador, en
+ * `cupo/emulador.test.ts`.
+ */
+const PREFIJO_DE_TOKEN = "token-de:";
+
+async function verificadorFalso(idToken: string): Promise<{ uid: string }> {
+  if (!idToken.startsWith(PREFIJO_DE_TOKEN)) {
+    throw new Error("FirebaseAuthError: Decoding Firebase ID token failed");
+  }
+  return { uid: idToken.slice(PREFIJO_DE_TOKEN.length) };
+}
+
+function cabeceras(uid: string): Record<string, string> {
+  return { authorization: `Bearer ${PREFIJO_DE_TOKEN}${uid}` };
+}
+
+/** Un instante fijo, para que el mes y el día del cupo no dependan del día que se corre. */
+const FECHA_FIJA = new Date("2026-09-02T10:00:00Z");
+const MOMENTO_FIJO = momentoDelCupo(FECHA_FIJA);
+
 interface Andamio {
   deps: Dependencias;
   persistidos: DatosAPersistir[];
+  /** El consumo en memoria, por dueño. Decide con la MISMA función que producción. */
+  consumo: Map<string, EstadoDeConsumo>;
+  /** Cuántas veces se devolvió el crédito, y a quién. */
+  devoluciones: string[];
 }
 
-function andamio(
-  cliente: ClienteDeVision,
-  opciones: { copy?: Record<string, string>; persistirFalla?: boolean } = {},
-): Andamio {
+interface OpcionesDeAndamio {
+  copy?: Record<string, string>;
+  persistirFalla?: boolean;
+  limites?: Partial<LimitesDeCupo>;
+  /** El consumo con el que arranca el dueño, para construir el escenario. */
+  consumoInicial?: Partial<EstadoDeConsumo>;
+  fecha?: Date;
+}
+
+function andamio(cliente: ClienteDeVision, opciones: OpcionesDeAndamio = {}): Andamio {
   const persistidos: DatosAPersistir[] = [];
+  const devoluciones: string[] = [];
+  const consumo = new Map<string, EstadoDeConsumo>();
+  if (opciones.consumoInicial !== undefined) {
+    consumo.set(UID, { ...CONSUMO_EN_CERO, dia: MOMENTO_FIJO.dia, ...opciones.consumoInicial });
+  }
+  const config: AppConfig = {
+    ...CONFIG_VACIA,
+    copy: opciones.copy ?? {},
+    ...(opciones.limites?.por_mes === undefined ? {} : { max_scans_per_month: opciones.limites.por_mes }),
+    ...(opciones.limites?.por_dia === undefined ? {} : { max_scans_per_day: opciones.limites.por_dia }),
+  };
   let reloj = 0;
   return {
     persistidos,
+    consumo,
+    devoluciones,
     deps: {
       cliente,
       indice: async () => indiceReal(),
-      config: async () => ({ config: { ...CONFIG_VACIA, copy: opciones.copy ?? {} } }),
+      config: async () => ({ config }),
+      verificarToken: verificadorFalso,
+      // El cupo en memoria decide con `decidirCupo`, la misma función pura que
+      // corre en producción: lo que este andamio reemplaza es Firestore, no la
+      // regla. La transacción de verdad se prueba contra el emulador.
+      reservarCupo: async ({ owner_id, momento, limites }) => {
+        const estado = consumo.get(owner_id) ?? CONSUMO_EN_CERO;
+        const veredicto = decidirCupo(estado, limites, momento);
+        if (veredicto.entra) consumo.set(owner_id, veredicto.consumo);
+        return veredicto;
+      },
+      devolverCupo: async ({ owner_id, momento }) => {
+        devoluciones.push(owner_id);
+        const estado = consumo.get(owner_id);
+        if (estado !== undefined) consumo.set(owner_id, revertirConsumo(estado, momento));
+      },
       persistir: async (datos) => {
         if (opciones.persistirFalla === true) throw new Error("Firestore no responde");
         persistidos.push(datos);
       },
       nuevoScanId: () => "scan-de-prueba",
       ahora: () => (reloj += 100),
+      fecha: () => opciones.fecha ?? FECHA_FIJA,
       opcionesDeVision: { esperar: async () => {} },
     },
   };
@@ -92,14 +163,27 @@ function andamio(
 /** Una imagen base64 cualquiera: acá nunca se decodifica, se valida la forma. */
 const IMAGEN_OK = { image_base64: "AAAABBBB", media_type: "image/jpeg" };
 
+/** Un POST bien formado y autenticado. Es el pedido que hace la PWA. */
+function POST(body: unknown = IMAGEN_OK, uid: string = UID): PedidoDeAnalisis {
+  return { method: "POST", body, headers: cabeceras(uid) };
+}
+
 // ---------------------------------------------------------------------------
 // Validación del pedido
 // ---------------------------------------------------------------------------
 
-test("validarEntrada acepta el cuerpo mínimo y pone el dueño provisorio", () => {
+test("validarEntrada acepta el cuerpo mínimo, que ya no trae dueño", () => {
   const entrada = validarEntrada(IMAGEN_OK);
-  assert.equal(entrada.owner_id, DUEÑO_PROVISORIO);
+  assert.equal(entrada.owner_id_del_cuerpo, null, "el dueño sale del token, no del cuerpo");
   assert.equal(entrada.image_base64, "AAAABBBB");
+});
+
+test("un `owner_id` en el cuerpo se recoge para el log y no rompe (card 4.2)", () => {
+  // El front dejó de mandarlo, pero durante días hay teléfonos con la versión
+  // vieja cacheada. Un 400 les rompería la app por un campo que ya no miramos.
+  assert.equal(validarEntrada({ ...IMAGEN_OK, owner_id: " anon-dev " }).owner_id_del_cuerpo, "anon-dev");
+  assert.equal(validarEntrada({ ...IMAGEN_OK, owner_id: "   " }).owner_id_del_cuerpo, null);
+  assert.equal(validarEntrada({ ...IMAGEN_OK, owner_id: 42 }).owner_id_del_cuerpo, null);
 });
 
 test("validarEntrada acepta el prefijo `data:` que devuelve el navegador", () => {
@@ -117,7 +201,6 @@ test("validarEntrada rechaza lo que no puede analizar", () => {
     [{ media_type: "image/jpeg" }, "cuerpo_invalido"],
     [{ image_base64: "AAAA" }, "cuerpo_invalido"],
     [{ image_base64: "AAAA", media_type: "image/gif" }, "cuerpo_invalido"],
-    [{ ...IMAGEN_OK, owner_id: "  " }, "cuerpo_invalido"],
     [{ image_base64: "AAA!", media_type: "image/png" }, "imagen_invalida"],
     [{ image_base64: "AAAAA", media_type: "image/png" }, "imagen_invalida"],
     [{ image_base64: "A".repeat(MAX_BASE64_CHARS + 4), media_type: "image/png" }, "imagen_muy_grande"],
@@ -150,7 +233,7 @@ test("foto → modelo → motor → persistencia: el circuito entero", async () 
     ),
   );
 
-  const { status, body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const { status, body } = await manejarAnalyze(POST(), deps);
   const cuerpo = body as CuerpoDeAnalisis;
 
   assert.equal(status, 200);
@@ -177,7 +260,7 @@ test("foto → modelo → motor → persistencia: el circuito entero", async () 
   // Lo que se guarda es el resultado del motor, sin reformatear.
   assert.equal(persistidos.length, 1);
   assert.equal(persistidos[0]?.scan_id, "scan-de-prueba");
-  assert.equal(persistidos[0]?.owner_id, DUEÑO_PROVISORIO);
+  assert.equal(persistidos[0]?.owner_id, UID, "el dueño del expediente es el uid del token");
   assert.deepEqual(persistidos[0]?.resultado.items, cuerpo.items);
 });
 
@@ -189,7 +272,7 @@ test("`items` y `totals` son los del motor, no una copia parecida", async () => 
       mensaje(JSON.stringify({ is_food: true, items: [{ food_en: "Apple, raw", grams: 150, confidence: 0.9 }] })),
     ),
   );
-  const { body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const { body } = await manejarAnalyze(POST(), deps);
   const item = (body as CuerpoDeAnalisis).items[0];
 
   assert.deepEqual(Object.keys(item ?? {}).sort(), [
@@ -234,7 +317,7 @@ test("`termino_es` viaja al expediente con lo que dijo la visión (DT-25)", asyn
       ),
     ),
   );
-  const { body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const { body } = await manejarAnalyze(POST(), deps);
   const item = (body as CuerpoDeAnalisis).items[0];
 
   assert.equal(item?.termino_en, "spanish omelette");
@@ -254,7 +337,7 @@ test("sin `food_es` el término español es una cadena vacía, no una clave ause
       mensaje(JSON.stringify({ is_food: true, items: [{ food_en: "Apple, raw", grams: 150, confidence: 0.9 }] })),
     ),
   );
-  const { body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const { body } = await manejarAnalyze(POST(), deps);
   const item = (body as CuerpoDeAnalisis).items[0];
 
   assert.equal(item?.termino_es, "");
@@ -276,7 +359,7 @@ test("un alimento sin ficha también guarda su `termino_es` (DT-25)", async () =
       ),
     ),
   );
-  const { body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const { body } = await manejarAnalyze(POST(), deps);
   const item = (body as CuerpoDeAnalisis).items[0];
 
   assert.equal(item?.match, "no_catalogado");
@@ -296,7 +379,7 @@ test("un alimento que el catálogo no tiene entra a la cola de curación", async
     ),
   );
 
-  const { body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const { body } = await manejarAnalyze(POST(), deps);
   const cuerpo = body as CuerpoDeAnalisis;
 
   assert.equal(cuerpo.items[0]?.match, "no_catalogado");
@@ -315,7 +398,7 @@ test("`is_food: false` es un 200 con copy simpático, y NO se persiste nada", as
     { copy: { error_not_food: "Eso es un gato, no un almuerzo." } },
   );
 
-  const { status, body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const { status, body } = await manejarAnalyze(POST(), deps);
   const cuerpo = body as CuerpoDeAnalisis;
 
   assert.equal(status, 200);
@@ -329,7 +412,7 @@ test("`is_food: false` es un 200 con copy simpático, y NO se persiste nada", as
 
 test("sin copy publicado, el texto de `not_food` sale del arranque en frío", async () => {
   const { deps } = andamio(clienteQueDice(mensaje(JSON.stringify({ is_food: false, items: [] }))));
-  const { body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const { body } = await manejarAnalyze(POST(), deps);
   assert.match((body as CuerpoDeAnalisis).message_es ?? "", /no parece un plato/i);
 });
 
@@ -357,7 +440,7 @@ test("el mensaje de error sale de `config/app.copy` cuando la clave existe", asy
   const { deps } = andamio(clienteQueDice(mensaje("{roto", "end_turn")), {
     copy: { error_unreadable: "No pude leer el plato. Probá con más luz." },
   });
-  const { status, body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const { status, body } = await manejarAnalyze(POST(), deps);
   const error = (body as CuerpoDeError).error;
 
   assert.equal(status, 502);
@@ -368,7 +451,7 @@ test("el mensaje de error sale de `config/app.copy` cuando la clave existe", asy
 
 test("sin la clave publicada, el error usa su texto en frío y lo declara", async () => {
   const { deps } = andamio(clienteQueDice(mensaje("{roto", "end_turn")));
-  const { body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const { body } = await manejarAnalyze(POST(), deps);
   const error = (body as CuerpoDeError).error;
 
   assert.equal(error.copy_source, "cold-start-default");
@@ -379,7 +462,7 @@ test("un `stop_reason` inesperado llega al cliente como 502, no como 500", async
   const { deps } = andamio(
     clienteQueDice(mensaje(JSON.stringify({ is_food: true, items: [] }), "max_tokens")),
   );
-  const { status, body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const { status, body } = await manejarAnalyze(POST(), deps);
   assert.equal(status, 502);
   assert.equal((body as CuerpoDeError).error.code, "respuesta_ilegible");
 });
@@ -388,7 +471,7 @@ test("si el modelo no responde, es 503 y no un 500 anónimo", async () => {
   const caida = new Error("HTTP 529");
   (caida as unknown as { status: number }).status = 529;
   const { deps } = andamio(clienteQueDice(caida));
-  const { status, body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const { status, body } = await manejarAnalyze(POST(), deps);
   assert.equal(status, 503);
   assert.equal((body as CuerpoDeError).error.code, "modelo_no_disponible");
 });
@@ -398,7 +481,7 @@ test("si el catálogo no está, el análisis no arranca", async () => {
   deps.indice = async () => {
     throw new ErrorDeAnalisis("catalogo_no_disponible", "foods vacía");
   };
-  const { status, body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const { status, body } = await manejarAnalyze(POST(), deps);
   assert.equal(status, 503);
   assert.equal((body as CuerpoDeError).error.code, "catalogo_no_disponible");
 });
@@ -413,7 +496,7 @@ test("si la persistencia falla, el análisis se devuelve igual pero lo declara",
     ),
     { persistirFalla: true },
   );
-  const { status, body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const { status, body } = await manejarAnalyze(POST(), deps);
   const cuerpo = body as CuerpoDeAnalisis;
 
   assert.equal(status, 200);
@@ -430,7 +513,7 @@ test("un item con ficha pero SIN gramos usables viaja y se persiste igual", asyn
       mensaje(JSON.stringify({ is_food: true, items: [{ food_en: "Apple, raw", grams: 0, confidence: 0.9 }] })),
     ),
   );
-  const { status, body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const { status, body } = await manejarAnalyze(POST(), deps);
   const item = (body as CuerpoDeAnalisis).items[0];
 
   assert.equal(status, 200);
@@ -454,11 +537,16 @@ test("una kb_version distinta de la que config/app espera se avisa, no se aborta
   deps.config = async () => ({ config: { ...CONFIG_VACIA, kb_version: "1.0.0+viejisima" } });
   deps.advertir = (mensaje, detalle) => avisos.push({ mensaje, detalle });
 
-  const { status } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const { status } = await manejarAnalyze(POST(), deps);
   assert.equal(status, 200, "el análisis sigue: la versión que vale es la del catálogo cargado");
-  assert.equal(avisos.length, 1);
-  assert.match(avisos[0]?.mensaje ?? "", /kb_version/);
-  assert.equal(avisos[0]?.detalle["config_app"], "1.0.0+viejisima");
+  // Los pedidos de este andamio no traen cabecera de App Check, así que desde la
+  // card 4.4 el modo observación anota una línea por cada uno. Es lo que tiene
+  // que pasar (esa línea ES la medición), y acá se aparta para mirar la del
+  // catálogo, que es lo que este test comprueba.
+  const deLaVersion = avisos.filter((a) => !a.mensaje.startsWith("App Check"));
+  assert.equal(deLaVersion.length, 1);
+  assert.match(deLaVersion[0]?.mensaje ?? "", /kb_version/);
+  assert.equal(deLaVersion[0]?.detalle["config_app"], "1.0.0+viejisima");
 });
 
 test("cuando las dos versiones coinciden no se avisa nada", async () => {
@@ -472,16 +560,347 @@ test("cuando las dos versiones coinciden no se avisa nada", async () => {
   deps.config = async () => ({ config: { ...CONFIG_VACIA, kb_version: version } });
   deps.advertir = (mensaje) => avisos.push(mensaje);
 
-  await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
-  assert.deepEqual(avisos, []);
+  await manejarAnalyze(POST(), deps);
+  // Mismo apartado que el test de arriba: la línea de App Check en observación
+  // no es ruido, es la cifra que se va a mirar antes de encender el bloqueo.
+  assert.deepEqual(avisos.filter((m) => !m.startsWith("App Check")), []);
 });
 
-test("un `owner_id` explícito manda sobre el provisorio", async () => {
-  const { deps, persistidos } = andamio(
+test("el `owner_id` del cuerpo NO manda: manda el token, y el intento queda anotado", async () => {
+  // Es el candado de la card 4.2 y el que impide lo que antes era trivial: pedir
+  // un análisis con el token propio y escribirlo bajo el dueño de otro.
+  const avisos: { mensaje: string; detalle: Record<string, unknown> }[] = [];
+  const { deps, persistidos, consumo } = andamio(
     clienteQueDice(
       mensaje(JSON.stringify({ is_food: true, items: [{ food_en: "Apple, raw", grams: 150, confidence: 0.9 }] })),
     ),
   );
-  await manejarAnalyze({ method: "POST", body: { ...IMAGEN_OK, owner_id: "uid-de-tomas" } }, deps);
-  assert.equal(persistidos[0]?.owner_id, "uid-de-tomas");
+  deps.advertir = (mensaje, detalle) => avisos.push({ mensaje, detalle });
+
+  const { status } = await manejarAnalyze(POST({ ...IMAGEN_OK, owner_id: "la-victima" }), deps);
+
+  assert.equal(status, 200, "no rompe: el cliente viejo cacheado sigue funcionando");
+  assert.equal(persistidos[0]?.owner_id, UID, "el expediente es del dueño del token");
+  assert.equal(consumo.has("la-victima"), false, "y el cupo que se gastó tampoco es el de la víctima");
+  assert.equal(consumo.get(UID)?.usados_mes, 1);
+
+  const aviso = avisos.find((a) => a.mensaje.includes("owner_id"));
+  assert.ok(aviso, "el descarte se anota: es la única forma de saber cuándo dejan de mandarlo");
+  assert.equal(aviso?.detalle["owner_id_del_cuerpo"], "la-victima");
+  assert.equal(aviso?.detalle["uid_del_token"], UID);
+  assert.equal(aviso?.detalle["coincide"], false);
+});
+
+// ---------------------------------------------------------------------------
+// Card 4.2 — el dueño sale del token
+// ---------------------------------------------------------------------------
+
+/**
+ * El candado del §4 del contrato (regla DT-21) sobre los textos NUEVOS.
+ *
+ * Busca las formas voseantes concretas y no «una palabra terminada en á/é/í»:
+ * media lengua española termina así («aquí», «café», «está») y un detector
+ * genérico daría falsos positivos hasta que alguien lo apagara. Los textos
+ * VIEJOS de `errores.ts` sí vosean y siguen así a propósito: son la DT-40 (a),
+ * que se cierra moviéndolos a `config/copy.json` en otra card.
+ */
+function sinVoseo(texto: string): void {
+  assert.doesNotMatch(
+    texto,
+    /\b(?:prob|sac|volv|intent|esper|mir|and|ten|pod|quer|hac|deb)(?:á|é|és|ás)\b/iu,
+    `«${texto}» tiene voseo`,
+  );
+}
+
+const PLATO_OK = JSON.stringify({
+  is_food: true,
+  items: [{ food_en: "Apple, raw", grams: 150, confidence: 0.9 }],
+});
+
+test("sin cabecera Authorization es 401 y ni se llama al modelo ni se toca el cupo", async () => {
+  let llamoAlModelo = false;
+  const { deps, consumo } = andamio({
+    messages: {
+      create: async () => {
+        llamoAlModelo = true;
+        throw new Error("no tendría que haberse llamado");
+      },
+    },
+  });
+
+  const { status, body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const error = (body as CuerpoDeError).error;
+
+  assert.equal(status, 401);
+  assert.equal(error.code, "no_autenticado");
+  assert.equal(llamoAlModelo, false, "un anónimo no gasta ni un token de la API");
+  assert.equal(consumo.size, 0, "y tampoco gasta cupo de nadie");
+});
+
+test("un token que no verifica es 401 con el texto en frío en español de España", async () => {
+  const { deps } = andamio(clienteQueDice(mensaje(PLATO_OK)));
+  const { status, body } = await manejarAnalyze(
+    { method: "POST", body: IMAGEN_OK, headers: { authorization: "Bearer token.inventado" } },
+    deps,
+  );
+  const error = (body as CuerpoDeError).error;
+
+  assert.equal(status, 401);
+  assert.equal(error.code, "no_autenticado");
+  assert.equal(error.copy_source, "cold-start-default");
+  assert.match(error.message_es, /Vuelve a entrar/, "«vuelve», no «volvé»: §4 del contrato");
+  sinVoseo(error.message_es);
+});
+
+test("el 401 se puede publicar en `config/app.copy` sin desplegar", async () => {
+  const { deps } = andamio(clienteQueDice(mensaje(PLATO_OK)), {
+    copy: { error_unauthenticated: "Inicia sesión otra vez, por favor." },
+  });
+  const { body } = await manejarAnalyze({ method: "POST", body: IMAGEN_OK }, deps);
+  const error = (body as CuerpoDeError).error;
+  assert.equal(error.message_es, "Inicia sesión otra vez, por favor.");
+  assert.equal(error.copy_source, "config");
+});
+
+test("dos dueños distintos NO comparten ni expediente ni cupo", async () => {
+  // El candado que la card 4.2 vino a poner: el dueño de un scan es el del
+  // token. Antes bastaba con escribir el `owner_id` que uno quisiera.
+  const { deps, persistidos, consumo } = andamio(clienteQueDice(mensaje(PLATO_OK)));
+
+  await manejarAnalyze(POST(IMAGEN_OK, "dueño-a"), deps);
+  await manejarAnalyze(POST(IMAGEN_OK, "dueño-b"), deps);
+
+  assert.deepEqual(persistidos.map((p) => p.owner_id), ["dueño-a", "dueño-b"]);
+  assert.equal(consumo.get("dueño-a")?.usados_mes, 1);
+  assert.equal(consumo.get("dueño-b")?.usados_mes, 1, "el cupo de uno no se lo gasta el otro");
+});
+
+// ---------------------------------------------------------------------------
+// Card 4.3 — el cupo que muerde
+// ---------------------------------------------------------------------------
+
+test("el 200 le dice al usuario cómo va su cupo", async () => {
+  const { deps } = andamio(clienteQueDice(mensaje(PLATO_OK)), {
+    consumoInicial: { usados_mes: 7, usados_dia: 1 },
+  });
+  const { status, body } = await manejarAnalyze(POST(), deps);
+  const cuerpo = body as CuerpoDeAnalisis;
+
+  assert.equal(status, 200);
+  assert.deepEqual(cuerpo.quota, {
+    mes: { usados: 8, limite: 15, se_renueva: "2026-10-01" },
+    dia: { usados: 2, limite: 3, se_renueva: "2026-09-03" },
+  });
+});
+
+test("el 16.º escaneo del mes es 429 con su bloque `quota`, y el modelo ni se entera", async () => {
+  let llamoAlModelo = false;
+  const { deps } = andamio(
+    {
+      messages: {
+        create: async () => {
+          llamoAlModelo = true;
+          throw new Error("no tendría que haberse llamado");
+        },
+      },
+    },
+    { consumoInicial: { usados_mes: 15, usados_dia: 0 } },
+  );
+
+  const { status, body } = await manejarAnalyze(POST(), deps);
+  const error = (body as CuerpoDeError).error;
+
+  assert.equal(status, 429);
+  assert.equal(error.code, "cupo_agotado");
+  assert.deepEqual(error.quota, { ambito: "mes", usados: 15, limite: 15, se_renueva: "2026-10-01" });
+  assert.equal(llamoAlModelo, false, "el cupo frena ANTES de gastar plata: ese es el punto");
+});
+
+test("el 4.º del día es 429 aunque queden 10 del mes", async () => {
+  const { deps } = andamio(clienteQueDice(mensaje(PLATO_OK)), {
+    consumoInicial: { usados_mes: 5, usados_dia: 3 },
+  });
+  const { status, body } = await manejarAnalyze(POST(), deps);
+  const error = (body as CuerpoDeError).error;
+
+  assert.equal(status, 429);
+  assert.deepEqual(error.quota, { ambito: "dia", usados: 3, limite: 3, se_renueva: "2026-09-03" });
+});
+
+test("el texto del 429 también se publica sin desplegar", async () => {
+  const { deps } = andamio(clienteQueDice(mensaje(PLATO_OK)), {
+    consumoInicial: { usados_mes: 15 },
+    copy: { error_quota_exhausted: "Se te han acabado los análisis de este mes." },
+  });
+  const { body } = await manejarAnalyze(POST(), deps);
+  const error = (body as CuerpoDeError).error;
+  assert.equal(error.message_es, "Se te han acabado los análisis de este mes.");
+  assert.equal(error.copy_source, "config");
+});
+
+test("sin copy publicado, el 429 usa su texto en frío, en español de España", async () => {
+  const { deps } = andamio(clienteQueDice(mensaje(PLATO_OK)), { consumoInicial: { usados_mes: 15 } });
+  const { body } = await manejarAnalyze(POST(), deps);
+  const error = (body as CuerpoDeError).error;
+  assert.equal(error.copy_source, "cold-start-default");
+  assert.match(error.message_es, /Espera a que se renueve/, "«espera», no «esperá»");
+  sinVoseo(error.message_es);
+});
+
+test("los topes salen de `config/app`: bajarlos a 1 frena el segundo escaneo", async () => {
+  // La regla dura 1 del proyecto, ejercida: el umbral se cambia en Firestore y
+  // el código no se toca. Si el handler leyera un número propio, este test
+  // seguiría pasando con 3 y no con 1.
+  const { deps } = andamio(clienteQueDice(mensaje(PLATO_OK)), { limites: { por_dia: 1 } });
+
+  assert.equal((await manejarAnalyze(POST(), deps)).status, 200);
+  const segundo = await manejarAnalyze(POST(), deps);
+  assert.equal(segundo.status, 429);
+  assert.equal((segundo.body as CuerpoDeError).error.quota?.limite, 1, "el límite que se publicó");
+});
+
+test("el crédito se DEVUELVE si el modelo se cae", async () => {
+  const caida = new Error("HTTP 529");
+  (caida as unknown as { status: number }).status = 529;
+  const { deps, consumo, devoluciones } = andamio(clienteQueDice(caida), {
+    consumoInicial: { usados_mes: 4, usados_dia: 1 },
+  });
+
+  const { status, body } = await manejarAnalyze(POST(), deps);
+
+  assert.equal(status, 503);
+  assert.equal((body as CuerpoDeError).error.code, "modelo_no_disponible");
+  assert.deepEqual(devoluciones, [UID]);
+  assert.deepEqual(consumo.get(UID), { usados_mes: 4, dia: MOMENTO_FIJO.dia, usados_dia: 1 },
+    "quedó igual que antes del intento: no se le cobró una llamada que no se hizo");
+});
+
+test("el crédito también vuelve si el catálogo no está", async () => {
+  const { deps, consumo, devoluciones } = andamio(clienteQueDice(mensaje(PLATO_OK)), {
+    consumoInicial: { usados_mes: 4, usados_dia: 1 },
+  });
+  deps.indice = async () => {
+    throw new ErrorDeAnalisis("catalogo_no_disponible", "foods vacía");
+  };
+
+  const { status } = await manejarAnalyze(POST(), deps);
+  assert.equal(status, 503);
+  assert.deepEqual(devoluciones, [UID]);
+  assert.equal(consumo.get(UID)?.usados_mes, 4);
+});
+
+test("una foto que NO es comida SÍ consume: el modelo ya la miró", async () => {
+  const { deps, consumo, devoluciones, persistidos } = andamio(
+    clienteQueDice(mensaje(JSON.stringify({ is_food: false, items: [] }))),
+    { consumoInicial: { usados_mes: 4, usados_dia: 1 } },
+  );
+
+  const { status, body } = await manejarAnalyze(POST(), deps);
+  const cuerpo = body as CuerpoDeAnalisis;
+
+  assert.equal(status, 200);
+  assert.equal(cuerpo.is_food, false);
+  assert.deepEqual(devoluciones, [], "no se devuelve: el trabajo se pidió y se pagó");
+  assert.equal(consumo.get(UID)?.usados_mes, 5);
+  assert.equal(persistidos.length, 0, "consume, pero sigue sin dejar expediente (§7 del plan)");
+  assert.equal(cuerpo.quota.mes.usados, 5, "y el cupo que se le muestra ya lo cuenta");
+});
+
+test("una respuesta ilegible del modelo NO devuelve el crédito: esos tokens se facturaron", async () => {
+  const { deps, consumo, devoluciones } = andamio(clienteQueDice(mensaje("{roto")), {
+    consumoInicial: { usados_mes: 4, usados_dia: 1 },
+  });
+
+  const { status, body } = await manejarAnalyze(POST(), deps);
+  assert.equal(status, 502);
+  assert.equal((body as CuerpoDeError).error.code, "respuesta_ilegible");
+  assert.deepEqual(devoluciones, [], "el modelo contestó; que no se entendiera no es una llamada gratis");
+  assert.equal(consumo.get(UID)?.usados_mes, 5);
+});
+
+test("si la persistencia falla, el crédito tampoco vuelve: el análisis se entregó", async () => {
+  const { deps, consumo, devoluciones } = andamio(clienteQueDice(mensaje(PLATO_OK)), {
+    persistirFalla: true,
+    consumoInicial: { usados_mes: 4, usados_dia: 1 },
+  });
+  const { status, body } = await manejarAnalyze(POST(), deps);
+  assert.equal(status, 200);
+  assert.equal((body as CuerpoDeAnalisis).persisted, false);
+  assert.deepEqual(devoluciones, []);
+  assert.equal(consumo.get(UID)?.usados_mes, 5);
+});
+
+test("un error interno DESPUÉS de que el modelo contestó no devuelve el crédito", async () => {
+  // El `!elModeloYaCobro` del handler, ejercido: el código del error solo no
+  // alcanza, porque `error_interno` sí devuelve cuando pasa antes de la llamada.
+  const { deps, consumo, devoluciones } = andamio(clienteQueDice(mensaje(PLATO_OK)), {
+    consumoInicial: { usados_mes: 4, usados_dia: 1 },
+  });
+  deps.nuevoScanId = () => {
+    throw new Error("revienta después de la visión");
+  };
+
+  const { status, body } = await manejarAnalyze(POST(), deps);
+  assert.equal(status, 500);
+  assert.equal((body as CuerpoDeError).error.code, "error_interno");
+  assert.deepEqual(devoluciones, [], "la llamada al modelo ya estaba pagada");
+  assert.equal(consumo.get(UID)?.usados_mes, 5);
+});
+
+test("un error interno ANTES de la llamada al modelo sí lo devuelve", async () => {
+  const { deps, consumo, devoluciones } = andamio(clienteQueDice(mensaje(PLATO_OK)), {
+    consumoInicial: { usados_mes: 4, usados_dia: 1 },
+  });
+  deps.indice = async () => {
+    throw new Error("algo raro pasó armando el índice");
+  };
+
+  const { status } = await manejarAnalyze(POST(), deps);
+  assert.equal(status, 500);
+  assert.deepEqual(devoluciones, [UID]);
+  assert.equal(consumo.get(UID)?.usados_mes, 4);
+  assert.equal(CODIGOS_QUE_DEVUELVEN_EL_CREDITO.has("error_interno"), true);
+});
+
+test("un 429 NO devuelve nada: no llegó a reservar", async () => {
+  const { deps, devoluciones } = andamio(clienteQueDice(mensaje(PLATO_OK)), {
+    consumoInicial: { usados_mes: 15 },
+  });
+  await manejarAnalyze(POST(), deps);
+  assert.deepEqual(devoluciones, [], "rebotar no reserva, así que no hay nada que devolver");
+});
+
+test("si la devolución del crédito falla, el error original llega igual", async () => {
+  // Un problema devolviendo no puede convertir un 503 —que el front sabe
+  // reintentar— en un 500 anónimo. Lo que sí tiene que pasar es quedar anotado.
+  const avisos: { mensaje: string; detalle: Record<string, unknown> }[] = [];
+  const caida = new Error("HTTP 529");
+  (caida as unknown as { status: number }).status = 529;
+  const { deps } = andamio(clienteQueDice(caida));
+  deps.devolverCupo = async () => {
+    throw new Error("Firestore no responde");
+  };
+  deps.advertir = (mensaje, detalle) => avisos.push({ mensaje, detalle });
+
+  const { status, body } = await manejarAnalyze(POST(), deps);
+  assert.equal(status, 503);
+  assert.equal((body as CuerpoDeError).error.code, "modelo_no_disponible");
+
+  const aviso = avisos.find((a) => a.mensaje.includes("devolver el crédito"));
+  assert.ok(aviso, "un crédito que no se pudo devolver es un crédito perdido: tiene que verse");
+  assert.equal(aviso?.detalle["owner_id"], UID);
+  assert.equal(aviso?.detalle["periodo"], MOMENTO_FIJO.mes);
+});
+
+test("el mes del cupo lo decide el reloj de Madrid, no el de la máquina", async () => {
+  // 30/09 a las 22:30 UTC ya es el 1 de octubre en España: este escaneo tiene
+  // que caer en el cupo de OCTUBRE. Con corte por UTC caería en septiembre y el
+  // usuario perdería un escaneo de un mes que ya se le renovó.
+  const { deps } = andamio(clienteQueDice(mensaje(PLATO_OK)), {
+    fecha: new Date("2026-09-30T22:30:00Z"),
+  });
+  const { body } = await manejarAnalyze(POST(), deps);
+  const cuerpo = body as CuerpoDeAnalisis;
+  assert.equal(cuerpo.quota.mes.se_renueva, "2026-11-01", "el cupo que se gastó es el de octubre");
+  assert.equal(cuerpo.quota.dia.se_renueva, "2026-10-02");
 });

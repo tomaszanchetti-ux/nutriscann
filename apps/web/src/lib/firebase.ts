@@ -7,6 +7,8 @@
  */
 import { initializeApp, type FirebaseOptions } from "firebase/app";
 
+import { encenderAppCheck } from "./appcheck";
+
 const options: FirebaseOptions = {
   apiKey: import.meta.env.VITE_FB_API_KEY,
   authDomain: import.meta.env.VITE_FB_AUTH_DOMAIN,
@@ -17,6 +19,22 @@ const options: FirebaseOptions = {
 };
 
 export const firebaseApp = initializeApp(options);
+
+/**
+ * App Check se enciende ACÁ, en la línea siguiente a `initializeApp`, y no donde
+ * se usa (card 4.4).
+ *
+ * El orden lo pide el SDK: App Check tiene que estar activado antes de que se
+ * use cualquier otro servicio de Firebase. Poniéndolo acá el orden queda
+ * garantizado por el orden de los módulos —quien importe `./firebase` ya lo
+ * encuentra encendido— en vez de depender de que nadie mueva un import. En
+ * particular, corre antes que el `initializeAuth` de `auth.ts`, que importa este
+ * archivo.
+ *
+ * No lanza y no devuelve nada: si App Check no se puede montar, la app arranca
+ * igual y las llamadas van sin procedencia. Ver `appcheck.ts`.
+ */
+encenderAppCheck(firebaseApp);
 
 export const PROJECT_ID = options.projectId as string;
 export const FUNCTIONS_REGION = import.meta.env.VITE_FUNCTIONS_REGION ?? "europe-west1";

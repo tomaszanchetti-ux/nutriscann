@@ -10,7 +10,7 @@ idempotencia:
 | Comando | Qué publica | De dónde sale |
 |---|---|---|
 | `seed` | La colección `foods/` + `config/kb_meta` | `kb/build/foods.canonical.json` |
-| `seed:config` | El documento `config/app` | `config/recommendation_rules.json` + la `kb_version` del catálogo |
+| `seed:config` | El documento `config/app` | `config/recommendation_rules.json` + `config/copy.json` + `config/thresholds.json` + la `kb_version` del catálogo |
 
 El primero ocupa casi todo este README; el segundo tiene su sección propia,
 **[El seed de configuración](#el-seed-de-configuración-configapp)**.
@@ -204,15 +204,24 @@ SEED_TOKEN="$(gcloud auth print-access-token --account=tomaszanchetti@gmail.com)
 
 `config/app` es un documento **compartido**: además de lo que publica el seed
 tiene el tope de análisis por día (`max_scans_per_day`), que es de otra mano.
-Por eso la escritura es un **merge con máscara de cinco campos**:
+Por eso la escritura es un **merge con máscara de seis campos**:
 
 | Campo | Qué es |
 |---|---|
 | `recommendation_rules` | El documento de `config/recommendation_rules.json` **entero**, tal cual |
 | `copy` | El mapa `copy` de `config/copy.json` — los textos de la interfaz, **entero** |
+| `thresholds` | El mapa `thresholds` de `config/thresholds.json` — los umbrales NUMÉRICOS de la interfaz, **entero** |
 | `kb_version` | La versión del catálogo canónico — el mismo archivo que publica `foods/`, para que las dos no puedan divergir |
 | `updated_by` | `"seed-config"` |
 | `updated_at` | Cuándo cambió por última vez lo publicado |
+
+**`thresholds` es un mapa aparte y no una sección de `copy`** porque `copy` es un
+mapa de texto a **texto** (así lo lee `functions/src/config.ts` y así lo
+desenvuelve el navegador, clave por clave, como `stringValue`): un número ahí
+adentro rompe el tipo del campo. Entró con la **DT-41 (a)**, y hoy lleva uno
+solo: desde qué sodio por 100 g un alimento se pinta como salado. Ese número lo
+tenía también la curación (DT-13) y el front lo tenía **copiado a mano**, así que
+subirlo en `kb/curation/genericos.dt13.json` no cambiaba la pantalla.
 
 Todo lo demás queda intacto, y eso no es una promesa del código: es lo único
 que la máscara permite tocar. El reporte de cada corrida imprime las dos listas
@@ -263,13 +272,31 @@ pantalla igual de linda mostrando el texto viejo del código.
 - `scanning_steps` no tiene tramos vacíos entre separadores `|`, porque el front
   los descarta sin avisar y el paso desaparecería sin dejar rastro.
 
-Lo que **no** se valida es el contenido: largos, ortografía ni idioma. Los
-textos son configuración; el seed los publica tal cual y no opina.
+De los **umbrales**, lo mismo y una cosa más:
 
-Un candado más vive en los tests y no en el seed: `textos.test.ts` compara las
-claves de `config/copy.json` con los campos de `CopyDeLaApp`
-(`apps/web/src/lib/config.ts`), que es quien los lee. Si el front suma un texto
-y nadie lo siembra, se entera ahí — no en la pantalla de un usuario.
+- `thresholds` tiene **exactamente** las claves que declara su `keys`;
+- cada valor es un **número finito**. Un `"400"` entre comillas viajaría como
+  `stringValue` y el front lo descartaría sin avisar — es el error fácil de
+  cometer editando un JSON a mano y el que más caro sale.
+
+Lo que **no** se valida es el contenido: ni largos, ni ortografía, ni idioma, ni
+si 400 mg de sodio es mucho o poco. Los textos y los umbrales son configuración;
+el seed los publica tal cual y no opina.
+
+**Tres candados más viven en los tests y no en el seed**, porque comparan el repo
+contra archivos que el seed no necesita para publicar:
+
+- `textos.test.ts` compara las claves de `config/copy.json` con la **unión** de
+  sus dos lectores: los campos de `CopyDeLaApp` (`apps/web/src/lib/config.ts`) y
+  las `clave_copy` de `functions/src/analyze/errores.ts`. Si el front o el
+  backend suman un texto y nadie lo siembra, se entera ahí — no en la pantalla de
+  un usuario. Y verifica que las dos claves que los dos comparten
+  (`error_not_food`, `error_unreadable`) tengan el **mismo** arranque en frío de
+  los dos lados.
+- `umbrales.test.ts` compara `config/thresholds.json` con `UmbralesDeLaApp` y con
+  el arranque en frío del front, y —lo que de verdad importa— con el
+  `umbral_sodio_mg` de `kb/curation/genericos.dt13.json`: el caveat del catálogo
+  y el color de la pantalla salen del mismo número o no salen.
 
 Todo esto pasa **antes** de abrir una conexión: un documento inválido frena la
 corrida sin haber hablado con Firestore.
@@ -280,6 +307,7 @@ corrida sin haber hablado con Firestore.
 --project <id>     obligatorio; no hay proyecto por defecto a propósito
 --rules <ruta>     por defecto config/recommendation_rules.json
 --copy <ruta>      por defecto config/copy.json
+--thresholds <ruta> por defecto config/thresholds.json
 --catalog <ruta>   de dónde sale la kb_version; por defecto kb/build/foods.canonical.json
 --emulator         escribe contra el emulador en vez del proyecto real
 --token <token>    access token OAuth (o la variable SEED_TOKEN)
@@ -350,14 +378,16 @@ por el endpoint `/emulator/v1/...`, que **solo existe en el emulador**.
 El circuito del **seed de configuración** va aparte (`emulador-config.test.ts`,
 proyecto `nutriscann-config-qa`) y afirma sobre las escrituras de cada corrida:
 
-1. el documento no existe → se crea con las reglas y los textos del repo,
-   enteros, y cada texto vuelve como `stringValue`;
+1. el documento no existe → se crea con las reglas, los textos y los umbrales
+   del repo, enteros: cada texto vuelve como `stringValue` y cada umbral como
+   número;
 2. otra vez → 0 escrituras **y `updated_at` no se mueve**;
 3. otra mano agrega `max_scans_per_day` → sigue en 0 escrituras;
 4. las reglas editadas a mano → se repara **solo** `recommendation_rules`, y el
    tope diario sobrevive al merge;
 5. los textos editados a mano, con una clave inventada de yapa → se repara
    **solo** `copy`, entero: la clave de la consola no sobrevive;
+5 bis. un umbral editado a mano → se repara **solo** `thresholds`;
 6. sube la `kb_version` → se escribe solo ese campo;
 7. una corrida más → 0 escrituras.
 

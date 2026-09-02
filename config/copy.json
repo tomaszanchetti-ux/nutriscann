@@ -6,11 +6,15 @@
 
   "publishing_note": "OJO, se publica distinto que recommendation_rules.json: de las reglas se publica el documento ENTERO, y de este archivo se publica SOLO el objeto 'copy'. El motivo es el contrato: config/app.copy es un mapa de texto a texto (Record<string,string> en functions/src/config.ts) y el front lee cada clave como stringValue. Un '$schema_version' numérico adentro de ese mapa rompería el tipo. Los metadatos, entonces, viven afuera y se quedan en el repo.",
 
-  "dt22_note": "LAS 29 CLAVES NUEVAS DE LA CARD 3.1 (prefijos nutrient_, donut_, match_, item_ y las cuatro report_ del final) SON LA DT-22: textos que el usuario leía y estaban escritos adentro de los componentes. Cambiar «Coincidencia aproximada» exigía desplegar la PWA — la regla dura n.º 1 rota fuera de 'copy'. NO entró todo lo que se lee en pantalla, y la línea está declarada: viaja acá lo que es una FRASE FIJA; se queda en el código lo que se ARMA CON DATOS (el aviso de total parcial cuenta ítems y gramos, la letra chica de un compuesto enumera sus ingredientes, la nota del donut inyecta el porcentaje sin explicar). config/app.copy es un mapa de texto a texto y no tiene convención de placeholders: partir una frase y pegarle un número al lado se rompe apenas alguien la edita. Cuando haga falta se agrega la convención y se mudan; hoy sería inventar un motor de plantillas para cuatro frases. Los textos de la vitrina premium (apps/web/src/lib/copy.premium.ts) tampoco entraron: su mudanza es de la card 3.5, junto con el seed real.",
+  "dt22_note": "LAS 29 CLAVES NUEVAS DE LA CARD 3.1 (prefijos nutrient_, donut_, match_, item_ y las cuatro report_ del final) SON LA DT-22: textos que el usuario leía y estaban escritos adentro de los componentes. Cambiar «Coincidencia aproximada» exigía desplegar la PWA — la regla dura n.º 1 rota fuera de 'copy'. NO entró todo lo que se lee en pantalla, y la línea está declarada: viaja acá lo que es una FRASE FIJA; se queda en el código lo que se ARMA CON DATOS (el aviso de total parcial cuenta ítems y gramos, la letra chica de un compuesto enumera sus ingredientes, la nota del donut inyecta el porcentaje sin explicar). config/app.copy es un mapa de texto a texto y no tiene convención de placeholders: partir una frase y pegarle un número al lado se rompe apenas alguien la edita. Cuando haga falta se agrega la convención y se mudan; hoy sería inventar un motor de plantillas para cuatro frases. Los textos de la vitrina premium (apps/web/src/lib/copy.premium.ts) no entraron entonces: la card 4.5 mudó la PANTALLA DE PLANES entera (ver 'dt41_note') y dejó el resto de ese módulo —el perfil, el modal, la navegación y la lista de espera— con su motivo medido escrito en el informe de esa card.",
 
-  "v2_note": "LAS 14 CLAVES 'v2_' SON LA SECCIÓN «Funcionalidades Premium» DE LA VITRINA (card 3.3, retomada en la WS08): los dos escalones de la v2 —el accesible (fichas con fuente USDA, recetas por categoría, tendencias) y el alto (planes personalizados de 1 semana / 15 días / 1 mes)—, sin precio y empujando a la lista de espera, que es la única conversión que esta pantalla puede tener antes de que existan los pagos. NACIERON 17 Y QUEDARON 14: el Q/A de Tomás (02/09/2026) se llevó tres. 'v2_intro' (el párrafo de entrada) y 'v2_nota' (el pie) salieron de la pantalla — la sección se lee mejor con las dos tarjetas y nada alrededor, y lo que decía el pie ya está dicho en 'nota_pagos', al final de la vitrina. 'v2_badge' dejó de ser TEXTO y pasó a ser ESTRUCTURA: cada tarjeta lleva ahora el nombre de SU plan ('Premium' · 'Premium Gold'), que sale de PLANES en apps/web/src/lib/copy.premium.ts leído por la misma etiqueta con la que el botón da el alta, así el sello y el alta no pueden decir cosas distintas. Son los PRIMEROS textos de la vitrina que viven acá y no en apps/web/src/lib/copy.premium.ts: la mudanza del resto sigue siendo de la card 3.5, junto con el seed real. Tres reglas que no se tocan al editarlos: (1) NINGÚN precio — la escalera 15/40/150 con sus 0 €/12 €/4,99 € es la de los tres planes de arriba y estos escalones no inventan uno; (2) los objetivos son SOLO de forma física (bajar de peso, tonificar, ganar masa muscular) — ninguna condición médica se nombra, y el bloque del plan personalizado lleva pegado el 'disclaimer' que ya existe; (3) si alguno vuelve a nombrar la app, el nombre es CaliScan (rename del 02/09/2026) — hoy ninguno lo hace: la única mención se fue con 'v2_intro'.",
+  "v2_note": "LAS 14 CLAVES 'v2_' SON LA SECCIÓN «Funcionalidades Premium» DE LA VITRINA (card 3.3, retomada en la WS08): los dos escalones de la v2 —el accesible (fichas con fuente USDA, recetas por categoría, tendencias) y el alto (planes personalizados de 1 semana / 15 días / 1 mes)—, sin precio y empujando a la lista de espera, que es la única conversión que esta pantalla puede tener antes de que existan los pagos. NACIERON 17 Y QUEDARON 14: el Q/A de Tomás (02/09/2026) se llevó tres. 'v2_intro' (el párrafo de entrada) y 'v2_nota' (el pie) salieron de la pantalla — la sección se lee mejor con las dos tarjetas y nada alrededor, y lo que decía el pie ya está dicho en 'nota_pagos', al final de la vitrina. 'v2_badge' dejó de ser TEXTO y pasó a ser ESTRUCTURA: cada tarjeta lleva ahora el nombre de SU plan ('Premium' · 'Premium Gold'), que sale de los planes leído por la misma etiqueta con la que el botón da el alta, así el sello y el alta no pueden decir cosas distintas (desde la card 4.5 ese nombre también es una clave de acá: 'plan_premium_name' y 'plan_gold_name'). Fueron los PRIMEROS textos de la vitrina que vivieron acá; la card 4.5 mudó la pantalla de planes entera detrás de ellos. Tres reglas que no se tocan al editarlos: (1) NINGÚN precio — la escalera 15/40/150 con sus 0 €/12 €/4,99 € es la de los tres planes de arriba y estos escalones no inventan uno; (2) los objetivos son SOLO de forma física (bajar de peso, tonificar, ganar masa muscular) — ninguna condición médica se nombra, y el bloque del plan personalizado lleva pegado el 'disclaimer' que ya existe; (3) si alguno vuelve a nombrar la app, el nombre es CaliScan (rename del 02/09/2026) — hoy ninguno lo hace: la única mención se fue con 'v2_intro'.",
 
-  "keys_note": "Lista CERRADA de claves válidas, y el seed rechaza el archivo si 'copy' no tiene exactamente estas — ni una de menos ni una de más. No es burocracia: el front lee cada clave POR SU NOMBRE contra la interfaz CopyDeLaApp (apps/web/src/lib/config.ts). Una clave mal tipeada no rompe nada visible — la pantalla cae al arranque en frío y se ve bien —, así que el error se degrada en silencio y hay que cazarlo antes de publicar. Agregar un texto nuevo es un cambio de las dos puntas: la clave acá y el campo en CopyDeLaApp.",
+  "keys_note": "Lista CERRADA de claves válidas, y el seed rechaza el archivo si 'copy' no tiene exactamente estas — ni una de menos ni una de más. No es burocracia: cada clave se lee POR SU NOMBRE, y una clave mal tipeada no rompe nada visible —la pantalla cae al arranque en frío y se ve bien—, así que el error se degrada en silencio y hay que cazarlo antes de publicar. SON DOS LOS QUE LEEN, desde la card 4.5: el FRONT, por la interfaz CopyDeLaApp (apps/web/src/lib/config.ts), y el BACKEND, por las 'clave_copy' que declara functions/src/analyze/errores.ts. El candado (kb/seed/src/textos.test.ts) exige que esta lista sea exactamente la UNIÓN de las dos, así que agregar un texto nuevo sigue siendo un cambio de las dos puntas: la clave acá y el campo o la clave_copy del lado de quien la lee.",
+
+  "dt40_note": "DT-40 (a) CERRADA (card 4.5, 02/09/2026). Las OCHO claves del backend entraron a esta lista —error_bad_request, error_bad_image, error_image_too_big, error_model_unavailable, error_catalog_unavailable, error_internal, y las dos que estrenó la card 4.2, error_unauthenticated y error_quota_exhausted—, así que los mensajes de error ya se corrigen publicando y no desplegando. En el mismo movimiento se les hizo la pasada de España, que la DT-21 había dejado fuera de functions/: 'Probá sacar la foto de nuevo' → 'Prueba a hacer la foto de nuevo'; 'Probá con una más chica' → 'Prueba con una más ligera'; 'Probá de nuevo en un momento' → 'Prueba de nuevo en un momento'; '¿Probás con más luz o desde más cerca?' → 'Prueba con más luz'; 'No pude leer el pedido' → 'No pude leer la petición' (en España un pedido es lo que se encarga en una tienda). Y los DOS textos que el backend comparte con el front —error_unreadable y error_not_food— quedaron BYTE A BYTE con el arranque en frío de apps/web/src/lib/config.ts: antes decían frases distintas y cuál se veía dependía de quién contestara. ⚠️ QUEDA UNA PUNTA FUERA DE ESTE ARCHIVO: apps/web/src/lib/api.ts copia byte a byte dos de estos textos para su modo fixture (MODO_DE_DEMO 'error' y 'no_es_comida'); si se editan acá, esa copia queda vieja y la demo enseña un texto que producción ya no dice.",
+
+  "dt41_note": "DT-41 (b) y (c), card 4.5 (02/09/2026). ENTRARON 39 CLAVES de módulos locales del front —los que la regla dura 1 no gobernaba porque esta lista no se podía ampliar sin tocar el seed—: 'capture_tagline' (la línea debajo del círculo de la captura), 'report_cta_premium' (el segundo botón del reporte) y las 37 de la pantalla de planes (los cuatro textos de la pantalla, el recuadro destacado de Gold y los tres planes enteros: nombre, precio, período, cupo, resumen, viñetas, botón y sello). AHORA SE PUEDE CAMBIAR UN PRECIO SIN DESPLEGAR, que es de lo que se trataba. Lo que se quedó en el código es la ESTRUCTURA, no el texto: qué tarjeta va destacada, cuál es el plan actual y a qué etiqueta de la lista de espera apunta cada botón — el mismo reparto que ya usaba la sección 'v2_'. Y SALIERON CINCO CLAVES HUÉRFANAS: 'report_others_title' y 'report_weight_label' (el segundo recuadro del reporte, que Tomás sacó el 01/09), 'donut_detail_title' (la leyenda del anillo exterior, ídem) y 'donut_unexplained' y 'donut_rest', que quedaron sin lector cuando el donut volvió al anillo simple. Nadie las leía: una clave que nadie lee no es inofensiva, es una promesa falsa de que editarla cambia algo. Si el anillo exterior vuelve, vuelven con él. QUEDA ABIERTA la mudanza de los módulos locales que leen pantallas fuera del alcance de esta card (los T&C, la pantalla de entrada, el perfil, la lista de espera y la navegación): su motivo medido está en el informe de la card.",
 
   "keys": {
     "capture_prompt": {
@@ -24,6 +28,10 @@
     "capture_help": {
       "since": "card-2.3",
       "used_in": "PantallaCaptura — la línea de ayuda debajo del título"
+    },
+    "capture_tagline": {
+      "since": "card-4.5",
+      "used_in": "PantallaCaptura — la línea DEBAJO del círculo, la que cierra la promesa que abre 'capture_prompt' (Q/A de Tomás, WS08). Estaba escrita adentro del componente (CONTINUACION_DEL_TITULO) y era la mudanza pendiente de la DT-41 (b)."
     },
     "install_title": {
       "since": "card-3.5",
@@ -136,20 +144,6 @@
       "used_in": "PantallaReporte y DonutMacros — lo que se muestra donde iría un número que la fuente no declara. NUNCA un cero: null no es cero."
     },
 
-    "donut_unexplained": {
-      "since": "card-3.1",
-      "used_in": "DonutMacros — el tramo apagado del anillo interior cuando los tres macros no llegan a 100 % de las calorías"
-    },
-    "donut_detail_title": {
-      "since": "card-3.1",
-      "used_in": "SIN USO desde el Q/A de la WS08 (huérfana declarada)",
-      "huerfana": "Encabezaba la leyenda del ANILLO EXTERIOR («Dentro de cada macronutriente»). Tomás sacó esa sección entera del reporte el 01/09/2026: el anillo exterior se sigue DIBUJANDO —los gajos de azúcares, fibra y saturadas están— pero ya no se lista debajo. La clave se queda porque la lista de claves está CERRADA con candado (kb/seed/src/textos.test.ts exige que config/copy.json y CopyDeLaApp coincidan exactamente): borrarla es un cambio de las dos puntas y de kb/, que esta WS no toca. Si la sección no vuelve, se saca en el mismo movimiento que report_others_title y report_weight_label."
-    },
-    "donut_rest": {
-      "since": "card-3.1",
-      "used_in": "DonutMacros — dentro de un macro, lo que queda después de sus partes medidas (grasas no saturadas; hidratos que no son azúcares ni fibra). Desde la WS08 ya NO se ve como fila: sobrevive en la descripción accesible del gráfico (aria-label), que es la que enumera el desglose para quien no lo ve."
-    },
-
     "match_exacto": { "since": "card-3.1", "used_in": "BadgeDeMatch — el sello del ítem" },
     "match_exacto_ayuda": {
       "since": "card-3.1",
@@ -201,15 +195,42 @@
       "since": "card-3.1",
       "used_in": "PantallaReporte — el cuerpo de ese mismo caso, SOLO cuando el motor no mandó su propio motivo. El del motor gana: es específico de esta foto."
     },
-    "report_others_title": {
-      "since": "card-3.1",
-      "used_in": "SIN USO desde el Q/A de la WS08 (huérfana declarada)",
-      "huerfana": "Titulaba el SEGUNDO recuadro del reporte («Del resto del análisis»: fibra, saturadas, azúcares y sodio). Tomás lo sacó entero el 01/09/2026 — la pantalla muestra pocas cosas y muy útiles. Los datos NO se perdieron: siguen viajando en el payload del motor y en el expediente, salieron solo de la pantalla. La clave se queda por el candado de claves cerradas (ver donut_detail_title)."
+    "report_cta_premium": {
+      "since": "card-4.5",
+      "used_in": "PantallaReporte — el SEGUNDO botón del final, el que lleva a la vitrina. Vivía en apps/web/src/lib/copy.premium.ts (COPY_CTA_PREMIUM) desde la card 3.3 y era la mudanza pendiente de la DT-41 (b)."
     },
-    "report_weight_label": {
-      "since": "card-3.1",
-      "used_in": "SIN USO desde el Q/A de la WS08 (huérfana declarada)",
-      "huerfana": "Era la etiqueta del peso identificado, al pie del segundo recuadro, y se fue con él. La clave se queda por el candado de claves cerradas (ver donut_detail_title)."
+
+    "error_unauthenticated": {
+      "since": "card-4.2 (publicada en la 4.5)",
+      "used_in": "BACKEND — functions/src/analyze/errores.ts, el 401 del endpoint analyze. El front NO la lee: muestra el message_es que manda el backend."
+    },
+    "error_quota_exhausted": {
+      "since": "card-4.2 (publicada en la 4.5)",
+      "used_in": "BACKEND — el 429 del endpoint analyze. Un texto solo para los dos ámbitos (mes y día): cuál se agotó y hasta cuándo viaja en el bloque 'quota' de la respuesta, que es dato y no prosa."
+    },
+    "error_bad_request": {
+      "since": "card-4.5",
+      "used_in": "BACKEND — el 400 cuando el cuerpo del pedido no trae la imagen o no tiene la forma esperada."
+    },
+    "error_bad_image": {
+      "since": "card-4.5",
+      "used_in": "BACKEND — el 400 cuando la imagen llegó pero no se puede decodificar."
+    },
+    "error_image_too_big": {
+      "since": "card-4.5",
+      "used_in": "BACKEND — el 413 cuando la foto supera el tope de tamaño."
+    },
+    "error_model_unavailable": {
+      "since": "card-4.5",
+      "used_in": "BACKEND — el 503 cuando el modelo no contesta. ⚠️ Es el texto que el modo fixture del front copia byte a byte (apps/web/src/lib/api.ts, MODO_DE_DEMO='error'): si se edita acá, esa copia queda vieja y la demo enseña un texto que producción ya no dice."
+    },
+    "error_catalog_unavailable": {
+      "since": "card-4.5",
+      "used_in": "BACKEND — el 503 cuando el catálogo no se pudo cargar."
+    },
+    "error_internal": {
+      "since": "card-4.5",
+      "used_in": "BACKEND — el 500. No cuenta qué falló, a propósito: dice que ya quedó registrado, que es lo único útil para quien lo lee."
     },
 
     "v2_title": {
@@ -267,17 +288,77 @@
     "v2_cta": {
       "since": "card-3.3 (WS08)",
       "used_in": "PantallaPremium — el botón de las dos tarjetas de lo que viene. Abre el MISMO formulario de lista de espera que los planes de arriba y guarda la misma etiqueta ('premium' o 'gold'): no hay un segundo circuito. Dice lo mismo que el botón de los planes de pago, y a propósito: es la misma acción."
-    }
+    },
+
+    "plans_title": {
+      "since": "card-4.5",
+      "used_in": "PantallaPremium — el título de la pantalla, encima de las tres tarjetas de precio"
+    },
+    "plans_note_quota": {
+      "since": "card-4.5",
+      "used_in": "PantallaPremium — la primera nota al pie: por qué el cupo que se comunica es SIEMPRE el mensual"
+    },
+    "plans_note_ads": {
+      "since": "card-4.5",
+      "used_in": "PantallaPremium — la segunda nota al pie: no hay publicidad en ningún plan. Se dice como un hecho de la app, NUNCA como un beneficio de pagar (decisión de Tomás, 01/09/2026)."
+    },
+    "plans_note_payments": {
+      "since": "card-4.5",
+      "used_in": "PantallaPremium — la tercera nota al pie: los pagos todavía no están abiertos"
+    },
+    "plans_gold_highlight_title": {
+      "since": "card-4.5",
+      "used_in": "PantallaPremium — el título del recuadro destacado dentro de la tarjeta de Premium Gold: lo único que el plan anual no compra"
+    },
+    "plans_gold_highlight_body": {
+      "since": "card-4.5",
+      "used_in": "PantallaPremium — el cuerpo de ese recuadro destacado"
+    },
+
+    "plan_free_name": { "since": "card-4.5", "used_in": "PantallaPremium — el nombre del plan gratuito" },
+    "plan_free_price": { "since": "card-4.5", "used_in": "PantallaPremium — el número grande del plan gratuito" },
+    "plan_free_period": { "since": "card-4.5", "used_in": "PantallaPremium — qué significa ese número. Nunca un precio a secas." },
+    "plan_free_quota": { "since": "card-4.5", "used_in": "PantallaPremium — el cupo del plan gratuito, SIEMPRE mensual" },
+    "plan_free_summary": { "since": "card-4.5", "used_in": "PantallaPremium — la línea que resume el plan gratuito" },
+    "plan_free_point_1": { "since": "card-4.5", "used_in": "PantallaPremium — primera viñeta del plan gratuito" },
+    "plan_free_point_2": { "since": "card-4.5", "used_in": "PantallaPremium — segunda viñeta del plan gratuito" },
+    "plan_free_point_3": { "since": "card-4.5", "used_in": "PantallaPremium — tercera viñeta del plan gratuito" },
+    "plan_free_cta": { "since": "card-4.5", "used_in": "PantallaPremium — el botón del plan gratuito. No promete nada: es el plan que el usuario ya tiene, y por eso va deshabilitado." },
+
+    "plan_premium_name": { "since": "card-4.5", "used_in": "PantallaPremium — el nombre del plan anual. ⚠️ Es el MISMO nombre que sella la tarjeta «Fichas, recetas y tendencias» de la sección de abajo: la sella leyendo esta clave, no una copia." },
+    "plan_premium_price": { "since": "card-4.5", "used_in": "PantallaPremium — el número grande del plan anual" },
+    "plan_premium_period": { "since": "card-4.5", "used_in": "PantallaPremium — qué significa ese número" },
+    "plan_premium_quota": { "since": "card-4.5", "used_in": "PantallaPremium — el cupo del plan anual, mensual como todos" },
+    "plan_premium_summary": { "since": "card-4.5", "used_in": "PantallaPremium — la línea que resume el plan anual" },
+    "plan_premium_point_1": { "since": "card-4.5", "used_in": "PantallaPremium — primera viñeta del plan anual" },
+    "plan_premium_point_2": { "since": "card-4.5", "used_in": "PantallaPremium — segunda viñeta del plan anual" },
+    "plan_premium_point_3": { "since": "card-4.5", "used_in": "PantallaPremium — tercera viñeta del plan anual" },
+    "plan_premium_point_4": { "since": "card-4.5", "used_in": "PantallaPremium — cuarta viñeta del plan anual. ⚠️ DICE LO MISMO, letra por letra, que 'v2_premium_titulo', y es a propósito (Q/A del 02/09/2026): quien lee el plan aquí arriba y ve el recuadro de abajo tiene que RECONOCERLO, no descubrir algo nuevo. Si una cambia, cambia la otra." },
+    "plan_premium_cta": { "since": "card-4.5", "used_in": "PantallaPremium — el botón del plan anual. Abre la lista de espera, no un pago." },
+    "plan_premium_badge": { "since": "card-4.5", "used_in": "PantallaPremium — el sello de arriba de la tarjeta del plan anual" },
+
+    "plan_gold_name": { "since": "card-4.5", "used_in": "PantallaPremium — el nombre del plan alto. ⚠️ Es el MISMO nombre que sella la tarjeta «Tu plan personalizado» de la sección de abajo." },
+    "plan_gold_price": { "since": "card-4.5", "used_in": "PantallaPremium — el número grande del plan alto" },
+    "plan_gold_period": { "since": "card-4.5", "used_in": "PantallaPremium — qué significa ese número" },
+    "plan_gold_quota": { "since": "card-4.5", "used_in": "PantallaPremium — el cupo del plan alto, mensual como todos" },
+    "plan_gold_summary": { "since": "card-4.5", "used_in": "PantallaPremium — la línea que resume el plan alto" },
+    "plan_gold_point_1": { "since": "card-4.5", "used_in": "PantallaPremium — primera viñeta del plan alto" },
+    "plan_gold_point_2": { "since": "card-4.5", "used_in": "PantallaPremium — segunda viñeta del plan alto" },
+    "plan_gold_point_3": { "since": "card-4.5", "used_in": "PantallaPremium — tercera viñeta del plan alto" },
+    "plan_gold_point_4": { "since": "card-4.5", "used_in": "PantallaPremium — cuarta viñeta del plan alto" },
+    "plan_gold_cta": { "since": "card-4.5", "used_in": "PantallaPremium — el botón del plan alto. Abre la lista de espera, no un pago." },
+    "plan_gold_badge": { "since": "card-4.5", "used_in": "PantallaPremium — el sello de arriba de la tarjeta del plan alto" }
   },
 
-  "copy_note": "Estos son los textos, y son LO ÚNICO que viaja a Firestore. Siguen espejados byte a byte con el arranque en frío de apps/web/src/lib/config.ts al 02/09/2026: cuando uno cambia, cambia el otro en el mismo commit.",
+  "copy_note": "Estos son los textos, y son LO ÚNICO que viaja a Firestore. Siguen espejados byte a byte con el arranque en frío de apps/web/src/lib/config.ts al 02/09/2026: cuando uno cambia, cambia el otro en el mismo commit. Las OCHO claves de error del backend son la excepción declarada: el front no las lee y no están en CopyDeLaApp, así que su arranque en frío vive en functions/src/analyze/errores.ts (el campo texto_en_frio) y es con ESE con el que están espejadas byte a byte.",
 
-  "dt21_note": "DT-21 CERRADA DEL LADO DE ESTE ARCHIVO (card 3.4, 01/09/2026): las 47 claves están en español de España y ninguna vosea. Se corrigieron 7 de las 18 originales —'capture_cta' (sacar→hacer una foto, que es como se dice aquí), 'capture_help' (Sacá→Haz), 'not_food_title' (Acá→Aquí), 'error_unreadable' (¿Probás→Prueba), 'error_network' (Revisá/probá→Revisa/prueba) y 'error_unexpected' (Probá→Prueba)— y se sacó la JERGA INTERNA de 6 de las nuevas: 'ficha' y 'catálogo' son palabras nuestras, no del usuario, y en pantalla ahora se dice 'la base nutricional' (el mismo nombre que ya usaban los scanning_steps) y 'alimento'. Las tocadas: los cinco 'match_*_ayuda' y 'report_no_totals_body'. QUEDA UNA, declarada y con dueño: 'item_generic_note' sigue empezando por «Ficha genérica:» porque esa frase la escribe también el catálogo (kb/curation/genericos.dt13.json → plantilla_caveat, que llega al usuario como caveat de la ficha) y las dos tienen que cambiar en el mismo movimiento; cambiar solo esta abriría una incoherencia visible. Fuera de este archivo también quedan los textos en frío de errores del backend (functions/src/analyze/errores.ts), que sí vosean: sus claves ('error_bad_image', 'error_image_too_big', 'error_model_unavailable', 'error_catalog_unavailable'…) NO están en esta lista de 47, así que hoy no se pueden corregir sin desplegar. Las dos que sí comparte el backend con el front —'error_not_food' y 'error_unreadable'— ya quedan corregidas acá para los dos lados.",
+  "dt21_note": "DT-21 CERRADA DEL LADO DE ESTE ARCHIVO (card 3.4, 01/09/2026): las 47 claves están en español de España y ninguna vosea. Se corrigieron 7 de las 18 originales —'capture_cta' (sacar→hacer una foto, que es como se dice aquí), 'capture_help' (Sacá→Haz), 'not_food_title' (Acá→Aquí), 'error_unreadable' (¿Probás→Prueba), 'error_network' (Revisá/probá→Revisa/prueba) y 'error_unexpected' (Probá→Prueba)— y se sacó la JERGA INTERNA de 6 de las nuevas: 'ficha' y 'catálogo' son palabras nuestras, no del usuario, y en pantalla ahora se dice 'la base nutricional' (el mismo nombre que ya usaban los scanning_steps) y 'alimento'. Las tocadas: los cinco 'match_*_ayuda' y 'report_no_totals_body'. LOS ERRORES DEL BACKEND YA NO QUEDAN FUERA: la card 4.5 metió sus ocho claves en esta lista y les hizo la misma pasada (ver 'dt40_note'). QUEDA UNA, declarada y con dueño: 'item_generic_note' sigue empezando por «Ficha genérica:» porque esa frase la escribe también el catálogo (kb/curation/genericos.dt13.json → plantilla_caveat, que llega al usuario como caveat de la ficha) y las dos tienen que cambiar en el mismo movimiento; cambiar solo esta abriría una incoherencia visible. La card 4.5 lo MIDIÓ y decidió NO hacerlo todavía: cambiar la plantilla toca 101 fichas y solo 101 —el diff es limpio, ningún número se mueve— pero mueve la kb_version, que va estampada en cada documento, así que el re-seed reescribe 1.115 de 1.115 documentos de producción; y además la frase tiene una TERCERA punta, functions/src/engine/analyze.ts ('Alguno de los ingredientes es una ficha genérica…'), que esa card no podía tocar. Cambiar dos de tres es exactamente la incoherencia que la deuda quiere evitar.",
 
   "copy": {
     "capture_prompt": "¿Qué estás comiendo?",
     "capture_cta": "Hacer foto del plato",
     "capture_help": "Haz la foto desde arriba, con el plato entero y buena luz.",
+    "capture_tagline": "Y obtén el detalle nutricional de tu comida",
 
     "install_title": "Lleva CaliScan en tu pantalla de inicio",
     "install_ios_help": "En Safari: toca Compartir y elige «Añadir a pantalla de inicio».",
@@ -291,6 +372,7 @@
     "report_items_title": "Qué hay en el plato",
     "report_partial_title": "Este total es parcial",
     "report_cta": "Escanear otro plato",
+    "report_cta_premium": "Pasarte a Premium",
 
     "not_food_title": "Aquí no veo comida",
     "error_not_food": "Eso no parece un plato de comida. ¿Probamos con otra foto?",
@@ -300,6 +382,15 @@
     "error_network": "No hay respuesta del servidor. Revisa tu conexión y prueba de nuevo.",
     "error_unexpected": "Algo salió mal de este lado. Prueba de nuevo en un momento.",
     "error_cta": "Probar de nuevo",
+
+    "error_unauthenticated": "Tu sesión no es válida o ha caducado. Vuelve a entrar e inténtalo de nuevo.",
+    "error_quota_exhausted": "Has agotado tu cupo de análisis. Espera a que se renueve para analizar más fotos.",
+    "error_bad_request": "No pude leer la petición: falta la imagen o el formato no es el esperado.",
+    "error_bad_image": "Esa imagen no se puede leer. Prueba a hacer la foto de nuevo.",
+    "error_image_too_big": "La foto es demasiado pesada. Prueba con una más ligera.",
+    "error_model_unavailable": "El servicio de análisis está ocupado. Prueba de nuevo en un momento.",
+    "error_catalog_unavailable": "La base nutricional no está disponible en este momento.",
+    "error_internal": "Algo falló de nuestro lado. Ya quedó registrado.",
 
     "disclaimer": "Información nutricional orientativa, calculada sobre datos de USDA. No es consejo médico.",
 
@@ -311,10 +402,6 @@
     "nutrient_sugars": "Azúcares",
     "nutrient_sodium": "Sodio",
     "nutrient_no_data": "sin dato",
-
-    "donut_unexplained": "Sin explicar",
-    "donut_detail_title": "Dentro de cada macronutriente",
-    "donut_rest": "El resto",
 
     "match_exacto": "Coincidencia exacta",
     "match_exacto_ayuda": "El nombre identificado en la foto coincide, letra por letra, con un alimento de la base nutricional.",
@@ -334,8 +421,6 @@
 
     "report_no_totals_title": "Sin números para este plato",
     "report_no_totals_body": "Ninguno de los alimentos identificados está en la base nutricional, así que no hay nada que sumar. Abajo está lo que sí se reconoció.",
-    "report_others_title": "Del resto del análisis",
-    "report_weight_label": "Peso identificado",
 
     "v2_title": "Funcionalidades Premium",
 
@@ -353,6 +438,47 @@
     "v2_gold_punto_2": "Según tu objetivo: bajar de peso, tonificar o ganar masa muscular.",
     "v2_gold_punto_3": "Ajustados a tu entrenamiento y a tu perfil.",
 
-    "v2_cta": "Lista de espera"
+    "v2_cta": "Lista de espera",
+
+    "plans_title": "Nuestros Planes",
+    "plans_note_quota": "Todos los cupos son mensuales: el número que ves es el que tienes cada mes. Hay un límite diario interno para evitar ráfagas, pero lo que se te garantiza es el mensual.",
+    "plans_note_ads": "En CaliScan no hay publicidad. En ningún plan, tampoco en el gratuito.",
+    "plans_note_payments": "Los pagos todavía no están abiertos. Esta pantalla es la vitrina de lo que viene: no se te va a cobrar nada ni se te van a pedir datos de pago.",
+    "plans_gold_highlight_title": "Plan de dieta diario según tu rutina",
+    "plans_gold_highlight_body": "Carga tus datos personales y rutina diaria para obtener sugerencias alimentarias customizadas según tu perfil",
+
+    "plan_free_name": "Gratuito",
+    "plan_free_price": "0 €",
+    "plan_free_period": "para siempre",
+    "plan_free_quota": "15 fotos al mes",
+    "plan_free_summary": "El reporte completo de cada plato que fotografíes.",
+    "plan_free_point_1": "Calorías, macros y el desglose de cada alimento",
+    "plan_free_point_2": "Cada número trazable a su fuente en la base nutricional",
+    "plan_free_point_3": "Sin publicidad",
+    "plan_free_cta": "Tu plan actual",
+
+    "plan_premium_name": "Premium",
+    "plan_premium_price": "12 €",
+    "plan_premium_period": "al año, en un solo pago",
+    "plan_premium_quota": "40 fotos al mes",
+    "plan_premium_summary": "Casi tres veces el cupo, y nada de lo que escaneas se pierde.",
+    "plan_premium_point_1": "Todo lo del plan Gratuito",
+    "plan_premium_point_2": "40 fotos al mes",
+    "plan_premium_point_3": "Historial completo",
+    "plan_premium_point_4": "Fichas, recetas y tendencias",
+    "plan_premium_cta": "Lista de espera",
+    "plan_premium_badge": "Un pago al año",
+
+    "plan_gold_name": "Premium Gold",
+    "plan_gold_price": "4,99 €",
+    "plan_gold_period": "al mes",
+    "plan_gold_quota": "150 fotos al mes",
+    "plan_gold_summary": "Plan completo para alinear tus comidas con tu rutina diaria",
+    "plan_gold_point_1": "Todo lo del Premium",
+    "plan_gold_point_2": "150 fotos al mes",
+    "plan_gold_point_3": "Sugerencia de dietas diarias según rutina",
+    "plan_gold_point_4": "Armado de perfil personal completo",
+    "plan_gold_cta": "Lista de espera",
+    "plan_gold_badge": "El plan completo"
   }
 }

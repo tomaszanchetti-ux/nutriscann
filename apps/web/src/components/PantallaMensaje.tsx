@@ -12,6 +12,16 @@ import type { CopyDeLaApp } from "../lib/config";
 export interface PantallaMensajeProps {
   titulo: string;
   detalle: string;
+  /**
+   * Una segunda línea, más chica, con el DETALLE que el mensaje no puede traer.
+   *
+   * Nació con el cupo agotado (card 4.1): el backend dice "te quedaste sin
+   * fotos" y esta línea dice "has usado 15 de 15 este mes; se renueva el 1 de
+   * octubre" — números, no una frase, y por eso los arma el front. Va aparte y
+   * no pegada al mensaje porque son dos cosas distintas: lo que pasó, y el dato
+   * que hace falta para saber qué hacer.
+   */
+  nota?: string | null;
   /** El `error.code` del backend, cuando hubo. Se muestra chiquito, para el Q/A. */
   codigo?: string | null;
   cta: string;
@@ -31,6 +41,7 @@ export interface PantallaMensajeProps {
 export function PantallaMensaje({
   titulo,
   detalle,
+  nota,
   codigo,
   cta,
   onCta,
@@ -53,6 +64,9 @@ export function PantallaMensaje({
           {titulo}
         </h1>
         <p className="max-w-sm leading-relaxed text-pretty text-ink-soft">{detalle}</p>
+        {nota != null && nota !== "" && (
+          <p className="max-w-sm text-sm leading-relaxed text-pretty text-ink-faint">{nota}</p>
+        )}
         {codigo != null && codigo !== "" && (
           <p className="font-mono text-xs text-ink-faint">código: {codigo}</p>
         )}

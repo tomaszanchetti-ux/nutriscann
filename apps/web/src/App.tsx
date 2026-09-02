@@ -32,13 +32,33 @@
  * y Condiciones—, a la que se entra por el enlace del pie desde cualquiera de
  * las otras tres y de la que se vuelve exactamente a donde se estaba. Mismo
  * mecanismo: es una sección más, y el circuito del escaneo sigue intacto abajo.)
- */
+ *
+ * ---------------------------------------------------------------------------
+ * CARD 4.1 — Y AHORA HAY UNA PUERTA ANTES DE TODO ESTO.
+ *
+ * El login es OBLIGATORIO (decisión de Tomás, 02/09/2026): sin sesión no se
+ * escanea. La guarda vive acá arriba, delante de todo lo demás, y tiene TRES
+ * estados y no dos:
+ *
+ *   `cargando` — Firebase todavía está decidiendo si hay sesión guardada. Es un
+ *                parpadeo, pero existe, y en ese hueco NO se muestra el login:
+ *                a quien ya entró le aparecería la pantalla de entrada en la
+ *                cara cada vez que abre la app.
+ *   `login`    — no hay nadie. `PantallaLogin`, y nada más.
+ *   la app     — exactamente lo que había antes de esta card, sin un cambio en
+ *                el circuito del escaneo ni en las cuatro secciones.
+ *
+ * Lo único que la sesión le cambia a lo de abajo son dos cosas: la tarjeta de la
+ * cuenta en Perfil, y dos estados nuevos del escaneo —sesión caducada y cupo
+ * agotado— que son errores del backend como los demás, con sus propias salidas.
+ * ------------------------------------------------------------------------- */
 import { useEffect, useRef, useState } from "react";
 
 import { AvisoDeInstalacion } from "./components/AvisoDeInstalacion";
 import { BarraDeNavegacion, type Seccion } from "./components/BarraDeNavegacion";
 import { PantallaCaptura } from "./components/PantallaCaptura";
 import { PantallaEscaneo, type FaseDeEscaneo } from "./components/PantallaEscaneo";
+import { PantallaLogin, type InicioDeLogin } from "./components/PantallaLogin";
 import { PantallaMensaje, PantallaNoEsComida } from "./components/PantallaMensaje";
 import { PantallaPerfil } from "./components/PantallaPerfil";
 import { PantallaPremium } from "./components/PantallaPremium";
@@ -46,9 +66,18 @@ import { PantallaReporte } from "./components/PantallaReporte";
 import { PantallaTerminos } from "./components/PantallaTerminos";
 import { PieDeDiagnostico, PieLegal } from "./components/PieDeDiagnostico";
 import { analizarFoto, ErrorDeAnalisis, USA_FIXTURE_DE_ANALISIS } from "./lib/api";
+import {
+  hayEnlaceDeEntrada,
+  observarSesion,
+  resolverEntradaPendiente,
+  salir,
+  type Sesion,
+} from "./lib/auth";
 import { cargarConfig, CONFIG_DE_ARRANQUE, type ConfigDeLaApp } from "./lib/config";
+import { COPY_CUPO, COPY_SESION, notaDeCupo } from "./lib/copy.auth";
+import { TEXTO_VOLVER } from "./lib/copy.premium";
 import { comprimirImagen, ErrorDeImagen } from "./lib/imagen";
-import type { RespuestaDeAnalisis } from "./lib/types";
+import type { CupoDelBackend, RespuestaDeAnalisis } from "./lib/types";
 
 /**
  * LOS ESTADOS DE CARGA, completos (card 3.2). Ninguno es una pantalla en blanco
@@ -66,11 +95,69 @@ type Estado =
   | { fase: "escaneando"; paso: FaseDeEscaneo }
   | { fase: "reporte"; reporte: RespuestaDeAnalisis }
   | { fase: "no_es_comida"; mensaje: string | undefined }
-  | { fase: "error"; mensaje: string; codigo: string | null };
+  | {
+      fase: "error";
+      mensaje: string;
+      codigo: string | null;
+      /**
+       * El bloque `quota` del 429, cuando vino. Se guarda CRUDO y no ya
+       * convertido en una frase porque la pantalla necesita dos cosas distintas
+       * de él: el título depende del ámbito (mes o día) y la línea chica, de los
+       * números. Guardar solo el texto obligaría a deducir el ámbito leyéndolo.
+       */
+      cupo: CupoDelBackend | null;
+    };
 
 export default function App() {
   const [config, setConfig] = useState<ConfigDeLaApp>(CONFIG_DE_ARRANQUE);
   const [estado, setEstado] = useState<Estado>({ fase: "captura" });
+
+  /**
+   * LA SESIÓN. `null` = no hay nadie dentro.
+   *
+   * `sesionResuelta` es lo que distingue "todavía no sé" de "no hay nadie": el
+   * primer aviso de Firebase llega con `null` mientras el SDK aún está leyendo lo
+   * guardado, y confundir los dos es lo que hace parpadear la pantalla de login.
+   */
+  const [sesion, setSesion] = useState<Sesion | null>(null);
+  const [sesionResuelta, setSesionResuelta] = useState(false);
+
+  /**
+   * Cómo arrancó la puerta. Se decide en el PRIMER render mirando la URL, antes
+   * de que ninguna red conteste: si la dirección trae un enlace de correo, la
+   * pantalla arranca en "comprobando" y no en un vacío. Después cambia una sola
+   * vez, cuando `resolverEntradaPendiente()` dice qué salió de comprobarlo.
+   */
+  const [inicioDeLogin, setInicioDeLogin] = useState<InicioDeLogin>(() =>
+    hayEnlaceDeEntrada() ? { tipo: "verificando" } : { tipo: "normal" },
+  );
+
+  useEffect(() => {
+    let vivo = true;
+    const dejarDeObservar = observarSesion((quien) => {
+      if (vivo) setSesion(quien);
+    });
+
+    // Resuelve lo que haya quedado a medias —un enlace de correo en la URL, la
+    // vuelta de una redirección a Google— y recién entonces declara que la
+    // sesión está decidida.
+    void resolverEntradaPendiente().then((pendiente) => {
+      if (!vivo) return;
+      if (pendiente.estado === "falta_el_correo") {
+        setInicioDeLogin({ tipo: "pedir_correo" });
+      } else if (pendiente.estado === "fallo") {
+        setInicioDeLogin({ tipo: "fallo", codigo: pendiente.codigo });
+      } else {
+        setInicioDeLogin({ tipo: "normal" });
+      }
+      setSesionResuelta(true);
+    });
+
+    return () => {
+      vivo = false;
+      dejarDeObservar();
+    };
+  }, []);
   /**
    * LA SECCIÓN ES UN ESTADO APARTE, NO UNA FASE MÁS (card 3.3).
    *
@@ -190,17 +277,47 @@ export default function App() {
       // Tres orígenes distintos, tres textos distintos. El del backend gana
       // sobre cualquiera que se pudiera escribir acá: es el que sabe qué pasó.
       if (err instanceof ErrorDeImagen) {
-        setEstado({ fase: "error", mensaje: config.copy.error_unreadable, codigo: "imagen_ilegible" });
+        setEstado({
+          fase: "error",
+          mensaje: config.copy.error_unreadable,
+          codigo: "imagen_ilegible",
+          cupo: null,
+        });
       } else if (err instanceof ErrorDeAnalisis) {
         setEstado({
           fase: "error",
           mensaje: err.codigo === "sin_red" ? config.copy.error_network : err.message,
           codigo: err.codigo,
+          // Solo el 429 trae números. En todo lo demás es `null` y la pantalla
+          // ni dibuja la línea.
+          cupo: err.cupo,
         });
       } else {
-        setEstado({ fase: "error", mensaje: config.copy.error_unexpected, codigo: null });
+        setEstado({ fase: "error", mensaje: config.copy.error_unexpected, codigo: null, cupo: null });
       }
     }
+  }
+
+  /**
+   * Cierra la sesión y DEJA EL CIRCUITO EN CERO.
+   *
+   * Lo segundo no es un detalle: sin ello, el reporte del plato anterior seguiría
+   * en pantalla mientras aparece el login, y la siguiente persona que entre en
+   * ese teléfono vería lo que comió la anterior. Salir tiene que borrar lo que se
+   * estaba mirando, no solo el token.
+   *
+   * Es también la salida del 401: cuando el token ya no vale, la única acción
+   * útil es volver a entrar, y eso empieza por soltar el que hay.
+   */
+  async function cerrarSesion() {
+    volverACapturar();
+    setSeccion("escaneo");
+    // La puerta vuelve a su estado de fábrica. Sin esto, un tropiezo del
+    // arranque —un enlace que ya se había usado, por ejemplo— quedaría guardado
+    // y reaparecería como un cartel rojo al salir, acusando a algo que ya se
+    // había resuelto hace rato.
+    setInicioDeLogin({ tipo: "normal" });
+    await salir();
   }
 
   /** Entra a los términos recordando desde dónde, para que "Volver" vuelva ahí. */
@@ -217,11 +334,44 @@ export default function App() {
    */
   const mostrarNavegacion = !(seccion === "escaneo" && estado.fase === "escaneando");
 
+  /**
+   * LA GUARDA. Delante de todo, y con el hueco de "todavía no sé" contemplado.
+   *
+   * El caso `verificando` es la excepción que sí se dibuja mientras la sesión no
+   * está resuelta, y no hay riesgo de parpadeo: se llegó abriendo un enlace del
+   * correo, así que quien está mirando sabe perfectamente que está entrando.
+   *
+   * Los Términos siguen alcanzables desde acá, con el mismo enlace del pie de
+   * siempre: crear una cuenta sin poder leer las condiciones antes sería
+   * exactamente al revés.
+   */
+  if (!sesionResuelta && inicioDeLogin.tipo !== "verificando") {
+    return <Portada config={config} contenido={<PantallaQuieta />} />;
+  }
+
+  if (sesion === null) {
+    return (
+      <Portada
+        config={config}
+        contenido={
+          seccion === "terminos" ? (
+            <PantallaTerminos onVolver={() => setSeccion("escaneo")} />
+          ) : (
+            <PantallaLogin inicio={inicioDeLogin} />
+          )
+        }
+        onVerTerminos={seccion === "terminos" ? null : () => setSeccion("terminos")}
+      />
+    );
+  }
+
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col px-5">
       <main className="flex flex-1 flex-col">
         {seccion === "perfil" && (
           <PantallaPerfil
+            sesion={sesion}
+            onSalir={() => void cerrarSesion()}
             onVolver={() => setSeccion("escaneo")}
             onIrAPremium={() => setSeccion("premium")}
           />
@@ -292,6 +442,36 @@ export default function App() {
                   cta={config.copy.report_cta}
                   onCta={volverACapturar}
                 />
+              ) : /* LOS DOS ESTADOS DE LA IDENTIDAD (contrato WS09 §2). Los dos
+                     tienen título propio porque "No pude analizar la foto" sería
+                     mentira en los dos: la foto está perfecta, lo que falta es
+                     una sesión o un cupo. Y en los dos, reintentar con la misma
+                     foto daría exactamente el mismo resultado, así que la salida
+                     principal es otra. */
+              estado.codigo === "no_autenticado" ? (
+                <PantallaMensaje
+                  tono="error"
+                  titulo={COPY_SESION.titulo}
+                  detalle={estado.mensaje}
+                  codigo={estado.codigo}
+                  cta={COPY_SESION.volver_a_entrar}
+                  onCta={() => void cerrarSesion()}
+                />
+              ) : estado.codigo === "cupo_agotado" ? (
+                // Tono NEUTRO y no de error: quedarse sin cupo es el sistema
+                // funcionando como está diseñado, no algo que se rompió. El
+                // recuadro rojo está reservado para lo que sí falló.
+                <PantallaMensaje
+                  tono="neutro"
+                  titulo={COPY_CUPO.titulo(estado.cupo?.ambito ?? null)}
+                  detalle={estado.mensaje}
+                  nota={notaDeCupo(estado.cupo)}
+                  codigo={estado.codigo}
+                  cta={COPY_CUPO.ver_planes}
+                  onCta={() => setSeccion("premium")}
+                  ctaSecundaria={TEXTO_VOLVER}
+                  onCtaSecundaria={volverACapturar}
+                />
               ) : (
                 <PantallaMensaje
                   tono="error"
@@ -337,4 +517,52 @@ export default function App() {
       )}
     </div>
   );
+}
+
+/**
+ * EL MARCO DE LA PUERTA: el mismo contenedor de siempre, sin la barra de
+ * secciones.
+ *
+ * Existe para no duplicar la envoltura tres veces (el hueco de carga, el login y
+ * los Términos leídos desde el login), y sobre todo para que la puerta se vea
+ * como parte de la app y no como otra web: mismo ancho, mismo aire lateral, el
+ * mismo pie con la advertencia y el mismo diagnóstico en desarrollo.
+ *
+ * NO lleva `BarraDeNavegacion` y es a propósito: no hay ninguna sección a la que
+ * ir todavía, y tres pestañas muertas al pie serían tres promesas que no se
+ * pueden cumplir.
+ */
+function Portada({
+  config,
+  contenido,
+  onVerTerminos = null,
+}: {
+  config: ConfigDeLaApp;
+  contenido: React.ReactNode;
+  onVerTerminos?: (() => void) | null;
+}) {
+  return (
+    <div className="mx-auto flex min-h-dvh max-w-md flex-col px-5">
+      <main className="flex flex-1 flex-col">{contenido}</main>
+
+      <PieLegal disclaimer={config.copy.disclaimer} onVerTerminos={onVerTerminos} />
+
+      {(import.meta.env.DEV || USA_FIXTURE_DE_ANALISIS) && (
+        <PieDeDiagnostico origenDeConfig={config.origen} />
+      )}
+    </div>
+  );
+}
+
+/**
+ * El hueco de "todavía no sé si hay sesión". Dura lo que Firebase tarda en leer
+ * lo guardado —décimas de segundo— y por eso está DELIBERADAMENTE vacío: un
+ * texto o un logo apareciendo y desapareciendo en ese lapso se lee como un
+ * parpadeo, y un parpadeo se lee como un error.
+ *
+ * Lo único que hace es ocupar el alto de la pantalla, para que lo que venga
+ * después no salte.
+ */
+function PantallaQuieta() {
+  return <div className="flex-1" aria-hidden="true" />;
 }

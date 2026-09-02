@@ -1,26 +1,30 @@
 /**
- * Los textos de la VITRINA premium (card 3.3): el segundo CTA del reporte, la
- * sección Perfil con sus funcionalidades bloqueadas, el modal que las explica y
- * la sección Premium con los tres planes.
+ * La VITRINA premium (card 3.3): la sección Perfil con sus funcionalidades
+ * bloqueadas, el modal que las explica y la sección Premium con los tres planes.
  *
  * ---------------------------------------------------------------------------
- * ⚠️ POR QUÉ ESTOS TEXTOS ESTÁN EN EL CÓDIGO Y NO EN `config/app` (DT-22)
+ * QUÉ SE MUDÓ A `config/app` Y QUÉ SIGUE ACÁ (DT-41 b, card 4.5)
  *
  * La regla dura 1 del proyecto dice que todo texto que el usuario lee vive en
- * Firestore y se cambia sin desplegar. Estos todavía no: la fuente de verdad de
- * `copy` es `config/copy.json`, que publica el seeder de `kb/seed`, y ese seeder
- * tiene un CANDADO —un test con la lista de claves fija— que hace que sumar una
- * clave sea un cambio de las dos puntas. La card 3.3 se ejecutó en paralelo con
- * otra que estaba tocando `kb/`, así que agregar claves ahí en el mismo momento
- * era pisar trabajo ajeno.
+ * Firestore y se cambia sin desplegar. La card 4.5 amplió la lista cerrada de
+ * `config/copy.json` y con ella se fueron LA PANTALLA DE PLANES ENTERA (título,
+ * las tres notas al pie, el recuadro destacado de Gold y los tres planes con su
+ * precio, su cupo y sus viñetas) y el segundo CTA del reporte. Cambiar un precio
+ * ya no exige desplegar, que era el punto.
  *
- * Por eso están TODOS acá, agrupados en un solo módulo y en un solo lugar: la
- * migración a `config/copy.json` es mover este archivo, no cazar literales por
- * los componentes. Esa mudanza es parte de la **DT-22**, que la card 3.1 (o la
- * 3.5, con el seed real) ya tiene asignada.
+ * LO QUE SIGUE ACÁ SON DOS COSAS Y ESTÁN DECLARADAS:
  *
- * Hasta entonces, cambiar un precio o un cupo acá exige desplegar. Está dicho,
- * no supuesto.
+ *   1. LA ESTRUCTURA, que no es texto: qué plan es el actual, cuál va destacado,
+ *      a qué etiqueta de la lista de espera apunta cada botón, qué tarjeta lleva
+ *      el disclaimer. Eso no se edita en un PR de configuración; se programa.
+ *   2. LOS TEXTOS DE LAS PANTALLAS QUE ESTA CARD NO PODÍA CABLEAR — el perfil,
+ *      el modal, la navegación, el botón de volver y la lista de espera. No es
+ *      que no encajen en el modelo: encajan. Es que sus componentes no reciben
+ *      `copy`, y hacérselo llegar toca `App.tsx` y `lib/listaDeEspera.ts`, dos
+ *      archivos fuera del alcance de la card. Está dicho, no supuesto, y el
+ *      informe de la card lleva la lista exacta de qué falta cablear.
+ *
+ * Hasta entonces, cambiar una palabra de ESAS exige desplegar.
  * ---------------------------------------------------------------------------
  *
  * LA REGLA DE COMUNICACIÓN DE LOS CUPOS (Tomás, 01/09/2026, `docs/PLAN.md` §6.7):
@@ -35,13 +39,10 @@
  * Español de España, sin voseo (DT-21).
  *
  * ---------------------------------------------------------------------------
- * WS08 — LA EXCEPCIÓN, Y ES A PROPÓSITO: la sección «Funcionalidades Premium»
- * (`escalonesV2`, al final de este archivo) NO trae sus textos escritos acá. Los
- * LEE de `config/copy.json` a través de `CopyDeLaApp`, como el resto de la app,
- * porque son todas frases fijas y no había motivo para nacer ya en deuda. Este
- * archivo se queda con la ESTRUCTURA de esa sección —qué tarjeta es cuál, cuál
- * va destacada, cuál lleva el disclaimer, a qué etiqueta de la lista de espera
- * apunta cada botón y qué plan sella cada tarjeta—, que es lo que no es texto.
+ * WS08 — LA SECCIÓN «Funcionalidades Premium» (`escalonesV2`, al final de este
+ * archivo) fue la primera que nació así: sus textos se LEEN de `config/copy.json`
+ * a través de `CopyDeLaApp` y acá vive solo su estructura. La card 4.5 aplicó ese
+ * mismo reparto a los tres planes de arriba.
  * ---------------------------------------------------------------------------
  */
 import type { CopyDeLaApp } from "./config";
@@ -61,15 +62,10 @@ export const COPY_NAVEGACION = {
 /** El "atrás" que toda sección tiene, siempre. */
 export const TEXTO_VOLVER = "Volver";
 
-// ---------------------------------------------------------------------------
-// El segundo CTA del reporte
-// ---------------------------------------------------------------------------
-
-export const COPY_CTA_PREMIUM = {
-  /** Mismo tamaño que "Escanear otro plato", distinto color. */
-  etiqueta: "Pasarte a Premium",
-} as const;
-
+// El SEGUNDO CTA del reporte («Pasarte a Premium») vivía acá y desde la card 4.5
+// es `report_cta_premium` en `config/copy.json`: se cambia sin desplegar, igual
+// que el botón que tiene al lado.
+//
 // La línea que iba debajo de los dos CTAs ("Guarda este plato, mira tus
 // tendencias y recibe tu plan del día.") se sacó en el Q/A de la WS08: el
 // reporte tenía que terminar en los dos botones y nada más. Lo que prometía se
@@ -211,91 +207,85 @@ export interface PlanPremium {
   sello?: string;
 }
 
-export const COPY_PREMIUM = {
-  titulo: "Nuestros Planes",
-  // El subtítulo que explicaba por qué el cupo separa un plan del siguiente
-  // ("Mirar una foto y reconocer lo que hay en el plato cuesta dinero de
-  // verdad…") se sacó en el Q/A de la WS08: la pantalla empieza por las
-  // tarjetas, que es lo que se viene a ver. Lo que decía sigue dicho, en su
-  // sitio, en `nota_cupo`, al pie.
-  nota_cupo:
-    "Todos los cupos son mensuales: el número que ves es el que tienes cada mes. Hay un límite diario interno para evitar ráfagas, pero lo que se te garantiza es el mensual.",
-  nota_ads: "En CaliScan no hay publicidad. En ningún plan, tampoco en el gratuito.",
-  nota_pagos:
-    "Los pagos todavía no están abiertos. Esta pantalla es la vitrina de lo que viene: no se te va a cobrar nada ni se te van a pedir datos de pago.",
-  /**
-   * El diferenciador de Gold, escrito una vez y destacado en su tarjeta: es lo
-   * único que no se puede comprar en el plan anual (§6.7).
-   */
-  diferenciador: {
-    titulo: "Plan de dieta diario según tu rutina",
-    detalle:
-      "Carga tus datos personales y rutina diaria para obtener sugerencias alimentarias customizadas según tu perfil",
-  },
-} as const;
+// El título de la pantalla, sus tres notas al pie y el recuadro destacado de
+// Gold viajan desde la card 4.5 en `config/copy.json` (`plans_*`). El subtítulo
+// que explicaba por qué el cupo separa un plan del siguiente ("Mirar una foto y
+// reconocer lo que hay en el plato cuesta dinero de verdad…") se había sacado ya
+// en el Q/A de la WS08: la pantalla empieza por las tarjetas, que es lo que se
+// viene a ver. Lo que decía sigue dicho, en su sitio, en `plans_note_quota`.
 
 /**
  * Los tres planes, tal cual quedaron cerrados en `docs/PLAN.md` §6.7. No se
  * agrega ni una viñeta que no esté ahí: esta pantalla es una vitrina, y una
  * vitrina que promete de más es una mentira con mejor tipografía.
+ *
+ * DESDE LA CARD 4.5 (DT-41 b) EL TEXTO NO ESTÁ ACÁ: sale de `config/copy.json`
+ * (claves `plan_*`), así que cambiar 12 € por 15 €, o 40 fotos por 50, es un PR
+ * de configuración y una corrida del seed — no un despliegue de la PWA. Acá se
+ * queda lo que NO es texto: qué plan es el actual, cuál va destacado y con qué
+ * etiqueta se apunta cada botón a la lista de espera. Es el mismo reparto que
+ * `escalonesV2` estrenó en la WS08, ahora también arriba.
+ *
+ * Es una función y no una constante por el mismo motivo que `escalonesV2`: el
+ * copy llega de Firestore en tiempo de ejecución, y congelarlo al importar el
+ * módulo dejaría la pantalla con el arranque en frío para siempre.
  */
-export const PLANES: readonly PlanPremium[] = [
-  {
-    id: "gratuito",
-    nombre: "Gratuito",
-    precio: "0 €",
-    periodo: "para siempre",
-    cupo: "15 fotos al mes",
-    resumen: "El reporte completo de cada plato que fotografíes.",
-    incluye: [
-      "Calorías, macros y el desglose de cada alimento",
-      "Cada número trazable a su fuente en la base nutricional",
-      "Sin publicidad",
-    ],
-    cta: "Tu plan actual",
-    actual: true,
-  },
-  {
-    id: "premium_anual",
-    nombre: "Premium",
-    precio: "12 €",
-    periodo: "al año, en un solo pago",
-    cupo: "40 fotos al mes",
-    resumen: "Casi tres veces el cupo, y nada de lo que escaneas se pierde.",
-    // La cuarta viñeta dice LO MISMO, letra por letra, que el título de la
-    // tarjeta de «Funcionalidades Premium» que hay más abajo en la pantalla
-    // (`v2_premium_titulo`). Es a propósito: quien lee el plan aquí arriba y
-    // luego ve el recuadro de abajo tiene que reconocerlo, no descubrir algo
-    // nuevo. Si ese título cambia, esta línea cambia con él (Q/A, 02/09/2026).
-    incluye: [
-      "Todo lo del plan Gratuito",
-      "40 fotos al mes",
-      "Historial completo",
-      "Fichas, recetas y tendencias",
-    ],
-    cta: "Lista de espera",
-    listaDeEspera: "premium",
-    sello: "Un pago al año",
-  },
-  {
-    id: "premium_gold",
-    nombre: "Premium Gold",
-    precio: "4,99 €",
-    periodo: "al mes",
-    cupo: "150 fotos al mes",
-    resumen: "Plan completo para alinear tus comidas con tu rutina diaria",
-    incluye: [
-      "Todo lo del Premium",
-      "150 fotos al mes",
-      "Sugerencia de dietas diarias según rutina",
-      "Armado de perfil personal completo",
-    ],
-    cta: "Lista de espera",
-    listaDeEspera: "gold",
-    destacado: true,
-    sello: "El plan completo",
-  },
-];
+export function planes(copy: CopyDeLaApp): readonly PlanPremium[] {
+  return [
+    {
+      id: "gratuito",
+      nombre: copy.plan_free_name,
+      precio: copy.plan_free_price,
+      periodo: copy.plan_free_period,
+      cupo: copy.plan_free_quota,
+      resumen: copy.plan_free_summary,
+      incluye: [copy.plan_free_point_1, copy.plan_free_point_2, copy.plan_free_point_3],
+      cta: copy.plan_free_cta,
+      actual: true,
+    },
+    {
+      id: "premium_anual",
+      nombre: copy.plan_premium_name,
+      precio: copy.plan_premium_price,
+      periodo: copy.plan_premium_period,
+      cupo: copy.plan_premium_quota,
+      resumen: copy.plan_premium_summary,
+      // La cuarta viñeta dice LO MISMO, letra por letra, que el título de la
+      // tarjeta de «Funcionalidades Premium» que hay más abajo en la pantalla
+      // (`v2_premium_titulo`). Es a propósito: quien lee el plan aquí arriba y
+      // luego ve el recuadro de abajo tiene que reconocerlo, no descubrir algo
+      // nuevo. Si ese título cambia, esta línea cambia con él (Q/A, 02/09/2026),
+      // y ahora las dos se editan en el mismo archivo.
+      incluye: [
+        copy.plan_premium_point_1,
+        copy.plan_premium_point_2,
+        copy.plan_premium_point_3,
+        copy.plan_premium_point_4,
+      ],
+      cta: copy.plan_premium_cta,
+      listaDeEspera: "premium",
+      sello: copy.plan_premium_badge,
+    },
+    {
+      id: "premium_gold",
+      nombre: copy.plan_gold_name,
+      precio: copy.plan_gold_price,
+      periodo: copy.plan_gold_period,
+      cupo: copy.plan_gold_quota,
+      resumen: copy.plan_gold_summary,
+      incluye: [
+        copy.plan_gold_point_1,
+        copy.plan_gold_point_2,
+        copy.plan_gold_point_3,
+        copy.plan_gold_point_4,
+      ],
+      cta: copy.plan_gold_cta,
+      listaDeEspera: "gold",
+      destacado: true,
+      sello: copy.plan_gold_badge,
+    },
+  ];
+}
 
 // ---------------------------------------------------------------------------
 // La LISTA DE ESPERA (Q/A de la WS08)
@@ -417,11 +407,11 @@ export interface EscalonV2 {
  * ser estructura: no se escribe dos veces algo que ya está en `PLANES`, y el
  * sello no puede quedar diciendo un plan distinto del que el botón apunta.
  */
-function nombreDelPlan(etiqueta: PlanDeListaDeEspera): string {
-  const plan = PLANES.find((candidato) => candidato.listaDeEspera === etiqueta);
-  // Los dos escalones apuntan a planes que existen en `PLANES`. Si alguien
-  // borrara uno, la tarjeta muestra la etiqueta cruda —fea y a la vista— antes
-  // que inventar el nombre de un plan que ya no está.
+function nombreDelPlan(copy: CopyDeLaApp, etiqueta: PlanDeListaDeEspera): string {
+  const plan = planes(copy).find((candidato) => candidato.listaDeEspera === etiqueta);
+  // Los dos escalones apuntan a planes que existen arriba. Si alguien borrara
+  // uno, la tarjeta muestra la etiqueta cruda —fea y a la vista— antes que
+  // inventar el nombre de un plan que ya no está.
   return plan === undefined ? etiqueta : plan.nombre;
 }
 
@@ -434,7 +424,7 @@ export function escalonesV2(copy: CopyDeLaApp): readonly EscalonV2[] {
   return [
     {
       id: "v2_premium",
-      sello: nombreDelPlan("premium"),
+      sello: nombreDelPlan(copy, "premium"),
       titulo: copy.v2_premium_titulo,
       vinculo: copy.v2_premium_vinculo,
       resumen: copy.v2_premium_resumen,
@@ -444,7 +434,7 @@ export function escalonesV2(copy: CopyDeLaApp): readonly EscalonV2[] {
     },
     {
       id: "v2_gold",
-      sello: nombreDelPlan("gold"),
+      sello: nombreDelPlan(copy, "gold"),
       titulo: copy.v2_gold_titulo,
       vinculo: copy.v2_gold_vinculo,
       resumen: copy.v2_gold_resumen,

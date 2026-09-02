@@ -6,27 +6,15 @@
  * selector de archivos, que es exactamente lo que hace falta para el Q/A visual
  * con fotos guardadas. Un solo control para los dos casos, sin ramas.
  *
- * El copy sale de `config/app`, con UNA excepción declarada abajo
- * (`CONTINUACION_DEL_TITULO`).
+ * TODO el copy sale de `config/app`. La línea que cierra la promesa debajo del
+ * círculo —«Y obtén el detalle nutricional de tu comida», Q/A de Tomás en la
+ * WS08— vivía escrita acá porque la lista de claves no se podía ampliar sin
+ * tocar el seed; la card 4.5 la amplió y la línea se mudó a `capture_tagline`
+ * (DT-41 b). Esta pantalla ya no tiene ni un texto propio.
  */
 import { useRef } from "react";
 
 import type { CopyDeLaApp } from "../lib/config";
-
-/**
- * LA LÍNEA QUE CONTINÚA EL TÍTULO, debajo del círculo (Q/A de Tomás, WS08).
- *
- * El título pregunta —«¿Qué estás comiendo?»— y esta frase cierra la promesa
- * de la pantalla: se hace la foto y a cambio llega el detalle nutricional.
- *
- * POR QUÉ NO ESTÁ EN `config/app`. La lista de claves de `config/copy.json`
- * está CERRADA con candado: `kb/seed/src/textos.test.ts` exige que las claves
- * del repo sean exactamente los campos de `CopyDeLaApp`, así que sumar un texto
- * es un cambio de las dos puntas y además de `kb/`, que esta WS no toca. Se
- * queda acá, dicho y no supuesto, y viaja a `config/copy.json` junto con los
- * textos de la vitrina premium y los T&C — la mudanza de la **DT-22**.
- */
-const CONTINUACION_DEL_TITULO = "Y obtén el detalle nutricional de tu comida";
 
 export interface PantallaCapturaProps {
   copy: CopyDeLaApp;
@@ -67,7 +55,7 @@ export function PantallaCaptura({ copy, onFoto }: PantallaCapturaProps) {
         {/* Debajo del círculo, no encima: primero se ve qué hay que tocar y
             después qué se obtiene por tocarlo. */}
         <p className="max-w-[18rem] text-center leading-relaxed text-balance text-ink-soft">
-          {CONTINUACION_DEL_TITULO}
+          {copy.capture_tagline}
         </p>
 
         <input

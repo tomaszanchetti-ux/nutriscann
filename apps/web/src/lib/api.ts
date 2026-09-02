@@ -3,6 +3,9 @@
  *
  * Toda llamada al servidor pasa por acá — la app nunca arma URLs sueltas.
  */
+import { cabeceraDeAppCheck } from "./appcheck";
+import { obtenerIdToken, usuarioActual } from "./auth";
+import { COPY_SESION } from "./copy.auth";
 import { functionUrl } from "./firebase";
 import {
   RESPUESTA_DE_FIXTURE,
@@ -10,7 +13,7 @@ import {
   respuestaDeFixtureSinTotal,
 } from "./fixtures/scan.fixture";
 import type { ImagenComprimida } from "./imagen";
-import type { ErrorDelBackend, RespuestaDeAnalisis } from "./types";
+import type { CupoDelBackend, ErrorDelBackend, RespuestaDeAnalisis } from "./types";
 
 export interface HealthReport {
   status: "ok" | "error";
@@ -89,6 +92,21 @@ export async function fetchHealth(signal?: AbortSignal): Promise<HealthReport> {
  * kB. Adentro de una función solo se las llama desde esta rama, que se pliega a
  * `false`, y el módulo entero se va. Medido después del arreglo: 263,1 kB, sin
  * una sola cadena del fixture adentro.
+ *
+ * LA CARD 4.1 LE SUMÓ DOS MÁS, por el mismo motivo de siempre: los dos estados
+ * que la identidad trae —`sin_sesion` (el 401) y `sin_cupo` (el 429)— tampoco se
+ * pueden mirar a voluntad contra un backend que anda bien. El segundo, encima,
+ * exigiría gastar quince fotos de verdad para verlo una vez.
+ *
+ * ⚠️ Y HAY UNA DIFERENCIA CON LOS OTROS MODOS QUE HAY QUE DECIR: los textos de
+ * `error` y `no_es_comida` son copias byte a byte de `functions/src/analyze/
+ * errores.ts`, porque una demo que inventa su propio texto no es demo de nada.
+ * Estos dos NO pueden serlo todavía: los textos de `no_autenticado` y
+ * `cupo_agotado` los está escribiendo la card 4.2 en este mismo momento (contrato
+ * de la WS09, §2). `sin_sesion` usa el texto PROPIO del front —el que se muestra
+ * cuando no hay ni sesión que mandar, y que sí es real— y `sin_cupo` usa un
+ * texto de relleno marcado como tal. El día que el backend esté escrito, el de
+ * `sin_cupo` se copia de allá igual que los otros dos. Declarado, no olvidado.
  */
 export type ModoDeDemo =
   | "reporte"
@@ -96,7 +114,9 @@ export type ModoDeDemo =
   | "sin_total"
   | "lento"
   | "no_es_comida"
-  | "error";
+  | "error"
+  | "sin_sesion"
+  | "sin_cupo";
 
 const MODO_PEDIDO = import.meta.env.VITE_ANALYZE_FIXTURE;
 
@@ -116,7 +136,11 @@ export const MODO_DE_DEMO: ModoDeDemo | null =
             ? "error"
             : MODO_PEDIDO === "no_es_comida"
               ? "no_es_comida"
-              : null;
+              : MODO_PEDIDO === "sin_sesion"
+                ? "sin_sesion"
+                : MODO_PEDIDO === "sin_cupo"
+                  ? "sin_cupo"
+                  : null;
 
 export const USA_FIXTURE_DE_ANALISIS = MODO_DE_DEMO !== null;
 
@@ -142,10 +166,17 @@ function demoraDeLaDemo(modo: ModoDeDemo): number {
  */
 export class ErrorDeAnalisis extends Error {
   readonly codigo: string;
-  constructor(codigo: string, mensaje: string) {
+  /**
+   * El bloque `quota` del 429, cuando el backend lo mandó (contrato WS09 §2: es
+   * OPCIONAL). Es lo que deja decir "has usado 15 de 15 y se renueva el 1 de
+   * octubre" en vez de solo "te quedaste sin fotos".
+   */
+  readonly cupo: CupoDelBackend | null;
+  constructor(codigo: string, mensaje: string, cupo: CupoDelBackend | null = null) {
     super(mensaje);
     this.name = "ErrorDeAnalisis";
     this.codigo = codigo;
+    this.cupo = cupo;
   }
 }
 
@@ -157,18 +188,49 @@ function esErrorDelBackend(cuerpo: unknown): cuerpo is ErrorDelBackend {
   return typeof code === "string" && typeof message_es === "string";
 }
 
+/**
+ * Lee el bloque `quota` SIN confiar en que venga ni en que venga entero.
+ *
+ * El contrato lo declara opcional, así que la ausencia es normal y no un fallo:
+ * sin él se muestra el `message_es` y ya. Y se comprueba campo por campo porque
+ * un `usados` que llegara como texto pintaría "has usado undefined de 15".
+ */
+function leerCupo(cuerpo: ErrorDelBackend): CupoDelBackend | null {
+  const cupo = cuerpo.error.quota;
+  if (typeof cupo !== "object" || cupo === null) return null;
+  const { ambito, usados, limite } = cupo;
+  if (ambito !== "mes" && ambito !== "dia") return null;
+  if (typeof usados !== "number" || typeof limite !== "number") return null;
+  return {
+    ambito,
+    usados,
+    limite,
+    se_renueva: typeof cupo.se_renueva === "string" ? cupo.se_renueva : undefined,
+  };
+}
+
 export interface OpcionesDeAnalisis {
-  owner_id?: string;
   signal?: AbortSignal;
 }
 
 /**
  * Manda la foto ya comprimida a `analyze` y devuelve el reporte.
  *
- * El contrato (fijado por el orquestador de la WS04):
- *   POST { image_base64, media_type, owner_id? }
+ * El contrato (WS04, actualizado por el de la WS09 §1):
+ *   POST { image_base64, media_type }  ·  Authorization: Bearer <idToken>
+ *                                      ·  X-Firebase-AppCheck: <token>
  *   200  { scan_id, is_food, items, totals, meta }
- *   ≠200 { error: { code, message_es } }
+ *   ≠200 { error: { code, message_es, quota? } }
+ *
+ * La cabecera de App Check (card 4.4) PUEDE FALTAR y el pedido sale igual: en
+ * local está apagada y en producción reCAPTCHA puede fallar. Qué hace el backend
+ * cuando falta lo decide un interruptor de `config/app`; hoy solo lo anota.
+ *
+ * `owner_id` YA NO VIAJA. Hasta la Fase 3 el dueño del scan era un literal que
+ * mandaba el navegador —y que el navegador podía inventarse—; desde la card 4.1
+ * el dueño es el `uid` del token verificado del lado del servidor, que es la
+ * única forma de que "mis platos" signifique algo. El backend ignora el campo si
+ * un cliente viejo cacheado en un teléfono lo sigue mandando durante unos días.
  */
 export async function analizarFoto(
   imagen: ImagenComprimida,
@@ -191,7 +253,32 @@ export async function analizarFoto(
       // de `config/copy.json`. Declarado, no olvidado.
       throw new ErrorDeAnalisis(
         "modelo_no_disponible",
-        "El servicio de análisis está ocupado. Probá de nuevo en un momento.",
+        "El servicio de análisis está ocupado. Prueba de nuevo en un momento.",
+      );
+    }
+
+    if (MODO_DE_DEMO === "sin_sesion") {
+      // El 401 del contrato (§2). El texto es el PROPIO del front —el mismo que
+      // se muestra cuando ni siquiera hay sesión que mandar— y no una copia del
+      // del backend, que todavía no está escrito. En producción, cuando el
+      // backend contesta, gana el suyo.
+      throw new ErrorDeAnalisis("no_autenticado", COPY_SESION.caducada);
+    }
+
+    if (MODO_DE_DEMO === "sin_cupo") {
+      // El 429 del contrato (§2), con su bloque `quota` completo: 15 al mes es
+      // el cupo del plan gratuito (`docs/PLAN.md` §6.7) y el 1 de octubre es el
+      // corte del mes siguiente en Europe/Madrid.
+      //
+      // ⚠️ EL TEXTO ES DE RELLENO Y ESTÁ DICHO: el de verdad lo escribe la card
+      // 4.2 en `functions/src/analyze/errores.ts` y hay que copiarlo acá tal cual
+      // cuando exista, como ya se hizo con `modelo_no_disponible` y
+      // `error_not_food`. Hasta entonces, esta demo enseña la PANTALLA bien y el
+      // texto solo aproximado.
+      throw new ErrorDeAnalisis(
+        "cupo_agotado",
+        "Has agotado tu cupo de análisis. Espera a que se renueve para analizar más fotos.",
+        { ambito: "mes", usados: 15, limite: 15, se_renueva: "2026-10-01" },
       );
     }
 
@@ -211,7 +298,7 @@ export async function analizarFoto(
         is_food: false,
         items: [],
         totals: null,
-        message_es: "Eso no parece un plato de comida. Probá con una foto de lo que estás por comer.",
+        message_es: "Eso no parece un plato de comida. ¿Probamos con otra foto?",
         persisted: false,
       };
     }
@@ -226,15 +313,65 @@ export async function analizarFoto(
     return RESPUESTA_DE_FIXTURE;
   }
 
+  return mandarAlBackend(imagen, opciones, false);
+}
+
+/**
+ * El envío de verdad. Separado de `analizarFoto` porque puede correr DOS veces:
+ * ver el reintento del 401, más abajo.
+ *
+ * `conTokenNuevo` es lo que evita que ese reintento se vuelva un bucle.
+ */
+async function mandarAlBackend(
+  imagen: ImagenComprimida,
+  opciones: OpcionesDeAnalisis,
+  conTokenNuevo: boolean,
+): Promise<RespuestaDeAnalisis> {
+  /**
+   * EL TOKEN, QUE ES LO QUE DICE QUIÉN LLAMA (contrato WS09 §1).
+   *
+   * En el camino normal no hace falta pedir uno nuevo: el SDK lo renueva solo
+   * cuando le quedan menos de cinco minutos de vida. Se fuerza únicamente en el
+   * reintento de más abajo.
+   */
+  const token = await obtenerIdToken(conTokenNuevo);
+  if (token === null) {
+    // No hay sesión: se corta ACÁ y no se sube la foto. Subir cuatro megas para
+    // que el servidor conteste 401 es gastar los datos del móvil de alguien para
+    // nada. Como el backend no llegó a hablar, el texto lo pone el front.
+    throw new ErrorDeAnalisis("no_autenticado", COPY_SESION.caducada);
+  }
+
+  /**
+   * LA PROCEDENCIA, QUE ES OTRA COSA QUE EL TOKEN (card 4.4).
+   *
+   * El `Authorization` de arriba dice QUIÉN llama; esta cabecera dice DESDE
+   * DÓNDE: que el pedido sale de nuestra PWA en un navegador de verdad y no de
+   * un script con una cuenta gratis.
+   *
+   * Se pide DESPUÉS del token y justo antes del `fetch` a propósito: es lo
+   * último que puede tardar, y así el corte por falta de sesión —que no gasta
+   * datos del móvil— ya ocurrió.
+   *
+   * Puede venir vacía y eso NO es un error: en local está apagada, y en
+   * producción puede fallar reCAPTCHA. `cabeceraDeAppCheck` no lanza nunca. Qué
+   * pasa entonces lo decide el backend, con un interruptor que vive en
+   * `config/app` y no en este código.
+   */
+  const procedencia = await cabeceraDeAppCheck();
+
   let res: Response;
   try {
     res = await fetch(functionUrl("analyze"), {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+        ...procedencia,
+      },
       body: JSON.stringify({
         image_base64: imagen.image_base64,
         media_type: imagen.media_type,
-        ...(opciones.owner_id ? { owner_id: opciones.owner_id } : {}),
       }),
       signal: opciones.signal,
     });
@@ -257,10 +394,27 @@ export async function analizarFoto(
   }
 
   if (!res.ok) {
+    /**
+     * UN 401 SE REINTENTA UNA VEZ, CON UN TOKEN NUEVO, Y NO ES UN PARCHE.
+     *
+     * El caso pasa de verdad: la foto tarda unos segundos en comprimirse y
+     * subirse, y si el token vencía justo en esa ventana el servidor la rechaza
+     * cuando ya llegó entera. Mandar a la persona de vuelta al login por eso
+     * sería tirarle el plato a la basura por un reloj.
+     *
+     * Es seguro y es barato: el 401 se contesta ANTES de mirar la foto, así que
+     * el reintento no gasta una llamada al modelo ni consume cupo. Y se hace una
+     * sola vez —`conTokenNuevo` lo garantiza— y solo si sigue habiendo sesión:
+     * si la persona cerró sesión, no hay token nuevo que pedir.
+     */
+    if (res.status === 401 && !conTokenNuevo && usuarioActual() !== null) {
+      return mandarAlBackend(imagen, opciones, true);
+    }
+
     // El backend manda el texto en español: se muestra ESE, no uno inventado
     // acá. Si no vino con la forma esperada, se dice el código HTTP y nada más.
     if (esErrorDelBackend(cuerpo)) {
-      throw new ErrorDeAnalisis(cuerpo.error.code, cuerpo.error.message_es);
+      throw new ErrorDeAnalisis(cuerpo.error.code, cuerpo.error.message_es, leerCupo(cuerpo));
     }
     throw new ErrorDeAnalisis("http_" + res.status, `El backend respondió con un error ${res.status}.`);
   }

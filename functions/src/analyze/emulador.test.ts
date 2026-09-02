@@ -36,6 +36,8 @@ import { manejarAnalyze, type CuerpoDeAnalisis, type DatosAPersistir } from "./h
 import { guardarScan, registrarCuracion } from "./persistencia";
 import { MODELO_VISION, type ClienteDeVision } from "./vision";
 import type { AppConfig } from "../config";
+import { momentoDelCupo } from "../cupo/calendario";
+import { devolverCredito, refDelConsumo, reservarCupo } from "../cupo/persistencia";
 
 const PROYECTO = process.env["GCLOUD_PROJECT"] as string;
 const DUEÑO = "qa-emulador";
@@ -77,12 +79,24 @@ function respuestaDelModelo(vision: unknown): Anthropic.Message {
   } as unknown as Anthropic.Message;
 }
 
+/**
+ * Topes HOLGADOS a propósito. Este test mide el circuito del ANÁLISIS —catálogo,
+ * expediente, cola de curación— y hace tres escaneos seguidos con el mismo
+ * dueño; con el tope real de 3 al día el tercero rebotaría y lo que se estaría
+ * probando sería el cupo. El cupo tiene su propio test contra el emulador
+ * (`cupo/emulador.test.ts`), y ahí sí se lo aprieta hasta que muerde.
+ */
 const CONFIG: AppConfig = {
   kb_version: null,
-  max_scans_per_day: 3,
+  max_scans_per_month: 50,
+  max_scans_per_day: 50,
   copy: {},
   recommendation_rules: null,
 };
+
+/** Un instante fijo: el período del cupo no depende del día en que se corra. */
+const FECHA_FIJA = new Date("2026-09-02T10:00:00Z");
+const MOMENTO = momentoDelCupo(FECHA_FIJA);
 
 test("circuito foto → motor → Firestore contra el emulador", async (t) => {
   if (!(await hayEmulador())) {
@@ -100,6 +114,7 @@ test("circuito foto → motor → Firestore contra el emulador", async (t) => {
 
   // Base limpia SOLO de lo nuestro: el catálogo sembrado no se toca.
   await borrarColeccion(db.collection("owners").doc(DUEÑO).collection("scans"));
+  await borrarColeccion(db.collection("owners").doc(DUEÑO).collection("usage"));
   await borrarColeccion(db.collection("curation_queue"));
 
   let indice: Awaited<ReturnType<typeof cargarIndice>> | null = null;
@@ -118,6 +133,15 @@ test("circuito foto → motor → Firestore contra el emulador", async (t) => {
       return indice;
     },
     config: async () => ({ config: CONFIG }),
+    // El dueño sale del token también acá: lo que se reemplaza es la llamada al
+    // Admin SDK, no la regla. El circuito con el Admin SDK de verdad —contra el
+    // emulador de Auth— se prueba en `cupo/emulador.test.ts`.
+    verificarToken: async () => ({ uid: DUEÑO }),
+    reservarCupo: (entrada) => reservarCupo(db, entrada),
+    devolverCupo: async (entrada) => {
+      await devolverCredito(db, entrada);
+    },
+    fecha: () => FECHA_FIJA,
     nuevoScanId: () => scan_id,
     persistir: async (datos: DatosAPersistir) => {
       await guardarScan(db, { ...datos, owner_id: DUEÑO });
@@ -128,6 +152,13 @@ test("circuito foto → motor → Firestore contra el emulador", async (t) => {
     },
     opcionesDeVision: { esperar: async () => {} },
   });
+
+  /** El pedido tal como llega de la PWA: token en la cabecera, sin `owner_id`. */
+  const PEDIDO = {
+    method: "POST",
+    body: { image_base64: "AAAABBBB", media_type: "image/jpeg" },
+    headers: { authorization: "Bearer token-del-emulador" },
+  };
 
   const PLATO = {
     is_food: true,
@@ -140,12 +171,15 @@ test("circuito foto → motor → Firestore contra el emulador", async (t) => {
 
   await t.test("2 — el scan queda escrito con la forma del contrato", async () => {
     const { status, body } = await manejarAnalyze(
-      { method: "POST", body: { image_base64: "AAAABBBB", media_type: "image/jpeg", owner_id: DUEÑO } },
+      PEDIDO,
       deps(PLATO, "scan-1"),
     );
     const cuerpo = body as CuerpoDeAnalisis;
     assert.equal(status, 200);
     assert.equal(cuerpo.persisted, true, "si esto es false, la escritura falló y el test siguiente miente");
+    assert.equal(cuerpo.quota.mes.usados, 1, "el 200 le dice al usuario cómo va su cupo, ya cobrado");
+    assert.equal(cuerpo.quota.mes.limite, CONFIG.max_scans_per_month);
+    assert.equal(cuerpo.quota.mes.se_renueva, "2026-10-01");
 
     const doc = await db.collection("owners").doc(DUEÑO).collection("scans").doc("scan-1").get();
     assert.equal(doc.exists, true);
@@ -170,6 +204,21 @@ test("circuito foto → motor → Firestore contra el emulador", async (t) => {
     assert.equal(typeof meta["latency_ms"], "number");
   });
 
+  await t.test("2 bis — el escaneo dejó su marca en el cupo del mes", async () => {
+    // El cupo no se prueba en serio acá (lo hace `cupo/emulador.test.ts`), pero
+    // sí que el CABLEADO existe: si el handler no llamara a la reserva, este
+    // documento no estaría y el endpoint no frenaría a nadie en producción.
+    const doc = await refDelConsumo(db, DUEÑO, MOMENTO.mes).get();
+    assert.equal(doc.exists, true, `tenía que existir owners/${DUEÑO}/usage/${MOMENTO.mes}`);
+    const datos = doc.data() as Record<string, unknown>;
+    assert.equal(datos["usados_mes"], 1);
+    assert.equal(datos["usados_dia"], 1);
+    assert.equal(datos["dia"], MOMENTO.dia);
+    assert.equal(datos["zona"], "Europe/Madrid");
+    assert.equal(datos["limite_mes_aplicado"], CONFIG.max_scans_per_month, "con qué tope se decidió");
+    assert.ok(datos["primer_uso"], "el alta estampa cuándo empezó a consumir este mes");
+  });
+
   await t.test("3 — el término sin ficha entró a la cola una sola vez", async () => {
     const cola = await db.collection("curation_queue").get();
     assert.equal(cola.size, 1, "solo el alimento inventado; la manzana y el arroz están en el catálogo");
@@ -190,7 +239,7 @@ test("circuito foto → motor → Firestore contra el emulador", async (t) => {
     const antes = (await db.collection("curation_queue").doc("zzqx-invented-food").get()).data();
 
     await manejarAnalyze(
-      { method: "POST", body: { image_base64: "AAAABBBB", media_type: "image/jpeg", owner_id: DUEÑO } },
+      PEDIDO,
       deps(PLATO, "scan-2"),
     );
 
@@ -207,7 +256,7 @@ test("circuito foto → motor → Firestore contra el emulador", async (t) => {
     const scansAntes = (await db.collection("owners").doc(DUEÑO).collection("scans").get()).size;
 
     const { status, body } = await manejarAnalyze(
-      { method: "POST", body: { image_base64: "AAAABBBB", media_type: "image/jpeg", owner_id: DUEÑO } },
+      PEDIDO,
       deps({ is_food: false, items: [] }, "scan-3"),
     );
 

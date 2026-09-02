@@ -1,0 +1,25 @@
+{
+  "$schema_version": 1,
+  "updated_at": "2026-09-02",
+
+  "note": "Los umbrales NUMÉRICOS de la interfaz. Hermano de copy.json y por el mismo motivo: es la regla dura n.º 1 del proyecto —nada hardcodeado— aplicada a los números que deciden cómo se ve algo en pantalla. Se edita acá, se revisa en un PR y se publica con 'npm run kb:seed:config'. Los valores que están en apps/web/src/lib/config.ts (UMBRALES_DE_ARRANQUE) son el ARRANQUE EN FRÍO, no la configuración.",
+
+  "why_not_copy": "No entran en copy.json y no es por prolijidad: 'config/app.copy' es un mapa de TEXTO A TEXTO (Record<string,string> en functions/src/config.ts) y el navegador lee cada clave como stringValue. Un número ahí adentro rompe el tipo del campo. Por eso viajan en su propio campo del documento, 'thresholds', que es un mapa de texto a NÚMERO.",
+
+  "why_not_rules": "Tampoco entran en recommendation_rules.json, aunque ahí también haya umbrales. Aquel documento es la transcripción del modelo de perfil de nutrientes de la OPS y sus umbrales son del PLATO ENTERO (por ejemplo 1 mg de sodio por kcal). Estos son de un ALIMENTO suelto y por 100 g: la misma palabra, dos preguntas distintas. Mezclarlos haría que una cita de la OPS pareciera respaldar un número que la OPS no dice.",
+
+  "keys_note": "Lista CERRADA, igual que la de copy.json y por el mismo motivo: el front lee cada umbral POR SU NOMBRE contra la interfaz UmbralesDeLaApp (apps/web/src/lib/config.ts). Un nombre mal tipeado no rompe nada visible —la pantalla usa el valor del arranque en frío y se ve igual de bien—, así que hay que cazarlo antes de publicar. El candado vive en kb/seed/src/umbrales.test.ts.",
+
+  "keys": {
+    "sodium_high_mg_per_100g": {
+      "since": "card-4.5",
+      "used_in": "ItemDelPlato — desde qué sodio POR 100 g un alimento se pinta como salado (el valor en ámbar, con su explicación en el title). Se mide sobre per_100g y NUNCA sobre el valor escalado: es la diferencia entre «este alimento es salado» y «de este alimento hay mucho en el plato».",
+      "origen": "Es el MISMO número que el 'umbral_sodio_mg' de la DT-13 (kb/curation/genericos.dt13.json), con el que la curación decide a qué ficha genérica le escribe su caveat de sodio. Que sean el mismo es el punto: si el catálogo avisa por un alimento, la pantalla lo pinta, y al revés. Antes estaba COPIADO a mano en el componente y subirlo en la curación no cambiaba la pantalla — esa era la DT-41 (a). Ahora lo publica este archivo y kb/seed/src/umbrales.test.ts verifica que los dos números sigan siendo uno solo.",
+      "unidad": "mg de sodio por cada 100 g de alimento"
+    }
+  },
+
+  "thresholds": {
+    "sodium_high_mg_per_100g": 400
+  }
+}
