@@ -14,13 +14,12 @@
  * CTA del hero y del cierre, los tres botones de los planes y el pie. Un solo
  * destino, sin excepciones ni ramas: a la app.
  *
- * ⚠️ ESTE VALOR ES PROVISIONAL. Hoy la app vive en el dominio por defecto de
- * Firebase Hosting. Cuando `caliscan.app` esté conectado, la app pasará a
- * `https://app.caliscan.app` y este sitio a la raíz del dominio — y entonces
- * se cambia esta constante y NADA MÁS. Es el único sitio del repo donde la
- * landing sabe la dirección de la app.
+ * Desde el deploy de la card 3.5 (02/09/2026) apunta al dominio propio:
+ * `app.caliscan.app` está verificado en Firebase Hosting sobre el site de la
+ * PWA. Es el único sitio del repo donde la landing sabe la dirección de la
+ * app: si la dirección cambia, se cambia esta constante y NADA MÁS.
  */
-const APP_URL = "https://nutriscann-f809e.web.app";
+const APP_URL = "https://app.caliscan.app";
 
 (function () {
   "use strict";
