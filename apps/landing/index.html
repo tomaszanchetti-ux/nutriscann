@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#12160f" />
+    <meta name="color-scheme" content="dark" />
+
+    <title>CaliScan — Haz una foto a tu plato y conoce su valor nutricional</title>
+    <meta
+      name="description"
+      content="CaliScan es una app web: haces una foto a tu plato y obtienes las calorías, los macronutrientes y el desglose de los alimentos. Los números salen de la base nutricional del USDA, no de una estimación del modelo."
+    />
+    <link rel="canonical" href="https://caliscan.app/" />
+
+    <!-- Open Graph. La imagen es PNG y absoluta a propósito: los rastreadores
+         de las redes no cargan SVG ni resuelven rutas relativas. Se genera con
+         `assets/og.source.html` (ver el comentario de ese archivo). -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="CaliScan" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:url" content="https://caliscan.app/" />
+    <meta property="og:title" content="CaliScan — Haz una foto a tu plato y conoce su valor nutricional" />
+    <meta
+      property="og:description"
+      content="Calorías, macros y desglose del plato en segundos. Cada número, trazable a su ficha del USDA."
+    />
+    <meta property="og:image" content="https://caliscan.app/assets/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="CaliScan: haz una foto a tu plato y conoce su valor nutricional." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="CaliScan — Haz una foto a tu plato y conoce su valor nutricional" />
+    <meta
+      name="twitter:description"
+      content="Calorías, macros y desglose del plato en segundos. Cada número, trazable a su ficha del USDA."
+    />
+    <meta name="twitter:image" content="https://caliscan.app/assets/og.png" />
+
+    <link rel="icon" href="assets/logo-mark.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="assets/logo-mark.svg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400..700&family=Spline+Sans+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <a class="salto-al-contenido" href="#contenido">Saltar al contenido</a>
+
+    <!-- ================================================================== -->
+    <!-- LA MARCA, DEFINIDA UNA SOLA VEZ.                                    -->
+    <!-- El logotipo aparece en la cabecera, en el hero y en el pie. Va como -->
+    <!-- <symbol> y se instancia con <use> para no repetir el dibujo tres    -->
+    <!-- veces; y va EN LÍNEA, no como <img>, porque el wordmark es texto y  -->
+    <!-- un SVG referenciado desde fuera no carga la fuente de la página.    -->
+    <!-- Los archivos sueltos equivalentes son assets/logo.svg y             -->
+    <!-- assets/logo-mark.svg.                                              -->
+    <!-- ================================================================== -->
+    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position: absolute">
+      <defs>
+        <linearGradient id="g-hoja" x1="18" y1="46" x2="46" y2="18" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#4fbe82" stop-opacity="0.10" />
+          <stop offset="1" stop-color="#4fbe82" stop-opacity="0.28" />
+        </linearGradient>
+        <linearGradient id="g-haz" x1="10" y1="32" x2="54" y2="32" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#4fbe82" stop-opacity="0" />
+          <stop offset="0.3" stop-color="#4fbe82" stop-opacity="1" />
+          <stop offset="0.7" stop-color="#4fbe82" stop-opacity="1" />
+          <stop offset="1" stop-color="#4fbe82" stop-opacity="0" />
+        </linearGradient>
+
+        <symbol id="marca" viewBox="0 0 64 64">
+          <path
+            d="M18 46C18 30 30 18 46 18C46 34 34 46 18 46Z"
+            fill="url(#g-hoja)"
+            stroke="#4fbe82"
+            stroke-width="2.6"
+            stroke-linejoin="round"
+          />
+          <path d="M18 46 46 18" stroke="#2f9e63" stroke-width="2.2" stroke-linecap="round" fill="none" />
+          <g stroke="url(#g-haz)" stroke-linecap="round" fill="none">
+            <path d="M11 32H53" stroke-width="5" opacity="0.22" />
+            <path d="M11 32H53" stroke-width="2.2" />
+          </g>
+          <g fill="none" stroke="#4fbe82" stroke-width="3.4" stroke-linecap="round">
+            <path d="M21 4.5H12A7.5 7.5 0 0 0 4.5 12V21" />
+            <path d="M43 4.5H52A7.5 7.5 0 0 1 59.5 12V21" />
+            <path d="M59.5 43V52A7.5 7.5 0 0 1 52 59.5H43" />
+            <path d="M21 59.5H12A7.5 7.5 0 0 1 4.5 52V43" />
+          </g>
+        </symbol>
+
+        <symbol id="logotipo" viewBox="0 0 252 64">
+          <use href="#marca" width="64" height="64" />
+          <text x="78" y="44.5" class="wordmark" font-size="37" font-weight="700" letter-spacing="-0.9">
+            <tspan fill="#e8ece4">Cali</tspan><tspan fill="#4fbe82">Scan</tspan>
+          </text>
+        </symbol>
+      </defs>
+    </svg>
+
+    <header class="cabecera">
+      <div class="envoltura cabecera__fila">
+        <a class="cabecera__marca" href="#hero" aria-label="CaliScan, inicio">
+          <svg class="logotipo" viewBox="0 0 252 64" role="img" aria-label="CaliScan">
+            <use href="#logotipo" />
+          </svg>
+        </a>
+
+        <nav class="cabecera__nav" aria-label="Secciones">
+          <a href="#como-funciona">Cómo funciona</a>
+          <a href="#funcionalidades">Qué hace hoy</a>
+          <a href="#faq">Preguntas</a>
+        </nav>
+
+        <a class="boton boton--pequeno" data-enlace-app href="#">Abrir CaliScan</a>
+      </div>
+    </header>
+
+    <main id="contenido">
+      <!-- ============================== HERO ============================== -->
+      <section class="hero" id="hero">
+        <div class="hero__resplandor" aria-hidden="true"></div>
+
+        <div class="envoltura hero__rejilla">
+          <div class="hero__texto">
+            <p class="insignia">
+              <span class="insignia__punto" aria-hidden="true"></span>
+              PWA — sin descargas, funciona en tu navegador
+            </p>
+
+            <h1 class="titular">
+              Haz una foto a tu plato y conoce su <em>valor nutricional</em> al instante
+            </h1>
+
+            <p class="entradilla">
+              CaliScan reconoce lo que hay en el plato y calcula las calorías y los macronutrientes
+              con los valores de la base nutricional del USDA. El modelo identifica; la base de datos
+              cuantifica. Cada número lleva su fuente detrás.
+            </p>
+
+            <div class="hero__acciones">
+              <a class="boton boton--grande" data-enlace-app href="#">
+                Abrir CaliScan
+                <svg viewBox="0 0 20 20" class="boton__flecha" aria-hidden="true">
+                  <path
+                    d="M4 10h11m0 0-4.2-4.2M15 10l-4.2 4.2"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+              <a class="boton boton--fantasma boton--grande" href="#como-funciona">Ver cómo funciona</a>
+            </div>
+
+            <p class="letra-fina">
+              Gratis para empezar: 15 fotos al mes. Sin publicidad y sin datos de pago.
+            </p>
+          </div>
+
+          <!-- LA ILUSTRACIÓN. No es una captura de pantalla y no finge serlo:
+               es el encuadre del escáner con el anillo de macros y su leyenda,
+               las dos piezas que el reporte real dibuja. Sin cifras dentro, a
+               propósito — un número de ejemplo en una ilustración se lee como
+               una promesa. -->
+          <figure class="hero__figura">
+            <div class="visor">
+              <div class="visor__reticula" aria-hidden="true"></div>
+              <div class="visor__haz" aria-hidden="true"></div>
+
+              <svg class="visor__anillo" viewBox="0 0 220 220" role="img"
+                   aria-label="Anillo de macronutrientes: proteínas, hidratos y grasas.">
+                <circle cx="110" cy="110" r="74" fill="none" stroke="#2d362b" stroke-width="24" />
+                <g fill="none" stroke-width="24" stroke-linecap="butt">
+                  <circle cx="110" cy="110" r="74" stroke="#ec7b64"
+                          stroke-dasharray="133 465" transform="rotate(-90 110 110)" />
+                  <circle cx="110" cy="110" r="74" stroke="#e7b354"
+                          stroke-dasharray="203 465" transform="rotate(17.6 110 110)" />
+                  <circle cx="110" cy="110" r="74" stroke="#a98fe4"
+                          stroke-dasharray="110 465" transform="rotate(179.4 110 110)" />
+                </g>
+              </svg>
+
+              <div class="visor__esquinas" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+              </div>
+
+              <ul class="leyenda">
+                <li><i class="punto punto--proteina"></i>Proteínas</li>
+                <li><i class="punto punto--hidratos"></i>Hidratos</li>
+                <li><i class="punto punto--grasas"></i>Grasas</li>
+              </ul>
+            </div>
+
+            <figcaption class="letra-fina">
+              Ilustración. En la app, el reporte muestra las calorías totales, este reparto con sus
+              gramos y el desglose alimento por alimento.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ========================= CÓMO FUNCIONA ========================= -->
+      <section class="seccion" id="como-funciona">
+        <div class="envoltura">
+          <header class="seccion__cabecera">
+            <p class="antetitulo">Cómo funciona</p>
+            <h2 class="titulo-seccion">Tres pasos, y el tercero es el que importa</h2>
+            <p class="seccion__bajada">
+              El reparto de trabajo no es un detalle técnico: es lo que hace que las cifras se
+              sostengan. La inteligencia artificial mira y nombra; los números los pone una base de
+              datos pública.
+            </p>
+          </header>
+
+          <ol class="pasos">
+            <li class="paso tarjeta">
+              <span class="paso__numero" aria-hidden="true">1</span>
+              <svg class="icono" viewBox="0 0 32 32" aria-hidden="true">
+                <path
+                  d="M5 11.5A3 3 0 0 1 8 8.5h1.8a1.4 1.4 0 0 0 1.18-.65l1.2-1.86a1.4 1.4 0 0 1 1.18-.64h5.28a1.4 1.4 0 0 1 1.18.64l1.2 1.86a1.4 1.4 0 0 0 1.18.65H24a3 3 0 0 1 3 3v10A3 3 0 0 1 24 25H8a3 3 0 0 1-3-3.5Z"
+                  fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"
+                />
+                <circle cx="16" cy="16.5" r="4.6" fill="none" stroke="currentColor" stroke-width="1.7" />
+              </svg>
+              <h3>Haz la foto</h3>
+              <p>
+                Abres CaliScan en el navegador, tocas el botón y disparas con la cámara del móvil. No
+                hay que instalar nada ni crear una cuenta para probarlo.
+              </p>
+            </li>
+
+            <li class="paso tarjeta">
+              <span class="paso__numero" aria-hidden="true">2</span>
+              <svg class="icono" viewBox="0 0 32 32" aria-hidden="true">
+                <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 5H7a2 2 0 0 0-2 2v4M21 5h4a2 2 0 0 1 2 2v4M11 27H7a2 2 0 0 1-2-2v-4M21 27h4a2 2 0 0 0 2-2v-4" />
+                  <path d="M9.5 16h13" opacity="0.5" />
+                  <circle cx="13" cy="12.5" r="1.6" />
+                  <circle cx="19.5" cy="19" r="1.6" />
+                </g>
+              </svg>
+              <h3>La IA identifica qué hay y cuánto</h3>
+              <p>
+                Un modelo de visión reconoce los alimentos del plato y estima los gramos de cada uno.
+                Ahí termina su trabajo: no devuelve calorías ni macros, porque no se le pregunta por
+                ellos.
+              </p>
+            </li>
+
+            <li class="paso tarjeta">
+              <span class="paso__numero" aria-hidden="true">3</span>
+              <svg class="icono" viewBox="0 0 32 32" aria-hidden="true">
+                <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <ellipse cx="16" cy="8" rx="9.5" ry="3.6" />
+                  <path d="M6.5 8v16c0 2 4.25 3.6 9.5 3.6s9.5-1.6 9.5-3.6V8" />
+                  <path d="M6.5 16c0 2 4.25 3.6 9.5 3.6s9.5-1.6 9.5-3.6" />
+                </g>
+              </svg>
+              <h3>La base nutricional pone los números</h3>
+              <p>
+                Cada alimento se busca en el catálogo y sus valores por cada 100 g se multiplican por
+                los gramos estimados. Aritmética, no memoria: nada inventado, y cada cifra trazable
+                hasta su ficha del USDA.
+              </p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ======================= FUNCIONALIDADES ========================= -->
+      <section class="seccion seccion--alterna" id="funcionalidades">
+        <div class="envoltura">
+          <header class="seccion__cabecera">
+            <p class="antetitulo">Lo que hace hoy</p>
+            <h2 class="titulo-seccion">Esto ya funciona, y es todo lo que hay</h2>
+            <p class="seccion__bajada">
+              Cinco cosas. Ni una más. Lo que está en preparación tiene su propio apartado, más
+              abajo, y no se mezcla con esto.
+            </p>
+          </header>
+
+          <ul class="capacidades">
+            <li class="tarjeta capacidad">
+              <svg class="icono" viewBox="0 0 32 32" aria-hidden="true">
+                <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="16" cy="16" r="11" />
+                  <path d="M16 9.5V16l4.2 2.6" />
+                </g>
+              </svg>
+              <h3>Escaneo por foto en segundos</h3>
+              <p>
+                De la foto al reporte en unos pocos segundos, y mientras tanto ves en pantalla en qué
+                paso va el análisis.
+              </p>
+            </li>
+
+            <li class="tarjeta capacidad">
+              <svg class="icono" viewBox="0 0 32 32" aria-hidden="true">
+                <g fill="none" stroke-width="4.5">
+                  <circle cx="16" cy="16" r="10" stroke="currentColor" opacity="0.22" />
+                  <circle cx="16" cy="16" r="10" stroke="#ec7b64" stroke-dasharray="18 63" transform="rotate(-90 16 16)" />
+                  <circle cx="16" cy="16" r="10" stroke="#e7b354" stroke-dasharray="27 63" transform="rotate(17 16 16)" />
+                  <circle cx="16" cy="16" r="10" stroke="#a98fe4" stroke-dasharray="14 63" transform="rotate(179 16 16)" />
+                </g>
+              </svg>
+              <h3>Calorías y macros con composición visual</h3>
+              <p>
+                El total de calorías y el reparto entre proteínas, hidratos y grasas en un anillo, con
+                sus gramos y sus porcentajes.
+              </p>
+            </li>
+
+            <li class="tarjeta capacidad">
+              <svg class="icono" viewBox="0 0 32 32" aria-hidden="true">
+                <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 6.5h13.5L25 11v14.5a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-18a1 1 0 0 1 1-1Z" />
+                  <path d="M20 6.5V11h5" />
+                  <path d="M11 17h10M11 21h6" />
+                </g>
+              </svg>
+              <h3>Datos con fuente trazable</h3>
+              <p>
+                Cada alimento del desglose enseña de qué ficha salieron sus valores y con qué
+                referencia del USDA. Si algo se estimó, lo dice.
+              </p>
+            </li>
+
+            <li class="tarjeta capacidad">
+              <svg class="icono" viewBox="0 0 32 32" aria-hidden="true">
+                <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="3.5" width="14" height="25" rx="3.2" />
+                  <path d="M14 6.8h4M16 24.5h.01" />
+                </g>
+              </svg>
+              <h3>Funciona en cualquier teléfono</h3>
+              <p>
+                Es una aplicación web instalable: se abre en el navegador y, si quieres, se añade a la
+                pantalla de inicio. Sin App Store de por medio.
+              </p>
+            </li>
+
+            <li class="tarjeta capacidad">
+              <svg class="icono" viewBox="0 0 32 32" aria-hidden="true">
+                <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 27s-9.5-5.6-9.5-12.2A5.3 5.3 0 0 1 16 11.2a5.3 5.3 0 0 1 9.5 3.6C25.5 21.4 16 27 16 27Z" />
+                </g>
+              </svg>
+              <h3>Gratis para empezar</h3>
+              <p>
+                15 fotos al mes en el plan gratuito, con el reporte completo. Y sin publicidad: en
+                CaliScan no la hay en ningún plan.
+              </p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ========================= PRÓXIMAMENTE ========================== -->
+      <section class="seccion" id="proximamente">
+        <div class="envoltura">
+          <header class="seccion__cabecera">
+            <p class="antetitulo antetitulo--espera">En preparación</p>
+            <h2 class="titulo-seccion">Lo que viene después</h2>
+            <p class="seccion__bajada">
+              Nada de esto está disponible todavía. Está aquí para que sepas hacia dónde va CaliScan,
+              no para que cuentes con ello hoy.
+            </p>
+          </header>
+
+          <ul class="futuro">
+            <li class="tarjeta tarjeta--tenue">
+              <span class="sello">Próximamente</span>
+              <h3>Fichas de más de 1.000 alimentos</h3>
+              <p>Consultar el catálogo por tu cuenta, alimento por alimento, con sus valores y su fuente.</p>
+            </li>
+            <li class="tarjeta tarjeta--tenue">
+              <span class="sello">Próximamente</span>
+              <h3>Recetas por categoría</h3>
+              <p>Ideas de comidas ordenadas por momento: antes de entrenar, después de entrenar, ligeras.</p>
+            </li>
+            <li class="tarjeta tarjeta--tenue">
+              <span class="sello">Próximamente</span>
+              <h3>Tendencias semanales</h3>
+              <p>Cómo se mueven tus calorías y tus macros de una semana a la siguiente.</p>
+            </li>
+            <li class="tarjeta tarjeta--tenue">
+              <span class="sello">Próximamente</span>
+              <h3>Planes personalizados</h3>
+              <p>Sugerencias de comidas según tus datos y el objetivo que te marques.</p>
+            </li>
+          </ul>
+
+          <div class="llamada">
+            <div>
+              <h3 class="llamada__titulo">¿Quieres que te avisemos?</h3>
+              <p class="llamada__texto">
+                La lista de espera vive dentro de la app, en la sección Premium. Te pedimos un correo
+                para avisarte cuando esto abra: ni datos de pago, ni nada más.
+              </p>
+            </div>
+            <a class="boton boton--fantasma" data-enlace-app href="#">Apuntarme a la lista de espera</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== FAQ ============================== -->
+      <section class="seccion seccion--alterna" id="faq">
+        <div class="envoltura envoltura--estrecha">
+          <header class="seccion__cabecera">
+            <p class="antetitulo">Preguntas</p>
+            <h2 class="titulo-seccion">Lo que sueles querer saber antes de probar</h2>
+          </header>
+
+          <div class="faq">
+            <details class="faq__item">
+              <summary>¿Qué es CaliScan?</summary>
+              <div class="faq__cuerpo">
+                <p>
+                  Una aplicación web para saber qué estás comiendo. Haces una foto al plato y obtienes
+                  las calorías totales, el reparto de proteínas, hidratos y grasas, y la lista de los
+                  alimentos que se han reconocido con sus gramos.
+                </p>
+              </div>
+            </details>
+
+            <details class="faq__item">
+              <summary>¿Cuánto cuesta?</summary>
+              <div class="faq__cuerpo">
+                <p>
+                  Empezar es gratis: 15 fotos al mes con el reporte completo y sin publicidad. Hay dos
+                  planes de pago previstos —Premium, 12 € al año, con más cupo e historial; y Premium
+                  Gold, 4,99 € al mes, con el plan de comidas—, pero
+                  <strong>los pagos todavía no están abiertos</strong>: nadie te va a cobrar nada ni te
+                  va a pedir datos bancarios.
+                </p>
+              </div>
+            </details>
+
+            <details class="faq__item">
+              <summary>¿Cómo se instala una app web (PWA)?</summary>
+              <div class="faq__cuerpo">
+                <p>
+                  No hace falta instalarla: se abre en el navegador y funciona. Si prefieres tenerla
+                  como un icono más en la pantalla de inicio:
+                </p>
+                <ul>
+                  <li><strong>iPhone:</strong> ábrela en Safari, toca Compartir y elige «Añadir a pantalla de inicio».</li>
+                  <li><strong>Android:</strong> ábrela en Chrome, entra en el menú y elige «Instalar aplicación».</li>
+                </ul>
+                <p>
+                  A partir de ahí se abre a pantalla completa, como cualquier otra app, y ocupa unos
+                  pocos kilobytes.
+                </p>
+              </div>
+            </details>
+
+            <details class="faq__item">
+              <summary>¿De dónde salen los números?</summary>
+              <div class="faq__cuerpo">
+                <p>
+                  De <strong>USDA FoodData Central</strong>, la base de datos de composición de
+                  alimentos del Departamento de Agricultura de los Estados Unidos, de dominio público.
+                  El modelo de inteligencia artificial solo identifica los alimentos y estima cuántos
+                  gramos hay; los valores nutricionales los aporta la base. Por eso el desglose enseña
+                  la ficha detrás de cada cifra.
+                </p>
+                <p>
+                  Dicho con la misma honestidad: los gramos son una <em>estimación</em> hecha a partir
+                  de una foto, y las calorías que se calculan a partir de ellos heredan esa
+                  aproximación. Sirve para hacerte una idea fiable de lo que comes, no para pesar la
+                  comida.
+                </p>
+              </div>
+            </details>
+
+            <details class="faq__item">
+              <summary>¿Esto es consejo médico?</summary>
+              <div class="faq__cuerpo">
+                <p>
+                  No. CaliScan no es un servicio sanitario y quienes la hacemos no somos médicos,
+                  dietistas ni nutricionistas. La información es orientativa y no sustituye la consulta
+                  con un profesional. Si tienes una condición de salud, una alergia o sigues un
+                  tratamiento, decide con quien te atiende, no con esta app.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================== CIERRE ============================== -->
+      <section class="cierre">
+        <div class="envoltura cierre__caja">
+          <svg class="cierre__marca" viewBox="0 0 64 64" role="img" aria-label="CaliScan">
+            <use href="#marca" />
+          </svg>
+          <h2 class="titulo-seccion">Tu próximo plato, con los números delante</h2>
+          <p class="seccion__bajada">Se abre en el navegador. Tarda menos que leer esta frase dos veces.</p>
+          <a class="boton boton--grande" data-enlace-app href="#">
+            Abrir CaliScan
+            <svg viewBox="0 0 20 20" class="boton__flecha" aria-hidden="true">
+              <path
+                d="M4 10h11m0 0-4.2-4.2M15 10l-4.2 4.2"
+                fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="pie">
+      <div class="envoltura pie__rejilla">
+        <div>
+          <svg class="logotipo logotipo--pie" viewBox="0 0 252 64" role="img" aria-label="CaliScan">
+            <use href="#logotipo" />
+          </svg>
+          <p class="pie__dominio">caliscan.app</p>
+        </div>
+
+        <p class="pie__aviso">
+          Información nutricional orientativa, calculada sobre datos de USDA FoodData Central. No es
+          consejo médico.
+        </p>
+      </div>
+
+      <div class="envoltura pie__base">
+        <p>© CaliScan 2026</p>
+        <a data-enlace-app href="#">Abrir la app</a>
+      </div>
+    </footer>
+
+    <script src="main.js"></script>
+  </body>
+</html>
