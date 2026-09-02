@@ -1,60 +1,58 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="CaliScan">
   <title>CaliScan</title>
   <!--
-    EL ÍCONO DE NUTRISCANN (card 3.4, DT-5).
+    EL ÍCONO DE CALISCAN (Q/A de Tomás, 02/09/2026).
 
-    Es la app dibujada, no un clipart de comida: el DONUT de macros —el gráfico
-    que el usuario ve en cada reporte— dentro de las cuatro ESQUINAS DE ESCANEO
-    del scanner. Las dos piezas ya existen en la interfaz (`DonutMacros` y
-    `ScannerDeFoto`), así que el ícono no inventa un lenguaje visual nuevo: cita
-    el que ya hay.
+    Es el ISOTIPO de la marca —el mismo de la landing—, no un dibujo propio de
+    la app: el encuadre de cámara apuntando a una hoja, con el haz de escaneo
+    cruzándola. Decisión de Tomás sobre el teléfono real: lo que se instala en
+    la pantalla de inicio tiene que ser LA MARCA, la misma que se ve en
+    caliscan.app.
 
-    Los colores son los tokens semánticos de `apps/web/src/index.css`, sin una
-    sola tinta nueva:
-      fondo  #12160f  (color-ground)
-      verde  #4fbe82  (color-accent)
-      ámbar  #e7b354  (color-carbs)
-      coral  #ec7b64  (color-protein)
+    (El ícono anterior —el donut de macros entre esquinas, DT-5— era la app
+    dibujada y funcionaba bien a 16 px; queda en el historial de git. Se cambió
+    porque tener dos identidades, una en la landing y otra en el teléfono, era
+    exactamente el tipo de costura que una marca nueva no se puede permitir.)
 
-    El morado de las grasas (color-fat) se deja fuera a propósito: a 16 px
-    sobre fondo oscuro se empasta con el coral y el anillo pierde la lectura de
-    tres tramos. Tres colores es lo que aguanta un favicon.
+    LA FUENTE DE VERDAD DEL DIBUJO es apps/landing/assets/logo-mark.svg (ahí
+    está el porqué de cada trazo). Este archivo lo REPRODUCE sobre el lienzo
+    del ícono: fondo `ground` #12160f a sangre completa y el isotipo centrado
+    al 78 % (400 de 512) — aire suficiente para que las esquinas del visor no
+    toquen el borde del ícono. Si el isotipo cambia allá, se re-copia acá y se
+    re-rasterizan los PNG (el comando está en el commit).
 
-    GEOMETRÍA. Anillo r=118 con trazo 46 → borde exterior a 141 del centro.
-    Las esquinas viven a 152 del centro en cada eje, así que no tocan el anillo.
-    Circunferencia = 2·π·118 = 741,42. Los tramos, con 8 de aire entre ellos:
-      verde 330 (44,5 %) · ámbar 215 (29,0 %) · coral 172 (23,2 %)
-    y sus arranques acumulados en 0, 338 y 561, pasados a grados como
-    -90 + (arranque / 741,42) · 360.
-
-    La variante `icon-maskable.svg` es este mismo dibujo encogido para que TODO
-    entre en el círculo de seguridad de los íconos maskable (80 % del lienzo);
-    aquí las puntas de las esquinas se salen un poco de ese círculo, y por eso
-    este archivo NO se declara como maskable en el manifiesto.
+    Paleta: los tokens de siempre — #12160f ground · #4fbe82 accent ·
+    #2f9e63 accent-deep. Ninguna tinta nueva.
   -->
+  <defs>
+    <linearGradient id="caliscan-hoja" x1="18" y1="46" x2="46" y2="18" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4fbe82" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#4fbe82" stop-opacity="0.28"/>
+    </linearGradient>
+    <linearGradient id="caliscan-haz" x1="10" y1="32" x2="54" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4fbe82" stop-opacity="0"/>
+      <stop offset="0.3" stop-color="#4fbe82" stop-opacity="1"/>
+      <stop offset="0.7" stop-color="#4fbe82" stop-opacity="1"/>
+      <stop offset="1" stop-color="#4fbe82" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
   <rect width="512" height="512" fill="#12160f"/>
 
-  <g fill="none" stroke-linecap="butt">
-    <!-- El aro apagado de fondo: cierra el círculo donde quedan los huecos. -->
-    <circle cx="256" cy="256" r="118" stroke="#2d362b" stroke-width="46"/>
-
-    <!-- Verde (accent) -->
-    <circle cx="256" cy="256" r="118" stroke="#4fbe82" stroke-width="46"
-            stroke-dasharray="330 742" transform="rotate(-90 256 256)"/>
-    <!-- Ámbar (hidratos) -->
-    <circle cx="256" cy="256" r="118" stroke="#e7b354" stroke-width="46"
-            stroke-dasharray="215 742" transform="rotate(74.1 256 256)"/>
-    <!-- Coral (proteínas) -->
-    <circle cx="256" cy="256" r="118" stroke="#ec7b64" stroke-width="46"
-            stroke-dasharray="172 742" transform="rotate(182.4 256 256)"/>
-  </g>
-
-  <!-- Las cuatro esquinas del scanner. -->
-  <g fill="none" stroke="#4fbe82" stroke-width="18" stroke-linecap="round"
-     stroke-linejoin="round" opacity="0.62">
-    <path d="M104 152V104h48"/>
-    <path d="M360 104h48v48"/>
-    <path d="M408 360v48h-48"/>
-    <path d="M152 408h-48v-48"/>
+  <g transform="translate(56 56) scale(6.25)">
+    <path d="M18 46C18 30 30 18 46 18C46 34 34 46 18 46Z"
+          fill="url(#caliscan-hoja)" stroke="#4fbe82" stroke-width="2.6"
+          stroke-linejoin="round"/>
+    <path d="M18 46 46 18" stroke="#2f9e63" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+    <g stroke="url(#caliscan-haz)" stroke-linecap="round" fill="none">
+      <path d="M11 32H53" stroke-width="5" opacity="0.22"/>
+      <path d="M11 32H53" stroke-width="2.2"/>
+    </g>
+    <g fill="none" stroke="#4fbe82" stroke-width="3.4" stroke-linecap="round">
+      <path d="M21 4.5H12A7.5 7.5 0 0 0 4.5 12V21"/>
+      <path d="M43 4.5H52A7.5 7.5 0 0 1 59.5 12V21"/>
+      <path d="M59.5 43V52A7.5 7.5 0 0 1 52 59.5H43"/>
+      <path d="M21 59.5H12A7.5 7.5 0 0 1 4.5 52V43"/>
+    </g>
   </g>
 </svg>
