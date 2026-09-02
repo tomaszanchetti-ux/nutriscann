@@ -57,6 +57,18 @@ export interface ErrorDeCampo {
  */
 const FORMA_DE_CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/**
+ * ¿Esto tiene forma de correo?
+ *
+ * Se exporta desde la card 4.1 porque la pantalla de entrada valida lo mismo, y
+ * dos reglas distintas para el mismo campo terminan en un correo que la lista de
+ * espera acepta y el login rechaza (o al revés). Una sola regla, en un solo
+ * sitio, con el criterio de arriba: simple a propósito.
+ */
+export function tieneFormaDeCorreo(correo: string): boolean {
+  return FORMA_DE_CORREO.test(correo.trim());
+}
+
 export function validar(alta: AltaDeListaDeEspera): ErrorDeCampo | null {
   if (alta.nombre.trim() === "") {
     return { campo: "nombre", mensaje: COPY_LISTA_DE_ESPERA.error_nombre };
@@ -64,7 +76,7 @@ export function validar(alta: AltaDeListaDeEspera): ErrorDeCampo | null {
   if (alta.apellidos.trim() === "") {
     return { campo: "apellidos", mensaje: COPY_LISTA_DE_ESPERA.error_apellidos };
   }
-  if (!FORMA_DE_CORREO.test(alta.correo.trim())) {
+  if (!tieneFormaDeCorreo(alta.correo)) {
     return { campo: "correo", mensaje: COPY_LISTA_DE_ESPERA.error_correo };
   }
   return null;

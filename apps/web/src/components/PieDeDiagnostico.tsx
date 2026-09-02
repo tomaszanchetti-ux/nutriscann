@@ -23,6 +23,7 @@
 import { useEffect, useState } from "react";
 
 import { fetchHealth, MODO_DE_DEMO, USA_FIXTURE_DE_ANALISIS, type HealthReport } from "../lib/api";
+import { USA_EMULADOR_DE_AUTH } from "../lib/auth";
 import type { OrigenDeConfig } from "../lib/config";
 import { COPY_TERMINOS } from "../lib/copy.terminos";
 import { PROJECT_ID, USA_EMULADOR_DE_FIRESTORE, USA_EMULADOR_DE_FUNCIONES } from "../lib/firebase";
@@ -119,6 +120,16 @@ export function PieDeDiagnostico({ origenDeConfig }: { origenDeConfig: OrigenDeC
           <>
             <span>·</span>
             <span>Firestore emulado</span>
+          </>
+        )}
+        {/* La card 4.1 apaga la banda amarilla que el SDK de Auth clava abajo de
+            todo —tapa la barra de navegación justo en el Q/A visual del móvil—,
+            así que el aviso de "estás contra el emulador" vive acá, con los otros
+            dos. */}
+        {USA_EMULADOR_DE_AUTH && (
+          <>
+            <span>·</span>
+            <span>Auth emulado</span>
           </>
         )}
         <span>·</span>

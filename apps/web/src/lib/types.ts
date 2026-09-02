@@ -215,7 +215,34 @@ export interface RespuestaDeAnalisis {
 }
 
 /** El cuerpo de un error del backend: un código estable y un texto en español. */
+/**
+ * El bloque `quota` que acompaña al 429 `cupo_agotado` (contrato WS09 §2).
+ *
+ * ES OPCIONAL POR CONTRATO, y el front está escrito para que lo sea de verdad:
+ * sin él se muestra el `message_es` del backend y nada más. Cuando viene, es lo
+ * que deja decir "has usado 15 de 15 fotos este mes" y "se renueva el 1 de
+ * octubre", que es lo que de verdad quiere saber quien se quedó sin cupo.
+ *
+ * `ambito` distingue los dos frenos del §6.7: el cupo del MES, que es la promesa
+ * que se comunica, y el tope del DÍA, que es solo anti-ráfaga interno.
+ *
+ * `se_renueva` es una fecha `YYYY-MM-DD` cortada en Europe/Madrid (contrato §3),
+ * no un instante: se muestra tal cual, sin convertir de zona horaria.
+ */
+export interface CupoDelBackend {
+  ambito: "mes" | "dia";
+  usados: number;
+  limite: number;
+  se_renueva?: string;
+}
+
 export interface ErrorDelBackend {
   /** `copy_source` declara de dónde salió el texto: "config" o "cold-start-default". */
-  error: { code: string; message_es: string; copy_source?: string };
+  error: {
+    code: string;
+    message_es: string;
+    copy_source?: string;
+    /** Solo en el 429. Ver `CupoDelBackend`: opcional de verdad. */
+    quota?: CupoDelBackend;
+  };
 }
