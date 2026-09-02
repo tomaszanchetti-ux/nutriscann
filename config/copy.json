@@ -25,6 +25,18 @@
       "since": "card-2.3",
       "used_in": "PantallaCaptura — la línea de ayuda debajo del título"
     },
+    "install_title": {
+      "since": "card-3.5",
+      "used_in": "AvisoDeInstalacion — el título del aviso de instalación de la PWA, en la pantalla de captura"
+    },
+    "install_ios_help": {
+      "since": "card-3.5",
+      "used_in": "AvisoDeInstalacion — la instrucción para iPhone/iPad (Safari no ofrece instalar solo: hay que contar el gesto)"
+    },
+    "install_android_cta": {
+      "since": "card-3.5",
+      "used_in": "AvisoDeInstalacion — el botón de instalar en Android, visible solo cuando el navegador entregó el beforeinstallprompt"
+    },
     "scanning_steps": {
       "since": "fase-0",
       "used_in": "PantallaEscaneo — los pasos que rotan durante la espera",
@@ -266,6 +278,10 @@
     "capture_prompt": "¿Qué estás comiendo?",
     "capture_cta": "Hacer foto del plato",
     "capture_help": "Haz la foto desde arriba, con el plato entero y buena luz.",
+
+    "install_title": "Lleva CaliScan en tu pantalla de inicio",
+    "install_ios_help": "En Safari: toca Compartir y elige «Añadir a pantalla de inicio».",
+    "install_android_cta": "Instalar aplicación",
 
     "scanning_steps": "Identificando qué hay en el plato y cuánto…|Buscando cada alimento en la base nutricional…|Calculando calorías y macros con esos gramos…",
     "scanning_title": "Mirando tu plato",

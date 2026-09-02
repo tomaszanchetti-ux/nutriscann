@@ -120,7 +120,7 @@ test("los pasos se parten y se recortan igual que en el front", () => {
 // ── El archivo real del repo: es lo que se publica ───────────────────────────
 
 /**
- * Las 61 claves del contrato, al 02/09/2026.
+ * Las 64 claves del contrato, al 02/09/2026.
  *
  * Eran 18 (DT-18, card 2.5). La card 3.1 sumó las 29 de la DT-22: los textos
  * que el usuario leía y estaban escritos adentro de los componentes del front
@@ -139,6 +139,10 @@ test("los pasos se parten y se recortan igual que en el front", () => {
  * `config/copy.json` (de `keys` y de `copy`), se va de `CopyDeLaApp` y se va de
  * esta lista, en el mismo commit.
  *
+ * Y EL MISMO Q/A SUMÓ LAS TRES `install_*` (card 3.5): el aviso de instalación
+ * de la PWA en la pantalla de captura — iOS explica el gesto de Safari, Android
+ * ofrece su botón nativo. 61 + 3 = 64.
+ *
  * La lista está en orden alfabético porque `cargarTextos` devuelve las claves
  * ordenadas: es el orden del contrato, no el del archivo.
  */
@@ -156,6 +160,9 @@ const CLAVES_ESPERADAS = [
   "error_title",
   "error_unexpected",
   "error_unreadable",
+  "install_android_cta",
+  "install_ios_help",
+  "install_title",
   "item_confidence_label",
   "item_generic_badge",
   "item_generic_note",
@@ -206,7 +213,7 @@ const CLAVES_ESPERADAS = [
   "v2_title",
 ];
 
-test("config/copy.json valida y trae las 61 claves del contrato", () => {
+test("config/copy.json valida y trae las 64 claves del contrato", () => {
   const textos = cargarTextos(TEXTOS_DEL_REPO);
   assert.deepEqual(textos.claves, CLAVES_ESPERADAS);
   assert.equal(textos.pasos.length, 3, "la pantalla de espera muestra tres pasos");

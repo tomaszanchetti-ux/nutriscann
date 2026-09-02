@@ -84,6 +84,10 @@ export interface CopyDeLaApp {
 
   // — Nuevas de la card 2.3: hoy salen del arranque en frío —
   capture_help: string;
+  // — El aviso de instalación de la PWA (Q/A del 02/09, card 3.5) —
+  install_title: string;
+  install_ios_help: string;
+  install_android_cta: string;
   scanning_title: string;
   report_kcal_label: string;
   report_macros_title: string;
@@ -191,6 +195,9 @@ export const COPY_DE_ARRANQUE: CopyDeLaApp = {
   error_unreadable: "No pude reconocer el plato. Prueba con más luz.",
 
   capture_help: "Haz la foto desde arriba, con el plato entero y buena luz.",
+  install_title: "Lleva CaliScan en tu pantalla de inicio",
+  install_ios_help: "En Safari: toca Compartir y elige «Añadir a pantalla de inicio».",
+  install_android_cta: "Instalar aplicación",
   scanning_title: "Mirando tu plato",
   report_kcal_label: "calorías del plato",
   report_macros_title: "Componente nutricional de tu plato",

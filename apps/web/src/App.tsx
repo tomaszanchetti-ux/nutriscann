@@ -1,5 +1,5 @@
 /**
- * NutriScann — el flujo de DOS interacciones, versión mínima (card 2.3).
+ * CaliScan — el flujo de DOS interacciones, versión mínima (card 2.3).
  *
  * Reemplaza la pantalla de fundaciones de la Fase 0: aquello probaba que el
  * andamiaje estaba en pie, esto es la app. El health-check no se tiró, se mudó
@@ -35,6 +35,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 
+import { AvisoDeInstalacion } from "./components/AvisoDeInstalacion";
 import { BarraDeNavegacion, type Seccion } from "./components/BarraDeNavegacion";
 import { PantallaCaptura } from "./components/PantallaCaptura";
 import { PantallaEscaneo, type FaseDeEscaneo } from "./components/PantallaEscaneo";
@@ -243,7 +244,12 @@ export default function App() {
         {seccion === "escaneo" && (
           <>
             {estado.fase === "captura" && (
-              <PantallaCaptura copy={config.copy} onFoto={(archivo) => void analizar(archivo)} />
+              <>
+                <PantallaCaptura copy={config.copy} onFoto={(archivo) => void analizar(archivo)} />
+                {/* Solo en la captura: es el único momento en que el usuario no
+                    está ni esperando ni leyendo su plato. */}
+                <AvisoDeInstalacion copy={config.copy} />
+              </>
             )}
 
             {estado.fase === "escaneando" && (
