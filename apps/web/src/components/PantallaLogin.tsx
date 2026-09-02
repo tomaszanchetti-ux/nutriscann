@@ -55,6 +55,7 @@ import {
   textoDeErrorDeEntrada,
 } from "../lib/copy.auth";
 import { tieneFormaDeCorreo } from "../lib/listaDeEspera";
+import { LogoCaliScan } from "./LogoCaliScan";
 
 /**
  * Cómo se llegó a esta pantalla. Lo decide `App` al arrancar, mirando la URL y
@@ -342,8 +343,19 @@ export function PantallaLogin({ inicio }: PantallaLoginProps) {
 
 /**
  * El encabezado cambia con el estado porque el estado cambia la pregunta: no es
- * lo mismo "entra para escanear" que "comprobando tu enlace". El icono se queda
- * igual en los tres: es la marca, no un semáforo.
+ * lo mismo entrar que "comprobando tu enlace". Lo que NO cambia es el logotipo:
+ * es la marca, no un semáforo.
+ *
+ * EL LOGOTIPO OCUPA EL SITIO DEL TÍTULO (Q/A de Tomás, 02/09/2026). Antes había
+ * un icono de cámara genérico —que no era de nadie— y un título de texto. Ahora
+ * quien abre la app ve exactamente la misma marca que en la landing de la que
+ * viene, y el eslogan de debajo cuenta qué hace el producto. En los demás pasos
+ * el logotipo se queda arriba, porque son la misma pantalla y no otras, y debajo
+ * aparece el título que dice en cuál de ellos estás.
+ *
+ * El nombre accesible es SIEMPRE el mismo `<h1>` invisible: quien navega con un
+ * lector oye "CaliScan" al llegar y el paso concreto a continuación, en vez de
+ * oír una imagen sin nombre o un encabezado que cambia bajo sus pies.
  */
 function Encabezado({ paso }: { paso: Paso }) {
   const { titulo, cuerpo } =
@@ -355,29 +367,37 @@ function Encabezado({ paso }: { paso: Paso }) {
           ? { titulo: COPY_LOGIN.pedir_titulo, cuerpo: COPY_LOGIN.pedir_cuerpo }
           : paso.tipo === "enviado"
             ? { titulo: COPY_LOGIN.enviado_titulo, cuerpo: "" }
-            : { titulo: COPY_LOGIN.titulo, cuerpo: COPY_LOGIN.entrada };
+            : { titulo: "", cuerpo: COPY_LOGIN.entrada };
 
   return (
     <header className="flex flex-col items-center gap-4 text-center">
-      <span
-        aria-hidden="true"
-        className="flex size-16 items-center justify-center rounded-2xl bg-accent-soft text-accent"
-      >
-        <svg viewBox="0 0 24 24" className="size-8" fill="none">
-          <path
-            d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.2a1 1 0 0 0 .84-.46l.92-1.42A1 1 0 0 1 10.3 3.7h3.4a1 1 0 0 1 .84.42l.92 1.42a1 1 0 0 0 .84.46h1.2A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-8Z"
-            stroke="currentColor"
-            strokeWidth="1.6"
-          />
-          <circle cx="12" cy="12.2" r="3.4" stroke="currentColor" strokeWidth="1.6" />
-        </svg>
-      </span>
-
-      <h1 className="font-display text-3xl leading-tight font-bold text-balance text-ink">
-        {titulo}
+      {/* EL LOGOTIPO ES EL `<h1>`, no una imagen al lado de un `<h1>` invisible.
+          Con las dos cosas, un lector de pantalla anunciaba "CaliScan" dos veces
+          seguidas —el encabezado oculto y el título del dibujo—, que es la clase
+          de ruido que hace que la gente apague el lector. Así, el encabezado
+          toma su nombre del `<title>` del propio SVG: se anuncia una vez.
+          Alto fijo y ancho automático: el SVG conserva su proporción y no se
+          estira nunca. 44 px deja el wordmark holgado sobre su mínimo de 24. */}
+      <h1 className="flex">
+        <LogoCaliScan className="h-11 w-auto" id="login" />
       </h1>
+
+      {/* Es un `<p>` con pinta de título y no un `<h2>`: no abre una sección
+          nueva, dice en qué punto de la MISMA pantalla estás. */}
+      {titulo !== "" && (
+        <p className="font-display text-3xl leading-tight font-bold text-balance text-ink">
+          {titulo}
+        </p>
+      )}
       {cuerpo !== "" && (
-        <p className="max-w-sm leading-relaxed text-pretty text-ink-soft">{cuerpo}</p>
+        <p className="max-w-sm text-lg leading-relaxed text-pretty text-ink">{cuerpo}</p>
+      )}
+      {/* El apoyo del eslogan solo acompaña a la puerta: en los demás pasos la
+          persona ya decidió entrar, y volver a venderle el producto sobra. */}
+      {paso.tipo === "elegir" && (
+        <p className="max-w-sm text-sm leading-relaxed text-pretty text-ink-soft">
+          {COPY_LOGIN.entrada_apoyo}
+        </p>
       )}
     </header>
   );

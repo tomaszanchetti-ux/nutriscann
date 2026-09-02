@@ -27,18 +27,27 @@ import type { CupoDelBackend } from "./types";
 // ---------------------------------------------------------------------------
 
 export const COPY_LOGIN = {
-  /**
-   * EL TÍTULO DICE PARA QUÉ, NO "INICIA SESIÓN". Quien abre CaliScan vino a
-   * fotografiar un plato; la frase tiene que unir lo que quiere con lo que la
-   * pantalla le pide, no anunciar un trámite.
+  /*
+   * NO HAY CLAVE `titulo` (Q/A de Tomás, 02/09/2026). Decía "Entra para
+   * escanear" —explicaba el trámite— y ahora el encabezado de la puerta ES el
+   * logotipo de CaliScan, el mismo de la landing de la que viene el usuario. El
+   * nombre accesible que oye un lector de pantalla sale del `<title>` del propio
+   * SVG (`LogoCaliScan`), no de aquí: dejar la clave habría sido dejar un texto
+   * que nadie dibuja, que es justo lo que la DT-41 (c) acaba de limpiar.
    */
-  titulo: "Entra para escanear",
   /**
-   * Y la entrada dice POR QUÉ hay una puerta. El login es obligatorio desde la
-   * v1 y la razón es honesta —cada foto la paga CaliScan, y el cupo del mes es
-   * de alguien—, así que se cuenta en vez de esconderse detrás de un formulario.
+   * EL ESLOGAN, y lo que puede prometer.
+   *
+   * Dice las tres cosas que Tomás pidió que quedaran claras —que se escanea con
+   * una foto, que sale la ficha nutricional, y que todo esto sirve para comer
+   * mejor— sin firmar nada que la v1 no haga: la app MIDE, todavía no aconseja.
+   * El perfil, los objetivos y el plan llegan en la v2, así que la mejora se
+   * cuenta como consecuencia de saber ("el primer paso"), no como una función
+   * que alguien podría buscar esta tarde y no encontrar.
    */
-  entrada: "Tus platos y tu cupo de fotos van contigo. Sin contraseñas que recordar.",
+  entrada: "Sabe lo que comes con solo una foto.",
+  entrada_apoyo:
+    "Calorías y nutrientes al instante, sin pesar ni apuntar nada. El primer paso para comer mejor.",
 
   google: "Continuar con Google",
   /** Entre los dos caminos. Es una palabra sola porque es un separador, no un texto. */
@@ -46,14 +55,22 @@ export const COPY_LOGIN = {
 
   correo_etiqueta: "Tu correo electrónico",
   correo_placeholder: "nombre@correo.com",
-  correo_cta: "Entrar con un enlace por correo",
+  /**
+   * "Entrar con correo electrónico" y no "con un enlace por correo" (Q/A de
+   * Tomás): la etiqueta del botón dice CON QUÉ se entra —igual que la de
+   * Google, su vecina—, y no cómo funciona por dentro. Que llegará un enlace se
+   * cuenta en la pantalla siguiente, que es donde importa saberlo.
+   */
+  correo_cta: "Entrar con correo electrónico",
   correo_enviando: "Enviando el enlace…",
 
   /** Mientras la página se va a Google. Dura un parpadeo, pero el hueco existe. */
   redirigiendo: "Te llevamos a Google…",
 
   // — El enlace ya salió —
-  enviado_titulo: "Te hemos enviado un enlace",
+  /** Dos palabras: lo que pasó. El detalle —a qué correo, y qué hacer— va en el
+   *  recuadro de debajo, que es el que se lee de verdad. (Q/A de Tomás.) */
+  enviado_titulo: "Enlace enviado",
   /**
    * El correo se repite en pantalla A PROPÓSITO: es el único momento en que se
    * puede cazar una letra de más antes de quedarse esperando un correo que no
@@ -109,8 +126,13 @@ export const COPY_LOGIN = {
    */
   aviso_cancelado: "Has cerrado la ventana de Google. Cuando quieras, vuelve a intentarlo.",
 
-  /** Al pie, la letra chica de siempre: entrar no es comprar nada. */
-  pie: "Entrar es gratis. CaliScan no pide datos de pago.",
+  /**
+   * Al pie, la letra chica de siempre: entrar no es comprar nada. Y recoge lo
+   * que la cabecera soltó al quedarse con el eslogan — que aquí no hay ninguna
+   * contraseña que inventar ni que recordar, que es la duda de quien ve dos
+   * botones de entrada y ningún campo de contraseña.
+   */
+  pie: "Entrar es gratis y sin contraseñas. CaliScan no pide datos de pago.",
 } as const;
 
 /**
