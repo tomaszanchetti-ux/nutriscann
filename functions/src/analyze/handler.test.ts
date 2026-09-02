@@ -539,9 +539,14 @@ test("una kb_version distinta de la que config/app espera se avisa, no se aborta
 
   const { status } = await manejarAnalyze(POST(), deps);
   assert.equal(status, 200, "el análisis sigue: la versión que vale es la del catálogo cargado");
-  assert.equal(avisos.length, 1);
-  assert.match(avisos[0]?.mensaje ?? "", /kb_version/);
-  assert.equal(avisos[0]?.detalle["config_app"], "1.0.0+viejisima");
+  // Los pedidos de este andamio no traen cabecera de App Check, así que desde la
+  // card 4.4 el modo observación anota una línea por cada uno. Es lo que tiene
+  // que pasar (esa línea ES la medición), y acá se aparta para mirar la del
+  // catálogo, que es lo que este test comprueba.
+  const deLaVersion = avisos.filter((a) => !a.mensaje.startsWith("App Check"));
+  assert.equal(deLaVersion.length, 1);
+  assert.match(deLaVersion[0]?.mensaje ?? "", /kb_version/);
+  assert.equal(deLaVersion[0]?.detalle["config_app"], "1.0.0+viejisima");
 });
 
 test("cuando las dos versiones coinciden no se avisa nada", async () => {
@@ -556,7 +561,9 @@ test("cuando las dos versiones coinciden no se avisa nada", async () => {
   deps.advertir = (mensaje) => avisos.push(mensaje);
 
   await manejarAnalyze(POST(), deps);
-  assert.deepEqual(avisos, []);
+  // Mismo apartado que el test de arriba: la línea de App Check en observación
+  // no es ruido, es la cifra que se va a mirar antes de encender el bloqueo.
+  assert.deepEqual(avisos.filter((m) => !m.startsWith("App Check")), []);
 });
 
 test("el `owner_id` del cuerpo NO manda: manda el token, y el intento queda anotado", async () => {

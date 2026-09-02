@@ -11,22 +11,43 @@
  *
  * EL CIRCUITO, en orden:
  *   1. quién es                     (IO: verificar el ID token ⇒ 401 si no)
- *   2. validar el pedido            (puro)
- *   3. reservar un crédito del cupo (IO: una transacción ⇒ 429 si no entra)
- *   4. índice del catálogo          (una vez por instancia caliente)
- *   5. visión                       (la ÚNICA llamada al modelo)
- *   6. `analizarEscaneo`            (puro: matching + aritmética + composición)
- *   7. persistir scan + curación    (IO)
+ *   2. de dónde viene               (IO: verificar el token de App Check ⇒ 403)
+ *   3. validar el pedido            (puro)
+ *   4. reservar un crédito del cupo (IO: una transacción ⇒ 429 si no entra)
+ *   5. índice del catálogo          (una vez por instancia caliente)
+ *   6. visión                       (la ÚNICA llamada al modelo)
+ *   7. `analizarEscaneo`            (puro: matching + aritmética + composición)
+ *   8. persistir scan + curación    (IO)
  *
- * Los pasos 1 y 3 los estrena la Fase 4 (cards 4.2 y 4.3) y están en ese orden
- * por una razón cada uno: el dueño se verifica ANTES de mirar el cuerpo, y el
- * crédito se reserva ANTES de gastar plata en el modelo. Si el circuito se cae
- * entre el 3 y el 5, el crédito vuelve; del 5 en adelante ya está pagado
- * (`CODIGOS_QUE_DEVUELVEN_EL_CREDITO`, más abajo, es la lista y el porqué).
+ * Los pasos 1, 2 y 4 los estrena la Fase 4 (cards 4.2, 4.4 y 4.3) y el orden
+ * entre ellos está elegido, no heredado:
+ *
+ *   · el DUEÑO se verifica ANTES que nada, porque a quien no sabemos quién es no
+ *     le contamos qué le pasa a su JSON;
+ *   · la PROCEDENCIA va después de la identidad y ANTES del cupo. Después de la
+ *     identidad porque un pedido sin sesión ya tiene su respuesta —el 401, que
+ *     además le dice a la persona qué hacer— y no hace falta gastar una
+ *     verificación más en él. Y antes del cupo porque si no, un pedido que se va
+ *     a rechazar habría reservado un crédito que después hay que devolver: un
+ *     camino de vuelta más, para nada.
+ *   · el CRÉDITO se reserva ANTES de gastar plata en el modelo.
+ *
+ * Si el circuito se cae entre el 4 y el 6, el crédito vuelve; del 6 en adelante
+ * ya está pagado (`CODIGOS_QUE_DEVUELVEN_EL_CREDITO`, más abajo, es la lista y
+ * el porqué). El 403 de App Check no aparece en esa lista y no tiene por qué:
+ * ocurre ANTES de la reserva, así que no hay nada que devolver.
  */
 import { analizarEscaneo, type CatalogIndex, type EngineResult } from "../engine";
-import { limitesDeCupo, type AppConfig } from "../config";
+import { appCheckExigido, limitesDeCupo, type AppConfig } from "../config";
 import { identificarDueño, type CabecerasDelPedido, type VerificadorDeToken } from "../auth/identidad";
+import {
+  ErrorDeAppCheck,
+  comprobarProcedencia,
+  decidirProcedencia,
+  respuestaDeAppCheck,
+  type CuerpoDeErrorDeAppCheck,
+  type VerificadorDeAppCheck,
+} from "../appcheck/procedencia";
 import { momentoDelCupo, type Momento } from "../cupo/calendario";
 import {
   fotoDelCupo,
@@ -98,6 +119,16 @@ export interface Dependencias {
   config: () => Promise<{ config: AppConfig }>;
   /** Verifica el ID token y devuelve el `uid`. El IO de Auth, inyectado. */
   verificarToken: VerificadorDeToken;
+  /**
+   * Verifica el token de App Check. El IO de la procedencia, inyectado.
+   *
+   * OPCIONAL, y su ausencia NO cierra la puerta: un montaje sin verificador cae
+   * en `indeterminada`, que no bloquea nunca y grita en el log. La razón está
+   * escrita entera en `appcheck/procedencia.ts` — fallar cerrado por un cable
+   * suelto del backend apagaría la app para todos. Producción SIEMPRE lo
+   * inyecta (`index.ts`).
+   */
+  verificarAppCheck?: VerificadorDeAppCheck;
   /** Reserva un crédito del cupo, o dice por qué no. Transacción, en Firestore. */
   reservarCupo: (entrada: {
     owner_id: string;
@@ -174,7 +205,7 @@ export interface CuerpoDeAnalisis {
 
 export interface RespuestaDeAnalisis {
   status: number;
-  body: CuerpoDeAnalisis | CuerpoDeError;
+  body: CuerpoDeAnalisis | CuerpoDeError | CuerpoDeErrorDeAppCheck;
 }
 
 // ---------------------------------------------------------------------------
@@ -280,6 +311,24 @@ export async function manejarAnalyze(
     //    qué le pasa a su JSON. Sin token, token roto o token vencido ⇒ 401.
     const dueño = await identificarDueño(pedido.headers ?? {}, deps.verificarToken);
 
+    // 2. DE DÓNDE VIENE. `comprobarProcedencia` no lanza nunca: mira y cuenta.
+    //    Quien decide es `decidirProcedencia`, y lo que le da la orden es un
+    //    campo de `config/app` —no una constante de este archivo—, así que el
+    //    bloqueo se enciende y se apaga sin desplegar. Con el interruptor en
+    //    `false` (el arranque en frío) esto solo ANOTA: no puede rechazar nada.
+    const procedencia = await comprobarProcedencia(pedido.headers ?? {}, deps.verificarAppCheck);
+    const veredictoDeProcedencia = decidirProcedencia(procedencia, appCheckExigido(configPublicada));
+    if (veredictoDeProcedencia.nivel !== "silencio") {
+      deps.advertir?.("App Check: el pedido no trae una procedencia verificada", {
+        estado: procedencia.estado,
+        nivel: veredictoDeProcedencia.nivel,
+        bloquea: veredictoDeProcedencia.bloquea,
+        uid: dueño.uid,
+        ...("motivo" in procedencia ? { motivo: procedencia.motivo } : {}),
+      });
+    }
+    if (veredictoDeProcedencia.bloquea) throw new ErrorDeAppCheck(procedencia);
+
     const entrada = validarEntrada(pedido.body);
     if (entrada.owner_id_del_cuerpo !== null) {
       // No rompe y no manda: solo queda anotado. Cuando este aviso deje de
@@ -291,7 +340,7 @@ export async function manejarAnalyze(
       });
     }
 
-    // 2. CUÁNTO LE QUEDA. La reserva va ANTES del catálogo y ANTES del modelo:
+    // 3. CUÁNTO LE QUEDA. La reserva va ANTES del catálogo y ANTES del modelo:
     //    es la comprobación más barata que puede rebotar el pedido, y reservar
     //    después de pagar la llamada sería reservar tarde.
     const momento = momentoDelCupo((deps.fecha ?? (() => new Date()))());
@@ -387,6 +436,23 @@ export async function manejarAnalyze(
       },
     };
   } catch (err) {
+    // EL 403 DE APP CHECK SALE POR ACÁ Y NO POR `respuestaDeError`, y es
+    // temporal: su código todavía no está en la lista cerrada de `errores.ts`
+    // —ese archivo es territorio de otra card— así que se responde con la
+    // definición que vive en `appcheck/procedencia.ts`, con la misma forma. El
+    // día que la fila se integre, esta rama se borra y el código entra por el
+    // camino de siempre.
+    //
+    // Va PRIMERO en el catch por una razón concreta: sin esto caería en el
+    // `else` y se respondería un 500, que es exactamente lo que no puede pasar.
+    // Y no hay crédito que devolver: esto se lanza antes de la reserva.
+    if (err instanceof ErrorDeAppCheck) {
+      deps.advertir?.("analyze rechazó el pedido: App Check exigido y no verificado", {
+        estado: err.resultado.estado,
+      });
+      return respuestaDeAppCheck(copy);
+    }
+
     const codigo: CodigoDeError = err instanceof ErrorDeAnalisis ? err.codigo : "error_interno";
     const detalle = err instanceof ErrorDeAnalisis ? err.detalle : describir(err);
     deps.advertir?.("analyze falló", { codigo, detalle });

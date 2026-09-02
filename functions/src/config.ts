@@ -74,6 +74,21 @@ export interface AppConfig {
   copy: Record<string, string>;
   /** El documento de reglas publicado. `null` mientras no se haya sembrado. */
   recommendation_rules: ReglasDeRecomendacion | null;
+  /**
+   * EL INTERRUPTOR DE APP CHECK (card 4.4). `false` = observación, `true` = bloqueo.
+   *
+   * Es OPCIONAL en el tipo y no obligatorio, y no es pereza: `config/app` es un
+   * documento que ya está publicado en producción y no tiene este campo. Un campo
+   * obligatorio obligaría a escribirlo antes de desplegar, y hasta que alguien lo
+   * escribiera la app leería `undefined` donde el tipo promete un booleano. Con
+   * `?` la ausencia es un estado legítimo y significa lo más seguro: observar.
+   *
+   * ⚠️ El seed de `kb/seed` NO lo toca: su máscara nombra cinco campos
+   * (`recommendation_rules`, `copy`, `kb_version`, `updated_by`, `updated_at`) y
+   * este no está entre ellos, así que una corrida del seed no lo pisa. Es «de
+   * otra mano», igual que los dos topes del cupo.
+   */
+  app_check_enforced?: boolean;
 }
 
 /**
@@ -92,6 +107,10 @@ export const COLD_START_DEFAULTS: AppConfig = {
   max_scans_per_day: LIMITES_EN_FRIO.por_dia,
   copy: {},
   recommendation_rules: null,
+  // ARRANCA EN FRÍO APAGADO, y esa es la decisión de la card 4.4: el bloqueo se
+  // enciende MIRANDO una semana de logs, no el día que se despliega. Ver
+  // `appcheck/procedencia.ts`.
+  app_check_enforced: false,
 };
 
 const CACHE_TTL_MS = 60_000;
@@ -145,4 +164,23 @@ export function limitesDeCupo(config: AppConfig | null): LimitesDeCupo {
     { por_mes: config?.max_scans_per_month, por_dia: config?.max_scans_per_day },
     { por_mes: COLD_START_DEFAULTS.max_scans_per_month, por_dia: COLD_START_DEFAULTS.max_scans_per_day },
   );
+}
+
+/**
+ * ¿Está encendido el BLOQUEO de App Check? (card 4.4)
+ *
+ * Acepta `null` por el mismo motivo que `limitesDeCupo`: el handler pregunta
+ * esto incluso cuando `loadConfig` falló, y ahí rige el arranque en frío. Un
+ * Firestore caído NO puede encender un candado que nadie encendió.
+ *
+ * SOLO DOS VALORES ENCIENDEN, y todo lo demás apaga. La asimetría es deliberada
+ * y va en la dirección segura: este campo se edita a mano en la consola de
+ * Firebase, donde es fácil escribir el texto `"true"` en vez del booleano, así
+ * que las dos formas de decir que sí valen. Cualquier otra cosa —un `"si"`, un
+ * `1`, un campo a medio escribir— se lee como «no bloquear», que es el estado
+ * del que siempre se puede volver. Al revés, un dedazo apagaría la app.
+ */
+export function appCheckExigido(config: AppConfig | null): boolean {
+  const valor: unknown = config?.app_check_enforced;
+  return valor === true || valor === "true";
 }

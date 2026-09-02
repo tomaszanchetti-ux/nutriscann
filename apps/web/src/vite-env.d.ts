@@ -24,6 +24,15 @@ interface ImportMetaEnv {
   /** Puerto del emulador de Auth. Por defecto el 9099 de `firebase.json`. */
   readonly VITE_AUTH_EMULATOR_PORT?: string;
   /**
+   * "1" ⇒ la app pide un token de App Check a reCAPTCHA Enterprise y lo manda en
+   * `X-Firebase-AppCheck`. AL REVÉS QUE LAS DE ARRIBA: viene encendida desde
+   * `apps/web/.env` y en local se apaga con cualquier otro valor. Ver
+   * `src/lib/appcheck.ts` y `.env.local.example`.
+   */
+  readonly VITE_APP_CHECK?: string;
+  /** La clave de reCAPTCHA Enterprise. Pública; vive en `apps/web/.env`. */
+  readonly VITE_APP_CHECK_SITE_KEY?: string;
+  /**
    * El modo de demo de `analyze`: en vez de llamar al backend, la app espera y
    * devuelve algo guardado. Valores: "1"/"reporte" (el fixture del reporte),
    * "lento" (lo mismo, pero con la espera larga para mirar el escaneo),

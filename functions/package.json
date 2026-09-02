@@ -13,7 +13,7 @@
     "watch": "tsc --watch",
     "serve": "npm run build && firebase emulators:start --only functions,firestore",
     "lint": "tsc --noEmit",
-    "test": "npm run build && node --test lib/engine/*.test.js lib/kb/*.test.js lib/analyze/*.test.js lib/auth/*.test.js lib/cupo/*.test.js",
+    "test": "npm run build && node --test lib/engine/*.test.js lib/kb/*.test.js lib/analyze/*.test.js lib/auth/*.test.js lib/cupo/*.test.js lib/appcheck/*.test.js",
     "$comment_test_emulador": "El circuito contra los emuladores de Firestore Y AUTH se saltea solo si no están levantados (`PATH=\"/opt/homebrew/opt/openjdk/bin:$PATH\" npm run emulators` en otra terminal, y `npm run kb:seed:local` para sembrar el catálogo). Los dos emuladores arrancan juntos con ese comando. Ningún test llama a la API de Anthropic de verdad: el cliente entra inyectado; y desde la card 4.2, tampoco a Firebase Auth de verdad: el uid sale de un token que emite el emulador.",
     "logs": "firebase functions:log"
   },

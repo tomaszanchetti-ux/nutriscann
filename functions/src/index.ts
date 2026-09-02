@@ -20,8 +20,9 @@ import { logger } from "firebase-functions/v2";
 // El import trae el secreto y, de paso, corre `setGlobalOptions` (región,
 // memoria, timeout). Por eso alcanza con este único import de `./runtime`.
 import { ANTHROPIC_API_KEY, anthropicWorkspaceId } from "./runtime";
-import { loadConfig } from "./config";
+import { appCheckExigido, loadConfig } from "./config";
 import { crearVerificador, usaEmuladorDeAuth } from "./auth/identidad";
+import { crearVerificadorDeAppCheck } from "./appcheck/procedencia";
 import { devolverCredito, reservarCupo } from "./cupo/persistencia";
 import { obtenerIndice } from "./analyze/catalogo";
 import { manejarAnalyze } from "./analyze/handler";
@@ -56,6 +57,13 @@ export const health = onRequest({ cors: true }, async (_req, res) => {
       // arrancara apuntando al emulador de Auth —o sea, aceptando tokens sin
       // firma— se vea en la sonda y no en un incidente.
       auth_emulator: usaEmuladorDeAuth(),
+      // EN QUÉ MODO ESTÁ APP CHECK (card 4.4), leído del mismo `config/app` que
+      // gobierna el circuito. Se publica por el mismo motivo que la línea de
+      // arriba: el interruptor se edita en la consola de Firebase sin desplegar,
+      // así que "¿está bloqueando ahora mismo?" no se puede contestar mirando el
+      // repo. Acá se contesta desde afuera, sin credenciales y en un segundo —
+      // que es justo lo que hace falta el día que haya que apagarlo con prisa.
+      app_check_enforced: appCheckExigido(config),
       latency_ms: Date.now() - startedAt,
       checked_at: new Date().toISOString(),
     });
@@ -98,6 +106,9 @@ const clienteDeVision: ClienteDeVision = {
  *
  * Cabecera: `Authorization: Bearer <idToken de Firebase>`. OBLIGATORIA desde la
  * card 4.2: el dueño del scan es el `uid` de ese token y nada más.
+ * Cabecera: `X-Firebase-AppCheck: <token>`. Desde la card 4.4 se verifica
+ * siempre; que sea OBLIGATORIA o no lo decide `config/app.app_check_enforced`,
+ * que arranca en `false` (observación: se anota y no se bloquea).
  * Cuerpo: `{ image_base64, media_type }`. Un `owner_id` que llegue se ignora.
  * Respuesta: `{ scan_id, is_food, items, totals, meta, quota }` — `items` y
  * `totals` son EXACTAMENTE los del motor, sin reformatear.
@@ -115,6 +126,9 @@ const clienteDeVision: ClienteDeVision = {
  * `allowedHeaders`, y el paquete `cors` en ese caso REFLEJA lo que el preflight
  * pidió. El test lo ejerce contra la copia de `cors` que este paquete tiene
  * instalada, así que si una actualización cambiara ese default, se entera acá.
+ * La card 4.4 agregó `X-Firebase-AppCheck`, que tampoco es "simple" y viaja por
+ * el mismo preflight: no hizo falta tocar nada porque lo que hay es un reflejo y
+ * no una lista blanca, y eso está comprobado en `appcheck/procedencia.test.ts`.
  *
  * Límite conocido (Q/A WS04): un cuerpo que NO es JSON válido lo rechaza el
  * body-parser de Express ANTES de que este handler exista — ese 400 sale como
@@ -132,6 +146,11 @@ export const analyze = onRequest({ cors: true, secrets: [ANTHROPIC_API_KEY] }, a
       // El Admin SDK ya respeta `FIREBASE_AUTH_EMULATOR_HOST` por su cuenta: no
       // hay ninguna rama de "modo local" en este circuito.
       verificarToken: crearVerificador(),
+      // La procedencia (card 4.4). Se inyecta SIEMPRE, en los dos modos: en
+      // observación también se verifica —lo que cambia es que el resultado se
+      // anota en vez de rechazar—, porque una semana de logs que no verifican
+      // nada no diría nada.
+      verificarAppCheck: crearVerificadorDeAppCheck(),
       reservarCupo: (entrada) => reservarCupo(getFirestore(), entrada),
       devolverCupo: async (entrada) => {
         await devolverCredito(getFirestore(), entrada);
