@@ -21,12 +21,23 @@ import type { Per100g } from "../kb/types";
 /**
  * Los métodos de cocción que la visión puede declarar.
  *
- * Es un subconjunto de `kb/curation/cooking.transforms.json`: son los que se
- * pueden VER en una foto. `crudo` y `hervido` no están porque en una imagen no
- * se distinguen de forma confiable (y `hervido` es, además, el factor menos
- * confiable de la tabla).
+ * Desde la Fase 5 son LOS OCHO de `kb/curation/cooking.transforms.json`, no un
+ * subconjunto. Hasta acá faltaban `crudo`, `hervido` y `cocido_cebolla` porque
+ * "no se ven en una foto"; el Bloque 0 de la Fase 5 midió el costo de esa
+ * cautela: 24 subfamilias de verdura y legumbre tenían que declarar `mezclado`
+ * como método por defecto, y una lenteja hervida se componía con rendimiento 1
+ * en vez de 1,113. Lo que la visión no distingue lo pone la subfamilia
+ * (`metodo_por_defecto` en `functions/src/kb/familias.ts`).
  */
-export type Preparacion = "frito" | "horneado" | "horneado_masa" | "plancha" | "mezclado";
+export type Preparacion =
+  | "crudo"
+  | "mezclado"
+  | "frito"
+  | "horneado"
+  | "plancha"
+  | "hervido"
+  | "horneado_masa"
+  | "cocido_cebolla";
 
 /** Un ingrediente visible de un plato que la visión no supo nombrar entero. */
 export interface VisionComponent {
@@ -34,6 +45,12 @@ export interface VisionComponent {
   /** El mismo ingrediente en español. Ver `VisionItem.food_es`. */
   food_es?: string;
   grams: number;
+  /**
+   * `familia/subfamilia` del ingrediente, uno de `IDS_FAMILIA_SUBFAMILIA`
+   * (Fase 5). Opcional: es el respaldo del motor cuando el nombre del
+   * ingrediente no llega a ninguna ficha (la masa de pizza cae en su familia).
+   */
+  familia_subfamilia?: string;
 }
 
 /**
@@ -65,8 +82,31 @@ export interface VisionItem {
   /** 0..1 — cuánto confía la visión en la IDENTIFICACIÓN, no en el número. */
   confidence: number;
   preparation?: Preparacion | null;
-  /** Ingredientes visibles, cuando el plato entero no tiene un nombre obvio. */
+  /**
+   * EL PLATO EN EL IDIOMA DEL CATÁLOGO (Fase 5, card 5.2). Es un id compuesto
+   * `familia/subfamilia` de la lista cerrada `IDS_FAMILIA_SUBFAMILIA`
+   * (`functions/src/kb/familias.ts`, generado desde `kb/curation/familias.json`).
+   * El esquema de salida lo pide como enum: el modelo no puede escribir "pizza"
+   * de tres formas. Es el RESPALDO del término exacto, nunca su reemplazo:
+   * medido en el Bloque 0, pisar el término con la cabeza de familia llevaría
+   * el atún en lata de 85 a 238 kcal. Opcional en el tipo por la misma razón
+   * que `food_es`: una salida vieja o saneada tiene que seguir funcionando.
+   */
+  familia_subfamilia?: string;
+  /**
+   * Ingredientes visibles con sus gramos. Desde la Fase 5 la visión los declara
+   * SIEMPRE que el plato tenga más de uno (antes, solo si el plato "no tenía
+   * nombre obvio", y por eso la composición nunca disparó en producción).
+   * Vacío u omitido en un alimento simple.
+   */
   components?: VisionComponent[];
+  /**
+   * Lo que dice el envase, tal cual está impreso, cuando la foto es un producto
+   * envasado con etiqueta legible (Fase 5). Un envase con etiqueta ES comida:
+   * la etiqueta es la fuente más precisa que hay. Solo el nombre del producto;
+   * nunca calorías ni macros (regla dura 2).
+   */
+  etiqueta_del_envase?: string;
 }
 
 export interface VisionResult {

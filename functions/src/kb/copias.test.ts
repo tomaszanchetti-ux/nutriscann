@@ -20,6 +20,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, it } from "node:test";
 import { COOKING_TRANSFORMS } from "./cooking.transforms";
+import { FAMILIAS, FAMILIAS_KB_VERSION, IDS_FAMILIA_SUBFAMILIA } from "./familias";
 
 const RAIZ = resolve(__dirname, "..", "..", "..");
 const CENTINELA = Buffer.from(
@@ -71,5 +72,37 @@ describe("la tabla de cocción no se separó de la curación", () => {
       assert.equal(copia.aceite_absorbido_pct, declarado.aceite_absorbido_pct, `${id}.aceite_absorbido_pct`);
       assert.equal(copia.aceite_ref, declarado.aceite_ref, `${id}.aceite_ref`);
     }
+  });
+});
+
+describe("la taxonomía de familias no se separó de la curación", () => {
+  const json = JSON.parse(readFileSync(resolve(RAIZ, "kb", "curation", "familias.json"), "utf8")) as {
+    kb_version_medida: string;
+    familias: {
+      id: string; nombre_es: string; nombre_en: string; modo: string; cabeza?: string | null;
+      subfamilias: { id: string; nombre_es: string; nombre_en: string; modo: string; metodo_por_defecto: string; cabeza?: string | null; fichas: string[] }[];
+    }[];
+  };
+
+  it("son las mismas familias, subfamilias, cabezas y fichas, en el mismo orden", () => {
+    const esperado = json.familias.map((f) => ({
+      id: f.id, nombre_es: f.nombre_es, nombre_en: f.nombre_en, modo: f.modo, cabeza: f.cabeza ?? null,
+      subfamilias: f.subfamilias.map((s) => ({
+        id: s.id, nombre_es: s.nombre_es, nombre_en: s.nombre_en, modo: s.modo,
+        metodo_por_defecto: s.metodo_por_defecto, cabeza: s.cabeza ?? null, fichas: s.fichas,
+      })),
+    }));
+    assert.deepEqual(FAMILIAS, esperado, "regenerá con `node kb/cobertura/generar_familias_ts.js`");
+    assert.equal(FAMILIAS_KB_VERSION, json.kb_version_medida);
+  });
+
+  it("el enum tiene una entrada por subfamilia y ninguna repetida", () => {
+    const total = json.familias.reduce((n, f) => n + f.subfamilias.length, 0);
+    assert.equal(IDS_FAMILIA_SUBFAMILIA.length, total);
+    assert.equal(new Set(IDS_FAMILIA_SUBFAMILIA).size, total);
+  });
+
+  it("cada método por defecto existe en la tabla de cocción", () => {
+    for (const f of FAMILIAS) for (const s of f.subfamilias) assert.ok(COOKING_TRANSFORMS[s.metodo_por_defecto], `${f.id}/${s.id}: ${s.metodo_por_defecto}`);
   });
 });
