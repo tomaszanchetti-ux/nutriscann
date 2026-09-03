@@ -314,48 +314,74 @@ export const PALABRAS_DE_COCIDO: readonly string[] = [
 export const FAMILIAS_QUE_SE_COMEN_CRUDAS: readonly string[] = ["verdura", "fruta"];
 
 /**
- * EL PISO DE CONFIANZA QUE NECESITA UN TOTAL PARA LLAMARSE COMPLETO.
+ * EL PISO DE CONFIANZA QUE DEJÓ DE GOBERNAR EL TOTAL.
  *
- * No es un umbral de matching: ningún item se descarta por esto y ninguna ficha
- * deja de mostrarse. Es una compuerta sobre EL NÚMERO DE PORTADA. La regla es
- * una sola línea: **si NINGÚN alimento del plato llega a este piso, la suma de
- * esos alimentos no se publica como un total completo.**
+ * HASTA HOY (03/09/2026, card 6.2) esta constante era una compuerta: si ningún
+ * alimento del plato llegaba a este piso, `sumarTotales` (`arithmetic.ts`)
+ * apagaba el total entero —los ocho `nutrients` en `null`— y el front mostraba
+ * "Sin números para este plato". Tomás la REDEFINIÓ hoy, con el motivo dicho en
+ * sus palabras: **«no mostrar ficha nos MATA»**. Desde esta card el total se
+ * publica SIEMPRE y esta constante YA NO DECIDE NADA sobre él: ni si se
+ * publica, ni si lleva un aviso. La confianza deja de ser un score que quien
+ * usa la app tenga que interpretar; la señal de calidad de un plato pasa a ser
+ * la VÍA por la que se llegó a cada ficha (exacto, alias, difuso, cabeza de
+ * familia…), mostrada ítem por ítem — harina de otra card, no de esta.
  *
- * POR QUÉ EXISTE, con el caso que la abrió: una foto de comida de plástico de
- * exhibición (réplicas de resina en una vitrina) pasó la visión como comida, sus
- * DOS ítems resolvieron a `Miel` con confianza final 0,088 cada uno, y el motor
- * publicó **1.550,4 kcal marcadas `completo: true`, con 510 de 510 g
- * cuantificados**. Cada paso era correcto por separado —la aritmética, la ficha,
- * la confianza declarada— y el resultado era una afirmación en firme construida
- * sobre dos matches que el propio motor consideraba basura. Sumar y no dudar es
- * la falla; la compuerta la corta donde nace.
+ * POR QUÉ EXISTIÓ, con el caso que la abrió (card 2.8): una foto de comida de
+ * plástico de exhibición (réplicas de resina en una vitrina) pasó la visión
+ * como comida, sus DOS ítems resolvieron a `Miel` con confianza final 0,088
+ * cada uno, y el motor publicó 1.550,4 kcal con cara de dato medido. Cada paso
+ * era correcto por separado —la aritmética, la ficha, la confianza declarada—
+ * y el resultado era una afirmación en firme construida sobre dos matches que
+ * el propio motor consideraba basura. La card 2.8 cortaba esa afirmación
+ * entera tapando el total del plato; la card 6.2 decidió que tapar el plato
+ * entero —CUALQUIER plato, no solo el del plástico— le costaba más caro al
+ * producto que dejar ver un número que a veces viene de una identificación
+ * floja.
  *
- * DE DÓNDE SALE EL NÚMERO. Del histograma real del golden set de 30 platos, y
- * mirando lo que importa: **la confianza del MEJOR ítem de cada plato**, que es
- * lo que la compuerta compara. Ordenado, ese histograma tiene un hueco:
+ * DE DÓNDE SALÍA EL NÚMERO ORIGINALMENTE (card 2.8, golden set de 30 platos,
+ * visión v1-v3, ítems sueltos): el hueco entre el plástico (0,088) y el plato
+ * correcto más flojo (0,152) dejaba margen de sobra para elegir 0,12. Ese
+ * histograma YA NO REPRESENTA LA REALIDAD: la visión v6 y el motor de la Fase 5
+ * (compuestos, cabezas de subfamilia y familia) mueven la confianza de cada
+ * plato, y el plástico dejó de ser el peor caso — lo que terminó de justificar
+ * la redefinición de hoy.
  *
- *   0,088  ← plato 28, la comida de plástico (los dos ítems, `Miel`)
- *   ────── el hueco: no hay NI UN plato del set acá adentro ──────
- *   0,152  ← plato 24, espaguetis con albóndigas: las DOS fichas correctas
- *   0,185  ← plato 03, paella: la ficha correcta
- *   0,285 · 0,375 · 0,510 · 0,638 · 0,680 · 0,720 · 0,765 · 0,950 · 0,980
+ * LO MEDIDO HOY (WS12, `node golden/bin/replay-vision.js` sobre
+ * `fase/06-gramos-y-confianza` con las cards 6.1 y 6.3 adentro), la confianza
+ * del MEJOR ítem por plato — que es lo que este piso comparaba — de las 31
+ * fotos del golden, ordenada:
  *
- * 0,12 cae en el medio de ese hueco: un 36 % por encima del plástico y un 21 %
- * por debajo del plato correcto más flojo. Es el punto que más margen deja de
- * los dos lados, y por eso se elige ese y no el borde de ninguno.
+ *   0,160 30-envase-cerrado (difuso; es un envase con etiqueta legible, comida
+ *         por diseño desde la card 5.2)
+ *   0,206 · 0,218 · 0,255 · 0,270  (risotto, arepa, queso manchego, naranja)
+ *   0,306 28-comida-plástico (`cabeza_subfamilia`; la visión v6 la dio por
+ *         comida al 72 %)
+ *   0,319 · 0,319 · 0,324 · 0,355  (huevos rotos, croquetas, jamón serrano, pan
+ *         tostado)
+ *   0,361 · 0,383 · 0,393  (cocido, espaguetis, ensalada mixta compuesta)
+ *   0,510 · 0,578 · 0,595 · 0,722 · 0,765 · 0,808 · 0,850 (×3) · 0,900 ·
+ *   0,950 (×3) · 0,970 · 0,980
  *
- * EL TRADE-OFF, DICHO ENTERO. Un piso más alto convertiría en "parcial" platos
- * que están BIEN: con 0,16 se cae el plato 24 (702,8 kcal, dos fichas correctas)
- * y con 0,20 se cae además la paella. Un piso más bajo (0,09) dejaría al plástico
- * a cuatro milésimas de pasar, que no es un margen. El costo de equivocarse para
- * arriba es barato —un plato correcto se muestra como total parcial, con sus
- * ítems y sus números a la vista igual— y el de equivocarse para abajo es el
- * plato 28 otra vez. Ante la duda, el piso se sube.
+ * LA CONCLUSIÓN MEDIDA: **ningún plato del golden quedaba bajo 0,12** —el piso
+ * no frenaba a NADIE del set real— y **el plástico (0,306) quedaba por encima
+ * de cinco platos reales** (envase, risotto, arepa, queso manchego, naranja).
+ * La confianza sola ya no podía separar "esto es basura" de "esto es comida de
+ * verdad, identificada floja": la card 2.8 confiaba en un hueco que la visión
+ * de hoy cerró, y no hay ningún piso que dejara pasar esos cinco platos y
+ * frenara al plástico a la vez, porque el plástico puntúa MÁS alto que ellos.
  *
- * LÍMITE DECLARADO: la compuerta mira el MEJOR ítem, no el promedio. Un plato con
- * un ítem al 0,9 y cinco al 0,05 sigue saliendo completo. Es deliberado: ahí hay
- * comida bien identificada y la reserva de los otros cinco se lee en cada ítem.
- * Lo que esta constante impide es un total donde NADA se identificó bien.
+ * LÍMITE DECLARADO, dicho con todas las letras: el plástico es un DEFECTO DE LA
+ * VISIÓN, no algo que este piso —ni ningún piso de confianza— pudiera separar
+ * de un plato real. La visión v6 lo clasificó como comida al 72 % y el motor lo
+ * resolvió a una ficha con `identidad_respaldada`; ninguna de las dos cosas es
+ * un fallo de la aritmética ni de esta constante. Va a una deuda de curación de
+ * la visión aparte (`docs/DEUDAS.md`).
+ *
+ * QUÉ QUEDA DE ESTA CONSTANTE. El valor y el histograma se conservan, sin
+ * ningún uso en `arithmetic.ts`: documentan por qué el total dejó de preguntar
+ * nada sobre la confianza, y quedan disponibles si una futura card necesita un
+ * piso de confianza para otra cosa. Hoy, ninguna lo usa.
  */
 export const CONFIANZA_MINIMA_PARA_UN_TOTAL = 0.12;
 

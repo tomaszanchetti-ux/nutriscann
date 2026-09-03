@@ -13,6 +13,16 @@
  *   3. la lista de items con confianza, sello de match y letra chica
  *   4. el doble CTA (card 3.3): escanear otro plato, y pasarse a Premium
  *
+ * CARD 6.2 (03/09/2026): el total se publica SIEMPRE. Hasta esta card, cuando
+ * ningún alimento del plato superaba el piso de confianza, la compuerta
+ * apagaba el total entero y esta pantalla mostraba "Sin números para este
+ * plato" aunque el motor tuviera con qué calcular. Tomás la redefinió con el
+ * motivo dicho en sus palabras: «no mostrar ficha nos MATA». La señal de
+ * calidad para quien usa la app deja de ser un score de confianza — pasa a ser
+ * la VÍA por la que se llegó a cada ficha, que es harina de otra card — así que
+ * esta pantalla no gana ningún recuadro nuevo: gana el número que antes se
+ * tapaba.
+ *
  * QUÉ SACÓ LA WS08, y por qué no se perdió nada:
  *
  *   · EL SEGUNDO RECUADRO, «Del resto del análisis» (fibra, saturadas, azúcares
@@ -49,28 +59,22 @@ export interface PantallaReporteProps {
 /**
  * ¿Hay un total que se pueda dibujar?
  *
- * Son TRES preguntas y las tres tienen que dar que sí, porque el motor tiene tres
- * formas distintas de decir que no (y ninguna es una excepción ni un error):
+ * Card 6.2: la compuerta que hasta hoy podía apagar el total entero por
+ * confianza baja SE FUE — el total se publica siempre que haya algo que sumar.
+ * Quedan DOS preguntas, no tres, y las dos tienen que dar que sí:
  *
- *   · `totals === null`         — ningún alimento se pudo cuantificar.
- *   · `total_no_publicable`     — la compuerta del total cerró (card 6.1): los
- *                                 ocho valores viajan en `null` a propósito.
- *   · `macro_pct === null`      — no hay nada que repartir: las kcal están en 0,
- *                                 o el plato tiene calorías que no vienen de
- *                                 ningún macronutriente (alcohol, card 5.1).
+ *   · `totals === null`     — ningún alimento se pudo cuantificar.
+ *   · `macro_pct === null`  — no hay nada que repartir: las kcal están en 0,
+ *                             o el plato tiene calorías que no vienen de
+ *                             ningún macronutriente (alcohol, card 5.1).
  *
- * En los tres casos el reporte muestra el motivo que escribió el motor, no un
+ * En los dos casos el reporte muestra el motivo que escribió el motor, no un
  * anillo vacío ni un cero inventado.
  */
 function hayTotalDibujable(
   totals: EngineTotals | null,
 ): totals is EngineTotals & { nutrients: { kcal: number } } {
-  return (
-    totals !== null &&
-    totals.total_no_publicable !== true &&
-    totals.macro_pct !== null &&
-    totals.nutrients.kcal !== null
-  );
+  return totals !== null && totals.macro_pct !== null && totals.nutrients.kcal !== null;
 }
 
 export function PantallaReporte({
@@ -181,13 +185,16 @@ export function PantallaReporte({
 
 /**
  * Cuando no hay total que dibujar no hay anillo, y el motor manda el motivo
- * escrito. Se muestra ESE, tal cual: es más honesto que un donut vacío, y
- * además distingue los dos casos que se ven igual desde afuera —"ninguna ficha"
- * y "ninguna identificación confiable"— porque el texto los distingue.
+ * escrito. Se muestra ESE, tal cual: es más honesto que un donut vacío.
  *
- * Tampoco se muestran los recuadros de números: con la compuerta cerrada los
- * ocho valores viajan en `null`, y una tabla entera de "sin dato" no informa,
- * hace ruido. Los alimentos siguen abajo, uno por uno, con lo suyo.
+ * Card 6.2: hasta hoy este caso cubría además la compuerta de confianza baja
+ * —cuando ningún alimento superaba el piso, el total entero se apagaba y se
+ * veía igual que cuando ningún alimento tenía ficha—. Esa compuerta se fue: el
+ * total se publica siempre que haya algo que sumar. Lo que queda acá es solo
+ * lo que quedaba ANTES de la compuerta (card 2.3): no hay ningún nutriente que
+ * sumar porque ningún alimento identificado está en la base, o las kcal del
+ * total dieron 0 o sin macros que repartir (`macro_pct === null`, card 5.1).
+ * Los alimentos siguen abajo, uno por uno, con lo suyo.
  */
 function SinTotales({ copy, motivo }: { copy: CopyDeLaApp; motivo: string | null }) {
   return (

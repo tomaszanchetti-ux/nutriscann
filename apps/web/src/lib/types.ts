@@ -34,7 +34,9 @@
  * Origen: functions/src/engine/types.ts + kb/src/types.ts (Per100g).
  * Alineado el 01/09/2026 (card 3.1) contra el motor de la WS07: `termino_es`
  * siempre presente (DT-25), `identidad_respaldada` (DT-37) y los ocho valores
- * del total nullables + `total_no_publicable` (card 6.1).
+ * del total nullables + la marca de la compuerta (card 6.1). Realineado el
+ * 03/09/2026 (card 6.2): la compuerta se fue, esa marca se fue con ella, y el
+ * total se publica siempre.
  * ========================================================================== */
 
 /** Valores por 100 g. Origen: `kb/src/types.ts` → `Per100g`. */
@@ -100,6 +102,13 @@ export interface ComponenteFaltante {
 export interface Composicion {
   metodo: string;
   componentes: ComponenteDelPlato[];
+  /**
+   * EL COMPONENTE PEOR IDENTIFICADO DEL PLATO (card 6.1). Ver el original en
+   * `functions/src/engine/types.ts`: la confianza del compuesto pasó a ser un
+   * promedio ponderado por gramos, y este campo es la contrapartida — el
+   * eslabón más débil dejó de decidir la confianza, pero no dejó de verse.
+   */
+  eslabon_mas_debil: { termino_en: string; name_es: string | null; confidence_match: number };
   peso_entrada_g: number;
   aceite_absorbido_g: number;
   aceite_ref: string | null;
@@ -166,9 +175,10 @@ export interface EngineItem {
  * suma cruda — el candado verifica que los ocho nombres sean los mismos y que
  * los ocho estén en `number | null`.
  *
- * Dos ausencias distintas viajan por el mismo `null`, y se distinguen mirando
- * `EngineTotals`: sin `total_no_publicable`, un `null` significa "la fuente no
- * declara este valor"; con `total_no_publicable`, significa "no hay total".
+ * Card 6.2: un `null` acá significa una sola cosa, "la fuente no declara este
+ * valor" — hasta esta card podía significar además "la compuerta del total
+ * cerró", con una marca aparte que lo decía, y esa segunda lectura se fue con
+ * la compuerta: el total se publica siempre.
  */
 export interface TotalesNutrientes {
   kcal: number | null;
@@ -208,13 +218,8 @@ export interface PorcentajesDeMacros {
 export type OpcionalAusente = "fiber_g" | "sat_fat_g" | "sugars_g" | "sodium_mg";
 
 export interface EngineTotals {
+  /** Viaja SIEMPRE que haya algo que sumar (card 6.2): el total ya no se apaga. */
   nutrients: TotalesNutrientes;
-  /**
-   * `true` cuando los ocho `nutrients` vienen en `null` porque la compuerta del
-   * total cerró: no es que la fuente no los declare, es que el análisis no
-   * sostiene el total. `macro_pct_motivo` trae el porqué, escrito.
-   */
-  total_no_publicable?: true;
   opcionales_ausentes: Partial<Record<"fiber_g" | "sat_fat_g" | "sugars_g" | "sodium_mg", string>>;
   macro_pct: PorcentajesDeMacros | null;
   macro_pct_motivo: string | null;
@@ -222,7 +227,7 @@ export interface EngineTotals {
   grams_cuantificados: number;
   items_incluidos: number;
   items_sin_datos: number;
-  /** `true` solo si todos los items del escaneo aportaron números. */
+  /** `true` solo si todos los items del escaneo aportaron números (cobertura de masa). */
   completo: boolean;
 }
 

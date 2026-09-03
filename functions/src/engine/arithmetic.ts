@@ -14,7 +14,6 @@ import { OPTIONAL_KEYS, REQUIRED_KEYS, type OptionalNutrientKey } from "../kb/nu
 import type { Per100g } from "../kb/types";
 import {
   ATWATER,
-  CONFIANZA_MINIMA_PARA_UN_TOTAL,
   DIFERENCIA_RELEVANTE_PCT,
   FACTOR_DE_MASA_COHERENTE,
   KCAL_DE_ALCOHOL_TOLERADAS,
@@ -32,26 +31,7 @@ import type {
   Per100gEscalado,
   PorcentajesDeMacros,
   SumaDeNutrientes,
-  TotalesNutrientes,
 } from "./types";
-
-/**
- * LOS OCHO VALORES EN BLANCO: lo que viaja cuando la compuerta del total cierra.
- *
- * No es un total de cero —eso afirmaría que el plato no aporta nada— ni un objeto
- * ausente: es la misma forma de siempre con los ocho valores declarados como no
- * publicables. Ver `TotalesNutrientes` en `types.ts`.
- */
-const TOTAL_SIN_PUBLICAR: TotalesNutrientes = {
-  kcal: null,
-  protein_g: null,
-  carbs_g: null,
-  fat_g: null,
-  fiber_g: null,
-  sat_fat_g: null,
-  sugars_g: null,
-  sodium_mg: null,
-};
 
 /**
  * Los valores de una porción: `per_100g × gramos / 100`.
@@ -404,52 +384,36 @@ export function sumarTotales(items: EngineItem[]): EngineTotals | null {
     }
   }
 
-  // LA COMPUERTA DEL TOTAL (card 2.8). Ver `CONFIANZA_MINIMA_PARA_UN_TOTAL`.
+  // EL TOTAL SE PUBLICA SIEMPRE (card 6.2, redefine la card 2.8 y la 6.1). Ver
+  // `CONFIANZA_MINIMA_PARA_UN_TOTAL` en `constants.ts`.
   //
-  // Mira EL MEJOR ítem del plato, no el promedio ni la suma: la pregunta es si
-  // hay AL MENOS UN alimento que el motor haya sabido identificar. Cuando no lo
-  // hay, la suma sigue existiendo —los ítems se muestran con su ficha y su
-  // confianza, nada se borra— pero deja de poder llamarse un total completo, y
-  // el reparto de macros se apaga con el motivo escrito.
+  // HASTA HOY (03/09/2026) esta suma podía no publicarse: si NINGÚN alimento del
+  // plato llegaba al piso de confianza, el total entero se apagaba —los ocho
+  // `nutrients` en `null`, marcado aparte— y el front mostraba "Sin números
+  // para este plato". Tomás lo redefinió con el motivo dicho en sus palabras:
+  // **«no mostrar ficha nos MATA»**. Medido hoy con
+  // `node golden/bin/replay-vision.js` sobre las 31 fotos del golden (visión v6,
+  // motor con las cards 6.1 y 6.3 adentro): NINGÚN plato del set queda bajo el
+  // piso de 0,12, y el plato de comida de plástico que abrió la compuerta
+  // (0,306, `cabeza_subfamilia`) puntúa por ENCIMA de cinco platos reales
+  // (envase cerrado 0,160, risotto 0,206, arepa 0,218, queso manchego 0,255,
+  // naranja 0,270). La confianza sola ya no puede separar "esto es basura" de
+  // "esto es comida real, identificada floja" — el plástico es un defecto de la
+  // VISIÓN (deuda aparte, ver `docs/DEUDAS.md`), no algo que un piso de
+  // confianza pueda cortar sin tapar también esos cinco platos buenos.
   //
-  // NO SE INVENTA UN CAMINO NUEVO PARA EL FRONT: `completo: false` es el aviso de
-  // total parcial que ya existe desde la card 2.3, y `macro_pct: null` con su
-  // `macro_pct_motivo` es el camino que ya se usa cuando no hay nada que
-  // repartir. La compuerta entra por esas dos puertas y no agrega ninguna.
-  //
-  // DOS PUERTAS PARA "SÉ QUÉ ES ESTO" (DT-37, card 6.5). La confianza sola no
-  // alcanzaba y está medido: la lasaña del plato 05 del golden llegó a SU ficha
-  // correcta y no publicó total, porque la vía que la encontró —un alias corto
-  // dentro de un nombre largo— puntúa 0,084. El piso existe para cortar "no sé
-  // qué es esto", no "sé qué es y lo encontré por una vía floja", y esas dos
-  // cosas se distinguen preguntando si la ficha NOMBRA lo que la visión
-  // describió (`identidad_respaldada`, ver `RESPALDO_MINIMO_DE_IDENTIDAD`).
-  //
-  // Y LA MITAD DE VISIÓN SIGUE CONTANDO: la segunda puerta reemplaza la mitad
-  // del matching, no la de la visión. Un plato donde el modelo dijo "creo, con
-  // un 5 %, que esto es una lasaña" no publica total aunque la ficha nombre la
-  // lasaña entera — ahí el que no sabe qué es es el que miró la foto. Se compara
-  // contra la misma vara, que es la única que este archivo conoce.
-  const mejorConfianza = conDatos.reduce((mejor, i) => Math.max(mejor, i.confidence), 0);
-  const algunaIdentidadRespaldada = conDatos.some(
-    (i) => i.identidad_respaldada === true && i.confidence_vision >= CONFIANZA_MINIMA_PARA_UN_TOTAL,
-  );
-  const sinNadieIdentificado = mejorConfianza < CONFIANZA_MINIMA_PARA_UN_TOTAL && !algunaIdentidadRespaldada;
+  // QUÉ SE FUE CON LA COMPUERTA, dicho entero: esta suma ya no consulta
+  // `CONFIANZA_MINIMA_PARA_UN_TOTAL` ni `identidad_respaldada` para decidir
+  // NADA — ni si publica, ni si avisa. Un score de confianza no es algo que
+  // quien usa la app tenga que interpretar; la señal de calidad del plato pasa
+  // a ser la VÍA por la que se llegó a cada ficha (exacto, alias, difuso, cabeza
+  // de familia…), que se muestra ítem por ítem y es harina de otra card.
+  // `nutrients` y `macro_pct` se calculan siempre que haya algo que sumar, sin
+  // ninguna excepción de confianza.
+  const macro_pct = porcentajesDeMacros(nutrients);
 
-  const macro_pct = sinNadieIdentificado ? null : porcentajesDeMacros(nutrients);
-  const motivoDeLaCompuerta =
-    `Ningún alimento de esta foto se identificó con confianza suficiente: el mejor llegó al ` +
-    `${redondear(mejorConfianza * 100, 1)} % y el mínimo para publicar un total es ` +
-    `${redondear(CONFIANZA_MINIMA_PARA_UN_TOTAL * 100, 1)} %; tampoco hay ninguna ficha que nombre lo ` +
-    `que se describió. Los alimentos y sus valores siguen abajo, ` +
-    `uno por uno, pero sumarlos y llamar a eso "el total del plato" sería afirmar algo que el análisis no sostiene.`;
-
-  // LA COMPUERTA CIERRA ENTERA (card 6.1). Antes apagaba la declaración y dejaba
-  // los números adentro del JSON; ahora el payload dice lo mismo que la
-  // declaración. Los ítems no se tocan: cada alimento sigue con sus valores.
   return {
-    nutrients: sinNadieIdentificado ? TOTAL_SIN_PUBLICAR : nutrients,
-    ...(sinNadieIdentificado ? { total_no_publicable: true as const } : {}),
+    nutrients,
     opcionales_ausentes: ausentes,
     macro_pct,
     // DOS AUSENCIAS DISTINTAS DEL REPARTO, Y NO SE LEEN IGUAL (card 5.1). Sin
@@ -459,16 +423,18 @@ export function sumarTotales(items: EngineItem[]): EngineTotals | null {
     macro_pct_motivo:
       macro_pct !== null
         ? null
-        : sinNadieIdentificado
-          ? motivoDeLaCompuerta
-          : nutrients.kcal <= 0
-            ? "El total de calorías es 0: no hay nada que repartir entre los macronutrientes."
-            : "Ninguna de las calorías de este plato viene de proteínas, hidratos o grasas: " +
-              "no hay reparto de macronutrientes que mostrar.",
+        : nutrients.kcal <= 0
+          ? "El total de calorías es 0: no hay nada que repartir entre los macronutrientes."
+          : "Ninguna de las calorías de este plato viene de proteínas, hidratos o grasas: " +
+            "no hay reparto de macronutrientes que mostrar.",
     grams_total: gramsTotal,
     grams_cuantificados: redondear(conDatos.reduce((s, i) => s + i.grams, 0)),
     items_incluidos: conDatos.length,
     items_sin_datos: items.length - conDatos.length,
-    completo: conDatos.length === items.length && !sinNadieIdentificado,
+    // LA COBERTURA DE MASA, Y NADA MÁS (card 6.2). Hasta hoy exigía además que
+    // algún alimento se identificara con confianza suficiente; ese segundo
+    // requisito se fue con la compuerta. Ver `EngineTotals.completo` en
+    // `types.ts`.
+    completo: conDatos.length === items.length,
   };
 }

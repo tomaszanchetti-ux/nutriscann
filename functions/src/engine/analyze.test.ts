@@ -128,18 +128,24 @@ describe("card 2.6 — el escaneo con los dos nombres", () => {
   });
 });
 
-describe("card 2.8 — el motor entero contra la comida de plástico", () => {
+describe("card 6.2 — el motor entero contra la comida de plástico publica su total", () => {
   /**
    * EL PLATO 28 DEL GOLDEN SET, DE PUNTA A PUNTA. Dos réplicas de resina en una
    * vitrina que la visión leyó como comida con un 70 % de confianza, matchearon a
-   * `Miel` por una palabra del nombre del postre, y salieron como **1.550,4 kcal
-   * marcadas `completo: true`**.
+   * `Miel` por una palabra del nombre del postre.
+   *
+   * Este plato es el que hizo NACER la compuerta (card 2.8): publicaba 1.550,4
+   * kcal marcadas `completo: true` con dos matches que el propio motor
+   * consideraba basura, y la card 2.8 lo tapaba. Tomás redefinió la card hoy
+   * (03/09/2026), con el motivo dicho en sus palabras: «no mostrar ficha nos
+   * MATA» — así que el mismo número vuelve a publicarse, ahora A PROPÓSITO.
    *
    * El escenario se CONSTRUYE con un fixture y no con el catálogo real: lo que
-   * este test tiene que medir es la compuerta, y hacerlo depender de que una
-   * ficha del catálogo siga dando un match de 0,088 sería atar el candado a una
-   * curación que se mueve. Lo que se reproduce es la FORMA del plato 28: todos
-   * los ítems cuantificados, todos por debajo del piso.
+   * este test tiene que medir es el comportamiento del motor con confianza
+   * baja, y hacerlo depender de que una ficha del catálogo siga dando un match
+   * de 0,088 sería atar el candado a una curación que se mueve. Lo que se
+   * reproduce es la FORMA del plato 28: todos los ítems cuantificados, todos
+   * por debajo del piso que hasta hoy los tapaba.
    */
   const fixture = indiceDeFixture([
     fichaFalsa({
@@ -159,7 +165,7 @@ describe("card 2.8 — el motor entero contra la comida de plástico", () => {
       { food_en: "honey toast with whipped cream and banana, dessert", grams: 260, confidence: 0.7 },
     ]);
 
-  it("los dos ítems matchean, quedan por el piso, y el total deja de ser completo", () => {
+  it("los dos ítems matchean por debajo del piso, y el total se publica igual", () => {
     const r = analizarEscaneo(plastico(), fixture);
     assert.equal(r.items.length, 2);
     for (const item of r.items) {
@@ -168,15 +174,15 @@ describe("card 2.8 — el motor entero contra la comida de plástico", () => {
       assert.ok(item.confidence < CONFIANZA_MINIMA_PARA_UN_TOTAL, `confianza ${item.confidence}`);
     }
     assert.ok(r.totals);
-    assert.equal(r.totals.completo, false);
-    assert.equal(r.totals.items_sin_datos, 0, "no falta ningún ítem: lo que falta es confianza");
-    assert.equal(r.totals.macro_pct, null);
-    assert.match(r.totals.macro_pct_motivo ?? "", /confianza suficiente/);
+    assert.equal(r.totals.nutrients.kcal, 1550.4, "510 g × 304 kcal/100 g de Miel");
+    assert.equal(r.totals.completo, true, "los dos ítems se cuantificaron: nada falta por masa");
+    assert.equal(r.totals.items_sin_datos, 0);
+    assert.ok(r.totals.macro_pct !== null);
   });
 
-  it("el mismo plato con la visión segura de lo que vio SÍ publica su total", () => {
-    // La compuerta no castiga el plato: castiga la duda. Con la misma ficha y los
-    // mismos gramos, una identificación firme pasa.
+  it("el mismo plato con la visión segura de lo que vio publica el mismo tipo de total", () => {
+    // La confianza ya no decide NADA acá: con la misma ficha y otros gramos, una
+    // identificación firme publica exactamente igual que una dudosa.
     const seguro = escaneo([{ food_en: "Honey", grams: 250, confidence: 0.9 }]);
     const r = analizarEscaneo(seguro, fixture);
     assert.ok(r.totals);
@@ -540,16 +546,18 @@ describe("DT-37 — la lasaña del plato 05 vuelve a publicar su total", () => {
     assert.equal(item.identidad_respaldada, true, "pero la ficha NOMBRA lo que se describió");
 
     assert.ok(r.totals);
-    assert.equal(r.totals.total_no_publicable, undefined);
     assert.equal(r.totals.nutrients.kcal, 724.5, "350 g × 207 kcal/100 g");
     assert.equal(r.totals.completo, true);
     assert.ok(r.totals.macro_pct !== null);
   });
 
-  it("y la comida de plástico del 28 sigue muda, con el catálogo real", () => {
-    // El contra-caso, y contra el catálogo de verdad: si la segunda puerta se
-    // abriera de más, el plato que hizo nacer la compuerta volvería a publicar
-    // 1.550 kcal de resina.
+  it("y la comida de plástico del 28 publica su total igual, con el catálogo real (card 6.2)", () => {
+    // El contra-caso, y contra el catálogo de verdad. Hasta la card 6.2 esto
+    // daba un total apagado —los ocho `nutrients` en `null`—: el plato que hizo
+    // nacer la compuerta era justamente el que la compuerta tapaba. Tomás
+    // redefinió la card («no mostrar ficha nos MATA») y ahora el total se
+    // publica siempre — este plato incluido: 510 g de `Miel` (304 kcal/100 g,
+    // fdc-169640) dan 1.550,4 kcal, publicadas y completas.
     const r = analizarEscaneo(
       escaneo([
         { food_en: "honey toast with whipped cream and cookie", food_es: "tostada con miel y nata", grams: 250, confidence: 0.6 },
@@ -567,9 +575,9 @@ describe("DT-37 — la lasaña del plato 05 vuelve a publicar su total", () => {
       assert.equal(item.identidad_respaldada, undefined, "y la miel no nombra el postre");
     }
     assert.ok(r.totals);
-    assert.equal(r.totals.total_no_publicable, true);
-    assert.equal(r.totals.nutrients.kcal, null);
-    assert.equal(r.totals.completo, false);
+    assert.equal(r.totals.nutrients.kcal, 1550.4, "510 g × 304 kcal/100 g de Miel");
+    assert.equal(r.totals.completo, true, "los dos ítems se cuantificaron: la cobertura de masa es 100 %");
+    assert.ok(r.totals.macro_pct !== null);
   });
 });
 
@@ -675,8 +683,8 @@ describe("card 5.3 — escalones 4 y 5: las cabezas y la composición", () => {
     // el descuento de genérico de la DT-13.
     assert.equal(item.generic, true);
     assert.equal(item.confidence_match, redondear(CONFIANZA_CABEZA_SUBFAMILIA * FACTOR_GENERICO));
-    // Y publica total: es exactamente lo que la compuerta tenía que dejar pasar.
-    assert.equal(r.totals?.total_no_publicable, undefined);
+    // Y publica total, con número (card 6.2: el total se publica siempre).
+    assert.ok(r.totals?.nutrients.kcal !== null);
   });
 
   it("una subfamilia SIN cabeza baja a la de la familia, y confía menos", () => {
@@ -764,7 +772,6 @@ describe("card 5.3 — escalones 4 y 5: las cabezas y la composición", () => {
     assert.equal(item.food_id, "fdc-2708649");
     assert.equal(item.per_100g?.kcal, 280);
     assert.equal(item.nutrients?.kcal, 420);
-    assert.equal(r.totals?.total_no_publicable, undefined);
     assert.equal(r.totals?.completo, true);
   });
 });
@@ -799,7 +806,6 @@ describe("card 5.3 — LA PIZZA DEL 02/09, tal como salió de la visión ese dí
     assert.ok(item);
     assert.equal(item.match, "compuesto");
     assert.ok(item.nutrients !== null && item.nutrients.kcal > 0);
-    assert.equal(r.totals?.total_no_publicable, undefined);
     assert.ok((r.totals?.nutrients.kcal ?? 0) > 300);
   });
 

@@ -233,7 +233,8 @@ export interface Composicion {
    * `true`, y entonces `faltantes` y `gramos_faltantes` dicen qué y cuánto.
    *
    * Que sea una clave propia y no una deducción de `faltantes.length > 0` es la
-   * misma regla que `total_no_publicable`: dos cosas distintas no se leen igual.
+   * misma regla que `generic` en el catálogo: dos cosas distintas no se leen
+   * igual.
    */
   parcial?: true;
   /** Los ingredientes que se vieron y no se resolvieron. Vacío en una completa. */
@@ -340,19 +341,14 @@ export interface SumaDeNutrientes {
 /**
  * LOS OCHO VALORES QUE VIAJAN, Y LOS OCHO PUEDEN SER `null`.
  *
- * Card 6.1 — LA COMPUERTA TAMBIÉN CIERRA EL PAYLOAD. Hasta la card 2.8 la
- * compuerta del total (`CONFIANZA_MINIMA_PARA_UN_TOTAL`) apagaba la DECLARACIÓN
- * —`completo: false`, `macro_pct: null` y el motivo escrito— pero los números
- * seguían viajando: la foto de comida de plástico del golden set salía con
- * `completo: false` y con **1.550,4 kcal** en `totals.nutrients.kcal`. Un JSON
- * que dice "esto no se puede afirmar" y a la vez trae el número en firme le deja
- * la decisión a quien lo pinte, y un cliente que se porte mal convierte una
- * reserva del motor en una cifra de portada.
- *
- * Con los ocho en `null` el payload dice lo mismo que la declaración: no hay
- * total. Los ítems NO se tocan — cada alimento sigue abajo con su ficha, sus
- * gramos y sus propios `nutrients` — y `opcionales_ausentes` sigue explicando
- * por qué faltaba lo que ya faltaba.
+ * HASTA LA CARD 6.2 el `null` de los ocho tenía una segunda lectura: la
+ * compuerta del total (`CONFIANZA_MINIMA_PARA_UN_TOTAL`) podía apagarlos
+ * enteros, con una marca aparte en `EngineTotals` que distinguía ese `null` del
+ * `null` normal de "la fuente no declara este valor". Tomás redefinió la card
+ * hoy (03/09/2026), con el motivo dicho en sus palabras: «no mostrar ficha nos
+ * MATA». El total se publica SIEMPRE, así que esa segunda lectura ya no existe:
+ * un `null` acá vuelve a significar una sola cosa, la fuente no mide ese
+ * nutriente (ver la regla sobre el vacío en `arithmetic.ts`).
  */
 export type TotalesNutrientes = { [K in keyof SumaDeNutrientes]: number | null };
 
@@ -387,27 +383,19 @@ export interface PorcentajesDeMacros {
 
 export interface EngineTotals {
   /**
-   * La suma del plato — o los ocho valores en `null` cuando la compuerta del
-   * total cerró. `macro_pct_motivo` dice cuál de las dos cosas pasó.
+   * La suma del plato. Card 6.2: viaja SIEMPRE que haya algo que sumar — el
+   * total ya no se apaga por confianza.
    */
   nutrients: TotalesNutrientes;
-  /**
-   * `true` cuando los ocho `nutrients` vienen en `null` porque la compuerta
-   * cerró: no es que la fuente no los declare, es que el análisis no sostiene el
-   * total. Solo aparece cuando vale `true`, igual que `generic` en el catálogo.
-   *
-   * Existe para que quien lea el payload no tenga que deducirlo de un `null`:
-   * `fiber_g: null` en un total normal significa "la fuente no lo mide" y acá
-   * significa otra cosa. Dos ausencias distintas no pueden leerse igual.
-   */
-  total_no_publicable?: true;
   /** Por qué un opcional salió `null`. Solo aparecen los que salieron `null`. */
   opcionales_ausentes: Partial<Record<"fiber_g" | "sat_fat_g" | "sugars_g" | "sodium_mg", string>>;
   macro_pct: PorcentajesDeMacros | null;
   /**
    * Por qué no hay porcentajes, cuando no los hay. Dos motivos posibles: el
-   * total de calorías es 0, o ningún alimento llegó al piso de confianza que
-   * hace falta para publicar un total (`CONFIANZA_MINIMA_PARA_UN_TOTAL`).
+   * total de calorías es 0, o ninguna de las calorías de este plato viene de
+   * proteínas, hidratos o grasas (alcohol puro). Card 6.2: ya NO incluye el
+   * caso de la confianza baja — el reparto se calcula igual siempre que haya
+   * calorías y macros que repartir, sin ninguna excepción de confianza.
    */
   macro_pct_motivo: string | null;
   grams_total: number;
@@ -416,14 +404,10 @@ export interface EngineTotals {
   items_incluidos: number;
   items_sin_datos: number;
   /**
-   * `true` solo si todos los items del escaneo aportaron números Y AL MENOS UNO
-   * se identificó con confianza suficiente (card 2.8, la compuerta del total).
-   *
-   * Son dos preguntas distintas y las dos tienen que dar que sí: "¿está todo el
-   * plato adentro de la suma?" y "¿alguno de esos alimentos se supo identificar?".
-   * Un plato entero de matches basura cumple la primera y falla la segunda, y ahí
-   * el total no es completo: es una suma de dudas. Ver
-   * `CONFIANZA_MINIMA_PARA_UN_TOTAL` en `constants.ts`.
+   * `true` solo si todos los items del escaneo aportaron números: la cobertura
+   * de masa, y nada más. Card 6.2: hasta acá esto exigía ADEMÁS que algún
+   * alimento se identificara con confianza suficiente, y ese segundo requisito
+   * se saca — la confianza dejó de gobernar nada de `EngineTotals`.
    */
   completo: boolean;
 }

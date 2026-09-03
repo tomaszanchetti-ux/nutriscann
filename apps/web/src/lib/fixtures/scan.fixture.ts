@@ -213,12 +213,13 @@ export const RESPUESTA_DE_FIXTURE: RespuestaDeAnalisis =
       "name_en": null,
       "source_ref": null,
       "grams": 300,
-      "confidence": 0.236,
+      "confidence": 0.538,
       "confidence_vision": 0.9,
-      "confidence_match": 0.262,
+      "confidence_match": 0.598,
       "match": "compuesto",
       "caveats": [
         "Plato compuesto en el momento con 5 ingredientes del catálogo y el método \"mezclado\": los valores por 100 g salen de fichas reales, pero la proporción de cada ingrediente la estimó la foto.",
+        "El ingrediente peor identificado es \"tomato, raw\" → Tomate crudo, al 33 %.",
         "Alguno de los ingredientes es una ficha genérica: su valor es el promedio de una familia."
       ],
       "per_100g": {
@@ -296,6 +297,11 @@ export const RESPUESTA_DE_FIXTURE: RespuestaDeAnalisis =
             "generic": false
           }
         ],
+        "eslabon_mas_debil": {
+          "termino_en": "tomato, raw",
+          "name_es": "Tomate crudo",
+          "confidence_match": 0.327
+        },
         "peso_entrada_g": 320,
         "aceite_absorbido_g": 0,
         "aceite_ref": null,
@@ -312,13 +318,14 @@ export const RESPUESTA_DE_FIXTURE: RespuestaDeAnalisis =
       "name_en": null,
       "source_ref": null,
       "grams": 105,
-      "confidence": 0.068,
+      "confidence": 0.092,
       "confidence_vision": 0.78,
-      "confidence_match": 0.087,
+      "confidence_match": 0.118,
       "match": "compuesto_parcial",
       "caveats": [
         "Faltó 5 g de un ingrediente que el catálogo no tiene (\"epazote leaves\"), sobre 105 g vistos. El plato se calculó con la densidad de los ingredientes que sí están: es una estimación de lo que falta, no una medición.",
         "Plato compuesto en el momento con 2 ingredientes del catálogo y el método \"mezclado\": los valores por 100 g salen de fichas reales, pero la proporción de cada ingrediente la estimó la foto.",
+        "El ingrediente peor identificado es \"pork stew meat, cooked\" → Cerdo, al 14 %.",
         "Ficha genérica: los valores son el promedio de una familia de productos, no la medición de uno solo. Los 450 mg de sodio por 100 g son ese promedio, y el de la variante del plato puede ser muy distinto.",
         "Alguno de los ingredientes es una ficha genérica: su valor es el promedio de una familia."
       ],
@@ -367,6 +374,11 @@ export const RESPUESTA_DE_FIXTURE: RespuestaDeAnalisis =
             "generic": true
           }
         ],
+        "eslabon_mas_debil": {
+          "termino_en": "pork stew meat, cooked",
+          "name_es": "Cerdo",
+          "confidence_match": 0.145
+        },
         "peso_entrada_g": 100,
         "aceite_absorbido_g": 0,
         "aceite_ref": null,
