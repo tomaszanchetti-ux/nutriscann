@@ -29,10 +29,12 @@ import {
   claveDeMatching,
   contieneSecuencia,
   empiezaConPalabra,
+  estadoDeCoccion,
   lecturasDelTermino,
   mismaPalabra,
   normalizar,
   sinColaDescriptiva,
+  sinDescriptores,
   variantesDeIndice,
 } from "./normalize";
 import { aliasConfidence, aliasText } from "../kb/types";
@@ -1387,5 +1389,163 @@ describe("card 6.3 — el desempate crudo/cocido, escrito simétrico", () => {
     assert.equal(r?.ficha.id, "fdc-2707152");
     assert.equal(index.difusoEn.find((e) => e.clave === "egg whole cooked")?.variante, true);
     assert.equal(index.difusoEn.find((e) => e.clave === "egg whole raw")?.variante, undefined);
+  });
+
+  /* ------------------------------------------------------------------
+   * LA AUDITORÍA DEL CIERRE (WS13). Cuatro preguntas que el comentario de
+   * `desempateDeEstado` afirma pero no medía con un test propio.
+   * ------------------------------------------------------------------ */
+
+  it("EL BARRIDO: el desempate NUNCA dispara en las direcciones A o B, y no es casualidad", () => {
+    // `leGana` es la misma función en las tres direcciones (A, B y C), así que
+    // `desempateDeEstado` SÍ corre en las tres — el comentario que dice "acá es
+    // donde vive" describe dónde se MIDIÓ el defecto, no un guardia que lo
+    // limite a la dirección C. Lo que lo mantiene inerte en A y B es otra cosa:
+    // en esas dos direcciones la cobertura se calcula sobre la clave ENTERA (sin
+    // pasar por `sinDescriptores`), y "crudo/crudo(s)" (5-6 letras) nunca mide lo
+    // mismo que "cocido/cocido(s)" (6-7) ni "raw" (3) lo mismo que "cooked" (6):
+    // la propia palabra de estado desempata la cobertura antes de que el nuevo
+    // desempate tenga algo que decidir. Y si la consulta nombrara las dos
+    // palabras a la vez para forzar el empate, `estadoPedido` dejaría de ser
+    // `null` y el desempate se apaga solo (condición 1). Este barrido MIDE la
+    // consecuencia sobre las 1.115 fichas reales: cero empates de cobertura
+    // entre una hermana cruda y una cocida en ninguno de los dos índices.
+    for (const [lista, idioma] of [
+      [index.difusoEn, "en"],
+      [index.difusoEs, "es"],
+    ] as const) {
+      const porBase = new Map<string, typeof lista>();
+      for (const termino of lista) {
+        if (termino.estado === undefined) continue;
+        const base = sinDescriptores(termino.clave);
+        const grupo = porBase.get(base) ?? [];
+        grupo.push(termino);
+        porBase.set(base, grupo);
+      }
+      let paresDeHermanas = 0;
+      let empatesDeLargo = 0;
+      for (const grupo of porBase.values()) {
+        const crudos = grupo.filter((t) => t.estado === "crudo");
+        const cocidos = grupo.filter((t) => t.estado === "cocido");
+        for (const crudo of crudos) {
+          for (const cocido of cocidos) {
+            paresDeHermanas += 1;
+            if (crudo.clave.length === cocido.clave.length) empatesDeLargo += 1;
+          }
+        }
+      }
+      // Hay pares de hermanas de sobra (15 en inglés, 22 en español): el barrido
+      // no está midiendo sobre un catálogo vacío de estado.
+      assert.ok(paresDeHermanas >= 15, `${idioma}: se esperaban pares hermana/os, hubo ${paresDeHermanas}`);
+      assert.equal(empatesDeLargo, 0, `${idioma}: un empate de longitud en A/B activaría el desempate ahí también`);
+    }
+  });
+
+  it("tres candidatos reales empatan por texto (huevo, patata) y las PREPARACIONES los separan antes de llegar acá", () => {
+    // El catálogo real SÍ tiene grupos de tres o más fichas que comparten el
+    // mismo texto sin descriptores: `huevo` (cocido/crudo/frito) y `patata`
+    // (hervida/cruda/frita/asada/salteada). Es el escenario de la pregunta —tres
+    // candidatos empatados por texto—, pero no llega a empatar por CONFIANZA
+    // porque `mismasPreparaciones` (card 2.8, condición 3 de la dirección C) saca
+    // a "frito"/"asado"/"salteado" en cuanto la consulta no los nombra: sus
+    // conjuntos de preparaciones difieren (uno vacío, el otro con una) y la
+    // condición 3 los descarta ANTES de que este desempate los vea. Por eso
+    // `huevo duro` y `patata troceada` (ya candados más arriba) resuelven limpio
+    // entre dos, nunca entre tres.
+    for (const termino of ["huevo picado", "huevo troceado", "huevo duro"]) {
+      const r = buscarAlimento(termino, index);
+      assert.equal(r?.ficha.id, "fdc-2707153", termino); // huevo cocido, nunca "huevo frito"
+    }
+    for (const termino of ["patata picada", "patata troceada", "papa picada"]) {
+      const r = buscarAlimento(termino, index);
+      // patata hervida — nunca "patata frita", "patata asada" ni "patata salteada casera"
+      assert.equal(r?.ficha.id, "fdc-2709393", termino);
+    }
+    // Y si la consulta SÍ nombra la preparación, la condición 3 deja pasar esa
+    // ficha y saca a las que no la nombran (crudo y cocido incluidos): no hay
+    // tercer camino donde los tres compitan de verdad.
+    assert.equal(buscarAlimento("huevo frito", index)?.ficha.id, "fdc-2707155");
+    assert.equal(buscarAlimento("patata frita", index)?.ficha.id, "fdc-2709456");
+  });
+
+  it("EL LÍMITE QUE ESTA CARD NO CIERRA: un tercer candidato SIN estado, si empata en longitud, puede ganarle a la pareja hermana", () => {
+    // Construido a propósito porque el catálogo real no lo tiene (el test de
+    // arriba mide por qué: las preparaciones separan a todos los terceros
+    // reales). Acá el tercero no declara preparación NI estado —una presentación
+    // sola, como "sliced"— así que sobrevive la condición 3 y sí entra a
+    // competir. `desempateDeEstado` no dice nada de él (la condición de
+    // `estados` exige que el PAR tenga un "crudo" Y un "cocido"; contra un
+    // `undefined` nunca se completa el par), así que ni le gana a la cruda ni a
+    // la cocida — y TAMPOCO pierde contra ellas por la misma razón. Cuando el
+    // que ya está sentado en "mejor" es el tercero, se queda sentado: es el
+    // mismo defecto que abrió la card 6.3 (el orden de la lista decide un
+    // empate que ninguna regla contesta), pero entre TRES candidatos en lugar de
+    // dos, y sigue sin ser el que esta card cerró — cerrar ESE requeriría juntar
+    // a los empatados y resolverlos como grupo, no de a pares, y es un cambio de
+    // forma del reductor, no del desempate. Reportado, no arreglado.
+    const tercero = { ...fichaReal("fdc-169977"), names: { en: "Lettuce, sliced", es: null } };
+    const crudo = { ...fichaReal("fdc-2709789"), names: { en: "Lettuce, raw", es: null } };
+    const cocido = { ...fichaReal("fdc-2709949"), names: { en: "Lettuce, cooked", es: null } };
+    const idx = indiceDeFixture([crudo, cocido, tercero]);
+    // El propio orden de carga no mueve nada — el índice reordena siempre por
+    // longitud de clave y a igual longitud por food_id (`porLargo` en
+    // `catalog.ts`), así que la salida es la misma sin importar en qué orden se
+    // le pasan las fichas a `indiceDeFixture`.
+    const idxAlReves = indiceDeFixture([tercero, cocido, crudo]);
+    assert.equal(buscarAlimento("lettuce, chopped", idx)?.ficha.id, buscarAlimento("lettuce, chopped", idxAlReves)?.ficha.id);
+    // Y hoy gana el tercero, no la cocida: "lettuce sliced" empata en longitud
+    // con "lettuce cooked" (14 caracteres las dos) y el food_id de la ficha
+    // reciclada como "sliced" ordena antes. Documentado para que la próxima
+    // card que toque el reductor de empates sepa que este caso existe.
+    assert.equal(buscarAlimento("lettuce, chopped", idx)?.ficha.id, "fdc-169977");
+  });
+
+  it("`huevo duro` y `hard-boiled egg` resuelven cocido HOY, pero no porque el vocabulario lo pida (DT-63/DT-64)", () => {
+    // `estadoDeCoccion` es la función que lee la consulta para decidir
+    // `estadoPedido`, y "duro" no está en `PALABRAS_DE_COCIDO`: ninguna de las
+    // dos frases declara un estado. Medido:
+    assert.equal(estadoDeCoccion("huevo duro"), null);
+    assert.equal(estadoDeCoccion("hard-boiled egg"), null);
+    // Y sin embargo el resultado hoy es el correcto — cocido, nunca crudo—
+    // porque con `estadoPedido` en `null` el desempate de esta card SÍ opina, y
+    // `huevo` no está en `FAMILIAS_QUE_SE_COMEN_CRUDAS`: gana la cocida por
+    // FAMILIA, no porque el motor haya entendido "duro". Es la garantía nueva
+    // (DT-64) tapando un agujero de vocabulario viejo (DT-63) que sigue abierto:
+    // el día que la familia `huevo` tuviera una excepción legítima (no la tiene
+    // hoy), o que la visión escribiera un giro que esta regla no cubre, "duro"
+    // seguiría sin decir nada. La curación de DT-63 (alias/vocabulario de
+    // cocción) sigue pendiente; este test deja escrito que el síntoma de
+    // producción del 03/09 —huevo crudo quedó cerrado por la card, no por la
+    // curación.
+    assert.equal(buscarAlimento("huevo duro", index)?.ficha.id, "fdc-2707153");
+    assert.equal(buscarConDosNombres("hard-boiled egg", "huevo duro", index)?.ficha.id, "fdc-2707153");
+  });
+
+  it("si la ficha CRUDA no está en la taxonomía, gana la COCIDA en los dos órdenes — el criterio conservador de `contradiceALaFamilia`", () => {
+    // `desempateDeEstado` solo pregunta la familia de la ficha CRUDA
+    // (`index.taxonomia.deLaFicha.get(cruda.id)`); si esa ficha no existe en el
+    // mapa de la taxonomía (una ficha nueva que la curación no clasificó
+    // todavía, o —como acá— una inventada para el test), `familia` da
+    // `undefined` y la condición `FAMILIAS_QUE_SE_COMEN_CRUDAS.includes(familia)`
+    // nunca puede dar `true`: sin dato, no hay ascenso a crudo.
+    const crudaSinTaxonomia = fichaFalsa({
+      id: "fdc-test-sin-taxonomia-cruda",
+      names: { en: "Testfood, raw", es: null },
+    });
+    const cocidaCualquiera = fichaFalsa({
+      id: "fdc-test-sin-taxonomia-cocida",
+      names: { en: "Testfood, cooked", es: null },
+    });
+    const cocidoPrimero = indiceDeFixture([cocidaCualquiera, crudaSinTaxonomia]);
+    const crudoPrimero = indiceDeFixture([crudaSinTaxonomia, cocidaCualquiera]);
+    assert.equal(buscarAlimento("testfood, chopped", cocidoPrimero)?.ficha.id, "fdc-test-sin-taxonomia-cocida");
+    assert.equal(buscarAlimento("testfood, chopped", crudoPrimero)?.ficha.id, "fdc-test-sin-taxonomia-cocida");
+    // Confirmado que NINGUNA de las dos fichas de este fixture está en la
+    // taxonomía: el test mide el caso "sin dato", no un id que por casualidad
+    // cayó en una familia que sí come cruda. `deLaFicha` sale de `FAMILIAS`
+    // (`kb/familias.ts`), no del catálogo, así que da lo mismo consultarla
+    // desde cualquiera de los dos índices de este test.
+    assert.equal(cocidoPrimero.taxonomia.deLaFicha.get("fdc-test-sin-taxonomia-cruda"), undefined);
+    assert.equal(cocidoPrimero.taxonomia.deLaFicha.get("fdc-test-sin-taxonomia-cocida"), undefined);
   });
 });
