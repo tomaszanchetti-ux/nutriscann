@@ -117,12 +117,13 @@ Descripción contra kcal, plato por plato, con lo que no cierra:
 
 | Card | Qué | Territorio |
 |---|---|---|
-| 6.0 | El expediente guarda `vision` (byte a byte lo que entró al motor) y la foto en Storage, sin latencia agregada | `functions/src/analyze/`, `index.ts` |
-| 6.1 | La confianza de un compuesto se pondera por gramos; cada ingrediente conserva la suya | `engine/compose.ts`, `analyze.ts` |
-| 6.2 | Compuerta recalibrada con un golden de compuestos; la segunda puerta lee la subfamilia declarada; el plástico vuelve a caer | `engine/arithmetic.ts`, `constants.ts`, golden |
-| 6.3 | Desempate crudo/cocido simétrico, con las lentejas secas como candado | `engine/match.ts` |
+| 6.0 ✅ WS12 | El expediente guarda `vision` (byte a byte lo que entró al motor) y la foto en Storage, sin latencia agregada | `functions/src/analyze/`, `index.ts` |
+| 6.1 ✅ WS13 | La confianza de un compuesto se pondera por gramos; cada ingrediente conserva la suya. Informe `docs/fase6.card-6.1.md` | `engine/compose.ts`, `analyze.ts` |
+| 6.2 ✅ WS13 · **REDEFINIDA por Tomás** | **El total se publica SIEMPRE.** La compuerta del 12 % deja de apagar el total (`total_no_publicable` desaparece); el score de confianza no es acierto sino la vía del match, y no decide si hay ficha. Ni segunda puerta ni recalibración: medido con las 6.1 y 6.3 adentro, ningún plato del golden queda bajo 0,12 y el plástico (0,306) está por encima de cinco platos reales — es de la visión (DT-71). Informe `docs/fase6.card-6.2.md` | `engine/arithmetic.ts`, `constants.ts` (comentario), front |
+| 6.3 ✅ WS13 | Desempate crudo/cocido simétrico, con las lentejas secas como candado. Informe `docs/fase6.card-6.3.md` | `engine/match.ts` |
+| **6.2b (WS14)** | **Píldoras por vía de match, calculadas en el BACKEND** (decisión de Tomás, WS13): por ítem y por plato una categoría cerrada de cuatro valores que el front solo pinta — 🟢 **Exacto** (exacto, alias) · 🟡 **Muy parecido** (difuso, compuesto completo) · 🟠 **Aproximado** (sustituto, cabeza_subfamilia, compuesto_parcial) · 🔴 **Estimación** (cabeza_familia, no_catalogado). El compuesto hereda la de su peor ingrediente (`eslabon_mas_debil`); el plato, la de su peor ítem. Naranja y rojo = tokens nuevos del design system. Las 9 claves `match_*` se reemplazan por 4 pares y salen del candado del seed | `engine/analyze.ts`, `types.ts` (back y front), `BadgeDeMatch.tsx`, `config/copy.json`, `kb/seed` |
 | 6.4 | Curación: atún en lata/conserva, huevo duro, lombarda, plural inglés; DT-51…54 | `kb/curation/` |
-| 6.5 | El modelo cuenta, la base pesa: plato como regla, unidades contadas, conversión por `portion_hints`, candado por subfamilia y geometría, medición de costo | `vision.ts`, `engine/`, prompt |
+| 6.5 (WS14, Bloque 0 primero) | El modelo cuenta, la base pesa — con el material de raciones españolas que trajo Tomás (`NutriScann/Calculo de Gramos/*.pdf` y https://aeeh.es/liverai-pesos-raciones/) cruzado con los `portion_hints`: plato como regla, unidades contadas, conversión por `portion_hints`, candado por subfamilia y geometría, medición de costo | `vision.ts`, `engine/`, prompt |
 | 6.6 | Golden de peso conocido (fotos de Tomás con pesos impresos) | `golden/` |
 | 6.7 | Pulgares por ítem y del total. Arriba: un toque. Abajo: motivo CERRADO («no era esto» / «la cantidad no» / «las calorías no me cierran») + texto libre opcional («¿qué era?», «¿cuánto había?»). Todo al expediente, junto a `vision` y la foto. Caso que lo motivó: la ensalada «con pollo» del 03/09 era caballa | front + `persistencia` |
 
