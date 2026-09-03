@@ -88,24 +88,36 @@ export const SUFIJO_DEL_BUCKET_POR_DEFECTO = ".firebasestorage.app";
  * (`getStorage().bucket()` sin nombre usa `options.storageBucket`, y si está
  * vacío tira `storage/invalid-argument`). Esa es la fuente principal.
  *
- * POR QUÉ HAY UNA CASCADA Y NO SOLO ESO, medido el 03/09 con
- * `gcloud storage buckets list --project=nutriscann-f809e`: el proyecto tiene
- * UN solo bucket de fotos, `nutriscann-f809e.firebasestorage.app`
- * (europe-west1), y NO existe ningún `nutriscann-f809e.appspot.com`. Un
- * `FIREBASE_CONFIG` que trajera el nombre legado apuntaría a un bucket que no
- * existe y toda foto fallaría —sin romper el análisis, pero en silencio salvo
- * por el `image_error` del expediente—. Entonces:
+ * LO QUE ESTÁ MEDIDO, y conviene leerlo antes que la cascada:
+ *   · `gcloud storage buckets list --project=nutriscann-f809e` (03/09): el
+ *     proyecto tiene UN solo bucket de fotos,
+ *     `nutriscann-f809e.firebasestorage.app` (europe-west1). NO existe ningún
+ *     `nutriscann-f809e.appspot.com`.
+ *   · el despliegue real trae `FIREBASE_CONFIG.storageBucket =
+ *     nutriscann-f809e.firebasestorage.app` (verificado en el Q/A de la card
+ *     6.0). O sea: hoy el paso 2 de la cascada acierta, y esta función devuelve
+ *     lo mismo que devolvería `getStorage().bucket()` sin argumentos.
  *
- *   1. `STORAGE_BUCKET`  el override explícito. Es la salida de emergencia: si
- *                        el despliegue resolviera mal, se arregla con una
- *                        variable de entorno y sin tocar el código.
- *   2. `FIREBASE_CONFIG.storageBucket`  lo que inyecta el runtime de Functions.
+ * LA CASCADA, y qué protege CADA paso —sin vender de más:
+ *
+ *   1. `STORAGE_BUCKET`  el override explícito. HOY NO ESTÁ PUESTO EN NINGÚN
+ *                        LADO, y por eso no protege nada por sí solo: es una
+ *                        palanca, no una defensa. Su valor es que el día que el
+ *                        entorno resolviera mal —por ejemplo si el runtime
+ *                        empezara a inyectar el nombre legado `.appspot.com`,
+ *                        que en este proyecto no existe— se arregla poniendo
+ *                        una variable, sin tocar código ni esperar un deploy.
+ *   2. `FIREBASE_CONFIG.storageBucket`  lo que inyecta el runtime de Functions,
+ *                        y lo que de hecho se usa hoy. Si este valor fuera
+ *                        equivocado, la cascada NO lo corrige: gana igual, y el
+ *                        fallo se ve en el `image_error` del expediente.
  *   3. `<projectId>` + el sufijo por defecto, con el projectId de
  *      `GCLOUD_PROJECT` / `GOOGLE_CLOUD_PROJECT` / `FIREBASE_CONFIG.projectId`.
+ *                        Cubre el montaje que no tiene `FIREBASE_CONFIG`
+ *                        (una corrida local, un script), no el que lo tiene mal.
  *
- * Devuelve `null` cuando no hay NADA de dónde sacarlo (una corrida local sin
- * entorno de Firebase). Quien llama decide qué hacer con eso; lo que no hace
- * esta función es inventar un nombre.
+ * Devuelve `null` cuando no hay NADA de dónde sacarlo. Quien llama decide qué
+ * hacer con eso; lo que no hace esta función es inventar un nombre.
  */
 export function nombreDelBucketDeFotos(env: NodeJS.ProcessEnv = process.env): string | null {
   const explicito = (env["STORAGE_BUCKET"] ?? "").trim();
@@ -188,10 +200,33 @@ export interface AlmacenDeFotos {
   borrar(referencia: string): Promise<void>;
 }
 
+/** Las opciones con las que se escribe el objeto. Ver `almacenEnBucket`. */
+export interface OpcionesDeGuardado {
+  contentType: string;
+  resumable: boolean;
+  preconditionOpts: { ifGenerationMatch: number };
+}
+
 /** Lo que este archivo usa de un `File` de `@google-cloud/storage`. */
 export interface ArchivoDelBucket {
-  save(datos: Buffer, opciones: { contentType: string; resumable: boolean }): Promise<unknown>;
+  save(datos: Buffer, opciones: OpcionesDeGuardado): Promise<unknown>;
   delete(): Promise<unknown>;
+}
+
+/**
+ * El código HTTP de "la precondición no se cumplió": el objeto YA existía.
+ *
+ * Ver `almacenEnBucket` para por qué ese caso NO es un error para nosotros.
+ */
+export const YA_EXISTIA = 412;
+
+/** El código de un error de la API de Storage, venga en `code` o en `status`. */
+function codigoDelError(err: unknown): number | null {
+  if (err === null || typeof err !== "object") return null;
+  const objeto = err as { code?: unknown; status?: unknown };
+  if (typeof objeto.code === "number") return objeto.code;
+  if (typeof objeto.status === "number") return objeto.status;
+  return null;
 }
 
 /** Lo que este archivo usa de un `Bucket` de `@google-cloud/storage`. */
@@ -212,16 +247,39 @@ export interface BucketDeFotos {
  * la subida resumible arranca con un round-trip extra para pedir la sesión;
  * para un archivo chico y de un solo intento eso es latencia pagada de más
  * dentro de una función con 60 s de presupuesto.
+ *
+ * `preconditionOpts: { ifGenerationMatch: 0 }` NO ES UNA PRECAUCIÓN DE ESTILO:
+ * ES LO QUE ENCIENDE LOS REINTENTOS. Verificado en el Q/A de la card 6.0 sobre
+ * `@google-cloud/storage` 7.22: una escritura es idempotente —y por lo tanto
+ * reintentable— solo si viene condicionada, y la biblioteca lo implementa con
+ * una `RetryConditional` que pone `maxRetries = 0` cuando no hay precondición.
+ * Sin esta línea, un 503 transitorio de GCS (el caso normal, no el raro) perdía
+ * la foto en el primer intento. El `0` significa "el objeto todavía no existe",
+ * que es exactamente nuestro caso: el nombre lo da un `scan_id` recién creado.
+ *
+ * LA CONTRAPARTIDA, dicha entera: si un intento escribe bien y la respuesta se
+ * pierde en el camino, el reintento encuentra el objeto ya creado y la API
+ * contesta 412. Eso NO es un fallo —la foto está, y es la nuestra, en la ruta
+ * que le corresponde a este escaneo y a ningún otro—, así que se trata como un
+ * éxito y se devuelve la referencia igual. Marcar `image_error` ahí sería
+ * anotar en el expediente que no hay foto cuando sí la hay.
  */
 export function almacenEnBucket(abrirBucket: () => BucketDeFotos): AlmacenDeFotos {
   return {
     async subir(foto) {
       const bucket = abrirBucket();
       const ruta = rutaDeLaFoto(foto.owner_id, foto.scan_id, foto.media_type);
-      await bucket.file(ruta).save(Buffer.from(foto.image_base64, "base64"), {
-        contentType: foto.media_type,
-        resumable: false,
-      });
+      try {
+        await bucket.file(ruta).save(Buffer.from(foto.image_base64, "base64"), {
+          contentType: foto.media_type,
+          resumable: false,
+          preconditionOpts: { ifGenerationMatch: 0 },
+        });
+      } catch (err) {
+        // 412 = ya estaba. Es el reintento de una escritura que había salido
+        // bien: la foto está donde tiene que estar y este escaneo la nombra.
+        if (codigoDelError(err) !== YA_EXISTIA) throw err;
+      }
       return referenciaDeLaFoto(bucket.name, ruta);
     },
 

@@ -988,7 +988,13 @@ test("el `scan_id` se genera ANTES de llamar al modelo: es el nombre de la foto"
   assert.deepEqual(orden, ["el scan_id", "el modelo"]);
 });
 
-test("la subida de la foto ARRANCA antes de que el modelo conteste: no agrega latencia", async () => {
+// `timeout` EXPLÍCITO, y no es decoración (Q/A de la card 6.0): este test cruza
+// dos promesas —la subida espera al modelo, el modelo libera la subida—, así que
+// la mutación inversa (esperar la subida ANTES de `pedirVision`) no lo pone en
+// rojo: lo CUELGA. Y `npm test` no pasa `--test-timeout`, con lo cual la corrida
+// se quedaría colgada para siempre en vez de fallar. Con esto, un deadlock es un
+// test en rojo a los 5 segundos, que es lo que un candado tiene que hacer.
+test("la subida de la foto ARRANCA antes de que el modelo conteste: no agrega latencia", { timeout: 5_000 }, async () => {
   // ESTE ES EL CANDADO DE LA CERO LATENCIA, y no se mide con un cronómetro
   // —que dependería de la máquina— sino con el ORDEN de los hechos. La subida
   // falsa se queda trabada hasta que el modelo contesta: si el handler la
@@ -1026,7 +1032,11 @@ test("la subida de la foto ARRANCA antes de que el modelo conteste: no agrega la
 
   assert.equal(status, 200);
   assert.deepEqual(orden, ["la subida arranca", "el modelo contesta", "la subida termina"]);
-  assert.notEqual(persistidos[0]?.imagen.referencia, null, "y la foto igual llegó entera al expediente");
+  assert.equal(
+    persistidos[0]?.imagen.referencia,
+    `gs://${BUCKET_DE_PRUEBA}/scans/${UID}/scan-de-prueba.jpg`,
+    "y la foto igual llegó entera al expediente (referencia exacta: un `notEqual(null)` pasaría con `persistidos` vacío)",
+  );
 });
 
 test("la foto va a `scans/{dueño}/{scan}.jpg` y su `gs://` queda en el expediente", async () => {
@@ -1123,4 +1133,98 @@ test("si el borrado de esa foto falla, el 200 sale igual y queda anotado con su 
   const aviso = avisos.find((a) => a.mensaje.includes("borrar la foto"));
   assert.ok(aviso, "un huérfano que nadie sabe que existe no se limpia nunca");
   assert.equal(aviso?.detalle["referencia"], `gs://${BUCKET_DE_PRUEBA}/scans/${UID}/scan-de-prueba.jpg`);
+});
+
+// ---------------------------------------------------------------------------
+// Card 6.0 (Q/A) — la foto se queda SOLO si existe el documento que la nombra
+// ---------------------------------------------------------------------------
+//
+// La subida arranca antes de saber si la foto es comida, si el modelo va a
+// contestar y si la escritura va a andar. El Q/A midió lo que eso dejaba: en las
+// tres ramas de abajo el objeto quedaba en el bucket sin ningún documento que lo
+// nombrara, y encima la promesa de la subida no se esperaba nunca —el aviso
+// llegaba 120 ms DESPUÉS de que `manejarAnalyze` había resuelto, o sea con la
+// CPU de Cloud Run ya estrangulada—. Estos tres tests son ese candado.
+
+test("modelo caído (503): la foto que ya subió se borra, y el crédito igual vuelve", async () => {
+  const caida = new Error("HTTP 529");
+  (caida as unknown as { status: number }).status = 529;
+  const { deps, fotos, consumo, devoluciones } = andamio(clienteQueDice(caida), {
+    consumoInicial: { usados_mes: 4, usados_dia: 1 },
+  });
+
+  const { status, body } = await manejarAnalyze(POST(), deps);
+  const ruta = `scans/${UID}/scan-de-prueba.jpg`;
+
+  assert.equal(status, 503);
+  assert.equal((body as CuerpoDeError).error.code, "modelo_no_disponible");
+  assert.deepEqual(fotos.subidas, [ruta], "la subida había arrancado antes de que el modelo se cayera");
+  assert.deepEqual(fotos.borradas, [`gs://${BUCKET_DE_PRUEBA}/${ruta}`], "y sin expediente, no se queda");
+  // El borrado de la foto no puede haberse comido la devolución del crédito:
+  // son dos cosas distintas y las dos tienen que pasar.
+  assert.deepEqual(devoluciones, [UID], "el modelo no cobró: el crédito vuelve igual");
+  assert.equal(consumo.get(UID)?.usados_mes, 4);
+});
+
+test("respuesta ilegible (502): la foto que ya subió se borra", async () => {
+  const { deps, fotos, devoluciones } = andamio(clienteQueDice(mensaje("{roto")), {
+    consumoInicial: { usados_mes: 4, usados_dia: 1 },
+  });
+
+  const { status, body } = await manejarAnalyze(POST(), deps);
+  const ruta = `scans/${UID}/scan-de-prueba.jpg`;
+
+  assert.equal(status, 502);
+  assert.equal((body as CuerpoDeError).error.code, "respuesta_ilegible");
+  assert.deepEqual(fotos.borradas, [`gs://${BUCKET_DE_PRUEBA}/${ruta}`]);
+  assert.deepEqual(devoluciones, [], "y esto no cambia: el modelo contestó, esos tokens se facturaron");
+});
+
+test("persistencia fallida (`persisted: false`): la foto se borra, porque no hay documento", async () => {
+  // Es el caso más fácil de pasar por alto: el usuario recibe su reporte y el
+  // 200 sale perfecto. Lo que no existe es el expediente — y una foto sin
+  // expediente no la puede encontrar ni recuperar nadie.
+  const { deps, fotos, persistidos } = andamio(clienteQueDice(mensaje(PLATO_OK)), { persistirFalla: true });
+
+  const { status, body } = await manejarAnalyze(POST(), deps);
+  const ruta = `scans/${UID}/scan-de-prueba.jpg`;
+
+  assert.equal(status, 200);
+  assert.equal((body as CuerpoDeAnalisis).persisted, false);
+  assert.equal(persistidos.length, 0, "no quedó escrito nada");
+  assert.deepEqual(fotos.borradas, [`gs://${BUCKET_DE_PRUEBA}/${ruta}`]);
+});
+
+test("el borrado se espera DENTRO del request: cuando `manejarAnalyze` resuelve, ya ocurrió", async () => {
+  // LA OTRA MITAD DEL ARREGLO, y la que el Q/A midió mal antes: no alcanza con
+  // lanzar el borrado, hay que ESPERARLO. En Cloud Run gen2 la CPU se estrangula
+  // apenas sale la respuesta, así que un borrado disparado y no esperado puede
+  // no ejecutarse nunca. Acá se mira que en el instante en que la promesa de
+  // `manejarAnalyze` resuelve, el borrado YA está anotado — sin `setTimeout` ni
+  // esperas: si el `finally` no lo esperara, la lista estaría vacía.
+  const fotos = almacenFalso();
+  const borrarDeVerdad = fotos.borrar;
+  fotos.borrar = async (referencia) => {
+    // Un salto de microtarea, para que un borrado meramente LANZADO no llegue a
+    // anotarse antes de que el `await manejarAnalyze` de abajo continúe.
+    await Promise.resolve();
+    await borrarDeVerdad(referencia);
+  };
+  const { deps } = andamio(clienteQueDice(mensaje(JSON.stringify({ is_food: false, items: [] }))), { fotos });
+
+  await manejarAnalyze(POST(), deps);
+
+  assert.deepEqual(fotos.borradas, [`gs://${BUCKET_DE_PRUEBA}/scans/${UID}/scan-de-prueba.jpg`]);
+});
+
+test("cuando el expediente SÍ queda escrito, la foto no se toca", async () => {
+  // La contracara, y es la que garantiza que el `finally` no se volvió un
+  // borrador universal: en el camino feliz la foto se queda donde está.
+  const { deps, fotos, persistidos } = andamio(clienteQueDice(mensaje(PLATO_OK)));
+
+  const { status } = await manejarAnalyze(POST(), deps);
+
+  assert.equal(status, 200);
+  assert.equal(persistidos.length, 1);
+  assert.deepEqual(fotos.borradas, [], "hay documento que la nombra: la foto se queda");
 });

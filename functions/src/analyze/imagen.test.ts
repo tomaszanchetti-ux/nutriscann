@@ -13,6 +13,7 @@ import test from "node:test";
 import {
   EXTENSIONES,
   SUFIJO_DEL_BUCKET_POR_DEFECTO,
+  YA_EXISTIA,
   almacenEnBucket,
   nombreDelBucketDeFotos,
   partirReferencia,
@@ -115,11 +116,20 @@ test("un FIREBASE_CONFIG roto no rompe la resolución del bucket", () => {
 // ---------------------------------------------------------------------------
 
 interface BucketEspiado extends BucketDeFotos {
-  guardados: { ruta: string; bytes: number; contentType: string; resumable: boolean }[];
+  guardados: {
+    ruta: string;
+    bytes: number;
+    contentType: string;
+    resumable: boolean;
+    ifGenerationMatch: number;
+  }[];
   borrados: string[];
 }
 
-function bucketFalso(name = "un-bucket.firebasestorage.app"): BucketEspiado {
+function bucketFalso(
+  name = "un-bucket.firebasestorage.app",
+  alGuardar?: () => never,
+): BucketEspiado {
   const guardados: BucketEspiado["guardados"] = [];
   const borrados: string[] = [];
   return {
@@ -129,7 +139,14 @@ function bucketFalso(name = "un-bucket.firebasestorage.app"): BucketEspiado {
     file(ruta: string): ArchivoDelBucket {
       return {
         save: async (datos, opciones) => {
-          guardados.push({ ruta, bytes: datos.length, contentType: opciones.contentType, resumable: opciones.resumable });
+          if (alGuardar !== undefined) alGuardar();
+          guardados.push({
+            ruta,
+            bytes: datos.length,
+            contentType: opciones.contentType,
+            resumable: opciones.resumable,
+            ifGenerationMatch: opciones.preconditionOpts.ifGenerationMatch,
+          });
         },
         delete: async () => {
           borrados.push(ruta);
@@ -137,6 +154,13 @@ function bucketFalso(name = "un-bucket.firebasestorage.app"): BucketEspiado {
       };
     },
   };
+}
+
+/** Un error de la API de Storage, con el código donde la biblioteca lo pone. */
+function errorDeStorage(code: number, mensaje: string): Error {
+  const err = new Error(mensaje);
+  (err as unknown as { code: number }).code = code;
+  return err;
 }
 
 test("subir escribe los bytes de la imagen con su contentType y devuelve la referencia", async () => {
@@ -149,9 +173,54 @@ test("subir escribe los bytes de la imagen con su contentType y devuelve la refe
   const ref = await almacen.subir({ owner_id: "u", scan_id: "s", media_type: "image/png", image_base64: base64 });
 
   assert.deepEqual(bucket.guardados, [
-    { ruta: "scans/u/s.png", bytes: 4, contentType: "image/png", resumable: false },
+    { ruta: "scans/u/s.png", bytes: 4, contentType: "image/png", resumable: false, ifGenerationMatch: 0 },
   ]);
   assert.equal(ref, "gs://un-bucket.firebasestorage.app/scans/u/s.png");
+});
+
+test("la subida va CONDICIONADA, que es lo que le enciende los reintentos a GCS", async () => {
+  // No es cosmética: en `@google-cloud/storage` 7.22 una escritura sin
+  // precondición NO es idempotente y la biblioteca le pone `maxRetries = 0`
+  // (`RetryConditional`). Sin el `ifGenerationMatch`, un 503 transitorio de GCS
+  // —el caso normal, no el raro— pierde la foto en el primer intento. Este test
+  // es el candado de esa línea: si alguien la saca, se cae acá.
+  const bucket = bucketFalso();
+  const almacen = almacenEnBucket(() => bucket);
+
+  await almacen.subir({ owner_id: "u", scan_id: "s", media_type: "image/jpeg", image_base64: "AAAA" });
+
+  assert.equal(bucket.guardados[0]?.ifGenerationMatch, 0, "0 = el objeto todavía no existe");
+});
+
+test("un 412 no es un fallo: es el reintento de una escritura que ya había salido bien", async () => {
+  // LA CONTRAPARTIDA DE CONDICIONAR LA ESCRITURA, ejercida. Si un intento
+  // escribe y la respuesta se pierde, el reintento choca con el objeto ya
+  // creado y la API contesta 412. La foto ESTÁ, y es la de este escaneo (la
+  // ruta la da su `scan_id`): devolver un error escribiría `image_error` en un
+  // expediente cuya foto existe, que es peor que no anotar nada.
+  const bucket = bucketFalso("un-bucket.firebasestorage.app", () => {
+    throw errorDeStorage(YA_EXISTIA, "At least one of the pre-conditions you specified did not hold.");
+  });
+  const almacen = almacenEnBucket(() => bucket);
+
+  const ref = await almacen.subir({ owner_id: "u", scan_id: "s", media_type: "image/jpeg", image_base64: "AAAA" });
+
+  assert.equal(ref, "gs://un-bucket.firebasestorage.app/scans/u/s.jpg", "la referencia sale igual");
+});
+
+test("cualquier OTRO error de la subida sí se propaga", async () => {
+  // El 412 es la única excepción, y tiene que serlo: un 403 de permisos o un
+  // 404 de bucket inexistente son fallos de verdad y el expediente los tiene
+  // que decir en `image_error`.
+  const bucket = bucketFalso("un-bucket.firebasestorage.app", () => {
+    throw errorDeStorage(403, "does not have storage.objects.create access");
+  });
+  const almacen = almacenEnBucket(() => bucket);
+
+  await assert.rejects(
+    () => almacen.subir({ owner_id: "u", scan_id: "s", media_type: "image/jpeg", image_base64: "AAAA" }),
+    /storage.objects.create/,
+  );
 });
 
 test("borrar saca el objeto que nombra la referencia", async () => {

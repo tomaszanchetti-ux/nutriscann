@@ -173,7 +173,15 @@ test("la visión viaja al expediente sin reformatear", () => {
     meta: { model: "claude-sonnet-5", kb_version: "3.8.0+test", latency_ms: 100, tokens_in: 1, tokens_out: 1 },
   });
 
-  assert.deepEqual(doc["vision"], vision, "byte a byte: los mismos campos, en el mismo orden");
+  // `deepEqual` NO compara el orden de las claves y el mensaje decía que sí
+  // (Q/A de la card 6.0). Se comparan las dos cosas, cada una diciendo lo suyo:
+  // la estructura con `deepEqual` y el orden con la serialización.
+  assert.deepEqual(doc["vision"], vision, "los mismos campos y los mismos valores");
+  assert.equal(
+    JSON.stringify(doc["vision"]),
+    JSON.stringify(vision),
+    "y en el mismo orden: el expediente no reformatea lo que dijo el modelo",
+  );
 });
 
 test("el expediente se puede RE-JUGAR: `analizarEscaneo(doc.vision)` da los mismos items y totals", () => {

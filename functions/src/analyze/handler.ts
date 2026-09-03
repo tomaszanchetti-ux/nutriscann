@@ -25,6 +25,12 @@
  * después del análisis, así que corre gratis debajo de los 3-6 segundos que
  * tarda la visión. Está explicado donde ocurre, más abajo.
  *
+ * Y ESE PASO 6 TIENE UNA REGLA QUE VALE PARA TODAS LAS SALIDAS: **la foto se
+ * queda si, y solo si, quedó escrito el documento que la nombra**. Como la
+ * subida arranca antes de saber si la foto es comida, si el modelo va a
+ * contestar y si la escritura va a andar, el descarte no puede vivir en una
+ * rama: vive en el `finally` del final de `manejarAnalyze`.
+ *
  * Los pasos 1, 2 y 4 los estrena la Fase 4 (cards 4.2, 4.4 y 4.3) y el orden
  * entre ellos está elegido, no heredado:
  *
@@ -318,6 +324,15 @@ export async function manejarAnalyze(
   let reservado: { owner_id: string; momento: Momento } | null = null;
   let elModeloYaCobro = false;
 
+  // Y LO QUE HACE FALTA PARA QUE NO QUEDE UNA FOTO HUÉRFANA (Q/A de la card 6.0).
+  // La regla es una sola y se dice en una línea: **la foto sobrevive si, y solo
+  // si, existe el documento que la nombra**. Estas tres variables viven acá
+  // afuera porque el `finally` de abajo —que corre en TODAS las salidas: el 200,
+  // el 502, el 503, el 500 y la foto que no era comida— tiene que poder mirarlas.
+  let laFoto: Promise<ResultadoDeLaFoto> | null = null;
+  let scanIdDeLaFoto: string | null = null;
+  let elExpedienteQuedoEscrito = false;
+
   try {
     if (pedido.method.toUpperCase() !== "POST") {
       throw new ErrorDeAnalisis("metodo_no_permitido", `llegó un ${pedido.method}`);
@@ -408,7 +423,8 @@ export async function manejarAnalyze(
     // escrito. Eso importa dos veces — la foto no puede romper el análisis
     // (abajo), y una promesa lanzada y no esperada que rechazara sería un
     // `unhandledRejection` en el camino en que el modelo se cae antes.
-    const laFoto = guardarLaFoto(deps, {
+    scanIdDeLaFoto = scan_id;
+    laFoto = guardarLaFoto(deps, {
       owner_id: dueño.uid,
       scan_id,
       media_type: entrada.media_type,
@@ -441,14 +457,10 @@ export async function manejarAnalyze(
     // análisis que guardar y el expediente de una foto de un perro no le sirve
     // a nadie. `scan_id` viaja en `null` porque no hay documento que nombrar.
     if (!resultado.es_comida) {
-      // Y LA FOTO QUE YA SE SUBIÓ SE BORRA. Es la contracara de haber arrancado
-      // la subida antes de saber qué había en la imagen: si no hay expediente,
-      // no puede quedar una foto de la persona colgada en el bucket sin nada que
-      // la nombre. Se espera la subida antes de borrar porque hasta que no
-      // termina no se sabe la referencia; a esta altura ya está resuelta hace
-      // rato (arrancó antes que el modelo), así que no agrega latencia real.
-      await descartarLaFoto(deps, laFoto, scan_id);
-
+      // LA FOTO YA SUBIDA SE BORRA, y no hace falta escribirlo acá: esta rama no
+      // deja expediente, así que `elExpedienteQuedoEscrito` se queda en `false` y
+      // el `finally` la descarta. Es la contracara de haber arrancado la subida
+      // antes de saber qué había en la imagen.
       const texto = resolverTexto(CLAVE_NO_ES_COMIDA, TEXTO_NO_ES_COMIDA_EN_FRIO, copy);
       return {
         status: 200,
@@ -478,6 +490,10 @@ export async function manejarAnalyze(
     let persisted = true;
     try {
       await deps.persistir({ owner_id: dueño.uid, scan_id, resultado, vision, imagen, meta });
+      // ACÁ, Y SOLO ACÁ, LA FOTO SE GANA EL DERECHO A QUEDARSE: hay un documento
+      // que la nombra. Si `persistir` lanzó, esta línea no corre y el `finally`
+      // la borra — un expediente que no existe no puede tener foto.
+      elExpedienteQuedoEscrito = true;
     } catch (err) {
       // El análisis ya se pagó: se devuelve igual, con `persisted: false` para
       // que nadie suponga que quedó escrito.
@@ -536,6 +552,29 @@ export async function manejarAnalyze(
     }
 
     return respuestaDeError(codigo, copy, err instanceof ErrorDeCupo ? err.bloqueo : undefined);
+  } finally {
+    // EL CIERRE DE LA FOTO, Y ESTÁ EN UN `finally` A PROPÓSITO.
+    //
+    // Qué arregla, medido por el Q/A de la card 6.0: la subida arranca antes de
+    // llamar al modelo, así que en TODA rama que se cae después —el modelo no
+    // responde (503), contesta algo ilegible (502), la persistencia falla
+    // (`persisted: false`)— la foto ya está en el bucket y no había nadie
+    // esperándola ni borrándola. Quedaba una foto de una persona sin ningún
+    // documento que la nombre, que es exactamente lo que no puede pasar.
+    //
+    // Y EL `await` DE ACÁ ADENTRO ES LA MITAD DEL ARREGLO. Un `finally` de una
+    // función async retrasa la resolución de la promesa hasta que termina, así
+    // que la subida queda esperada DENTRO del request. Sin eso, en Cloud Run
+    // gen2 la CPU se estrangula apenas la respuesta sale y el borrado puede no
+    // llegar a ejecutarse nunca (el Q/A midió el aviso llegando 120 ms tarde,
+    // después de que `manejarAnalyze` ya había resuelto).
+    //
+    // El costo es cero en el camino feliz: cuando el expediente quedó escrito no
+    // se hace nada, y cuando no, la subida hace rato que terminó porque arrancó
+    // antes que el modelo.
+    if (laFoto !== null && !elExpedienteQuedoEscrito) {
+      await descartarLaFoto(deps, laFoto, scanIdDeLaFoto ?? "desconocido");
+    }
   }
 }
 
@@ -564,12 +603,17 @@ async function guardarLaFoto(deps: Dependencias, foto: FotoDelEscaneo): Promise<
 }
 
 /**
- * Borra la foto de una imagen que no era comida. Mejor esfuerzo, y nunca lanza.
+ * Borra la foto que se quedó sin expediente. Mejor esfuerzo, y NUNCA lanza.
+ *
+ * La llama el `finally` de `manejarAnalyze` en las cuatro salidas que no dejan
+ * documento: la foto que no era comida (200), el modelo caído (503), la
+ * respuesta ilegible (502) y la persistencia fallida (`persisted: false`).
  *
  * Un borrado que falla deja un objeto huérfano: molesto y barato. Un borrado que
- * lanzara convertiría un 200 perfectamente bueno —"eso no parece un plato"— en
- * un 500, que es caro. Por eso se avisa y se sigue: el aviso trae la referencia
- * exacta, que es lo que hace falta para limpiarlo a mano.
+ * lanzara convertiría un 200 perfectamente bueno —"eso no parece un plato"— o un
+ * 503 que el front sabe reintentar en un 500 anónimo, que es caro. Por eso se
+ * avisa y se sigue: el aviso trae la referencia exacta, que es lo único que hace
+ * falta para limpiarlo a mano.
  */
 async function descartarLaFoto(
   deps: Dependencias,
