@@ -57,10 +57,11 @@ const COLOR_DE_CONFIANZA = {
  *
  * ⚠️ SE MIDE SOBRE `per_100g`, NUNCA SOBRE EL VALOR ESCALADO. Es la diferencia
  * entre "este alimento es salado" y "de este alimento hay mucho en el plato", y
- * el propio fixture tiene el caso que lo demuestra: la brocheta aporta 448 mg al
- * plato y el queso solo 289, pero el salado es el queso (964 mg/100 g contra
- * 312). Juzgar por el valor escalado premiaría a las porciones grandes y dejaría
- * pasar la cucharada de algo muy salado.
+ * el propio fixture tiene el caso que lo demuestra: la ensalada aporta 203,3 mg
+ * al plato y el platito de aceitunas solo 183,8, pero la salada es la aceituna
+ * (735 mg/100 g contra 68) y es la única de las dos que se pinta. Juzgar por el
+ * valor escalado premiaría a las porciones grandes y dejaría pasar la cucharada
+ * de algo muy salado.
  */
 
 /** Primera letra en mayúscula, sin tocar el resto (los nombres traen siglas). */
