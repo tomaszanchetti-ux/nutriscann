@@ -113,6 +113,7 @@ export const SECCIONES_DE_TERMINOS: readonly SeccionDeTerminos[] = [
     titulo: "Qué precisión esperar",
     parrafos: [
       "Hay dos cosas que se estiman, y las dos pueden fallar: qué hay en el plato y cuánto pesa. Un guiso mezclado, una foto a contraluz o una salsa que tapa la mitad dan peores resultados que un plato ordenado con buena luz.",
+      "Los gramos son siempre aproximados. La app no pesa nada: estima la cantidad mirando la foto, y una foto no tiene ni profundidad ni báscula. Ese margen de error se arrastra entero al resultado: si la estimación se pasa un tercio, las calorías y los macronutrientes se pasan un tercio. Estamos midiendo cuánto se equivoca con platos de peso conocido, y en cuanto tengamos el número lo publicaremos aquí, con su cifra.",
       "Por eso la app te enseña siempre lo que sabe y lo que no: la confianza de cada alimento, si se usó una coincidencia exacta o la más parecida, y un aviso cuando el total no cubre el plato entero.",
       "Cuando no hay un dato fiable, CaliScan prefiere no dar el número antes que dar uno inventado. Un hueco es honesto; un número redondo que nadie midió, no.",
     ],
