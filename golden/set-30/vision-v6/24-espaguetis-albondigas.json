@@ -1,0 +1,94 @@
+{
+  "foto": "24-espaguetis-albondigas",
+  "meta": {
+    "model": "claude-sonnet-5",
+    "latency_ms": 4159,
+    "tokens_in": 1061,
+    "tokens_out": 283,
+    "tokens_cache_write": 0,
+    "tokens_cache_read": 8296,
+    "intentos": 1,
+    "stop_reason": "end_turn"
+  },
+  "vision": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "spaghetti with meatballs and tomato sauce",
+        "grams": 420,
+        "confidence": 0.9,
+        "food_es": "espaguetis con albóndigas en salsa de tomate",
+        "familia_subfamilia": "pasta/plato",
+        "preparation": "mezclado",
+        "components": [
+          {
+            "food_en": "spaghetti, cooked",
+            "grams": 220,
+            "food_es": "espaguetis cocidos",
+            "familia_subfamilia": "pasta/cocida"
+          },
+          {
+            "food_en": "meatballs, beef",
+            "grams": 140,
+            "food_es": "albóndigas de carne",
+            "familia_subfamilia": "vacuno/picada"
+          },
+          {
+            "food_en": "tomato sauce",
+            "grams": 60,
+            "food_es": "salsa de tomate",
+            "familia_subfamilia": "salsa-y-aderezo/tomate"
+          }
+        ]
+      }
+    ]
+  },
+  "crudo": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "spaghetti with meatballs and tomato sauce",
+        "food_es": "espaguetis con albóndigas en salsa de tomate",
+        "familia_subfamilia": "pasta/plato",
+        "grams": 420,
+        "confidence": 0.9,
+        "preparation": "mezclado",
+        "components": [
+          {
+            "food_en": "spaghetti, cooked",
+            "food_es": "espaguetis cocidos",
+            "grams": 220,
+            "familia_subfamilia": "pasta/cocida"
+          },
+          {
+            "food_en": "meatballs, beef",
+            "food_es": "albóndigas de carne",
+            "grams": 140,
+            "familia_subfamilia": "vacuno/picada"
+          },
+          {
+            "food_en": "tomato sauce",
+            "food_es": "salsa de tomate",
+            "grams": 60,
+            "familia_subfamilia": "salsa-y-aderezo/tomate"
+          }
+        ]
+      }
+    ]
+  },
+  "usage": {
+    "input_tokens": 1061,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 8296,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 283,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "inference_geo": "global"
+  }
+}

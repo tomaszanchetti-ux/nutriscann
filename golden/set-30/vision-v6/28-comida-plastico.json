@@ -1,0 +1,210 @@
+{
+  "foto": "28-comida-plastico",
+  "meta": {
+    "model": "claude-sonnet-5",
+    "latency_ms": 7814,
+    "tokens_in": 1061,
+    "tokens_out": 765,
+    "tokens_cache_write": 0,
+    "tokens_cache_read": 8296,
+    "intentos": 1,
+    "stop_reason": "end_turn"
+  },
+  "vision": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "honey toast with whipped cream and cookie",
+        "grams": 250,
+        "confidence": 0.72,
+        "food_es": "honey toast con nata y galleta",
+        "familia_subfamilia": "tortita-y-crepe/crepe",
+        "preparation": "horneado_masa",
+        "components": [
+          {
+            "food_en": "thick toast bread",
+            "grams": 140,
+            "food_es": "pan tostado grueso",
+            "familia_subfamilia": "pan/tostado"
+          },
+          {
+            "food_en": "whipped cream",
+            "grams": 50,
+            "food_es": "nata montada",
+            "familia_subfamilia": "nata/montada"
+          },
+          {
+            "food_en": "chocolate sauce",
+            "grams": 15,
+            "food_es": "salsa de chocolate",
+            "familia_subfamilia": "dulce/untable"
+          },
+          {
+            "food_en": "strawberry",
+            "grams": 15,
+            "food_es": "fresa",
+            "familia_subfamilia": "fruta/fresca"
+          },
+          {
+            "food_en": "cookie",
+            "grams": 20,
+            "food_es": "galleta",
+            "familia_subfamilia": "bolleria/galleta"
+          },
+          {
+            "food_en": "banana slices",
+            "grams": 10,
+            "food_es": "rodajas de plátano",
+            "familia_subfamilia": "fruta/fresca"
+          }
+        ]
+      },
+      {
+        "food_en": "chocolate banana honey toast with whipped cream",
+        "grams": 240,
+        "confidence": 0.72,
+        "food_es": "honey toast de chocolate y plátano con nata",
+        "familia_subfamilia": "tortita-y-crepe/crepe",
+        "preparation": "horneado_masa",
+        "components": [
+          {
+            "food_en": "thick toast bread",
+            "grams": 140,
+            "food_es": "pan tostado grueso",
+            "familia_subfamilia": "pan/tostado"
+          },
+          {
+            "food_en": "whipped cream",
+            "grams": 50,
+            "food_es": "nata montada",
+            "familia_subfamilia": "nata/montada"
+          },
+          {
+            "food_en": "chocolate sauce",
+            "grams": 20,
+            "food_es": "salsa de chocolate",
+            "familia_subfamilia": "dulce/untable"
+          },
+          {
+            "food_en": "almond slices",
+            "grams": 15,
+            "food_es": "almendras laminadas",
+            "familia_subfamilia": "frutos-secos/fruto-seco"
+          },
+          {
+            "food_en": "banana slices",
+            "grams": 15,
+            "food_es": "rodajas de plátano",
+            "familia_subfamilia": "fruta/fresca"
+          }
+        ]
+      }
+    ]
+  },
+  "crudo": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "honey toast with whipped cream and cookie",
+        "food_es": "honey toast con nata y galleta",
+        "familia_subfamilia": "tortita-y-crepe/crepe",
+        "grams": 250,
+        "confidence": 0.72,
+        "preparation": "horneado_masa",
+        "components": [
+          {
+            "food_en": "thick toast bread",
+            "food_es": "pan tostado grueso",
+            "grams": 140,
+            "familia_subfamilia": "pan/tostado"
+          },
+          {
+            "food_en": "whipped cream",
+            "food_es": "nata montada",
+            "grams": 50,
+            "familia_subfamilia": "nata/montada"
+          },
+          {
+            "food_en": "chocolate sauce",
+            "food_es": "salsa de chocolate",
+            "grams": 15,
+            "familia_subfamilia": "dulce/untable"
+          },
+          {
+            "food_en": "strawberry",
+            "food_es": "fresa",
+            "grams": 15,
+            "familia_subfamilia": "fruta/fresca"
+          },
+          {
+            "food_en": "cookie",
+            "food_es": "galleta",
+            "grams": 20,
+            "familia_subfamilia": "bolleria/galleta"
+          },
+          {
+            "food_en": "banana slices",
+            "food_es": "rodajas de plátano",
+            "grams": 10,
+            "familia_subfamilia": "fruta/fresca"
+          }
+        ]
+      },
+      {
+        "food_en": "chocolate banana honey toast with whipped cream",
+        "food_es": "honey toast de chocolate y plátano con nata",
+        "familia_subfamilia": "tortita-y-crepe/crepe",
+        "grams": 240,
+        "confidence": 0.72,
+        "preparation": "horneado_masa",
+        "components": [
+          {
+            "food_en": "thick toast bread",
+            "food_es": "pan tostado grueso",
+            "grams": 140,
+            "familia_subfamilia": "pan/tostado"
+          },
+          {
+            "food_en": "whipped cream",
+            "food_es": "nata montada",
+            "grams": 50,
+            "familia_subfamilia": "nata/montada"
+          },
+          {
+            "food_en": "chocolate sauce",
+            "food_es": "salsa de chocolate",
+            "grams": 20,
+            "familia_subfamilia": "dulce/untable"
+          },
+          {
+            "food_en": "almond slices",
+            "food_es": "almendras laminadas",
+            "grams": 15,
+            "familia_subfamilia": "frutos-secos/fruto-seco"
+          },
+          {
+            "food_en": "banana slices",
+            "food_es": "rodajas de plátano",
+            "grams": 15,
+            "familia_subfamilia": "fruta/fresca"
+          }
+        ]
+      }
+    ]
+  },
+  "usage": {
+    "input_tokens": 1061,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 8296,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 765,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "inference_geo": "global"
+  }
+}

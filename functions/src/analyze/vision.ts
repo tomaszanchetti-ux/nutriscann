@@ -24,7 +24,8 @@ import Anthropic from "@anthropic-ai/sdk";
 
 import type { Preparacion, VisionComponent, VisionItem, VisionResult } from "../engine";
 import { COOKING_TRANSFORMS } from "../kb/cooking.transforms";
-import { FAMILIAS, IDS_FAMILIA_SUBFAMILIA, idCompuesto } from "../kb/familias";
+import type { Familia, Subfamilia } from "../kb/familias";
+import { FAMILIAS, IDS_FAMILIA_SUBFAMILIA } from "../kb/familias";
 import { ErrorDeAnalisis } from "./errores";
 
 /** El modelo. Está en `CLAUDE.md` y en el §D4 del plan; no se elige por request. */
@@ -82,22 +83,99 @@ const GLOSA_DE_PREPARACION: Record<Preparacion, string> = {
 export const PREPARACIONES: readonly Preparacion[] = Object.keys(COOKING_TRANSFORMS) as Preparacion[];
 
 /**
- * La taxonomía escrita para el modelo: 46 familias, 191 subfamilias.
+ * La taxonomía escrita para el modelo: 46 familias, 191 subfamilias, un renglón
+ * por familia.
  *
  * Se GENERA desde `FAMILIAS` (que a su vez se genera desde la curación). Escribir
- * estos 191 renglones a mano sería tener dos vocabularios que se separan en
- * silencio: el del enum del esquema y el de la explicación del prompt. El
- * marcador `[descomponer]` son las 11 subfamilias en modo `componer` —ensaladas,
- * bocadillos, tacos—, donde el número lo carga la suma de los ingredientes y no
- * una ficha promedio (medido: el plato de salmón respondido por identidad da
- * 1.049 kcal contra 595 reales, +76 %).
+ * estos renglones a mano sería tener dos vocabularios que se separan en silencio:
+ * el del enum del esquema y el de la explicación del prompt.
+ *
+ * POR QUÉ ES COMPACTA (card 5.2, retoque). La primera versión gastaba un renglón
+ * por subfamilia con el id, el nombre en español y el nombre en inglés:
+ * `pizza/con-carne = Pizza con carne | Meat pizza`. Medido con `count_tokens`:
+ * 6.288 tokens, y con el prompt entero adentro el prefijo de sistema saltó de
+ * 2.292 a 16.111 — un escaneo en frío pasó a costar 6,4× más. La forma de abajo
+ * mide 2.105 (−67 %) y dice lo mismo, porque los ids YA SON español legible:
+ *
+ *     pizza: calzone; cobertura; con-carne; con-queso; sin-queso
+ *
+ * Tres decisiones, cada una con su razón:
+ *   · EL NOMBRE EN INGLÉS NO VA. El modelo elige un id, no traduce; para nombrar
+ *     en inglés ya tiene `food_en`, que es texto libre.
+ *   · EL NOMBRE EN ESPAÑOL VA SOLO DONDE EL ID NO SE EXPLICA SOLO (60 de 191,
+ *     con `id=Nombre`). El criterio no es a ojo: se comparan las palabras del id
+ *     —más las del id de la familia y su nombre— contra las del `nombre_es`, y si
+ *     alguna de las dos partes aporta algo que la otra no tiene, el nombre viaja.
+ *     Así `arroz/cocido` va pelado y `verdura/cocida=Verdura cocida sin grasa` no,
+ *     porque el "sin grasa" es lo que la distingue de `verdura/cocida-con-grasa`.
+ *     Lo mismo con la familia: `otras-aves (Pavo y otras aves)`, porque un pavo
+ *     no se encuentra buscando "otras aves".
+ *   · EL MARCADOR `[descomponer]` PASÓ A SER UN `*`, explicado una vez en la
+ *     cabecera. Son las 11 subfamilias en modo `componer` —ensaladas, bocadillos,
+ *     tacos—, donde el número lo carga la suma de los ingredientes y no una ficha
+ *     promedio (medido: el plato de salmón respondido por identidad da 1.049 kcal
+ *     contra 595 reales, +76 %).
+ *
+ * El separador entre subfamilias es `; ` y no `, ` porque hay nombres con coma
+ * adentro (`especia-y-sal=Especia, sal y vinagre`) y la lista tiene que poder
+ * leerse sin ambigüedad.
  */
+const PALABRAS_VACIAS = new Set(["y", "o", "de", "del", "la", "el", "los", "las", "con", "sin", "en", "a", "al", "para", "u", "e"]);
+
+/** Las palabras con contenido de un texto, sin tildes ni signos. */
+function palabrasDe(texto: string): string[] {
+  return texto
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .split(/[^a-z0-9]+/)
+    .filter((p) => p.length > 0 && !PALABRAS_VACIAS.has(p));
+}
+
+/** Dos palabras dicen lo mismo si comparten los primeros 5 caracteres (cocido/cocida). */
+function mismaPalabra(a: string, b: string): boolean {
+  return a.startsWith(b.slice(0, Math.min(5, b.length))) || b.startsWith(a.slice(0, Math.min(5, a.length)));
+}
+
+function algunaDice(palabra: string, conocidas: Iterable<string>): boolean {
+  for (const otra of conocidas) if (mismaPalabra(palabra, otra)) return true;
+  return false;
+}
+
+/** ¿El id de la familia dice todo lo que dice su nombre? Si no, el nombre viaja. */
+export function familiaSeExplicaSola(familia: Familia): boolean {
+  const delId = palabrasDe(familia.id);
+  return palabrasDe(familia.nombre_es).every((p) => algunaDice(p, delId));
+}
+
+/**
+ * ¿El id de la subfamilia se entiende solo, leído debajo de su familia?
+ *
+ * Se pregunta en las dos direcciones a propósito: el nombre no puede aportar una
+ * palabra que el id no tenga (o el modelo se pierde el matiz), y el id no puede
+ * aportar una que el nombre no tenga (o el id significa otra cosa que el nombre).
+ */
+export function subfamiliaSeExplicaSola(familia: Familia, sub: Subfamilia): boolean {
+  const delNombre = palabrasDe(sub.nombre_es);
+  const conocidas = new Set([
+    ...palabrasDe(sub.id),
+    ...palabrasDe(familia.id),
+    ...(familiaSeExplicaSola(familia) ? [] : palabrasDe(familia.nombre_es)),
+  ]);
+  return (
+    delNombre.every((p) => algunaDice(p, conocidas)) &&
+    palabrasDe(sub.id).every((p) => algunaDice(p, delNombre))
+  );
+}
+
 export const LISTA_DE_SUBFAMILIAS: string = FAMILIAS.map((familia) => {
-  const lineas = familia.subfamilias.map((sub) => {
-    const marca = sub.modo === "componer" ? "  [descomponer]" : "";
-    return `  ${idCompuesto(familia, sub)} = ${sub.nombre_es} | ${sub.nombre_en}${marca}`;
+  const cabeza = familiaSeExplicaSola(familia) ? familia.id : `${familia.id} (${familia.nombre_es})`;
+  const subs = familia.subfamilias.map((sub) => {
+    const marca = sub.modo === "componer" ? "*" : "";
+    const nombre = subfamiliaSeExplicaSola(familia, sub) ? "" : `=${sub.nombre_es}`;
+    return `${sub.id}${marca}${nombre}`;
   });
-  return [`${familia.nombre_es} / ${familia.nombre_en}:`, ...lineas].join("\n");
+  return `${cabeza}: ${subs.join("; ")}`;
 }).join("\n");
 
 /** Los tres formatos de imagen que aceptamos. Son los que manda la PWA. */
@@ -113,24 +191,53 @@ export const MEDIA_TYPES: readonly MediaType[] = ["image/jpeg", "image/png", "im
  * `["string","null"]` no están soportados); `minimum`/`maximum` tampoco, así que
  * los rangos se piden en la descripción y se SANEAN en `interpretarVision` — un
  * rango que el esquema no puede exigir lo tiene que exigir el código.
+ *
+ * EL ENUM DE 191 IDS VIVE UNA SOLA VEZ, en `$defs`, y lo apuntan con `$ref` el
+ * ítem y el componente. Antes estaba escrito DOS VECES y esa copia costaba 2.756
+ * tokens de los 7.538 del esquema (medido con `count_tokens`): 2.756 tokens
+ * pagados en cada escaneo en frío para repetir una lista que ya estaba. Con
+ * `$defs` el esquema mide 4.054, y el prefijo entero 8.361 (16.088 antes: −48 %).
+ *
+ * Que `$defs`/`$ref` estén soportados NO se dio por bueno leyendo la
+ * documentación: un esquema que la API rechaza es un 400 en producción, no un
+ * test en rojo. Se verificó con UNA llamada real a `claude-sonnet-5` el 03/09 —
+ * respondió `end_turn` con `pollo/pechuga` y `arroz/cocido`, o sea que el enum
+ * referenciado sigue restringiendo de verdad—. Los esquemas recursivos SÍ están
+ * fuera de alcance; este no lo es (`$defs.subfamilia` no se referencia a sí mismo).
+ *
+ * Y LAS DESCRIPCIONES SON CORTAS A PROPÓSITO. Antes cada campo repetía en el
+ * esquema lo que el prompt ya explica tres párrafos más arriba, en la misma
+ * llamada. La división es: el PROMPT enseña —los ejemplos, las reglas de
+ * desempate, los dos caminos a la ficha—, el ESQUEMA restringe y recuerda en una
+ * línea. La excepción está abajo, en `is_food`: ahí los contraejemplos se
+ * repiten a propósito, porque la corrida v6 midió que sin ellos el modelo acepta
+ * una foto de comida de plástico.
  */
 export const ESQUEMA_VISION = {
   type: "object",
   additionalProperties: false,
   required: ["is_food", "items"],
+  $defs: {
+    /** La lista CERRADA de 191, escrita una sola vez. La apuntan el ítem y el componente. */
+    subfamilia: { type: "string", enum: IDS_FAMILIA_SUBFAMILIA },
+  },
   properties: {
     is_food: {
       type: "boolean",
+      // LOS CONTRAEJEMPLOS SE NOMBRAN, no se dejan solo en el prompt. La corrida
+      // v6 los perdió por un rato: al acortar esta descripción se cayó "comida de
+      // plástico", y la foto 28 —un expositor de comida falsa que la v5 rechazaba—
+      // pasó a `is_food: true` con dos tostadas inventadas. El prompt seguía
+      // diciéndolo en su punto 1; no alcanzó. Cuestan 67 tokens y son la única
+      // defensa contra un reporte nutricional de una foto que no es comida.
       description:
-        "true si la foto muestra comida o bebida, INCLUIDO un producto envasado cuya etiqueta se " +
-        "puede leer: un envase con etiqueta legible ES comida, y la etiqueta es la fuente más " +
-        "precisa que existe. Una persona, un paisaje, una pantalla, comida de plástico, un plato " +
-        "vacío o una foto ilegible son false.",
+        "¿La foto muestra comida o bebida? Un envase con la etiqueta legible SÍ lo es. Una persona, " +
+        "un paisaje, una pantalla, COMIDA DE PLÁSTICO o de exposición, un plato vacío o una foto " +
+        "ilegible son false.",
     },
     items: {
       type: "array",
-      description:
-        "Un elemento por alimento distinguible en el plato. Vacío si is_food es false.",
+      description: "Un elemento por alimento distinguible. Vacío si is_food es false.",
       items: {
         type: "object",
         additionalProperties: false,
@@ -138,19 +245,11 @@ export const ESQUEMA_VISION = {
         properties: {
           food_en: {
             type: "string",
-            description:
-              "El nombre del alimento en INGLÉS GENÉRICO, en el registro de USDA FoodData Central " +
-              '(por ejemplo "chicken breast, grilled", "white rice, cooked", "olive oil"). ' +
-              "Sin marcas comerciales y sin adjetivos de presentación.",
+            description: 'El alimento en inglés genérico de USDA ("chicken breast, grilled"). Sin marcas.',
           },
           food_es: {
             type: "string",
-            description:
-              "EL MISMO alimento nombrado en ESPAÑOL DE ESPAÑA, como lo diría alguien al sentarse a la " +
-              'mesa: "paella", "tortilla de patatas", "lasaña", "papas fritas", "bife", "panecillo". ' +
-              "El nombre corto y común del plato o del alimento, sin describir los ingredientes y sin " +
-              "traducir palabra por palabra el nombre en inglés. Si el alimento no tiene un nombre en " +
-              "español, escribí el que se usa igual (por ejemplo \"croissant\" o \"ketchup\").",
+            description: 'EL MISMO alimento en español de España, con su nombre corto y común ("paella").',
           },
           // OBLIGATORIO, y la razón está medida: el 02/09 en producción el modelo
           // escribió "pizza with ham and mushrooms" y ninguna de las CINCO fichas
@@ -161,25 +260,16 @@ export const ESQUEMA_VISION = {
           // término, nunca su reemplazo: pisar el término exacto con la cabeza de
           // familia llevaría el atún en lata de 85 a 238 kcal (Bloque 0, punto c).
           familia_subfamilia: {
-            type: "string",
-            enum: IDS_FAMILIA_SUBFAMILIA,
-            description:
-              "La subfamilia del catálogo a la que pertenece este alimento, con la forma " +
-              '"familia/subfamilia" (por ejemplo "pizza/con-carne"). Elegí SIEMPRE la más ' +
-              "específica que aplique; ante la duda entre dos, la más genérica de la misma familia. " +
-              "La lista completa, con el nombre de cada una, está en las instrucciones.",
+            $ref: "#/$defs/subfamilia",
+            description: 'La subfamilia del catálogo, "familia/subfamilia": la MÁS ESPECÍFICA que aplique.',
           },
           grams: {
             type: "number",
-            description:
-              "Gramos de la PORCIÓN VISIBLE en el plato, estimados a partir del tamaño aparente. " +
-              "Mayor que 0. Es una estimación de volumen, no un dato de tabla.",
+            description: "Gramos de la porción VISIBLE, mayor que 0.",
           },
           confidence: {
             type: "number",
-            description:
-              "Entre 0 y 1: cuánta confianza tenés en haber IDENTIFICADO bien el alimento " +
-              "(no en el número de gramos).",
+            description: "Entre 0 y 1: la confianza en la IDENTIFICACIÓN, no en los gramos.",
           },
           // La lista es CERRADA y son los OCHO de `Preparacion` en engine/types,
           // que salen de la tabla de cocción. Importa que sea el esquema el que la
@@ -192,9 +282,7 @@ export const ESQUEMA_VISION = {
           preparation: {
             type: "string",
             enum: PREPARACIONES,
-            description:
-              "El método de cocción, SOLO si se ve con claridad. Omitir el campo si no se distingue: " +
-              "lo que no se ve lo pone la subfamilia, que trae su método por defecto.",
+            description: "El método de cocción, SOLO si se ve. Omitir el campo si no se distingue.",
           },
           // OBLIGATORIO desde la Fase 5, y vacío en un alimento simple. Antes decía
           // "solo cuando el plato no tiene un nombre obvio", y el resultado medido
@@ -204,10 +292,7 @@ export const ESQUEMA_VISION = {
           components: {
             type: "array",
             description:
-              "Los ingredientes visibles del plato, con sus gramos. SIEMPRE que el plato tenga más " +
-              "de un ingrediente que se distinga; array VACÍO en un alimento simple o cuando la " +
-              "receta no se ve (una croqueta, una lasaña). Los gramos de los ingredientes suman " +
-              "aproximadamente los gramos del plato.",
+              "Los ingredientes visibles con sus gramos. VACÍO si el alimento es simple o la receta no se ve.",
             items: {
               type: "object",
               additionalProperties: false,
@@ -217,12 +302,8 @@ export const ESQUEMA_VISION = {
                 food_es: { type: "string", description: "El mismo ingrediente en español de España." },
                 grams: { type: "number", description: "Gramos de ese ingrediente dentro del plato." },
                 familia_subfamilia: {
-                  type: "string",
-                  enum: IDS_FAMILIA_SUBFAMILIA,
-                  description:
-                    "La subfamilia del ingrediente, misma lista que la del alimento. Opcional, " +
-                    "pero ponela siempre que la sepas: es lo que salva al ingrediente que el " +
-                    "catálogo no tiene por su nombre (la masa de pizza, sin ir más lejos).",
+                  $ref: "#/$defs/subfamilia",
+                  description: "La subfamilia del ingrediente. Opcional, pero ponela siempre que la sepas.",
                 },
               },
             },
@@ -236,9 +317,7 @@ export const ESQUEMA_VISION = {
           etiqueta_del_envase: {
             type: "string",
             description:
-              "El nombre del producto tal cual está impreso en el envase, cuando la foto muestra un " +
-              "producto envasado con etiqueta legible. Omitir el campo si no hay envase o no se lee. " +
-              "Nunca copies de la etiqueta calorías ni valores nutricionales.",
+              "El nombre del producto impreso en el envase, cuando se lee. Nunca sus valores nutricionales.",
           },
         },
       },
@@ -252,35 +331,33 @@ export const ESQUEMA_VISION = {
  * Está en castellano rioplatense a propósito: es un texto INTERNO, no lo lee
  * ningún usuario. Lo que ve el usuario sale del catálogo y de `config/app`.
  *
- * Es largo (la taxonomía son ~12 KB) y es IDÉNTICO en todas las llamadas: por eso
- * viaja como bloque de sistema con `cache_control` — ver `pedirVision`.
+ * Es largo (9,1 KB, casi la mitad de ellos la taxonomía) y es IDÉNTICO en todas
+ * las llamadas: por eso viaja como bloque de sistema con `cache_control` —
+ * ver `pedirVision`.
  */
 export const PROMPT_VISION = [
   "Sos el paso de VISIÓN de una app de nutrición. Mirás la foto de un plato y decís QUÉ hay y CUÁNTO.",
   "",
-  "Del otro lado hay una base nutricional de 1.115 fichas con trazabilidad a USDA. Vos no calculás",
-  "ni un número nutricional: solo nombrás y estimás gramos. Para llegar a la ficha hay DOS caminos y",
-  "usás LOS DOS en cada alimento:",
-  "  · EL CAMINO PRECISO — `food_en` y `food_es`, el nombre corto y común. Cuando acierta, es el mejor",
-  "    número posible porque da la ficha exacta de ESE alimento.",
-  "  · EL RESPALDO — `familia_subfamilia`, un valor de una lista CERRADA de 191. Cuando el nombre no",
-  "    llega a ninguna ficha, la subfamilia garantiza que el plato tenga un número igual.",
+  "Del otro lado hay una base de 1.115 fichas con trazabilidad a USDA. Vos no calculás ni un número",
+  "nutricional: solo nombrás y estimás gramos. A la ficha se llega por DOS caminos y usás LOS DOS:",
+  "  · EL PRECISO — `food_en` y `food_es`, el nombre corto y común: cuando acierta da la ficha exacta.",
+  "  · EL RESPALDO — `familia_subfamilia`, de una lista CERRADA de 191: cuando el nombre no llega a",
+  "    ninguna ficha, la subfamilia garantiza que el plato tenga un número igual.",
   "Los dos son obligatorios y ninguno reemplaza al otro.",
   "",
   "Lo que hacés:",
   "",
-  "1. `is_food`. true si hay comida o bebida, INCLUIDO un producto envasado con la etiqueta legible.",
-  "   false si es una persona, un paisaje, una pantalla, comida de plástico, un plato vacío o una foto",
-  "   que no se entiende. Con false, `items` va vacío.",
+  "1. `is_food`. true si hay comida o bebida, INCLUIDO un envase con la etiqueta legible. false si es",
+  "   una persona, un paisaje, una pantalla, comida de plástico, un plato vacío o una foto que no se",
+  "   entiende; con false, `items` va vacío.",
   "",
   "2. Los nombres. Nombrás cada alimento distinguible DOS VECES, en `food_en` y en `food_es`. Son los",
   "   dos idiomas de la base y con los dos se busca:",
   '   · `food_en`: el término común de USDA FoodData Central ("beef steak, grilled", "white rice, cooked").',
   '   · `food_es`: el mismo alimento como lo llamaría alguien en España ("bife", "arroz blanco cocido",',
   '     "paella", "tortilla de patatas", "lasaña", "papas fritas"). El nombre CORTO Y COMÚN del plato.',
-  "   Los dos nombres son del MISMO alimento: no pongas el plato en uno y un ingrediente en el otro.",
-  "   Preferí siempre el nombre común y corto antes que una descripción larga: la base guarda nombres",
-  '   de alimentos, no descripciones. "coleslaw" antes que "coleslaw, cabbage and carrot salad".',
+  "   Son del MISMO alimento: no pongas el plato en uno y un ingrediente en el otro. Y siempre el",
+  '   nombre corto antes que una descripción: "coleslaw", no "coleslaw, cabbage and carrot salad".',
   "",
   "3. `familia_subfamilia`. Un id de la lista de abajo, con la forma `familia/subfamilia`. Dos reglas:",
   "   · Elegí SIEMPRE la subfamilia MÁS ESPECÍFICA que aplique. Dentro de una misma familia el número",
@@ -294,8 +371,8 @@ export const PROMPT_VISION = [
   "",
   "5. `confidence`. Entre 0 y 1: cuánto confiás en la IDENTIFICACIÓN, no en los gramos.",
   "",
-  "6. `preparation`. Solo si el método de cocción se VE. Si no se distingue, omitís el campo: lo que",
-  "   vos no ves lo pone la subfamilia, que trae su propio método por defecto. Los ocho valores son:",
+  "6. `preparation`. Solo si el método de cocción se VE; si no se distingue omitís el campo, y lo que",
+  "   vos no ves lo pone la subfamilia con su método por defecto. Los ocho valores:",
   ...PREPARACIONES.map((metodo) => `   · ${metodo}: ${GLOSA_DE_PREPARACION[metodo]}`),
   "",
   "7. `components`. SIEMPRE que el plato tenga más de un ingrediente que se distinga, los declarás uno",
@@ -306,22 +383,23 @@ export const PROMPT_VISION = [
   "   · un plato con la receta escondida, donde los ingredientes NO se ven por separado: una croqueta,",
   "     una lasaña, una paella, un guiso. Ahí lo que importa es nombrar bien el plato entero, y no",
   "     inventar una receta que la foto no muestra.",
-  "   En las subfamilias marcadas [descomponer] —ensaladas, bocadillos, tacos, platos combinados— la",
+  "   En las subfamilias marcadas con `*` —ensaladas, bocadillos, tacos, platos combinados— la",
   "   descomposición es lo que da el número bueno: ahí no la saltees.",
   "",
   "8. Envases. Si la foto es un producto envasado y la etiqueta se lee, ESO ES COMIDA: `is_food` true,",
-  "   `etiqueta_del_envase` con el nombre del producto tal cual está impreso, `food_en`/`food_es` con",
-  "   el producto, su `familia_subfamilia`, y los gramos que declare el envase si están impresos.",
-  "   La etiqueta es la fuente más precisa que hay en la foto; no la desperdicies.",
+  "   `etiqueta_del_envase` con el nombre impreso tal cual, `food_en`/`food_es` con el producto, su",
+  "   `familia_subfamilia`, y los gramos que declare el envase. La etiqueta es la fuente más precisa",
+  "   que hay en la foto; no la desperdicies.",
   "",
   "Lo que NO hacés, nunca:",
-  "- No estimás calorías, proteínas, carbohidratos, grasas ni ningún valor nutricional. No es tu tarea",
-  "  y tu esquema de salida ni siquiera tiene esos campos: esos números salen de una base de datos",
-  "  con trazabilidad a USDA, no de vos. Tampoco los copiás de la etiqueta de un envase.",
+  "- No estimás calorías ni ningún valor nutricional, tuyo ni copiado de una etiqueta: esos números",
+  "  salen de la base, y tu esquema de salida ni siquiera tiene esos campos.",
   "- No inventás alimentos que no ves. Si la foto no es comida, `is_food` es false y `items` va vacío.",
   "- No agrupás el plato entero en un solo item genérico si podés nombrar sus partes.",
   "",
-  "LAS 191 SUBFAMILIAS, agrupadas por familia (id = nombre en español | nombre en inglés):",
+  "LAS 191 SUBFAMILIAS. Un renglón por familia: `familia: sub; sub; sub`. El id que va en",
+  "`familia_subfamilia` es `familia/sub` (ejemplo: `pizza/con-carne`). Un `*` marca las que hay que",
+  "DESCOMPONER en `components`. Donde el id solo no alcanza va su nombre después de un `=`.",
   "",
   LISTA_DE_SUBFAMILIAS,
 ].join("\n");
@@ -418,8 +496,9 @@ export interface MetaDeVision {
   tokens_out: number;
   /**
    * Tokens ESCRITOS al caché de prompt en esta llamada (el prompt de sistema, la
-   * primera vez). Se cobran a 1,25×. Si aparece en toda llamada en vez de solo en
-   * la primera, el prefijo está variando y el caché no sirve para nada.
+   * primera vez). Se cobran a 2× porque el TTL es de 1 hora (con el de 5 minutos
+   * serían 1,25×). Si aparece en toda llamada en vez de solo en la primera, el
+   * prefijo está variando y el caché no sirve para nada.
    */
   tokens_cache_write: number;
   /** Tokens LEÍDOS del caché (a 0,1×). Es la medida de que el caché funciona. */
@@ -454,20 +533,34 @@ export async function pedirVision(
     model: MODELO_VISION,
     max_tokens: MAX_TOKENS_VISION,
     // EL SISTEMA VA CACHEADO. Desde la Fase 5 el prompt lleva las 191 subfamilias
-    // adentro (~4.000 tokens) y es BYTE POR BYTE EL MISMO en todos los escaneos:
+    // adentro (4.307 tokens) y es BYTE POR BYTE EL MISMO en todos los escaneos:
     // es el caso de libro del caché de prefijo. Va como bloque con
     // `cache_control` en vez de como string suelto porque el string no admite el
     // marcador. Lo único que cambia entre llamadas es la imagen, y la imagen va
     // DESPUÉS del sistema en el orden de render (tools → system → messages), así
     // que no invalida nada.
     //
-    // TTL de 5 minutos (el default): con tráfico continuo cada llamada refresca
-    // la entrada y sale más barato que la de 1 hora, que cobra el doble por
-    // escribirla. Con la primera foto del día se paga el write y se lee gratis el
-    // resto; el mínimo cacheable de Sonnet 5 son 1.024 tokens y este prompt los
-    // pasa cuatro veces. Se verifica con `tokens_cache_read` de la meta: si viene
-    // en cero llamada tras llamada, algo está variando el prefijo.
-    system: [{ type: "text", text: PROMPT_VISION, cache_control: { type: "ephemeral" } }],
+    // TTL DE 1 HORA, y la cuenta está hecha. La entrada del caché vale desde que
+    // ARRANCA la llamada que la escribe o la lee, y una lectura refresca el reloj
+    // gratis. Con el TTL de 5 minutos (el default) eso significa que el caché solo
+    // sobrevive si entra un escaneo cada 5 minutos EN TODA LA APP; una app que
+    // recién arranca no tiene ese tráfico, así que casi todo escaneo caía en frío
+    // y pagaba el prefijo entero. Con el de 1 hora alcanza UN escaneo por hora
+    // para que el siguiente salga caliente — y el caché es por PREFIJO, no por
+    // usuario: el sistema es idéntico para todos, así que la foto de cualquiera
+    // deja caliente la de todos los demás.
+    //
+    // Lo que cuesta: el write pasa de 1,25× a 2× el precio de entrada. Sobre
+    // 8.361 tokens de prefijo y Sonnet 5 a 2 US$/M de entrada, el write sube de
+    // 0,0209 a 0,0334 US$ y la lectura sigue costando 0,0017 (0,1×). El punto de
+    // equilibrio del TTL de 1 hora son 3 llamadas sobre el mismo prefijo (2× +
+    // 0,2× = 2,2× contra 3× sin caché): a 15 escaneos/mes por usuario y con el
+    // caché compartido entre todos, se cruza el primer día.
+    //
+    // El mínimo cacheable de Sonnet 5 son 1.024 tokens y este prefijo los pasa
+    // ocho veces. Se verifica con `tokens_cache_read` de la meta: si viene en cero
+    // llamada tras llamada, algo está variando el prefijo.
+    system: [{ type: "text", text: PROMPT_VISION, cache_control: { type: "ephemeral", ttl: "1h" } }],
     // Sin `temperature`, sin `top_p`, sin `budget_tokens`: Sonnet 5 los rechaza con 400.
     output_config: { format: { type: "json_schema", schema: ESQUEMA_VISION as unknown as Record<string, unknown> } },
     messages: [

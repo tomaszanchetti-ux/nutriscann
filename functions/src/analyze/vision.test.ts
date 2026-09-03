@@ -21,6 +21,7 @@ import {
   MODELO_VISION,
   PREPARACIONES,
   PROMPT_VISION,
+  subfamiliaSeExplicaSola,
   esTransitorio,
   interpretarVision,
   pedirVision,
@@ -181,23 +182,42 @@ test("el enum de `familia_subfamilia` ES la taxonomía, byte por byte y en su or
   // subfamilia al JSON de curación y no regenera, o al revés— el modelo podría
   // emitir un id que el motor no conoce, y eso llega como "no encontré nada" en
   // el reporte de un usuario. El candado es la IGUALDAD, no la inclusión.
-  const item = (
-    (ESQUEMA_VISION as unknown as Record<string, Record<string, Record<string, unknown>>>)["properties"]?.[
-      "items"
-    ] as Record<string, Record<string, unknown>>
-  )["items"] as unknown as Record<string, Record<string, Record<string, unknown>>>;
+  //
+  // RETOQUE DE LA 5.2: el enum vive UNA sola vez, en `$defs`, y el ítem y el
+  // componente lo apuntan con `$ref`. Lo que se verifica sigue siendo lo mismo
+  // —los 191 ids exactos y en su orden— más una cosa nueva: que los dos sitios
+  // apunten a ESA definición y no a una copia, que es de donde salían los 2.756
+  // tokens que se pagaban de más en cada escaneo en frío.
+  const raiz = ESQUEMA_VISION as unknown as Record<string, Record<string, Record<string, unknown>>>;
+  const definido = raiz["$defs"]?.["subfamilia"]?.["enum"] as unknown as string[];
+  assert.equal(definido.length, IDS_FAMILIA_SUBFAMILIA.length, "mismo largo que la taxonomía");
+  assert.equal(definido.length, 191, "191 subfamilias, las del Bloque 0");
+  assert.deepEqual(definido, IDS_FAMILIA_SUBFAMILIA, "mismos valores y mismo orden");
 
-  const enItem = item["properties"]?.["familia_subfamilia"]?.["enum"] as unknown as string[];
-  assert.equal(enItem.length, IDS_FAMILIA_SUBFAMILIA.length, "mismo largo que la taxonomía");
-  assert.equal(enItem.length, 191, "191 subfamilias, las del Bloque 0");
-  assert.deepEqual(enItem, IDS_FAMILIA_SUBFAMILIA, "mismos valores y mismo orden");
+  const item = (raiz["properties"]?.["items"] as Record<string, Record<string, unknown>>)[
+    "items"
+  ] as unknown as Record<string, Record<string, Record<string, unknown>>>;
+
+  assert.equal(
+    item["properties"]?.["familia_subfamilia"]?.["$ref"],
+    "#/$defs/subfamilia",
+    "el ítem apunta a la definición, no a una copia del enum",
+  );
 
   const componente = item["properties"]?.["components"]?.["items"] as unknown as Record<
     string,
     Record<string, Record<string, unknown>>
   >;
-  const enComponente = componente["properties"]?.["familia_subfamilia"]?.["enum"] as unknown as string[];
-  assert.deepEqual(enComponente, IDS_FAMILIA_SUBFAMILIA, "el ingrediente elige de la MISMA lista");
+  assert.equal(
+    componente["properties"]?.["familia_subfamilia"]?.["$ref"],
+    "#/$defs/subfamilia",
+    "el ingrediente elige de la MISMA lista, por referencia",
+  );
+
+  // Y el enum NO puede estar escrito en ningún otro lado: si alguien vuelve a
+  // copiarlo, el prefijo engorda 2.756 tokens en silencio y esto suena.
+  const copias = JSON.stringify(ESQUEMA_VISION).split(JSON.stringify(IDS_FAMILIA_SUBFAMILIA[0])).length - 1;
+  assert.equal(copias, 1, "el primer id de la taxonomía aparece UNA sola vez en el esquema");
 });
 
 test("los métodos de `preparation` SON las claves de la tabla de cocción", () => {
@@ -220,19 +240,89 @@ test("el prompt explica la taxonomía entera, y también sale del código genera
   // El enum le dice al modelo qué ids puede escribir; la lista del prompt le dice
   // qué significa cada uno. Si la lista se escribiera a mano habría DOS
   // vocabularios y se separarían en silencio.
+  //
+  // RETOQUE DE LA 5.2: la lista es un renglón POR FAMILIA —`pizza: con-carne;
+  // con-queso; ...`— en vez de uno por subfamilia con los dos nombres. Bajó de
+  // 6.288 a 2.105 tokens. Lo que este candado exige es que las 191 sigan estando
+  // TODAS y que se puedan reconstruir: la familia encabeza el renglón y cada
+  // subfamilia aparece en él.
+  const renglones = new Map(
+    LISTA_DE_SUBFAMILIAS.split("\n").map((l) => {
+      const corte = l.indexOf(":");
+      return [l.slice(0, corte).replace(/ \(.*\)$/, ""), l.slice(corte + 1)] as const;
+    }),
+  );
+  assert.equal(renglones.size, FAMILIAS.length, "un renglón por familia, 46");
+
+  for (const familia of FAMILIAS) {
+    const renglon = renglones.get(familia.id);
+    assert.ok(renglon !== undefined, `falta la familia ${familia.id}`);
+    const escritas = renglon.split(";").map((s) => s.trim().split("=")[0]?.replace(/\*$/, ""));
+    assert.deepEqual(
+      escritas,
+      familia.subfamilias.map((s) => s.id),
+      `las subfamilias de ${familia.id}, todas y en su orden`,
+    );
+  }
+
+  assert.ok(PROMPT_VISION.includes(LISTA_DE_SUBFAMILIAS), "la lista viaja dentro del prompt");
+});
+
+test("el nombre en español viaja SOLO donde el id no se explica solo", () => {
+  // El ahorro sale de no repetir en castellano lo que el id ya dice: `arroz/cocido`
+  // no necesita "Arroz cocido" al lado. Pero `verdura/cocida` sí necesita "sin
+  // grasa", porque es lo único que la distingue de `verdura/cocida-con-grasa`, y
+  // ahí el número cambia de 30 a 86 kcal/100 g. El criterio está en el código
+  // (`subfamiliaSeExplicaSola`) y no a ojo, y este candado verifica que la lista
+  // lo respete en las 191 — que ninguna quede sin la información que necesita.
+  const renglones = new Map(
+    LISTA_DE_SUBFAMILIAS.split("\n").map((l) => {
+      const corte = l.indexOf(":");
+      return [l.slice(0, corte).replace(/ \(.*\)$/, ""), l.slice(corte + 1)] as const;
+    }),
+  );
+
+  let conNombre = 0;
   for (const familia of FAMILIAS) {
     for (const sub of familia.subfamilias) {
-      const id = `${familia.id}/${sub.id}`;
-      assert.ok(LISTA_DE_SUBFAMILIAS.includes(`${id} = ${sub.nombre_es} | ${sub.nombre_en}`), `falta ${id}`);
+      const escrita = (renglones.get(familia.id) ?? "").split(";").map((t) => t.trim()).find((t) => t.startsWith(sub.id));
+      const tieneNombre = (escrita ?? "").includes("=");
+      assert.equal(
+        tieneNombre,
+        !subfamiliaSeExplicaSola(familia, sub),
+        `${familia.id}/${sub.id}: el nombre tiene que estar si y solo si el id no alcanza`,
+      );
+      if (tieneNombre) {
+        assert.ok(escrita?.endsWith(`=${sub.nombre_es}`), `${familia.id}/${sub.id}: el nombre es el de la curación`);
+        conNombre += 1;
+      }
     }
   }
-  assert.ok(PROMPT_VISION.includes(LISTA_DE_SUBFAMILIAS), "la lista viaja dentro del prompt");
-  // Las 11 en modo `componer` van marcadas: son las que NO se responden con una
-  // ficha promedio (el plato de salmón por identidad da +76 %).
-  const marcadas = LISTA_DE_SUBFAMILIAS.split("\n").filter((l) => l.includes("[descomponer]"));
+  assert.equal(conNombre, 60, "60 de las 191 llevan su nombre al lado; el resto se leen solas");
+
+  // Y la familia lleva el suyo cuando el id se queda corto: `otras-aves` no dice
+  // "pavo" en ningún lado, y un pavo es lo más común que hay en esa familia.
+  assert.match(LISTA_DE_SUBFAMILIAS, /^otras-aves \(Pavo y otras aves\):/m);
+  assert.match(LISTA_DE_SUBFAMILIAS, /^arroz:/m);
+});
+
+test("las 11 subfamilias en modo `componer` van marcadas con un asterisco", () => {
+  // Son las que NO se responden con una ficha promedio (el plato de salmón por
+  // identidad da +76 %). El marcador era `[descomponer]` y ahora es un `*`
+  // explicado UNA vez en la cabecera de la lista: 11 marcas de 1 carácter en vez
+  // de 11 de 14. Lo que no cambió es que sean exactamente esas 11.
+  const marcadas = LISTA_DE_SUBFAMILIAS.split("\n").flatMap((l) =>
+    l
+      .slice(l.indexOf(":") + 1)
+      .split(";")
+      .map((t) => t.trim())
+      .filter((t) => /\*(=|$)/.test(t)),
+  );
   const componer = FAMILIAS.flatMap((f) => f.subfamilias).filter((s) => s.modo === "componer");
   assert.equal(marcadas.length, componer.length);
   assert.equal(marcadas.length, 11);
+  // La cabecera explica el marcador: sin la explicación el `*` no significa nada.
+  assert.match(PROMPT_VISION, /Un `\*` marca las que hay que/);
 });
 
 test("el prompt manda descomponer SIEMPRE y ya no solo si el plato no tiene nombre", () => {
@@ -332,7 +422,12 @@ test("el prompt de sistema viaja CACHEADO: es el mismo en todos los escaneos", a
   assert.ok(Array.isArray(sistema), "el sistema va como bloques: un string suelto no admite cache_control");
   assert.equal(sistema[0]?.["type"], "text");
   assert.equal(sistema[0]?.["text"], PROMPT_VISION);
-  assert.deepEqual(sistema[0]?.["cache_control"], { type: "ephemeral" });
+  // TTL DE 1 HORA. Con el de 5 minutos (el default) el caché solo sobrevive si
+  // entra un escaneo cada 5 minutos en toda la app, y una app que recién arranca
+  // no tiene ese tráfico: casi todo escaneo caía en frío y pagaba el prefijo
+  // entero. Con el de 1 hora alcanza un escaneo por hora. Si alguien lo saca, el
+  // costo en frío vuelve y no lo avisa nadie.
+  assert.deepEqual(sistema[0]?.["cache_control"], { type: "ephemeral", ttl: "1h" });
 
   assert.equal(meta.tokens_cache_write, 4000, "la primera llamada ESCRIBE el caché");
   assert.equal(meta.tokens_cache_read, 0);
