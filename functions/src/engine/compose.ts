@@ -59,11 +59,17 @@
  *    composición (o el ×0,6 de la parcial), exactamente como antes. Esa ensalada,
  *    reconstruida y vuelta a jugar: el match ponderado da 0,484 —contra 0,227 del
  *    mínimo— y la confianza del plato pasa de **0,155 a 0,329** (la corrida real
- *    de ese día daba 0,107: el tomate cayó en otra ficha). El mismo plato está en
- *    el golden, la foto 20 «ensalada mixta», y ahí se mide entero: **0,107 →
- *    0,393, y el total vuelve a publicarse** (241,7 kcal) después de haber salido
- *    sin número. Ningún ítem que no sea compuesto se mueve: los otros 54 de las
- *    30 fotos del golden dan la misma confianza y las mismas kcal.
+ *    de ese día daba 0,107: el tomate cayó en otra ficha).
+ *
+ *    NO ES EL MISMO PLATO, PERO SÍ EL MISMO SÍNTOMA: el golden de 30 fotos trae
+ *    otra ensalada compuesta, la foto 20 «ensalada mixta» —siete ingredientes,
+ *    no seis; lombarda y maíz en vez de guisantes—, y ahí el efecto se mide
+ *    entero, jugando de nuevo la salida real de la visión: **0,107 → 0,393, y
+ *    el total vuelve a publicarse** (241,7 kcal) después de haber salido sin
+ *    número. Ningún ítem que no sea compuesto se mueve: los otros 54 de las 30
+ *    fotos del golden dan la misma confianza y las mismas kcal. Ver
+ *    `docs/fase6.card-6.1.md` §3 para la reconciliación de los dos números
+ *    (0,329 del caso real contra 0,393 del golden) componente por componente.
  *
  *    POR QUÉ GRAMOS Y NO KCAL. Los gramos son lo que la visión estimó mirando la
  *    foto; las kcal son una consecuencia de la ficha que ganó, o sea de lo mismo
@@ -248,6 +254,11 @@ export function componerPlato(
     const confianzaComponente = redondear(match.confianza_match * (esGenerico ? FACTOR_GENERICO : 1));
     confianzaPorGramos += confianzaComponente * gramos;
     gramosResueltos += gramos;
+    // `<` ESTRICTO, NO `<=` (card 6.1, Q/A). En un empate exacto de confianza,
+    // gana el PRIMERO que apareció en `components` —el orden en que la visión
+    // listó los ingredientes, que es el mismo orden en que el usuario los ve—
+    // y no el último. `<=` reemplazaría al eslabón declarado cada vez que
+    // aparece un empate, sin ninguna razón para preferir el más nuevo.
     if (eslabonMasDebil === null || confianzaComponente < eslabonMasDebil.confidence_match) {
       eslabonMasDebil = {
         termino_en: nombre,

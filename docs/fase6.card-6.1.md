@@ -84,8 +84,13 @@ con `git diff main -- kb/build/foods.canonical.json`, cero diferencias—, así
 que lo único que puede moverse es el motor.
 
 **Resultado: de las 30 fotos (55 ítems, 2 "no es comida"), UNA sola cambia:
-la foto 20, "ensalada mixta".** Es exactamente el caso del §1 del Bloque 0
-(`docs/bloque0.fase6.md`), reconstruido en el golden.
+la foto 20, "ensalada mixta".** NO es el mismo plato que el caso real del §1
+del Bloque 0 (`docs/bloque0.fase6.md`): el de Tomás tiene seis ingredientes
+(lechuga, atún, guisantes, huevo, tomate, zanahoria); la foto 20 del golden
+tiene siete, y dos son distintos (maíz y lombarda en vez de guisantes). Es el
+MISMO SÍNTOMA —un compuesto de varios ingredientes bien vistos que sale sin
+total por uno solo (el atún en lata, genérico a 0,157)— en dos platos
+distintos. §3.1 más abajo reconcilia los dos números.
 
 | | main (baseline) | esta rama | atribución |
 |---|---|---|---|
@@ -117,6 +122,37 @@ Fotos 28 ("comida de plástico") y 30 ("envase cerrado"), que el Bloque 0
 esta card**: no son compuestos on-demand (resuelven por `cabeza_subfamilia` y
 por `difuso` respectivamente), así que quedan fuera del alcance de la 6.1 —
 es exactamente lo que le toca resolver a la 6.2.
+
+### 3.1 Reconciliar el 0,33 del caso real (H1) con el 0,393 del golden
+
+Los dos números salen de la MISMA fórmula sobre platos DISTINTOS, así que no
+tienen por qué coincidir — y la diferencia se explica componente por
+componente, no por ningún efecto de la card. El caso real (§1 del Bloque 0)
+tiene 6 ingredientes y 400 g; la foto 20 del golden tiene 7 y 385 g. Los tres
+que más pesan en cada uno:
+
+| | caso real (H1) | foto 20 (golden) |
+|---|---|---|
+| El más pesado | lechuga 100 g, **difuso 0,60** (Lechuga cocida) | lechuga 90 g, **exacto 1,0** (Lechuga cruda) |
+| El segundo | guisantes 90 g, exacto 0,85 (Arvejas cocidas) | huevo 70 g, **alias 0,85** (Huevo cocido) |
+| El tercero | atún 100 g, difuso 0,157 (Atún) | tomate 80 g, difuso 0,327 (Tomate crudo) |
+| Huevo | 60 g, difuso **0,255** | — (ya contado arriba) |
+
+La lechuga y el huevo son los dos ingredientes que MÁS empujan el promedio
+del golden hacia arriba: en el caso real las dos vías (`shredded`/`chopped`
+como descriptor) los mandan a un difuso bajo (0,60 y 0,255); en el golden, la
+visión escribió `lettuce, raw` y eso matchea EXACTO (1,0), y `hard-boiled egg`
+matchea por alias a 0,85 — subiendo 90 g y 70 g, dos de los tres componentes
+más pesados del plato, muy por encima de sus equivalentes del caso real. En
+contra: el golden perdió el ancla fuerte de los guisantes (90 g a 0,85 exacto)
+—reemplazados por maíz (50 g a 0,322) y lombarda (10 g a 0,6), los dos más
+flojos— y su tomate matchea peor (0,327 contra 0,51 del caso real, y con el
+doble de gramos, 80 g contra 40 g). Neto: dos componentes mucho mejor
+identificados y de mucho peso ganan por encima de un ancla fuerte perdida y un
+componente peor identificado, y el promedio del golden (0,577 de match, antes
+de vision y composición) queda por encima del caso real (0,484). Es una
+propiedad de CADA PLATO, no del método: el promedio pesa lo que cada foto trae,
+y estas dos fotos traen fichas distintas.
 
 ## 4. El límite, declarado
 

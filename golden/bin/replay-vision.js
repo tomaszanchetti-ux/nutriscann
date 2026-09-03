@@ -11,9 +11,15 @@
  * el efecto de ponderar por gramos SOBRE COMPUESTOS, y el golden grabado con
  * `golden.ts` no trae `components` en su formato.
  *
- * Por cada ítem de cada foto imprime: la foto, el nombre, si es compuesto, su
- * confianza, sus kcal, y el eslabón más débil cuando lo hay (card 6.1). Al
- * final, el total del plato (o "SIN TOTAL" si la compuerta cerró).
+ * Por cada ítem de cada foto imprime: la foto, el nombre, su `food_id` (el de
+ * la ficha que ganó; en un compuesto no hay UNA ficha, así que va "—" y la
+ * traza está en sus componentes), si es compuesto, su confianza, sus kcal, y el
+ * eslabón más débil cuando lo hay (card 6.1). Si el ítem es un compuesto,
+ * además imprime UNA FILA POR COMPONENTE con su propio `food_id`, su match y su
+ * confianza — sin esto, un cambio de ficha con la misma confianza y las mismas
+ * kcal redondeadas (como el de la lombarda de la card 6.3: crudo → cocido,
+ * mismo 0,6) pasaba inadvertido en un diff que solo mira el ítem. Al final, el
+ * total del plato (o "SIN TOTAL" si la compuerta cerró).
  *
  * Uso:
  *   cd functions && npm run build            # compila esta rama
@@ -32,6 +38,14 @@
  *   (cd /tmp/wt-main/functions && npm install && npm run build)
  *   node golden/bin/replay-vision.js --lib=/tmp/wt-main/functions/lib/engine --tsv > /tmp/main.tsv
  *   git worktree remove --force /tmp/wt-main
+ *
+ * EL "DIFF" ES `diff` A SECAS, NO UN MODO DEL SCRIPT: con `--tsv` cada fila
+ * —ítem o componente— trae su `food_id` en una columna propia, así que
+ *
+ *   diff /tmp/main.tsv /tmp/branch.tsv
+ *
+ * ya distingue "cambió la ficha" (columna `food_id` distinta) de "cambió el
+ * número" (columnas `confianza`/`kcal` distintas) sin tener que leer nada más.
  *
  * Requiere `functions/lib` compilado (`cd functions && npm run build`) — el de
  * esta rama por defecto, o el que diga `--lib`. La lógica NO vive acá: vive en
@@ -71,7 +85,9 @@ if (archivos.length === 0) {
   process.exit(2);
 }
 
-/** `null` → "—", para no confundir "no aplica" con "cero". */
+/** `null`/`undefined` → "—", para no confundir "no aplica" con "cero" ni con vacío. */
+const txt = (v) => (v === null || v === undefined || v === "" ? "—" : String(v));
+/** Igual que `txt`, pero para números, con los decimales que pida. */
 const fmt = (v, decimales = 1) => (v === null || v === undefined ? "—" : Number(v).toFixed(decimales));
 
 const filas = [];
@@ -81,14 +97,14 @@ for (const archivo of archivos) {
   const data = JSON.parse(fs.readFileSync(path.join(CARPETA_GOLDEN, archivo), "utf8"));
   const vision = data.vision;
   if (!vision || typeof vision !== "object") {
-    filas.push({ foto, aviso: "el JSON no trae `vision`" });
+    filas.push({ foto, tipo: "aviso", aviso: "el JSON no trae `vision`" });
     continue;
   }
 
   const resultado = analizarEscaneo(vision, index);
 
   if (!resultado.es_comida) {
-    filas.push({ foto, aviso: "la visión dijo que no es comida" });
+    filas.push({ foto, tipo: "aviso", aviso: "la visión dijo que no es comida" });
     continue;
   }
 
@@ -97,7 +113,12 @@ for (const archivo of archivos) {
     const eslabon = item.composicion?.eslabon_mas_debil ?? null;
     filas.push({
       foto,
+      tipo: "item",
       nombre: item.termino_es || item.termino_en,
+      // En un compuesto no hay UNA ficha —`food_id` sale `null` del motor
+      // (la traza está en `composicion.componentes`, una fila por debajo)—,
+      // así que acá se ve "—" y no un `null` que se confunda con "no matcheó".
+      food_id: item.food_id,
       compuesto,
       match: item.match,
       confianza: item.confidence,
@@ -106,31 +127,66 @@ for (const archivo of archivos) {
         ? `"${eslabon.termino_en}" → ${eslabon.name_es ?? "sin nombre en español"} @ ${eslabon.confidence_match}`
         : null,
     });
+
+    // UNA FILA POR COMPONENTE, solo si el ítem es un compuesto. Es la única
+    // forma de ver un cambio de ficha entre dos corridas cuando la confianza y
+    // las kcal del ítem no se movieron lo suficiente como para notarlo — el
+    // caso medido es la lombarda de la foto 20 (card 6.3): mismo 0,6 de
+    // confianza, ficha distinta (crudo en vez de cocido).
+    if (compuesto && item.composicion) {
+      for (const c of item.composicion.componentes) {
+        filas.push({
+          foto,
+          tipo: "componente",
+          nombre: `  └ ${c.termino_en}`,
+          food_id: c.food_id,
+          match: c.match,
+          confianza: c.confidence_match,
+          grams: c.grams,
+        });
+      }
+    }
   }
 
   filas.push({
     foto,
-    total: true,
+    tipo: "total",
     kcal_total: resultado.totals?.nutrients.kcal ?? null,
     sin_total: resultado.totals === null || resultado.totals.total_no_publicable === true,
   });
 }
 
 if (tsv) {
-  console.log(["foto", "nombre", "compuesto", "match", "confianza", "kcal", "eslabon_mas_debil"].join("\t"));
+  console.log(["foto", "tipo", "nombre", "food_id", "compuesto", "match", "confianza", "kcal", "eslabon_mas_debil"].join("\t"));
   for (const f of filas) {
-    if (f.total) {
-      console.log([f.foto, "TOTAL", "", "", "", f.sin_total ? "SIN_TOTAL" : fmt(f.kcal_total), ""].join("\t"));
+    if (f.tipo === "total") {
+      console.log(
+        [f.foto, "total", "TOTAL", "—", "—", "—", "—", f.sin_total ? "SIN_TOTAL" : fmt(f.kcal_total), "—"].join("\t"),
+      );
       continue;
     }
-    if (f.aviso) {
-      console.log([f.foto, `AVISO: ${f.aviso}`, "", "", "", "", ""].join("\t"));
+    if (f.tipo === "aviso") {
+      console.log([f.foto, "aviso", `AVISO: ${f.aviso}`, "—", "—", "—", "—", "—", "—"].join("\t"));
+      continue;
+    }
+    if (f.tipo === "componente") {
+      console.log(
+        [f.foto, "componente", f.nombre, txt(f.food_id), "—", f.match, fmt(f.confianza, 3), "—", "—"].join("\t"),
+      );
       continue;
     }
     console.log(
-      [f.foto, f.nombre, f.compuesto ? "sí" : "no", f.match, fmt(f.confianza, 3), fmt(f.kcal), f.eslabon ?? ""].join(
-        "\t",
-      ),
+      [
+        f.foto,
+        "item",
+        f.nombre,
+        txt(f.food_id),
+        f.compuesto ? "sí" : "no",
+        f.match,
+        fmt(f.confianza, 3),
+        fmt(f.kcal),
+        f.eslabon ?? "—",
+      ].join("\t"),
     );
   }
 } else {
@@ -142,16 +198,20 @@ if (tsv) {
       fotoActual = f.foto;
       console.log(f.foto);
     }
-    if (f.aviso) {
+    if (f.tipo === "aviso") {
       console.log(`  ⚠ ${f.aviso}`);
       continue;
     }
-    if (f.total) {
+    if (f.tipo === "total") {
       console.log(`  TOTAL: ${f.sin_total ? "SIN TOTAL" : `${fmt(f.kcal_total)} kcal`}`);
       continue;
     }
+    if (f.tipo === "componente") {
+      console.log(`  ${f.nombre.padEnd(32)} ${txt(f.food_id).padEnd(16)} ${f.match} · confianza ${fmt(f.confianza, 3)}`);
+      continue;
+    }
     console.log(
-      `  ${f.compuesto ? "[compuesto]" : "[simple]   "} ${(f.nombre ?? "").padEnd(30)} ` +
+      `  ${f.compuesto ? "[compuesto]" : "[simple]   "} ${(f.nombre ?? "").padEnd(30)} ${txt(f.food_id).padEnd(16)} ` +
         `confianza ${fmt(f.confianza, 3)} · ${fmt(f.kcal)} kcal${f.eslabon ? ` · eslabón más débil: ${f.eslabon}` : ""}`,
     );
   }

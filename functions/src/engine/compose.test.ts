@@ -168,11 +168,11 @@ describe("confianza y caveats de un compuesto", () => {
       (confianzaArroz * gramosArroz + confianzaPastel * gramosPastel) / (gramosArroz + gramosPastel);
     const esperada = redondear(ponderado * FACTOR_COMPOSICION);
     assert.equal(r.confianza_match, esperada);
-    // Con la regla vieja (el mínimo) habría dado 0,408: el pastel, 100 g de
-    // 300, hundía solo al plato entero. Con la nueva, el arroz —el doble de
-    // peso y con confianza 1,0— pesa lo que le corresponde.
+    // Con la regla vieja (el mínimo) el pastel, 100 g de 300, hundía solo al
+    // plato entero — el número (0,408) sale de las mismas dos confianzas de
+    // arriba, no se repite a mano. Con la nueva, el arroz —el doble de peso y
+    // con confianza 1,0— pesa lo que le corresponde.
     const conElMinimoViejo = redondear(Math.min(confianzaArroz, confianzaPastel) * FACTOR_COMPOSICION);
-    assert.equal(conElMinimoViejo, 0.408);
     assert.ok(r.confianza_match > conElMinimoViejo);
   });
 
@@ -243,12 +243,45 @@ const terminoMalo = (id: string) => ({
   food_es: `malo fixture 6.1 ${id}`,
 });
 
+/**
+ * Igual que `fichaMala`, pero la ficha ADEMÁS es genérica (Q/A de la card 6.1):
+ * la confianza declarada del alias se multiplica por `FACTOR_GENERICO` antes de
+ * entrar al promedio, y con una confianza que no da un número "redondo" después
+ * de ese producto (0,377 × 0,85 = 0,32045) se puede distinguir la cifra YA
+ * REDONDEADA —la que tiene que viajar en `confidence_match` y entrar al
+ * promedio— de la cruda. Con fixtures de confianza "limpia" (0,1 · 0,157 · 0,6 ·
+ * 1) sacar el `redondear()` de `confianzaComponente` no cambia ningún número, y
+ * por eso ese candado necesitaba su propio escenario.
+ */
+function fichaMalaGenerica(id: string, confianza: number) {
+  return fichaFalsa({
+    id,
+    names: {
+      en: `Malo genérico fixture 6.1 ${id}, sin alcanzar por inglés`,
+      es: `Malo genérico fixture 6.1 ${id} en español`,
+    },
+    aliases: { es: [{ alias: `malo genérico fixture 6.1 ${id}`, confidence: confianza }] },
+    generic: true,
+  });
+}
+
+/** El término que la visión escribiría para el "malo genérico" de fixture. */
+const terminoMaloGenerico = (id: string) => ({
+  food_en: `zzz sin match en inglés genérico — ${id}`,
+  food_es: `malo genérico fixture 6.1 ${id}`,
+});
+
+/** La confianza del componente "bueno" de fixture: 1,0, porque matchea EXACTO. */
+const CONFIANZA_BUENO_FIXTURE = 1;
+/** La confianza DECLARADA del alias del "malo" de fixture, en los tests de ponderación por gramos. */
+const CONFIANZA_MALO_FIXTURE = 0.1;
+
 describe("card 6.1 — la confianza se pondera por gramos", () => {
   it("un ingrediente CHICO y malo no hunde un plato grande y bueno", () => {
-    // 10 g a confianza 0,1 + 390 g a confianza 1,0. Ponderado por gramos queda
-    // cerca del bueno; con el mínimo viejo el plato entero habría heredado el
-    // 0,1 del ingrediente de 10 g, sin importar los otros 390.
-    const index6_1 = indiceDeFixture([fichaBuena("a"), fichaMala("b", 0.1)]);
+    // 10 g a confianza baja + 390 g a confianza alta. Ponderado por gramos
+    // queda cerca del bueno; con el mínimo viejo el plato entero habría
+    // heredado la confianza del ingrediente de 10 g, sin importar los otros 390.
+    const index6_1 = indiceDeFixture([fichaBuena("a"), fichaMala("b", CONFIANZA_MALO_FIXTURE)]);
     const gramosBueno = 390;
     const gramosMalo = 10;
     const r = componerPlato(
@@ -264,22 +297,23 @@ describe("card 6.1 — la confianza se pondera por gramos", () => {
       index6_1,
     );
     assert.ok(r.ok, r.ok ? "" : r.motivo);
-    const ponderado = (1 * gramosBueno + 0.1 * gramosMalo) / (gramosBueno + gramosMalo); // 0,9775
+    const ponderado =
+      (CONFIANZA_BUENO_FIXTURE * gramosBueno + CONFIANZA_MALO_FIXTURE * gramosMalo) / (gramosBueno + gramosMalo); // 0,9775
     const esperada = redondear(ponderado * FACTOR_COMPOSICION); // 0,782
     assert.equal(r.confianza_match, esperada);
-    // Con el mínimo viejo habría dado redondear(0,1 × 0,8) = 0,08: un ingrediente
-    // de 10 g de 400 decidía por el plato entero. La ponderada queda a un 22 %
-    // del techo (0,8), no a un 90 %.
-    assert.equal(redondear(0.1 * FACTOR_COMPOSICION), 0.08);
-    assert.ok(r.confianza_match > 0.75);
+    // Con el mínimo viejo el plato entero habría heredado la confianza del
+    // ingrediente de 10 g: un ingrediente chico decidía por los 400 g. La
+    // ponderada, con el mismo par de fichas, queda muy por encima de eso.
+    const conElMinimoViejo = redondear(CONFIANZA_MALO_FIXTURE * FACTOR_COMPOSICION);
+    assert.ok(r.confianza_match > conElMinimoViejo);
   });
 
   it("el ingrediente PRINCIPAL malo sí baja la confianza: el promedio pesa", () => {
-    // Mismo par de fichas, gramos invertidos: 300 g malo (0,1) + 100 g bueno
-    // (1,0). El promedio pesa el peso real de cada ingrediente, así que acá SÍ
-    // cae mucho más que en el caso anterior — la ponderación no es indulgente
-    // per se, es fiel a cuánto del plato está mal identificado.
-    const index6_1 = indiceDeFixture([fichaBuena("a"), fichaMala("b", 0.1)]);
+    // Mismo par de fichas, gramos invertidos: 300 g malo + 100 g bueno. El
+    // promedio pesa el peso real de cada ingrediente, así que acá SÍ cae mucho
+    // más que en el caso anterior — la ponderación no es indulgente per se, es
+    // fiel a cuánto del plato está mal identificado.
+    const index6_1 = indiceDeFixture([fichaBuena("a"), fichaMala("b", CONFIANZA_MALO_FIXTURE)]);
     const gramosMalo = 300;
     const gramosBueno = 100;
     const r = componerPlato(
@@ -295,14 +329,16 @@ describe("card 6.1 — la confianza se pondera por gramos", () => {
       index6_1,
     );
     assert.ok(r.ok, r.ok ? "" : r.motivo);
-    const ponderado = (0.1 * gramosMalo + 1 * gramosBueno) / (gramosMalo + gramosBueno); // 0,325
+    const ponderado =
+      (CONFIANZA_MALO_FIXTURE * gramosMalo + CONFIANZA_BUENO_FIXTURE * gramosBueno) / (gramosMalo + gramosBueno); // 0,325
     const esperada = redondear(ponderado * FACTOR_COMPOSICION); // 0,26
     assert.equal(r.confianza_match, esperada);
     // El límite declarado en la decisión 4: acá el ingrediente que probablemente
     // le da el NOMBRE al plato (el de más gramos) está mal identificado, y el
-    // promedio lo refleja — a diferencia del caso anterior, cuya confianza fue
-    // 0,782 con el mismo par de fichas.
-    assert.ok(r.confianza_match < 0.3);
+    // promedio lo refleja — bien por debajo de la mitad del techo (0,8), a
+    // diferencia del caso anterior, con el mismo par de fichas y los gramos
+    // invertidos, donde quedaba bien por encima.
+    assert.ok(r.confianza_match < FACTOR_COMPOSICION / 2);
   });
 
   it("`eslabon_mas_debil` apunta al componente de menor confianza, y su número es EXACTAMENTE el de `componentes`", () => {
@@ -410,6 +446,128 @@ describe("card 6.1 — la confianza se pondera por gramos", () => {
       Math.abs(recompuesta - r.confianza_match) < 10 ** -DECIMALES,
       `recompuesta ${recompuesta} vs. publicada ${r.confianza_match}`,
     );
+  });
+
+  it("el redondeo de `confianzaComponente` no es cosmético: lo que entra al promedio es la cifra YA REDONDEADA (Q/A)", () => {
+    // Con las confianzas de fixture de los tests de arriba (0,1 · 0,157 · 0,6 ·
+    // 1) redondear a `DECIMALES` es un no-op: sacar el `redondear()` de
+    // `confianzaComponente` en `compose.ts` no cambiaría ningún resultado, y la
+    // mutación pasaba viva. Este escenario usa una confianza que SÍ necesita
+    // redondeo después de `FACTOR_GENERICO`: 0,377 × 0,85 = 0,32045, que no
+    // cierra en tres decimales.
+    const confianzaAliasGenerico = 0.377;
+    const index6_1 = indiceDeFixture([fichaBuena("a"), fichaMalaGenerica("g", confianzaAliasGenerico)]);
+    const gramosBueno = 100;
+    const gramosMaloGenerico = 200;
+    const r = componerPlato(
+      {
+        food_en: "plato raro",
+        grams: gramosBueno + gramosMaloGenerico,
+        confidence: 1,
+        components: [
+          { ...terminoBueno("a"), grams: gramosBueno },
+          { ...terminoMaloGenerico("g"), grams: gramosMaloGenerico },
+        ],
+      },
+      index6_1,
+    );
+    assert.ok(r.ok, r.ok ? "" : r.motivo);
+    const componenteGenerico = r.composicion.componentes.find((c) => c.food_id === "g");
+    assert.ok(componenteGenerico);
+    // La cifra REDONDEADA (0,32), no la cruda (0,32045), es la que tiene que
+    // viajar en `confidence_match` — si `compose.ts` dejara de redondear acá,
+    // esta igualdad se rompe.
+    const confianzaRedondeada = redondear(confianzaAliasGenerico * FACTOR_GENERICO);
+    assert.equal(componenteGenerico.confidence_match, confianzaRedondeada);
+    // Y la cuenta rehecha desde EXACTAMENTE esa cifra —la que viaja en la
+    // salida, componente por componente— cierra igual de exacta con la
+    // publicada, sin ninguna tolerancia.
+    const numerador = r.composicion.componentes.reduce((acc, c) => acc + c.confidence_match * c.grams, 0);
+    const denominador = r.composicion.componentes.reduce((acc, c) => acc + c.grams, 0);
+    const recompuesta = redondear((numerador / denominador) * FACTOR_COMPOSICION);
+    assert.equal(recompuesta, r.confianza_match);
+  });
+
+  it("en un empate de confianza, `eslabon_mas_debil` declara el PRIMERO que listó la visión — no el último (Q/A)", () => {
+    // Dos fichas DISTINTAS con la MISMA confianza declarada: el empate no lo
+    // decide el número —los dos componentes valen lo mismo—, lo decide el
+    // orden de `components`, que es el orden en que la visión los listó y en
+    // el que el usuario los ve. `compose.ts` usa `<` estricto (no `<=`) para
+    // que el primero encontrado NO se pise con uno igual de malo que venga
+    // después.
+    const empate = 0.157;
+    const index6_1 = indiceDeFixture([fichaMala("x", empate), fichaMala("y", empate)]);
+
+    const xPrimero = componerPlato(
+      {
+        food_en: "plato raro",
+        grams: 200,
+        confidence: 1,
+        components: [
+          { ...terminoMalo("x"), grams: 100 },
+          { ...terminoMalo("y"), grams: 100 },
+        ],
+      },
+      index6_1,
+    );
+    const yPrimero = componerPlato(
+      {
+        food_en: "plato raro",
+        grams: 200,
+        confidence: 1,
+        components: [
+          { ...terminoMalo("y"), grams: 100 },
+          { ...terminoMalo("x"), grams: 100 },
+        ],
+      },
+      index6_1,
+    );
+    assert.ok(xPrimero.ok && yPrimero.ok);
+    // Las dos confianzas son idénticas: el empate es real, no un redondeo que
+    // las separa por casualidad.
+    assert.equal(xPrimero.composicion.eslabon_mas_debil.confidence_match, empate);
+    assert.equal(yPrimero.composicion.eslabon_mas_debil.confidence_match, empate);
+    // Y en cada corrida gana el que apareció PRIMERO en `components`.
+    assert.equal(xPrimero.composicion.eslabon_mas_debil.termino_en, terminoMalo("x").food_en);
+    assert.equal(yPrimero.composicion.eslabon_mas_debil.termino_en, terminoMalo("y").food_en);
+  });
+
+  it("ficha GENÉRICA + composición PARCIAL: los dos descuentos se combinan, y el número se deriva de este escenario (Q/A)", () => {
+    // Un resuelto exacto (200 g), un resuelto por alias a una ficha GENÉRICA
+    // (100 g), y un faltante (50 g, 14,3 % de 350 g — debajo del 25 % de
+    // `MASA_FALTANTE_MAXIMA`, así que la parcial entra). El Q/A verificó a mano
+    // un escenario propio que daba 0,564; este es OTRO escenario, con su propio
+    // número derivado de sus propias confianzas y gramos, no copiado del de ahí.
+    const confianzaAliasGenerico = 0.5;
+    const index6_1 = indiceDeFixture([fichaBuena("a"), fichaMalaGenerica("g", confianzaAliasGenerico)]);
+    const inexistente = "zzz ingrediente que el catálogo de fixture no tiene 6.1 (genérico + parcial)";
+    const gramosBueno = 200;
+    const gramosGenerico = 100;
+    const gramosFaltante = 50;
+    const r = componerPlato(
+      {
+        food_en: "plato raro",
+        grams: gramosBueno + gramosGenerico + gramosFaltante,
+        confidence: 1,
+        components: [
+          { ...terminoBueno("a"), grams: gramosBueno },
+          { ...terminoMaloGenerico("g"), grams: gramosGenerico },
+          { food_en: inexistente, grams: gramosFaltante },
+        ],
+      },
+      index6_1,
+    );
+    assert.ok(r.ok, r.ok ? "" : r.motivo);
+    assert.equal(r.parcial, true);
+    assert.equal(r.algun_generico, true);
+    const confianzaGenericaRedondeada = redondear(confianzaAliasGenerico * FACTOR_GENERICO);
+    // El faltante NO entra al promedio (decisión 4 del encabezado de
+    // `compose.ts`): el denominador es SOLO lo resuelto, 300 g, no 350.
+    const ponderado =
+      (CONFIANZA_BUENO_FIXTURE * gramosBueno + confianzaGenericaRedondeada * gramosGenerico) /
+      (gramosBueno + gramosGenerico);
+    const esperada = redondear(ponderado * FACTOR_COMPOSICION_PARCIAL);
+    assert.equal(r.confianza_match, esperada);
   });
 });
 
