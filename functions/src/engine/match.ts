@@ -38,6 +38,7 @@ import {
   CONFIANZA_SUSTITUTO_DECLARADO,
   DECIMALES,
   FACTOR_GENERICO,
+  FAMILIAS_QUE_SE_COMEN_CRUDAS,
   RESPALDO_MINIMO_DE_IDENTIDAD,
 } from "./constants";
 import {
@@ -503,7 +504,10 @@ interface CandidatoDifuso {
  *   · lo que viene detrás de un conector ("...with cheese") es un
  *     acompañamiento y no puede ser el plato;
  *   · entre una ficha que dice CRUDA y su hermana COCIDA, gana la cocida cuando
- *     la cruda es más densa (o sea, cuando está seca).
+ *     la cruda es más densa (o sea, cuando está seca). Y LA CARD 6.3 ESCRIBE LA
+ *     OTRA MITAD: cuando las dos EMPATAN y la consulta no dijo nada del estado,
+ *     gana la cruda si no es la más densa Y su familia se come cruda (`verdura`
+ *     o `fruta`); si no, gana la cocida. Vive en `desempateDeEstado`.
  *
  * Y LA CARD 2.8 AGREGA UNA TERCERA DIRECCIÓN, EL NOMBRE PARTIDO:
  *
@@ -569,6 +573,109 @@ function difusoEnIndice(
   };
 
   /**
+   * ENTRE LA CRUDA Y LA COCIDA DEL MISMO ALIMENTO, A IGUALDAD GANA LA CRUDA —
+   * salvo que la cruda sea la MÁS DENSA. `true` si gana `nuevo`, `false` si gana
+   * `actual`, `null` cuando este desempate no tiene nada que decir.
+   *
+   * ES LA MISMA REGLA DEL CRUDO/COCIDO DEL FINAL DE ESTA FUNCIÓN, ESCRITA
+   * SIMÉTRICA. La de allá abajo solo sabe promover: si ganó la cruda y la cruda
+   * es más densa (está SECA: lentejas 352 contra 166), devuelve la cocida. Al
+   * revés no sabía hacer nada, y el revés pasa todo el tiempo.
+   *
+   * MEDIDO EN PRODUCCIÓN EL 03/09/2026, dos ensaladas reales: `lettuce, shredded`
+   * resolvía a `Lettuce, cooked` (49 kcal/100 g, 3,1 g de grasa) existiendo
+   * `Lettuce, raw` (20 kcal), y el tomate picado a `Tomate cocido` (50 kcal)
+   * existiendo `Tomate crudo` (20). Una ensalada verde salía 12 % inflada.
+   *
+   * POR QUÉ PASABA, Y POR QUÉ EL ARREGLO VA ACÁ Y NO ALLÁ ABAJO. "picado",
+   * "shredded" y "chopped" son descriptores y se descuentan de la cobertura, así
+   * que «lechuga» explica ENTERO tanto a `Lechuga cruda` como a `Lechuga cocida`:
+   * las dos entran por el nombre partido con cobertura 1 y confianza 0,600, un
+   * empate perfecto. Lo decidía el ORDEN de la lista —que se ordena por largo, y
+   * "cocida" tiene una letra más que "cruda"—. O sea: el defecto ES el desempate,
+   * y acá es donde el desempate vive. Escribir la vuelta simétrica allá abajo la
+   * convertiría en una regla que puede DAR VUELTA a un ganador legítimo (que es
+   * lo que hace la de la promoción, con su rescate por debajo del piso de
+   * cobertura); acá solo decide empates exactos, que es exactamente el defecto
+   * medido, y solo entre candidatos de la misma dirección — la garantía de la
+   * card 2.8, que la dirección C no puede cambiar ningún match que ya existía,
+   * queda intacta.
+   *
+   * CUÁNDO OPINA: LAS DOS CONDICIONES DE ENTRADA.
+   *
+   *   1. LA CONSULTA NO DECLARÓ ESTADO. Si la visión dijo "cooked" o "cocido"
+   *      nombró la ficha que quería y nadie se la discute (`cabbage, cooked`
+   *      sigue igual); si dijo "raw" tampoco hay nada que desempatar.
+   *   2. SON HERMANAS DEL MISMO ALIMENTO, y eso se pregunta a los textos: los dos
+   *      nombres, sin descriptores —y "cruda"/"cocida" SON descriptores—, tienen
+   *      que quedar en la misma palabra. `lechuga cruda` y `lechuga cocida`
+   *      quedan las dos en «lechuga»: es el mismo alimento en dos estados. Sin
+   *      esto, dos fichas distintas que empatan por casualidad se pisarían.
+   *
+   * Y CUANDO OPINA, CONTESTA SIEMPRE: gana la cruda o gana la cocida, nunca
+   * "no sé". Un empate que este desempate deje pasar lo termina decidiendo el
+   * ORDEN DE LA LISTA, que es el defecto que vino a cerrar; que la cocida gane
+   * TAMBIÉN es una decisión, y está escrita como tal.
+   *
+   * QUIÉN GANA: DOS PREGUNTAS A LOS DATOS, Y LAS DOS TIENEN QUE DAR QUE SÍ.
+   *
+   *   a. LA DENSIDAD, que es el mismo número que usa la regla de allá abajo leído
+   *      al revés: la cruda no puede tener MÁS kcal/100 g que la cocida.
+   *      `Lentejas crudas` 352 contra `Lentejas cocidas` 166 → la cruda está
+   *      seca, nadie la come así, gana la cocida. `Lechuga cruda` 20 contra
+   *      `Lechuga cocida` 49 → por acá pasa.
+   *   b. LA FAMILIA DE LA FICHA CRUDA tiene que ser una de las que se comen
+   *      crudas (`FAMILIAS_QUE_SE_COMEN_CRUDAS`: `verdura` y `fruta`), y la
+   *      familia la declara la taxonomía, no este archivo.
+   *
+   * LA SEGUNDA PREGUNTA EXISTE POR LO QUE LA PRIMERA NO SABE, y está medido: la
+   * densidad dice "esto está seco" pero no dice "esto no se come crudo" cuando
+   * cocinar AGREGA grasa. Sin la familia, `huevo duro` contestaba `Huevo crudo`
+   * (143 kcal contra los 176 del cocido) y `patata troceada` contestaba
+   * `Patatas crudas con cáscara` (77 contra 126) — las dos con la misma forma
+   * aritmética que la lechuga, y las dos inaceptables de cara al usuario. La
+   * taxonomía sí sabe la diferencia: la lechuga y el tomate son `verdura`, la
+   * manzana es `fruta`, y el huevo y la patata tienen familia propia porque el
+   * catálogo los mide aparte. Ver el porqué completo en la constante.
+   *
+   * UNA FICHA QUE LA TAXONOMÍA NO UBICA NO GANA EL DESEMPATE: sin familia no hay
+   * con qué contestar la pregunta b, y ante la duda se queda la cocida, que es lo
+   * que había en la foto en todos los casos medidos. Es el mismo criterio
+   * conservador de `contradiceALaFamilia` con la ficha que no está en el mapa.
+   *
+   * Y CORRE DESPUÉS DEL DESEMPATE DE LA VARIANTE (el de acá abajo), que es la
+   * precedencia que este archivo declara en su encabezado: un término que
+   * escribió la curación le gana a una variante que dedujo el índice, y no hay
+   * regla que lo pase por encima. MEDIDO: con este desempate primero, el candado
+   * de la card 6.1 —`carrot, shredded` contra un fixture donde la zanahoria cruda
+   * tiene MÁS kcal que la cocida— se daba vuelta. Ninguno de los casos de
+   * producción depende del orden entre los dos: donde las dos fichas son nombres
+   * escritos (lechuga, tomate, huevo) manda este desempate, y donde la cocida es
+   * una variante (repollo rojo) los dos deciden para el mismo lado.
+   *
+   * Escrito de las dos direcciones a propósito —contesta lo mismo venga el crudo
+   * primero o segundo— porque el orden de la lista es justamente lo que estaba
+   * roto, y un desempate que dependa de él no arregla nada.
+   */
+  const desempateDeEstado = (nuevo: CandidatoDifuso, actual: CandidatoDifuso): boolean | null => {
+    if (estadoPedido !== null) return null;
+    if (nuevo.confianza !== actual.confianza) return null;
+    const estados = new Set([nuevo.entrada.estado, actual.entrada.estado]);
+    if (!estados.has("crudo") || !estados.has("cocido")) return null;
+    if (sinDescriptores(nuevo.entrada.clave) !== sinDescriptores(actual.entrada.clave)) return null;
+    const nuevoEsCrudo = nuevo.entrada.estado === "crudo";
+    const cruda = index.porId.get((nuevoEsCrudo ? nuevo : actual).entrada.food_id);
+    const cocida = index.porId.get((nuevoEsCrudo ? actual : nuevo).entrada.food_id);
+    if (cruda === undefined || cocida === undefined) return null;
+    const familia = index.taxonomia.deLaFicha.get(cruda.id)?.split("/")[0];
+    const ganaLaCruda =
+      cruda.per_100g.kcal <= cocida.per_100g.kcal &&
+      familia !== undefined &&
+      FAMILIAS_QUE_SE_COMEN_CRUDAS.includes(familia);
+    return nuevoEsCrudo ? ganaLaCruda : !ganaLaCruda;
+  };
+
+  /**
    * A IGUALDAD EXACTA, GANA EL TÉRMINO QUE ESCRIBIÓ LA CURACIÓN.
    *
    * Es la misma precedencia que ya ordena el índice ("a igual largo gana el
@@ -584,12 +691,23 @@ function difusoEnIndice(
    * rallada de una ensalada pasaba de 41 kcal a 72. La regla nueva no cambia
    * ningún match donde alguien gane por confianza; solo decide los empates, y los
    * decide siempre para el mismo lado.
+   *
+   * Y ESTE DESEMPATE CORRE PRIMERO, antes que el del crudo/cocido de la card 6.3
+   * (`desempateDeEstado`, acá arriba): el término que escribió la curación no lo
+   * pasa por encima ninguna otra regla. En el catálogo real la zanahoria la gana
+   * igual por los dos caminos —la cocida es una variante Y es la más densa—; en
+   * el fixture del test, donde la cruda tiene más kcal que la cocida, solo la
+   * gana por este. Por eso el orden entre los dos importa y está fijado.
    */
   const leGana = (nuevo: CandidatoDifuso, actual: CandidatoDifuso, valor: (c: CandidatoDifuso) => number): boolean => {
     const a = valor(nuevo);
     const b = valor(actual);
     if (a !== b) return a > b;
-    return actual.entrada.variante === true && nuevo.entrada.variante !== true;
+    // El término escrito primero, y ESCRITO EN LAS DOS DIRECCIONES: si el que ya
+    // está es el escrito, el que llega no puede ganarle por ningún otro camino.
+    if (actual.entrada.variante === true && nuevo.entrada.variante !== true) return true;
+    if (nuevo.entrada.variante === true && actual.entrada.variante !== true) return false;
+    return desempateDeEstado(nuevo, actual) ?? false;
   };
   const porCobertura = (c: CandidatoDifuso): number => c.cobertura;
   const porConfianza = (c: CandidatoDifuso): number => c.confianza;
@@ -737,7 +855,9 @@ function difusoEnIndice(
   // reemplaza cuando las dos se callaron. Ver el encabezado de la función.
   const ganador = mejorAB ?? mejorC;
 
-  // LA REGLA DEL CRUDO/COCIDO (ver `PALABRAS_DE_CRUDO` en `constants.ts`).
+  // LA REGLA DEL CRUDO/COCIDO — LA MITAD QUE PROMUEVE (ver `PALABRAS_DE_CRUDO`
+  // en `constants.ts`). La otra mitad, la que decide los EMPATES para el lado del
+  // crudo, corre más arriba y en cada dirección: `desempateDeEstado`.
   //
   // Solo desempata, nunca castiga, y ADEMÁS SE LO PREGUNTA A LOS DATOS. Si el que
   // ganó dice estar crudo y hay una hermana que dice estar cocida, la cocida gana

@@ -256,6 +256,42 @@ export const PALABRAS_DE_COCIDO: readonly string[] = [
 ];
 
 /**
+ * LAS FAMILIAS QUE SE COMEN CRUDAS. Card 6.3.
+ *
+ * Son ids de familia de la taxonomía (`kb/familias.ts`), y solo las usa el
+ * desempate simétrico del crudo/cocido (`desempateDeEstado`, en `match.ts`):
+ * cuando la ficha cruda y su hermana cocida EMPATAN y la consulta no dijo nada
+ * del estado, la cruda solo gana si su familia está en esta lista.
+ *
+ * POR QUÉ HACE FALTA, Y ES LO QUE MIDIÓ EL RETOQUE DE LA CARD 6.3. El desempate
+ * se lo preguntaba únicamente a las kcal, y las kcal saben decir UNA sola cosa:
+ * "esta ficha está SECA" (`Lentejas crudas` 352 contra las cocidas 166; el arroz
+ * salvaje 357 contra 101). Lo que NO saben decir es "esto no se come crudo"
+ * cuando cocinar AGREGA grasa en vez de sacar agua, porque ahí la cruda es la
+ * menos densa y tiene exactamente la misma forma que una lechuga:
+ *
+ *   · `huevo duro` → `Huevo crudo` (143 kcal) en lugar de `Huevo cocido` (176).
+ *     Es el caso real de producción del 03/09/2026, y es inaceptable de cara al
+ *     usuario: alguien que escribe "huevo duro" no puede recibir huevo crudo.
+ *   · `patata troceada` → `Patatas crudas con cáscara` (77) en lugar de
+ *     `Patata hervida con cáscara` (126).
+ *
+ * LA TAXONOMÍA SÍ SABE LO QUE LAS KCAL NO: `Lechuga cruda` y `Tomate crudo` son
+ * `verdura`, la manzana es `fruta`, y el huevo y la patata tienen FAMILIA PROPIA
+ * (`huevo`, `patata`) porque el catálogo los mide aparte. Cinco de las 46
+ * familias tocan alguna ficha cruda; estas dos son las únicas en las que el crudo
+ * es una forma normal de comer, y las otras tres —`legumbre`, `cereal-y-grano`,
+ * `cerdo`— son justamente las que la densidad ya frenaba.
+ *
+ * LA LISTA ES CORTA Y CERRADA A PROPÓSITO, como `DESCRIPTORES_DE_PRESENTACION`:
+ * la prueba de admisión no es "¿se puede comer crudo?" —un huevo se puede— sino
+ * "¿es ASÍ como se come normalmente, y es lo que hay en la foto?". Agregar una
+ * familia de más devuelve alimentos crudos donde había comida cocinada, que es el
+ * error que este retoque vino a cerrar.
+ */
+export const FAMILIAS_QUE_SE_COMEN_CRUDAS: readonly string[] = ["verdura", "fruta"];
+
+/**
  * EL PISO DE CONFIANZA QUE NECESITA UN TOTAL PARA LLAMARSE COMPLETO.
  *
  * No es un umbral de matching: ningún item se descarta por esto y ninguna ficha

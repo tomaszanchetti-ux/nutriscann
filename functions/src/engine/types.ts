@@ -207,6 +207,22 @@ export interface ComponenteFaltante {
 export interface Composicion {
   metodo: string;
   componentes: ComponenteDelPlato[];
+  /**
+   * EL COMPONENTE PEOR IDENTIFICADO DEL PLATO (card 6.1). Siempre presente: una
+   * composición que salió bien tiene al menos un ingrediente resuelto.
+   *
+   * Hasta la Fase 6 la confianza del compuesto ERA la de este ingrediente —el
+   * mínimo mandaba— y por eso no hacía falta nombrarlo. Ahora la confianza es el
+   * promedio ponderado por gramos (ver la decisión 4 de `compose.ts`), y el
+   * promedio puede tapar un ingrediente mal identificado entre varios buenos.
+   * Este campo es la contrapartida de ese cambio: el eslabón más débil dejó de
+   * decidir, pero no dejó de verse. Se nombra además en un caveat del ítem.
+   *
+   * `confidence_match` es exactamente la del componente homónimo en
+   * `componentes`: la de su match, con el descuento de genérico si lo hubo, ya
+   * redondeada. `name_es` es el de la ficha que ganó y puede ser `null`.
+   */
+  eslabon_mas_debil: { termino_en: string; name_es: string | null; confidence_match: number };
   peso_entrada_g: number;
   aceite_absorbido_g: number;
   aceite_ref: string | null;

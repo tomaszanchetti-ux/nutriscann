@@ -12,7 +12,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { construirIndice, GUARDAS_DE_VOCABULARIO } from "./catalog";
-import { COBERTURA_DIFUSA_MIN, CONFIANZA_DIFUSA_MAX } from "./constants";
+import { COBERTURA_DIFUSA_MIN, CONFIANZA_DIFUSA_MAX, FAMILIAS_QUE_SE_COMEN_CRUDAS } from "./constants";
 import {
   buscarAlimento,
   buscarConDosNombres,
@@ -1157,5 +1157,235 @@ describe("card 5.3 — la cabeza y el sustituto, sueltos", () => {
   it("y no dispara con nada que no se le haya escrito", () => {
     assert.equal(sustitutoDeclarado("pizza", "pizza", index), null);
     assert.equal(sustitutoDeclarado("dough", "masa", index), null);
+  });
+});
+
+describe("card 6.3 — el desempate crudo/cocido, escrito simétrico", () => {
+  /**
+   * EL DEFECTO, MEDIDO EN PRODUCCIÓN EL 03/09/2026: dos ensaladas reales
+   * resolvieron sus ingredientes CRUDOS a fichas COCIDAS. La lechuga picada salía
+   * `Lechuga cocida` (49 kcal/100 g y 3,1 g de grasa) existiendo `Lechuga cruda`
+   * (20 kcal, 0,2 g), y el tomate salía `Tomate cocido` (50) existiendo `Tomate
+   * crudo` (20). Una ensalada verde salió 12 % inflada.
+   *
+   * LA CAUSA: "picado", "shredded" y "chopped" son descriptores y no cuentan en
+   * la cobertura, así que «lechuga» explica ENTERO tanto a la cruda como a la
+   * cocida: las dos entran con cobertura 1 y confianza 0,600. El empate lo
+   * decidía el ORDEN de la lista —ordenada por largo, y "cocida" tiene una letra
+   * más que "cruda"—, porque la regla del crudo/cocido de la card 2.6 solo sabía
+   * PROMOVER a la cocida y nunca devolver al crudo.
+   */
+  it("`lechuga picada` y `lettuce, shredded` vuelven a la CRUDA: 20 kcal, no 49", () => {
+    for (const termino of ["lechuga picada", "lettuce, shredded", "lettuce, chopped", "lechuga en rodajas"]) {
+      assert.equal(buscarAlimento(termino, index)?.ficha.id, "fdc-2709789", termino);
+    }
+    assert.equal(buscarConDosNombres("lettuce, shredded", "lechuga picada", index)?.ficha.id, "fdc-2709789");
+    assert.equal(fichaReal("fdc-2709789").per_100g.kcal, 20);
+    assert.equal(fichaReal("fdc-2709949").per_100g.kcal, 49);
+  });
+
+  it("`tomate picado` y `tomate troceado` vuelven al CRUDO: 20 kcal, no 50", () => {
+    for (const termino of ["tomate picado", "tomate troceado", "tomate en rodajas", "tomatoes, diced"]) {
+      assert.equal(buscarAlimento(termino, index)?.ficha.id, "fdc-2709719", termino);
+    }
+    assert.equal(buscarConDosNombres("tomato, chopped", "tomate picado", index)?.ficha.id, "fdc-2709719");
+    assert.equal(fichaReal("fdc-2709720").per_100g.kcal, 50);
+  });
+
+  it("la lombarda del plato 20 del golden: CRUDA, 34 kcal, no 58", () => {
+    // Es el ÚNICO ítem que se mueve en las 30 visiones de `vision-v6` pasadas por
+    // `analizarEscaneo`: los 10 g de `red cabbage, shredded` de la ensalada mixta
+    // pasan de `Repollo rojo cocido con sal y grasa` a `Repollo rojo crudo`, y el
+    // plato pasa de 243,9 a 241,7 kcal.
+    for (const termino of ["red cabbage, shredded", "cabbage red, chopped", "repollo rojo picado"]) {
+      assert.equal(buscarAlimento(termino, index)?.ficha.id, "fdc-169977", termino);
+    }
+    assert.equal(buscarConDosNombres("red cabbage, shredded", "lombarda rallada", index)?.ficha.id, "fdc-169977");
+    assert.equal(fichaReal("fdc-2709893").per_100g.kcal, 58);
+  });
+
+  it("EL CHAMPIÑÓN NO SE MUEVE, y no es que la regla falle: no hay ficha cruda", () => {
+    // `mushrooms, sliced` sigue dando `Champiñones frescos cocidos con grasa` (66
+    // kcal) porque el catálogo NO TIENE champiñón crudo: el único crudo es el
+    // SHIITAKE, que es otro hongo y ni siquiera compite (su nombre agrega una
+    // palabra que la visión no dijo). Es una deuda de la curación, no del motor.
+    assert.equal(buscarAlimento("mushrooms, sliced", index)?.ficha.id, "fdc-2709939");
+    const crudos = catalogoReal().foods.filter(
+      (f) => !f.deprecated && /mushroom/i.test(f.names.en ?? "") && /\braw\b/i.test(f.names.en ?? ""),
+    );
+    assert.deepEqual(
+      crudos.map((f) => f.id),
+      ["fdc-169242"],
+      "si aparece un champiñón crudo llano, este candado tiene que revisarse",
+    );
+  });
+
+  /* ------------------------------------------------------------------
+   * LOS CANDADOS DE LO QUE YA ANDABA. Los cinco se midieron ANTES de tocar el
+   * matcher y dan lo mismo después.
+   * ------------------------------------------------------------------ */
+
+  it("lo SECO sigue ganando cocido: lentejas, arroz salvaje y panceta", () => {
+    // La otra mitad de la regla, la que promueve, no se movió: cuando la cruda es
+    // MÁS densa está seca y lo que hay en la foto es la cocida.
+    for (const termino of ["lentejas", "lentils", "lenteja picada", "lentils, chopped"]) {
+      assert.equal(buscarAlimento(termino, index)?.ficha.id, "fdc-2707423", termino);
+    }
+    // Arroz salvaje crudo 357 kcal contra hervido 101: el desempate ni se acerca.
+    for (const termino of ["arroz salvaje picado", "wild rice, chopped"]) {
+      assert.equal(buscarAlimento(termino, index)?.ficha.id, "fdc-168897", termino);
+    }
+    // `Panceta cruda` (fdc-167812) 518 kcal contra `Tocino cocido` 484: la misma
+    // cuenta, mucho más ajustada, y alcanza igual.
+    assert.equal(buscarAlimento("panceta picada", index)?.ficha.id, "fdc-2705885");
+    assert.ok(fichaReal("fdc-172420").per_100g.kcal > fichaReal("fdc-2707423").per_100g.kcal);
+    assert.ok(fichaReal("fdc-167812").per_100g.kcal > fichaReal("fdc-2705885").per_100g.kcal);
+  });
+
+  it("si la consulta DECLARA el estado, el desempate no opina", () => {
+    // `cabbage, cooked` sigue sin ficha —el candado de la card 2.8, que impide que
+    // una consulta cocida termine en una ficha cruda— y las cocidas nombradas
+    // siguen dando las cocidas.
+    assert.equal(buscarAlimento("cabbage, cooked", index), null);
+    assert.equal(buscarAlimento("lettuce, cooked", index)?.ficha.id, "fdc-2709949");
+    assert.equal(buscarAlimento("lechuga cocida", index)?.ficha.id, "fdc-2709949");
+    assert.equal(buscarAlimento("tomate cocido", index)?.ficha.id, "fdc-2709720");
+    assert.equal(buscarAlimento("huevo cocido picado", index)?.ficha.id, "fdc-2707153");
+    assert.equal(buscarAlimento("boiled potato", index)?.ficha.id, "fdc-2709393");
+  });
+
+  it("la zanahoria rallada y la pasta siguen donde estaban", () => {
+    // La zanahoria la ganaba el desempate de la variante (card 6.1); ahora la
+    // ganan los dos, y para el mismo lado.
+    for (const termino of ["carrot, shredded", "carrots, shredded", "zanahoria rallada"]) {
+      assert.equal(buscarAlimento(termino, index)?.ficha.id, "fdc-170393", termino);
+    }
+    assert.equal(buscarAlimento("pasta", index)?.ficha.id, "fdc-2708357");
+    // `arroz` y `rice` a secas tampoco se mueven. NO dan "arroz cocido" —dan
+    // `Arroz rojo` y `Sopa de arroz`—, y eso ya era así antes de esta card: es un
+    // agujero del vocabulario del arroz, no de este desempate.
+    assert.equal(buscarAlimento("arroz", index)?.ficha.id, "fdc-2709087");
+    assert.equal(buscarAlimento("rice", index)?.ficha.id, "fdc-2709146");
+  });
+
+  /* ------------------------------------------------------------------
+   * EL ESCENARIO CONSTRUIDO. El orden de la lista es lo que rompía, así que el
+   * candado tiene que correr las DOS direcciones, y el catálogo real solo ofrece
+   * una (el nombre cocido es siempre más largo que el crudo, y la lista se
+   * recorre ordenada por largo). Se construye cambiándole el nombre a fichas
+   * REALES: el id se mantiene, así que la taxonomía las sigue ubicando en su
+   * familia, que es justo lo que el desempate necesita preguntar. Con fichas
+   * inventadas no habría familia y el escenario mediría otra cosa.
+   * ------------------------------------------------------------------ */
+
+  const conNombre = (id: string, en: string) => ({ ...fichaReal(id), names: { en, es: null } });
+  const par = (idCrudo: string, enCrudo: string, idCocido: string, enCocido: string) =>
+    indiceDeFixture([conNombre(idCrudo, enCrudo), conNombre(idCocido, enCocido)]);
+
+  it("la lechuga gana venga EN EL ORDEN QUE VENGA en la lista de candidatos", () => {
+    const cocidoPrimero = par("fdc-2709789", "Lettuce, raw", "fdc-2709949", "Lettuce, cooked");
+    assert.equal(buscarAlimento("lettuce, chopped", cocidoPrimero)?.ficha.id, "fdc-2709789");
+    const crudoPrimero = par("fdc-2709789", "Lettuce, raw, whole", "fdc-2709949", "Lettuce, cooked");
+    assert.equal(buscarAlimento("lettuce, chopped", crudoPrimero)?.ficha.id, "fdc-2709789");
+  });
+
+  it("y el HUEVO gana cocido en los dos órdenes: el lado cocido también es una regla", () => {
+    // ACÁ SE MIDE LA FAMILIA SOLA, sin la densidad de por medio: el huevo crudo
+    // (143 kcal) es MENOS denso que el cocido (176), o sea que la pregunta de las
+    // kcal diría "gana el crudo" y la de la familia dice que no. Y contesta lo
+    // mismo en los dos órdenes: el empate ya no lo decide la lista.
+    const cocidoPrimero = par("fdc-2707152", "Egg, raw", "fdc-2707153", "Egg, cooked");
+    assert.equal(buscarAlimento("egg, chopped", cocidoPrimero)?.ficha.id, "fdc-2707153");
+    const crudoPrimero = par("fdc-2707152", "Egg, raw, whole", "fdc-2707153", "Egg, cooked");
+    assert.equal(buscarAlimento("egg, chopped", crudoPrimero)?.ficha.id, "fdc-2707153");
+    assert.ok(fichaReal("fdc-2707152").per_100g.kcal < fichaReal("fdc-2707153").per_100g.kcal);
+  });
+
+  it("y las lentejas ganan cocidas en los dos órdenes, por SECAS", () => {
+    const cocidoPrimero = par("fdc-172420", "Lentils, raw", "fdc-2707423", "Lentils, cooked");
+    assert.equal(buscarAlimento("lentils, chopped", cocidoPrimero)?.ficha.id, "fdc-2707423");
+    const crudoPrimero = par("fdc-172420", "Lentils, raw, whole", "fdc-2707423", "Lentils, cooked");
+    assert.equal(buscarAlimento("lentils, chopped", crudoPrimero)?.ficha.id, "fdc-2707423");
+  });
+
+  it("el desempate NO toca a nadie que gane por confianza, ni a dos que empatan de casualidad", () => {
+    // `lettuce green cooked` explica las dos palabras de la consulta y
+    // `lettuce raw` solo una: no es un empate, y una ficha que explica más no se
+    // pierde por un desempate. Además no son hermanas —sin descriptores, una dice
+    // "lettuce green" y la otra "lettuce"—, que es la segunda razón para no
+    // tocarlas.
+    const indice = par("fdc-2709789", "Lettuce, raw", "fdc-2709949", "Lettuce, green, cooked");
+    assert.equal(buscarAlimento("lettuce green, chopped", indice)?.ficha.id, "fdc-2709949");
+  });
+
+  it("si la consulta dice CRUDO o COCIDO, el fixture también obedece", () => {
+    const indice = par("fdc-2709789", "Lettuce, raw", "fdc-2709949", "Lettuce, cooked");
+    assert.equal(buscarAlimento("lettuce, cooked", indice)?.ficha.id, "fdc-2709949");
+    assert.equal(buscarAlimento("lettuce, raw", indice)?.ficha.id, "fdc-2709789");
+  });
+
+  /**
+   * EL RETOQUE DE LA CARD 6.3: LA FAMILIA ACOTA EL DESEMPATE.
+   *
+   * La primera versión se lo preguntaba solo a las kcal, y las kcal saben decir
+   * "está seco" pero no "no se come crudo" cuando cocinar AGREGA grasa. Medido
+   * sobre esa versión: `huevo duro` contestaba `Huevo crudo` (143 contra los 176
+   * del cocido) y `patata troceada` contestaba `Patatas crudas con cáscara` (77
+   * contra 126). Un usuario español que escribe "huevo duro" no puede recibir
+   * huevo crudo. La taxonomía sí sabe la diferencia: la lechuga es `verdura`, la
+   * manzana es `fruta`, y el huevo y la patata tienen familia propia.
+   */
+  it("`huevo duro` y `patata troceada` dan la COCIDA, y por regla, no por el orden", () => {
+    for (const termino of ["huevo duro", "huevo duro picado", "huevo picado", "huevo troceado"]) {
+      assert.equal(buscarAlimento(termino, index)?.ficha.id, "fdc-2707153", termino);
+    }
+    for (const termino of ["patata troceada", "patata picada", "papa picada", "potato, diced"]) {
+      assert.equal(buscarAlimento(termino, index)?.ficha.id, "fdc-2709393", termino);
+    }
+    assert.equal(buscarConDosNombres("hard-boiled egg, chopped", "huevo duro picado", index)?.ficha.id, "fdc-2707153");
+    assert.equal(buscarConDosNombres("potato, diced", "patata troceada", index)?.ficha.id, "fdc-2709393");
+    // Y no es que la densidad los frene: en los dos, la cruda es la MENOS densa.
+    assert.ok(fichaReal("fdc-2707152").per_100g.kcal < fichaReal("fdc-2707153").per_100g.kcal);
+    assert.ok(fichaReal("fdc-170026").per_100g.kcal < fichaReal("fdc-2709393").per_100g.kcal);
+  });
+
+  it("la FRUTA sí vuelve al crudo: es la otra familia de la lista", () => {
+    for (const termino of ["manzana picada", "apple, sliced", "apple, chopped"]) {
+      assert.equal(buscarAlimento(termino, index)?.ficha.id, "fdc-2709215", termino);
+    }
+    assert.deepEqual([...FAMILIAS_QUE_SE_COMEN_CRUDAS], ["verdura", "fruta"]);
+    // Las cuatro fichas crudas que este desempate devuelve hoy viven en esas dos
+    // familias; el huevo y la patata, en la suya.
+    const familias: [string, string][] = [
+      ["fdc-2709789", "verdura"],
+      ["fdc-2709719", "verdura"],
+      ["fdc-169977", "verdura"],
+      ["fdc-170419", "verdura"],
+      ["fdc-2709215", "fruta"],
+      ["fdc-2707152", "huevo"],
+      ["fdc-170026", "patata"],
+    ];
+    for (const [id, familia] of familias) {
+      assert.equal(index.taxonomia.deLaFicha.get(id)?.split("/")[0], familia, id);
+    }
+  });
+
+  /**
+   * LO QUE ESTE RETOQUE NO ARREGLA, Y NO ES SUYO (deuda, dueño: curación +
+   * una card del motor).
+   *
+   * `egg, chopped` contesta `Huevo crudo` —y lo contesta también en `main`, con
+   * el desempate viejo—. No pasa por acá: lo decide el desempate de la VARIANTE
+   * de la card 6.1, que corre antes. `Egg, whole, cooked, NS as to cooking
+   * method` solo llega a "egg cooked" como variante DEDUCIDA por el índice,
+   * mientras que `Egg, whole, raw` está ESCRITO, y un término escrito le gana a
+   * una variante. El arreglo es del lado del catálogo (un nombre o un alias
+   * escrito para el huevo cocido), no de este desempate.
+   */
+  it("lo que sigue igual que en main: `egg, chopped` da el crudo por la VARIANTE", () => {
+    const r = buscarAlimento("egg, chopped", index);
+    assert.equal(r?.ficha.id, "fdc-2707152");
+    assert.equal(index.difusoEn.find((e) => e.clave === "egg whole cooked")?.variante, true);
+    assert.equal(index.difusoEn.find((e) => e.clave === "egg whole raw")?.variante, undefined);
   });
 });

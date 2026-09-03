@@ -11,7 +11,7 @@
  * Un test lo verifica de la única forma que vale: recomponiendo las nueve
  * recetas del catálogo con sus mismos insumos y exigiendo el mismo `per_100g`.
  *
- * TRES DECISIONES QUE HAY QUE LEER ANTES DE TOCAR ESTE ARCHIVO:
+ * CUATRO DECISIONES QUE HAY QUE LEER ANTES DE TOCAR ESTE ARCHIVO:
  *
  * 1. LA REGLA DEL TODO O NADA, Y CÓMO LA CARD 5.3 LA RELAJÓ SIN MENTIR. Hasta la
  *    Fase 5 este archivo decía: si uno de los cinco ingredientes no matchea, no
@@ -42,6 +42,51 @@
  *    pregunta a `esPlausible` si esos valores por 100 g pueden existir. Si no
  *    pueden, la composición se declara imposible con el motivo escrito y el
  *    llamador baja al escalón siguiente de la cascada. Ver `arithmetic.ts`.
+ *
+ * 4. LA CONFIANZA DE UN COMPUESTO SE PONDERA POR GRAMOS, NO LA DECIDE EL PEOR
+ *    INGREDIENTE (card 6.1 de la Fase 6). Hasta acá este archivo devolvía
+ *    `min(confianza de cada componente) × FACTOR_COMPOSICION`, y así un solo
+ *    ingrediente decidía por todos. El costo está medido en producción: el
+ *    03/09/2026, una ensalada de atún de seis ingredientes que la visión vio al
+ *    85 % y que resolvieron LOS SEIS a fichas reales —cinco de ellos entre 0,255
+ *    y 0,85— salió SIN TOTAL porque el atún en lata cayó en la ficha genérica
+ *    `Atún` a 0,157: 0,85 × 0,157 × 0,8 = **0,107**, por debajo del piso de la
+ *    compuerta. Un ingrediente de 10 g podía hundir un plato de 400 g.
+ *
+ *    Ahora la confianza del match es el PROMEDIO DE LAS CONFIANZAS DE LOS
+ *    COMPONENTES RESUELTOS PONDERADO POR SUS GRAMOS —cada una ya con su propio
+ *    descuento de genérico— y recién sobre ese promedio cae el ×0,8 de la
+ *    composición (o el ×0,6 de la parcial), exactamente como antes. Esa ensalada,
+ *    reconstruida y vuelta a jugar: el match ponderado da 0,484 —contra 0,227 del
+ *    mínimo— y la confianza del plato pasa de **0,155 a 0,329** (la corrida real
+ *    de ese día daba 0,107: el tomate cayó en otra ficha). El mismo plato está en
+ *    el golden, la foto 20 «ensalada mixta», y ahí se mide entero: **0,107 →
+ *    0,393, y el total vuelve a publicarse** (241,7 kcal) después de haber salido
+ *    sin número. Ningún ítem que no sea compuesto se mueve: los otros 54 de las
+ *    30 fotos del golden dan la misma confianza y las mismas kcal.
+ *
+ *    POR QUÉ GRAMOS Y NO KCAL. Los gramos son lo que la visión estimó mirando la
+ *    foto; las kcal son una consecuencia de la ficha que ganó, o sea de lo mismo
+ *    que estamos tratando de medir —ponderar por kcal sería dejar que la
+ *    respuesta elija su propio peso—. Y son lo que el usuario entiende cuando lee
+ *    una confianza sobre un plato: cuánto DEL PLATO está respaldado por una buena
+ *    ficha. Una cucharada de aceite pesa 10 g de 400 y aporta 90 kcal de 300: por
+ *    kcal mandaría casi tanto como el ingrediente principal.
+ *
+ *    LOS FALTANTES DE UNA COMPOSICIÓN PARCIAL NO ENTRAN AL PROMEDIO. No tienen
+ *    confianza que promediar —no resolvieron a ninguna ficha— y ya se cobran dos
+ *    veces: en `FACTOR_COMPOSICION_PARCIAL` (0,6 contra 0,8) y en el candado de
+ *    `MASA_FALTANTE_MAXIMA`, que ni siquiera deja componer cuando pesan más de un
+ *    cuarto del plato. Contarlos además como ceros del promedio sería cobrarlos
+ *    una tercera vez por lo mismo.
+ *
+ *    EL LÍMITE, DECLARADO: un plato con su ingrediente PRINCIPAL mal identificado
+ *    y muchos secundarios bien identificados sube de confianza. El promedio pesa,
+ *    no jerarquiza: no distingue "el que le da el nombre al plato" de "los que
+ *    acompañan". Por eso el eslabón más débil NO desaparece — viaja en
+ *    `composicion.eslabon_mas_debil` con su término, su ficha y su confianza, y
+ *    se nombra con todas las letras en un caveat del ítem. Cada componente sigue
+ *    llevando además la suya en `confidence_match`.
  */
 import { derivarReceta, type Derivation, type ResolvedIngredient } from "../kb/transforms";
 import { COOKING_TRANSFORMS } from "../kb/cooking.transforms";
@@ -75,7 +120,12 @@ export interface ComposicionLograda {
   ok: true;
   composicion: Composicion;
   derivacion: Derivation;
-  /** La confianza del eslabón más débil, ya con el descuento de composición. */
+  /**
+   * EL PROMEDIO DE LAS CONFIANZAS DE LOS COMPONENTES RESUELTOS, PONDERADO POR
+   * SUS GRAMOS, ya con el descuento de composición (card 6.1). Ver la decisión 4
+   * del encabezado: por qué gramos, por qué los faltantes no entran, y por qué
+   * el eslabón más débil se sigue declarando aparte.
+   */
   confianza_match: number;
   /** Los caveats de las fichas ingredientes + el de la propia composición. */
   caveats: string[];
@@ -151,7 +201,16 @@ export function componerPlato(
   const detalle: ComponenteDelPlato[] = [];
   const sinMatch: ComponenteFaltante[] = [];
   const caveats: string[] = [];
-  let peorConfianza = 1;
+  // LA CONFIANZA DEL PLATO, PONDERADA POR GRAMOS (card 6.1, decisión 4 del
+  // encabezado). Se acumulan `confianza × gramos` y los gramos de lo RESUELTO:
+  // los faltantes de una parcial no entran ni al numerador ni al denominador.
+  // Se acumula la confianza YA REDONDEADA —la misma que viaja en cada componente
+  // como `confidence_match`— para que quien lea la composición pueda rehacer la
+  // cuenta con los números que tiene delante y no con otros de más decimales.
+  let confianzaPorGramos = 0;
+  let gramosResueltos = 0;
+  /** El componente peor identificado. No decide, pero se declara. */
+  let eslabonMasDebil: Composicion["eslabon_mas_debil"] | null = null;
   let algunGenerico = false;
   let aportaAlcohol = false;
   // Los gramos de TODO lo que se vio, resuelto o no: es el denominador con el
@@ -186,8 +245,16 @@ export function componerPlato(
     const esGenerico = match.ficha.generic === true;
     if (esGenerico) algunGenerico = true;
     if (resuelto.aportaAlcohol) aportaAlcohol = true;
-    const confianzaComponente = match.confianza_match * (esGenerico ? FACTOR_GENERICO : 1);
-    peorConfianza = Math.min(peorConfianza, confianzaComponente);
+    const confianzaComponente = redondear(match.confianza_match * (esGenerico ? FACTOR_GENERICO : 1));
+    confianzaPorGramos += confianzaComponente * gramos;
+    gramosResueltos += gramos;
+    if (eslabonMasDebil === null || confianzaComponente < eslabonMasDebil.confidence_match) {
+      eslabonMasDebil = {
+        termino_en: nombre,
+        name_es: match.ficha.names.es,
+        confidence_match: confianzaComponente,
+      };
+    }
 
     resueltos.push({ ref: match.ficha.id, grams: gramos, per_100g: match.ficha.per_100g });
     detalle.push({
@@ -197,7 +264,8 @@ export function componerPlato(
       name_es: match.ficha.names.es,
       source_ref: match.ficha.source_ref,
       match: match.nivel,
-      confidence_match: redondear(confianzaComponente),
+      // Ya viene redondeada de arriba: es LA MISMA que entró al promedio.
+      confidence_match: confianzaComponente,
       generic: esGenerico,
       // Un ingrediente que entró por un sustituto o por una cabeza NO es la
       // ficha de lo que se vio: es la que se puso en su lugar, y eso se declara.
@@ -307,9 +375,17 @@ export function componerPlato(
   const rendimiento = derivacion.peso_entrada_g > 0 ? derivacion.peso_final_g / derivacion.peso_entrada_g : 1;
   const masaDeLosIngredientes = redondear(derivacion.peso_final_g + gramosFaltantes * rendimiento);
 
+  // Nunca es `null` acá: para llegar hasta este punto tuvo que resolver al menos
+  // un componente con gramos > 0 (las tres puertas de la parcial, más arriba).
+  // El `??` es la forma de decirlo sin un `!`: si algún día deja de ser cierto,
+  // se lee un cero con nombre vacío y no una excepción en producción.
+  const eslabon = eslabonMasDebil ?? { termino_en: "", name_es: null, confidence_match: 0 };
+  const confianzaPonderada = gramosResueltos > 0 ? confianzaPorGramos / gramosResueltos : 0;
+
   const composicion: Composicion = {
     metodo: transform.id,
     componentes: detalle,
+    eslabon_mas_debil: eslabon,
     peso_entrada_g: derivacion.peso_entrada_g,
     aceite_absorbido_g: derivacion.aceite_absorbido_g,
     aceite_ref: derivacion.aceite_absorbido_g > 0 ? transform.aceite_ref : null,
@@ -327,6 +403,14 @@ export function componerPlato(
   caveats.unshift(
     `Plato compuesto en el momento con ${detalle.length} ingredientes del catálogo y el método "${transform.id}": ` +
       `los valores por 100 g salen de fichas reales, pero la proporción de cada ingrediente la estimó la foto.`,
+    // EL ESLABÓN MÁS DÉBIL, CON NOMBRE Y NÚMERO (card 6.1). Desde que la
+    // confianza se pondera por gramos, el peor ingrediente ya no decide por
+    // todos — y justamente por eso hay que nombrarlo: un promedio alto puede
+    // estar tapando una identificación mala en un ingrediente principal. Va
+    // pegado al caveat de la composición porque es la letra chica de ese mismo
+    // número.
+    `El ingrediente peor identificado es "${eslabon.termino_en}" → ${eslabon.name_es ?? "sin nombre en español"}, ` +
+      `al ${redondear(eslabon.confidence_match * 100, 0)} %.`,
   );
   if (parcial) {
     // El caveat de la parcial va PRIMERO, delante del de la composición: es la
@@ -351,7 +435,7 @@ export function componerPlato(
     ok: true,
     composicion,
     derivacion,
-    confianza_match: redondear(peorConfianza * (parcial ? FACTOR_COMPOSICION_PARCIAL : FACTOR_COMPOSICION)),
+    confianza_match: redondear(confianzaPonderada * (parcial ? FACTOR_COMPOSICION_PARCIAL : FACTOR_COMPOSICION)),
     caveats,
     algun_generico: algunGenerico,
     parcial,
