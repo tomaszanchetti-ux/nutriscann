@@ -13,7 +13,9 @@
  */
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { FAMILIAS } from "../kb/familias";
 import { aliasConfidence, aliasText } from "../kb/types";
+import { esPlausible } from "./arithmetic";
 import { construirIndice, GUARDAS_DE_VOCABULARIO, MINIMO_DE_FICHAS } from "./catalog";
 import { buscarAlimento } from "./match";
 import { claveDeMatching, normalizar, sinDescriptores } from "./normalize";
@@ -460,5 +462,65 @@ describe("DT-32 — las guardas viajan en el catálogo y el índice las lee", ()
         }
       }
     }
+  });
+});
+
+/* ===========================================================================
+ * CARD 5.3 — LAS 1.115 FICHAS CONTRA EL HALO DE PLAUSIBILIDAD
+ *
+ * El halo (`esPlausible`) NO corre sobre el catálogo en producción: las fichas
+ * vienen medidas por USDA y su garantía es la trazabilidad. Corre acá, y por dos
+ * motivos distintos:
+ *
+ *   1. ES LA CALIBRACIÓN DEL CANDADO. Una composición es un promedio ponderado
+ *      de fichas del catálogo, así que un límite que rechace una ficha real
+ *      rechazaría también el plato que la lleva adentro. Si estos barridos
+ *      pasan, ninguna composición legítima puede caerse por el halo.
+ *   2. UNA FICHA QUE NO PASA ES UN HALLAZGO DE CURACIÓN, no un bug del candado.
+ * =========================================================================== */
+describe("card 5.3 — ninguna ficha del catálogo es imposible", () => {
+  /** La familia de cada ficha, para saber cuáles declaran alcohol. */
+  const familiaDeLaFicha = new Map<string, (typeof FAMILIAS)[number]>();
+  for (const familia of FAMILIAS) {
+    for (const sub of familia.subfamilias) for (const id of sub.fichas) familiaDeLaFicha.set(id, familia);
+  }
+
+  const noPasan = activas
+    .map((ficha) => ({
+      ficha,
+      veredicto: esPlausible(ficha.per_100g, {
+        aporta_alcohol: familiaDeLaFicha.get(ficha.id)?.aporta_alcohol === true,
+      }),
+    }))
+    .filter((r) => !r.veredicto.plausible);
+
+  it("las 1.115 pasan, con la excepción del alcohol declarada en la taxonomía", () => {
+    assert.deepEqual(
+      noPasan.map((r) => `${r.ficha.id} ${r.ficha.names.es ?? r.ficha.names.en}: ${r.veredicto.motivos.join(" ")}`),
+      [],
+    );
+  });
+
+  it("SIN la excepción declarada fallan 16, y las 16 son bebida alcohólica", () => {
+    // Es la medida que justifica que la excepción exista y que sea de la
+    // TAXONOMÍA y no del motor: el etanol aporta 7 kcal/g y no es ningún
+    // macronutriente, así que ningún margen relativo va a dejar pasar un
+    // destilado (231 kcal/100 g con cero macros). Y es una excepción ACOTADA:
+    // ni una sola falsa alarma fuera de esa familia en 1.115 fichas.
+    const sinExcepcion = activas.filter((f) => !esPlausible(f.per_100g).plausible);
+    assert.equal(sinExcepcion.length, 16);
+    for (const ficha of sinExcepcion) {
+      assert.equal(familiaDeLaFicha.get(ficha.id)?.id, "bebida-alcoholica", ficha.names.es ?? ficha.id);
+    }
+  });
+
+  it("`Fish, NFS` PASA el halo — y eso es lo que el halo dice y lo que no dice", () => {
+    // El Bloque 0 sospechaba de esta ficha: 238 kcal/100 g para un genérico de
+    // pescado es un pescado REBOZADO disfrazado de promedio (deuda 2). El halo
+    // no la marca, y hace bien: sus números son perfectamente posibles. Está mal
+    // ELEGIDA, no es imposible. Plausibilidad y corrección son dos preguntas.
+    const pescado = catalogo.foods.find((f) => f.names.en === "Fish, NFS");
+    assert.ok(pescado, "el catálogo ya no tiene `Fish, NFS`: revisá la deuda 2 del Bloque 0");
+    assert.equal(esPlausible(pescado.per_100g).plausible, true);
   });
 });

@@ -35,6 +35,44 @@ export const FACTOR_GENERICO = 0.85;
 export const FACTOR_COMPOSICION = 0.8;
 
 /**
+ * Cuánto se le descuenta a un plato compuesto SOLO CON PARTE de lo que se vio
+ * (card 5.3).
+ *
+ * La composición completa vale 0,8 porque la aritmética está medida y lo que se
+ * estimó es la proporción. La parcial vale menos por una razón distinta y peor:
+ * hay masa del plato que NO tiene ficha y se está respondiendo por ella con la
+ * densidad de lo que sí la tiene. 0,6 es tres cuartos de la completa, que es la
+ * misma proporción con la que el difuso (0,6) se descuenta contra el exacto
+ * (1,0) — y sale del mismo criterio: cuando se responde por algo que no se vio,
+ * la reserva se declara en la confianza, no en una nota al pie.
+ */
+export const FACTOR_COMPOSICION_PARCIAL = 0.6;
+
+/**
+ * CUÁNTA MASA DEL PLATO PUEDE FALTAR PARA QUE LA COMPOSICIÓN PARCIAL SIGA SIENDO
+ * HONESTA (card 5.3).
+ *
+ * La regla vieja de `compose.ts` —o están todos los ingredientes o no hay
+ * composición— es correcta en su motivo y está medida en su costo: la pizza de
+ * producción del 02/09 resolvió 3 de 4 ingredientes y salió SIN NÚMEROS porque
+ * faltaba la masa. Lo que la regla vieja no distinguía es CUÁNTO faltaba.
+ *
+ * 25 % de la masa, y el número sale de qué error puede producir. La composición
+ * parcial escala el `per_100g` de lo resuelto a la masa ENTERA del plato, así
+ * que el error relativo del total es, como mucho, la diferencia de densidad
+ * entre lo que falta y lo que quedó, POR la fracción que falta. Con un cuarto de
+ * la masa ausente y una densidad que se equivoque por el doble —el peor caso
+ * realista entre dos alimentos del mismo plato— el total se va un 25 %. Medido
+ * en el Bloque 0: la diferencia entre responder un plato compuesto por identidad
+ * y componerlo llega al +76 % (el salmón), así que un 25 % es el orden de error
+ * que este motor ya considera preferible a callarse.
+ *
+ * Por encima de un cuarto no se compone: ahí lo que falta ya no es un detalle
+ * del plato, es una parte del plato, y el número saldría con cara de medido.
+ */
+export const MASA_FALTANTE_MAXIMA = 0.25;
+
+/**
  * El techo de la confianza de un match difuso.
  *
  * Un match difuso nunca es una certeza: es "el catálogo tiene algo que se
@@ -316,8 +354,181 @@ export const CONFIANZA_MINIMA_PARA_UN_TOTAL = 0.12;
  */
 export const RESPALDO_MINIMO_DE_IDENTIDAD = 0.6;
 
+/**
+ * LO QUE VALE RESPONDER CON LA CABEZA DE UNA SUBFAMILIA (card 5.3).
+ *
+ * La cabeza NO es un match: es la respuesta declarada de la taxonomía cuando el
+ * nombre que escribió la visión no llegó a ninguna ficha. La visión no eligió
+ * palabras —eligió un valor de una lista cerrada de 191— así que la identidad
+ * está declarada; lo que no está medido es que ESTA porción se parezca al
+ * promedio de su subfamilia.
+ *
+ * 0,5 y no más, y está medido en el Bloque 0: sobre los 68 ítems del golden, la
+ * cabeza de la subfamilia del ítem cae dentro de ±20 % de la ficha que
+ * realmente ganó en 42 casos y fuera en 23. Dos de cada tres — que es
+ * exactamente lo que vale un 0,5: mejor que una conjetura, peor que un nombre.
+ *
+ * 0,5 también deja la cabeza POR DEBAJO del techo del difuso (0,6) a propósito:
+ * si la cabeza puntuara más alto que el parecido, un empate se resolvería a
+ * favor del promedio, y la regla número uno de esta card es que el término
+ * gana siempre (pisar el exacto lleva el atún en lata de 85 a 238 kcal).
+ */
+export const CONFIANZA_CABEZA_SUBFAMILIA = 0.5;
+
+/**
+ * LO QUE VALE RESPONDER CON LA CABEZA DE LA FAMILIA (card 5.3).
+ *
+ * Es el último recurso antes de callarse, y vale menos que la de subfamilia
+ * porque el Bloque 0 midió exactamente cuánto se pierde al subir un nivel:
+ * dentro de «verdura», la cruda son 30 kcal/100 g y la cocida con grasa 86 —
+ * casi el triple— y las dos son la misma familia. **El número lo carga la
+ * subfamilia, no la familia**, así que la cabeza de familia contesta QUÉ CLASE
+ * de comida es y poco más.
+ *
+ * 0,3 es la mitad de la de subfamilia y coincide con la confianza típica de un
+ * difuso flojo. Sigue por encima del piso del total (0,12) multiplicada por una
+ * visión razonablemente segura, que es lo que se quiere: un plato identificado
+ * por familia publica número, con la reserva escrita.
+ */
+export const CONFIANZA_CABEZA_FAMILIA = 0.3;
+
+/**
+ * LO QUE VALE UN SUSTITUTO DECLARADO POR LA CURACIÓN (card 5.3).
+ *
+ * Un sustituto no es un alias —la ficha no se llama así— pero tampoco es un
+ * promedio: alguien miró el ingrediente, fue a los datasets, comprobó que USDA
+ * no lo mide y escribió cuál es el más cercano, con el motivo. Vale como el
+ * alias más flojo que admite el catálogo (0,5) y más que cualquier cabeza,
+ * porque una decisión escrita a mano le gana a un promedio de familia.
+ *
+ * Ojo con lo que NO cambia: el sustituto solo entra cuando el matcher no llegó a
+ * nada. Un término que resuelve a una ficha propia nunca lo ve.
+ */
+export const CONFIANZA_SUSTITUTO_DECLARADO = 0.55;
+
 /** Los factores de Atwater, en kcal por gramo. Convención universal. */
 export const ATWATER = { protein: 4, carbs: 4, fat: 9 } as const;
+
+/* ===========================================================================
+ * EL HALO DE PLAUSIBILIDAD (card 5.3)
+ *
+ * Toda ficha que el motor CONSTRUYE —un compuesto, un compuesto parcial— pasa
+ * por `esPlausible` antes de publicarse. Las fichas del catálogo no: esas vienen
+ * medidas por USDA y la trazabilidad es su garantía. Lo que este halo protege es
+ * lo que sale de una cuenta nuestra sobre gramos que estimó una foto.
+ *
+ * LOS CUATRO NÚMEROS DE ABAJO ESTÁN ELEGIDOS CONTRA LAS 1.115 FICHAS DEL
+ * CATÁLOGO, no a ojo, y hay un test que vuelve a medirlo: con estos valores
+ * pasan las 1.115. Es la única calibración que tiene sentido, porque una
+ * composición es un promedio ponderado de fichas del catálogo: un límite que
+ * rechace una ficha real rechazaría el plato que la lleva adentro.
+ * =========================================================================== */
+
+/**
+ * CUÁNTO SE LE PERDONA A LA MASA. En gramos por 100 g.
+ *
+ * Proteína + hidratos + grasa no pueden pasar de 100 g en 100 g de comida: el
+ * alimento no puede pesar más que él mismo. Medido sobre el catálogo entero, la
+ * ficha más alta es `Aceite de lino de primera prensada` con **100,09 g** —el
+ * resto de los redondeos de USDA— y ninguna otra llega a 100. Medio gramo cubre
+ * ese redondeo con margen y sigue cortando el disparate: una composición mal
+ * escalada que dé 120 g de macros por 100 g no pasa.
+ *
+ * OJO CON LA FIBRA, y es un hallazgo de esta card. El enunciado natural de la
+ * regla —"proteína + hidratos + grasa + FIBRA ≤ 100"— rechaza **41 fichas
+ * perfectamente reales** (semillas de chía 123,8; lino 116,6; casi todos los
+ * frutos secos), y no porque estén mal: USDA declara los hidratos *by
+ * difference*, así que **la fibra YA ESTÁ ADENTRO de `carbs_g`** y sumarla otra
+ * vez la cuenta dos veces. Lo que sí se verifica es la relación que eso implica:
+ * la fibra nunca puede pasar a los hidratos que la contienen (medido: 0 fichas
+ * de 1.115 la violan).
+ */
+export const TOLERANCIA_DE_MASA_G = 0.5;
+
+/**
+ * EL TECHO ABSOLUTO DE CALORÍAS POR 100 g.
+ *
+ * Nada supera a la grasa pura: 100 g de grasa son 900 kcal con Atwater. El techo
+ * está en 902 y no en 900 porque es lo que MIDE el catálogo —`Sebo de vaca` y
+ * `Manteca de cerdo`, las dos únicas fichas de grasa al 100 %, declaran 902 cada
+ * una— y un candado se calibra contra el dato, no contra la teoría. Cualquier
+ * cosa por encima de eso no es comida: es una cuenta rota.
+ */
+export const KCAL_MAXIMAS_POR_100G = 902;
+
+/**
+ * EL PISO PARA PREGUNTARLE ALGO A ATWATER. En kcal por 100 g.
+ *
+ * Por debajo de 5 kcal la comparación entre las calorías declaradas y las que
+ * explican los macros deja de significar nada: el `Café descafeinado` declara 0
+ * y sus macros dan 0,4, lo que en porcentaje es un −100 % y en la realidad es un
+ * redondeo. Un candado que se dispara con el café no es un candado.
+ */
+export const KCAL_MINIMAS_PARA_ATWATER = 5;
+
+/**
+ * CUÁNTO PUEDEN QUEDARSE LAS CALORÍAS POR DEBAJO DE LO QUE EXPLICAN SUS MACROS.
+ *
+ * 40 %, y el número duele pero está medido. La card 5.1 ya había encontrado que
+ * USDA calcula la fruta con factores propios (la banana cierra un −10,9 %), y el
+ * barrido de esta card sobre las 1.115 fichas muestra que eso llega mucho más
+ * lejos: **51 fichas quedan por debajo del −15 %** que parecía razonable, y son
+ * todas verdura de hoja y cítricos perfectamente medidos — `Alcaparras` −37,4 %,
+ * `Lima cruda` −35,8 %, `Limón` −34,7 %, `Berro` −27,9 %.
+ *
+ * Con −15 % este candado le sacaría el número a cualquier ensalada compuesta,
+ * que es exactamente el plato que la Fase 5 vino a arreglar. 40 % deja pasar el
+ * peor caso medido con margen y sigue cortando una cuenta rota, que se va de
+ * escala, no de un tercio.
+ */
+export const MARGEN_ATWATER_INFERIOR = 0.4;
+
+/**
+ * CUÁNTO PUEDEN PASARSE LAS CALORÍAS POR ENCIMA DE LO QUE EXPLICAN SUS MACROS.
+ *
+ * Un 15 % relativo MÁS 25 kcal absolutas, y las dos mitades hacen falta. El 15 %
+ * cubre los redondeos de una ficha densa; las 25 kcal cubren a los alimentos
+ * cuyas calorías no vienen de ningún macro y que no son alcohol — el `Vinagre`
+ * declara 21 kcal contra 3,7 de macros (es ácido acético), el `Café` 1 contra
+ * 0,7. Sin el término absoluto, un porcentaje sobre casi-cero se dispara con
+ * cualquier cosa.
+ *
+ * Medido: con este límite, de las 1.115 fichas fallan 16 y las 16 son
+ * `bebida-alcoholica`. Ni una sola falsa alarma fuera de esa familia.
+ */
+export const MARGEN_ATWATER_SUPERIOR = 0.15;
+export const KCAL_SIN_MACROS_TOLERADAS = 25;
+
+/**
+ * LA EXCEPCIÓN DEL ALCOHOL, DECLARADA Y ACOTADA.
+ *
+ * El etanol aporta 7 kcal/g y no es proteína, ni hidrato, ni grasa: una copa de
+ * destilado son 231 kcal/100 g con CERO macros, y ningún margen relativo la va a
+ * dejar pasar nunca. La excepción no se activa sola ni se adivina del número: la
+ * declara la taxonomía (`aporta_alcohol` en la familia, hoy solo
+ * `bebida-alcoholica`) y el motor la lee de ahí.
+ *
+ * 700 kcal es el tope del perdón: 100 g de etanol puro. Que la excepción tenga
+ * techo es el punto — una composición con alcohol adentro sigue sin poder
+ * declarar calorías que ni el etanol explicaría.
+ */
+export const KCAL_DE_ALCOHOL_TOLERADAS = 700;
+
+/**
+ * CUÁNTO PUEDEN SEPARARSE LOS GRAMOS DEL PLATO DE LA SUMA DE SUS INGREDIENTES.
+ *
+ * La visión estima dos cosas por separado: cuánto pesa el plato y cuánto pesa
+ * cada ingrediente. Cuando las dos no se parecen, una de las dos está mal, y la
+ * que se cree es la SUMA DE LOS INGREDIENTES: son cuatro estimaciones sobre
+ * objetos chicos y separados en vez de una sobre un montón.
+ *
+ * Un factor de 2 y no menos, porque por debajo la diferencia todavía puede ser
+ * legítima: la transformación cambia el peso (el horneado se queda en 0,759 del
+ * peso de entrada, el hervido llega a 1,113) y encima está el error de mirar una
+ * foto. Más allá del doble —o de la mitad— los dos números no hablan del mismo
+ * plato, y el motor usa el que puede rehacer y lo declara.
+ */
+export const FACTOR_DE_MASA_COHERENTE = 2;
 
 /**
  * CUÁNDO LA DIFERENCIA ENTRE ATWATER Y LA FUENTE MERECE LETRA CHICA (card 5.1).

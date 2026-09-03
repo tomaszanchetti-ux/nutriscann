@@ -21,6 +21,10 @@ const familias = json.familias.map((f) => ({
   nombre_en: f.nombre_en,
   modo: f.modo,
   cabeza: f.cabeza ?? null,
+  // Solo viaja cuando vale `true`, igual que `generic` en el catálogo: una clave
+  // presente y en `false` en 45 de 46 familias sería ruido en el diff de cada
+  // re-seed. Ver `aporta_alcohol` en el tipo.
+  ...(f.aporta_alcohol === true ? { aporta_alcohol: true } : {}),
   subfamilias: f.subfamilias.map((s) => ({
     id: s.id,
     nombre_es: s.nombre_es,
@@ -30,6 +34,12 @@ const familias = json.familias.map((f) => ({
     cabeza: s.cabeza ?? null,
     fichas: s.fichas,
   })),
+}));
+
+const sustitutos = (json.sustitutos ?? []).map((s) => ({
+  terminos: s.terminos,
+  ficha: s.ficha,
+  motivo: s.motivo,
 }));
 
 const cuerpo = `/* =============================================================================
@@ -63,13 +73,52 @@ export interface Familia {
   nombre_en: string;
   modo: ModoDeFamilia;
   cabeza: string | null;
+  /**
+   * SUS FICHAS TIENEN CALORÍAS QUE NO VIENEN DE NINGÚN MACRONUTRIENTE. Solo
+   * cuando vale \`true\` (hoy: \`bebida-alcoholica\`, y nada más).
+   *
+   * El etanol aporta 7 kcal/g y no es proteína, ni hidrato, ni grasa. Es la
+   * excepción declarada del candado de plausibilidad (\`esPlausible\`): sin ella
+   * las 16 fichas de esa familia —el destilado son 231 kcal/100 g con CERO
+   * macros— quedarían marcadas como imposibles. Medido sobre las 1.115 fichas:
+   * con la excepción no falla ninguna; sin ella fallan esas 16 y solo esas.
+   */
+  aporta_alcohol?: true;
   subfamilias: Subfamilia[];
+}
+
+/**
+ * UN INGREDIENTE QUE EL CATÁLOGO NO NOMBRA, Y LA FICHA QUE LA CURACIÓN DECLARA
+ * EN SU LUGAR.
+ *
+ * NO ES UN ALIAS, y la diferencia es la razón de que exista este tipo: un alias
+ * afirma que la ficha SE LLAMA así, y el build lo verifica contra las guardas de
+ * vocabulario. Un sustituto afirma otra cosa —"esto no lo mide nadie, y esta
+ * ficha es lo más cerca que hay"— y por eso viaja con su motivo escrito y el
+ * motor lo declara en los \`caveats\` del ítem en vez de callárselo.
+ *
+ * Formato en \`kb/curation/familias.json\` (sección \`sustitutos\`):
+ *
+ *     { "terminos": ["pizza dough", "masa de pizza"],
+ *       "ficha": "fdc-2708674",
+ *       "motivo": "USDA no mide la masa de pizza sola: …" }
+ *
+ * \`terminos\` son los nombres tal como los escribe la visión, en los dos
+ * idiomas; se comparan por igualdad del texto normalizado, nunca por parecido:
+ * un sustituto es una decisión escrita, y el parecido ya lo cubre el difuso.
+ */
+export interface Sustituto {
+  terminos: string[];
+  ficha: string;
+  motivo: string;
 }
 
 /** La versión del catálogo con la que se midió la taxonomía. */
 export const FAMILIAS_KB_VERSION = ${JSON.stringify(json.kb_version_medida)};
 
 export const FAMILIAS: Familia[] = ${JSON.stringify(familias, null, 2)};
+
+export const SUSTITUTOS: Sustituto[] = ${JSON.stringify(sustitutos, null, 2)};
 
 /** El id compuesto \`familia/subfamilia\`, que es el valor del enum de la visión. */
 export function idCompuesto(familia: Familia, sub: Subfamilia): string {
@@ -80,4 +129,12 @@ export function idCompuesto(familia: Familia, sub: Subfamilia): string {
 export const IDS_FAMILIA_SUBFAMILIA: string[] = FAMILIAS.flatMap((f) => f.subfamilias.map((s) => idCompuesto(f, s)));
 `;
 fs.writeFileSync(path.join(RAIZ, "functions", "src", "kb", "familias.ts"), cuerpo);
-console.log("escrito functions/src/kb/familias.ts:", familias.length, "familias,", familias.reduce((n, f) => n + f.subfamilias.length, 0), "subfamilias");
+console.log(
+  "escrito functions/src/kb/familias.ts:",
+  familias.length,
+  "familias,",
+  familias.reduce((n, f) => n + f.subfamilias.length, 0),
+  "subfamilias,",
+  sustitutos.length,
+  "sustitutos",
+);

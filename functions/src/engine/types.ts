@@ -128,8 +128,38 @@ export interface VisionResult {
  */
 export type Per100gEscalado = Per100g;
 
-/** Cómo se llegó a la ficha (o a la falta de ficha). */
-export type TipoDeMatch = "exacto" | "alias" | "difuso" | "compuesto" | "no_catalogado";
+/**
+ * Cómo se llegó a la ficha (o a la falta de ficha).
+ *
+ * LOS CUATRO SELLOS NUEVOS DE LA CARD 5.3, en el orden en que baja la cascada:
+ *
+ *   · `sustituto`         — el catálogo no nombra este alimento y la curación
+ *                           declaró por escrito cuál es la ficha más cercana
+ *                           (`SUSTITUTOS` en `kb/familias.ts`);
+ *   · `cabeza_subfamilia` — el término no llegó a nada, pero la visión declaró
+ *                           `familia/subfamilia` y esa subfamilia tiene una ficha
+ *                           que la representa;
+ *   · `cabeza_familia`    — ni eso: la subfamilia no tiene cabeza y contesta la
+ *                           de la familia entera. Es el último recurso con ficha;
+ *   · `compuesto_parcial` — se compuso con PARTE de los ingredientes visibles,
+ *                           porque lo que faltó era minoritario en gramos
+ *                           (`MASA_FALTANTE_MAXIMA`). Qué faltó está escrito en
+ *                           `composicion` y en `caveats`.
+ *
+ * Son sellos y no una escala: el front los pinta distinto porque significan
+ * cosas distintas, y `Record<TipoDeMatch, …>` en la PWA no compila hasta que
+ * alguien decida cómo se llama cada uno.
+ */
+export type TipoDeMatch =
+  | "exacto"
+  | "alias"
+  | "difuso"
+  | "sustituto"
+  | "cabeza_subfamilia"
+  | "cabeza_familia"
+  | "compuesto"
+  | "compuesto_parcial"
+  | "no_catalogado";
 
 /** Un ingrediente resuelto dentro de un plato compuesto en runtime. */
 export interface ComponenteDelPlato {
@@ -141,6 +171,29 @@ export interface ComponenteDelPlato {
   match: TipoDeMatch;
   confidence_match: number;
   generic: boolean;
+  /**
+   * ESTE INGREDIENTE NO SE ENCONTRÓ POR SU NOMBRE (card 5.3). Solo cuando vale
+   * `true`, y con el motivo escrito al lado.
+   *
+   * Un ingrediente que entró por un sustituto declarado o por la cabeza de su
+   * subfamilia sigue siendo una ficha real con su `source_ref`, pero no es la
+   * ficha de LO QUE SE VIO: es la que la curación —o la taxonomía— puso en su
+   * lugar. Quien lea la composición tiene derecho a distinguir las dos cosas sin
+   * tener que interpretar el `match`.
+   */
+  reemplazo?: { por: "sustituto" | "cabeza_subfamilia" | "cabeza_familia"; motivo: string };
+}
+
+/**
+ * UN INGREDIENTE QUE SE VIO Y NO SE PUDO RESOLVER, con los gramos que pesaba.
+ *
+ * Viaja adentro de `Composicion.faltantes` en una composición PARCIAL: es la
+ * parte del plato por la que el motor está respondiendo con la densidad de otra.
+ * Sin esta lista, un compuesto parcial y uno completo se leerían igual.
+ */
+export interface ComponenteFaltante {
+  termino_en: string;
+  grams: number;
 }
 
 /**
@@ -159,6 +212,25 @@ export interface Composicion {
   aceite_ref: string | null;
   peso_final_g: number;
   rendimiento_de: "transformacion" | "receta";
+  /**
+   * LA COMPOSICIÓN NO TIENE TODO EL PLATO ADENTRO (card 5.3). Solo cuando vale
+   * `true`, y entonces `faltantes` y `gramos_faltantes` dicen qué y cuánto.
+   *
+   * Que sea una clave propia y no una deducción de `faltantes.length > 0` es la
+   * misma regla que `total_no_publicable`: dos cosas distintas no se leen igual.
+   */
+  parcial?: true;
+  /** Los ingredientes que se vieron y no se resolvieron. Vacío en una completa. */
+  faltantes?: ComponenteFaltante[];
+  /** Cuántos gramos del plato representan esos faltantes. */
+  gramos_faltantes?: number;
+  /**
+   * Los gramos a los que se escaló el `per_100g` de lo resuelto. En una
+   * composición parcial NO es `peso_final_g`: es la masa del plato entero, la
+   * que vio la visión, faltantes incluidos. Es el número que hay que mirar para
+   * rehacer la cuenta del ítem.
+   */
+  gramos_del_plato?: number;
 }
 
 export interface EngineItem {

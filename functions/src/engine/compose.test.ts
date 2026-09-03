@@ -18,9 +18,9 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { COOKING_TRANSFORMS } from "../kb/cooking.transforms";
 import { componerPlato } from "./compose";
-import { FACTOR_COMPOSICION, FACTOR_GENERICO } from "./constants";
+import { FACTOR_COMPOSICION, FACTOR_COMPOSICION_PARCIAL, FACTOR_GENERICO } from "./constants";
 import { redondear } from "./match";
-import { catalogoReal, fichaReal, indiceReal } from "./testing";
+import { catalogoReal, fichaFalsa, fichaReal, indiceDeFixture, indiceReal } from "./testing";
 import type { Preparacion, VisionItem } from "./types";
 
 const index = indiceReal();
@@ -176,5 +176,254 @@ describe("confianza y caveats de un compuesto", () => {
     assert.ok(r.ok, r.ok ? "" : r.motivo);
     assert.ok(r.caveats.includes(caveatEsperado));
     assert.match(r.caveats[0] ?? "", /compuesto en el momento/);
+  });
+});
+
+/* ===========================================================================
+ * CARD 5.3 — LA COMPOSICIÓN PARCIAL, Y LOS REEMPLAZOS DECLARADOS
+ *
+ * Todo este bloque existe por el escaneo de producción del 02/09/2026: una
+ * pizza que resolvió 3 de 4 ingredientes y salió SIN NÚMEROS porque el catálogo
+ * no tiene la masa. Los escenarios están construidos con el catálogo real y con
+ * los mismos términos que escribió la visión ese día.
+ * =========================================================================== */
+
+/** Un ingrediente que el catálogo no puede nombrar de ninguna manera. */
+const INEXISTENTE = "Zzzz ingrediente inexistente qqq";
+
+describe("card 5.3 — el sustituto que declaró la curación", () => {
+  it("LA MASA DE PIZZA: el ingrediente que rompió el escaneo de producción", () => {
+    // `pizza dough, baked` no existe en USDA (cero coincidencias en los tres
+    // datasets, medido en el Bloque 0) y la curación declaró el sustituto
+    // `Pizza sin queso, masa fina`. Sin él la pizza entera se quedaba sin número.
+    const r = componerPlato(
+      {
+        food_en: "pizza with ham and mushrooms",
+        food_es: "pizza de jamón y champiñones",
+        grams: 150,
+        confidence: 0.85,
+        preparation: "horneado_masa",
+        components: [
+          { food_en: "pizza dough, baked", food_es: "masa de pizza horneada", grams: 80 },
+          { food_en: "mozzarella cheese, melted", food_es: "mozzarella fundida", grams: 35 },
+          { food_en: "ham, sliced", food_es: "jamón en lonchas", grams: 20 },
+          { food_en: "mushrooms, sliced", food_es: "champiñones laminados", grams: 15 },
+        ],
+      },
+      index,
+    );
+    assert.ok(r.ok, r.ok ? "" : r.motivo);
+    assert.equal(r.parcial, false, "con el sustituto la composición es COMPLETA, no parcial");
+    const masa = r.composicion.componentes[0];
+    assert.equal(masa?.food_id, "fdc-2708674");
+    assert.equal(masa?.match, "sustituto");
+    assert.equal(masa?.reemplazo?.por, "sustituto");
+    // Y el reemplazo se declara donde se lee, no solo en el campo.
+    assert.match(r.caveats.join(" "), /ficha declarada en lugar de la suya/);
+  });
+
+  it("el sustituto dispara aunque la visión describa la presentación", () => {
+    // La curación escribe EL ALIMENTO ("pizza dough") y la visión escribe cómo
+    // lo vio ("pizza dough, baked"). Hornear una masa no la convierte en otro
+    // alimento: son los mismos descriptores que el difuso ya descuenta.
+    for (const termino of ["pizza dough", "pizza dough, baked", "pizza crust, baked"]) {
+      const r = componerPlato(
+        { food_en: "x", grams: 100, confidence: 1, components: [{ food_en: termino, grams: 100 }] },
+        index,
+      );
+      assert.ok(r.ok, `${termino}: ${r.ok ? "" : r.motivo}`);
+      assert.equal(r.composicion.componentes[0]?.food_id, "fdc-2708674", termino);
+    }
+  });
+});
+
+describe("card 5.3 — un ingrediente que falta cae en la cabeza de su subfamilia", () => {
+  it("con `familia_subfamilia` declarado, el ingrediente desconocido deja de faltar", () => {
+    const r = componerPlato(
+      {
+        food_en: "plato raro",
+        grams: 300,
+        confidence: 0.9,
+        components: [
+          { food_en: "Rice noodles, cooked", grams: 200 },
+          { food_en: INEXISTENTE, grams: 100, familia_subfamilia: "queso/curado" },
+        ],
+      },
+      index,
+    );
+    assert.ok(r.ok, r.ok ? "" : r.motivo);
+    assert.equal(r.parcial, false);
+    const reemplazado = r.composicion.componentes[1];
+    assert.equal(reemplazado?.match, "cabeza_subfamilia");
+    assert.equal(reemplazado?.reemplazo?.por, "cabeza_subfamilia");
+  });
+
+  it("una subfamilia SIN cabeza baja a la de la familia", () => {
+    // `ensalada/verdura` es uno de los 13 huecos declarados del Bloque 0.
+    const r = componerPlato(
+      {
+        food_en: "plato raro",
+        grams: 300,
+        confidence: 0.9,
+        components: [
+          { food_en: "Rice noodles, cooked", grams: 200 },
+          { food_en: INEXISTENTE, grams: 100, familia_subfamilia: "ensalada/verdura" },
+        ],
+      },
+      index,
+    );
+    assert.ok(r.ok, r.ok ? "" : r.motivo);
+    assert.equal(r.composicion.componentes[1]?.match, "cabeza_familia");
+  });
+});
+
+describe("card 5.3 — la composición PARCIAL: cuánto puede faltar", () => {
+  const conFaltante = (gramosDelFaltante: number) =>
+    componerPlato(
+      {
+        food_en: "plato raro",
+        grams: 200 + gramosDelFaltante,
+        confidence: 0.9,
+        components: [
+          { food_en: "Rice noodles, cooked", grams: 200 },
+          { food_en: INEXISTENTE, grams: gramosDelFaltante },
+        ],
+      },
+      index,
+    );
+
+  it("si lo que falta es un 20 % de la masa, SE COMPONE y se declara", () => {
+    const r = conFaltante(50); // 50 de 250 = 20 %
+    assert.ok(r.ok, r.ok ? "" : r.motivo);
+    assert.equal(r.parcial, true);
+    assert.equal(r.composicion.parcial, true);
+    assert.equal(r.composicion.gramos_faltantes, 50);
+    assert.deepEqual(r.composicion.faltantes, [{ termino_en: INEXISTENTE, grams: 50 }]);
+    // El faltante sigue yendo a la curación: componer no es dar el tema por
+    // cerrado, es no dejar al usuario sin número mientras tanto.
+    assert.deepEqual(r.sin_match, [{ termino_en: INEXISTENTE, grams: 50 }]);
+    assert.match(r.caveats[0] ?? "", /Faltó 50 g/);
+    // Y la masa que se declara incluye lo que falta: 200 + 50, mezclado (×1).
+    assert.equal(r.masa_de_los_ingredientes_g, 250);
+  });
+
+  it("si falta MÁS de un cuarto, no se compone: el número sería de otro plato", () => {
+    const r = conFaltante(100); // 100 de 300 = 33 %
+    assert.equal(r.ok, false);
+    assert.match(r.ok ? "" : r.motivo, /33\.3 % de lo que se vio/);
+    assert.ok(!r.ok && r.sin_match.length === 1);
+  });
+
+  it("el borde: justo un 25 % entra, un pelo más no", () => {
+    assert.equal(conFaltante(200 / 3).ok, true); // 66,67 de 266,67 = 25,0 %
+    assert.equal(conFaltante(70).ok, false); // 70 de 270 = 25,9 %
+  });
+
+  it("una parcial confía MENOS que una completa, y el descuento es el declarado", () => {
+    const parcial = conFaltante(50);
+    const completa = componerPlato(
+      { food_en: "x", grams: 200, confidence: 1, components: [{ food_en: "Rice noodles, cooked", grams: 200 }] },
+      index,
+    );
+    assert.ok(parcial.ok && completa.ok);
+    assert.equal(completa.confianza_match, redondear(1 * FACTOR_COMPOSICION));
+    assert.equal(parcial.confianza_match, redondear(1 * FACTOR_COMPOSICION_PARCIAL));
+    assert.ok(parcial.confianza_match < completa.confianza_match);
+  });
+
+  it("si TODOS los ingredientes faltan no hay parcial que valga", () => {
+    const r = componerPlato(
+      { food_en: "x", grams: 100, confidence: 1, components: [{ food_en: INEXISTENTE, grams: 100 }] },
+      index,
+    );
+    assert.equal(r.ok, false);
+    assert.match(r.ok ? "" : r.motivo, /ninguno de sus ingredientes/);
+  });
+
+  it("un faltante SIN gramos usables tampoco: una fracción de una masa desconocida no existe", () => {
+    // Es la misma regla que `interpretarGramos` aplica al plato entero. Un cero
+    // no dice "no pesa": dice "no se pudo pesar", y sin eso no se puede saber
+    // qué fracción del plato falta.
+    const r = componerPlato(
+      {
+        food_en: "x",
+        grams: 300,
+        confidence: 1,
+        components: [
+          { food_en: "Rice noodles, cooked", grams: 200 },
+          { food_en: INEXISTENTE, grams: 0 },
+        ],
+      },
+      index,
+    );
+    assert.equal(r.ok, false);
+    assert.match(r.ok ? "" : r.motivo, /no se sabe cuánto hay/);
+  });
+});
+
+describe("card 5.3 — el método por defecto sale de la subfamilia", () => {
+  it("sin `preparation`, manda el `metodo_por_defecto` de la subfamilia declarada", () => {
+    // Lo que la visión no distingue en una foto lo pone la taxonomía. `pizza/*`
+    // declara `horneado_masa` (0,891), contra el 1,000 de `mezclado`.
+    const componentes = [{ food_en: "Rice noodles, cooked", grams: 200 }];
+    const entrada = index.taxonomia.porId.get("pizza/con-carne");
+    assert.ok(entrada);
+    const conFamilia = componerPlato({ food_en: "x", grams: 200, confidence: 1, components: componentes }, index, entrada);
+    const sinFamilia = componerPlato({ food_en: "x", grams: 200, confidence: 1, components: componentes }, index);
+    assert.ok(conFamilia.ok && sinFamilia.ok);
+    assert.equal(conFamilia.composicion.metodo, "horneado_masa");
+    assert.equal(sinFamilia.composicion.metodo, "mezclado");
+  });
+
+  it("pero si la visión declaró el método, gana la visión: ella miró la foto", () => {
+    const entrada = index.taxonomia.porId.get("pizza/con-carne");
+    assert.ok(entrada);
+    const r = componerPlato(
+      { food_en: "x", grams: 200, confidence: 1, preparation: "frito", components: [{ food_en: "Rice noodles, cooked", grams: 200 }] },
+      index,
+      entrada,
+    );
+    assert.ok(r.ok, r.ok ? "" : r.motivo);
+    assert.equal(r.composicion.metodo, "frito");
+  });
+});
+
+describe("card 5.3 — una composición imposible NO se publica", () => {
+  it("un per_100g que no puede existir se declara imposible con el motivo escrito", () => {
+    // El escenario se CONSTRUYE: dos fichas inventadas cuyos macros suman 120 g
+    // por 100 g. El catálogo real no tiene ninguna así —está medido, pasan las
+    // 1.115— y el candado tiene que existir igual, para el día que la aritmética
+    // se rompa.
+    const imposible = indiceDeFixture([
+      fichaFalsa({
+        id: "fake-imposible",
+        names: { en: "Imposible", es: "Imposible" },
+        per_100g: { kcal: 630, protein_g: 40, carbs_g: 50, fat_g: 30, fiber_g: 0, sat_fat_g: 0, sugars_g: 0, sodium_mg: 0 },
+      }),
+      fichaFalsa({ id: "fake-normal", names: { en: "Normal", es: "Normal" } }),
+    ]);
+    const r = componerPlato(
+      { food_en: "x", grams: 100, confidence: 1, components: [{ food_en: "Imposible", grams: 100 }] },
+      imposible,
+    );
+    assert.equal(r.ok, false);
+    assert.match(r.ok ? "" : r.motivo, /no pueden existir y no se publica/);
+    assert.match(r.ok ? "" : r.motivo, /pesar más que él mismo/);
+  });
+
+  it("y una composición normal del catálogo real sigue pasando el halo", () => {
+    const r = componerPlato(
+      {
+        food_en: "x",
+        grams: 300,
+        confidence: 1,
+        components: [
+          { food_en: "Rice noodles, cooked", grams: 200 },
+          { food_en: "Olive oil", grams: 20 },
+        ],
+      },
+      index,
+    );
+    assert.ok(r.ok, r.ok ? "" : r.motivo);
   });
 });

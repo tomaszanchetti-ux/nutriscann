@@ -16,8 +16,9 @@
  * mismo. Es el único cruce del catálogo, y con un índice plano habría bastado
  * para volver el motor no determinístico.
  */
+import { FAMILIAS, SUSTITUTOS, idCompuesto, type Familia, type Subfamilia, type Sustituto } from "../kb/familias";
 import { aliasConfidence, aliasText, type CanonicalFood, type Catalog, type VocabularyGuard } from "../kb/types";
-import { claveDeMatching, estadoDeCoccion, variantesDeIndice } from "./normalize";
+import { claveDeMatching, estadoDeCoccion, sinDescriptores, variantesDeIndice } from "./normalize";
 
 /** Un término del catálogo, ya normalizado, apuntando a su ficha. */
 export interface TerminoIndexado {
@@ -127,6 +128,59 @@ export interface ColisionDeIndice {
   pierde: string;
 }
 
+/**
+ * UNA SUBFAMILIA DE LA TAXONOMÍA, YA RESUELTA CONTRA ESTE CATÁLOGO (card 5.3).
+ *
+ * `FAMILIAS` (generado desde `kb/curation/familias.json`) dice el id de la ficha
+ * cabeza; acá viaja LA FICHA, y solo si este catálogo la tiene y está viva. La
+ * diferencia importa: un índice de fixture con dos fichas tiene la taxonomía
+ * entera pero ninguna cabeza, y el motor tiene que bajar al siguiente escalón
+ * sin enterarse de que existe un JSON en otra parte.
+ */
+export interface EntradaDeTaxonomia {
+  /** El id compuesto `familia/subfamilia`, tal como lo emite la visión. */
+  id: string;
+  familia: Familia;
+  subfamilia: Subfamilia;
+  /** La ficha que responde por la subfamilia. `null` = hueco declarado. */
+  cabezaDeSubfamilia: CanonicalFood | null;
+  /** La de la familia entera: el último escalón con ficha. */
+  cabezaDeFamilia: CanonicalFood | null;
+  /**
+   * La familia declara que sus alimentos tienen calorías que no vienen de
+   * ningún macronutriente (el alcohol). Es la excepción del candado de
+   * plausibilidad, y se lee de la taxonomía, nunca de una lista en el motor.
+   */
+  aportaAlcohol: boolean;
+}
+
+/**
+ * LA TAXONOMÍA, RESUELTA CONTRA UN CATÁLOGO. Ver `EntradaDeTaxonomia`.
+ *
+ * Son cuatro mapas y cada uno contesta una pregunta distinta de la cascada:
+ * quién responde por `pizza/con-carne`, a qué subfamilia pertenece la ficha que
+ * ganó un match (para saber si contradice lo que declaró la visión), qué
+ * subfamilia se llama "perrito caliente", y qué ficha declaró la curación para
+ * un ingrediente que USDA no mide.
+ */
+export interface Taxonomia {
+  /** `familia/subfamilia` -> la entrada resuelta. 191 valores. */
+  porId: Map<string, EntradaDeTaxonomia>;
+  /** `food_id` -> `familia/subfamilia`. Cada ficha está en exactamente una. */
+  deLaFicha: Map<string, string>;
+  /**
+   * El nombre de una subfamilia (normalizado, en los dos idiomas) -> su id
+   * compuesto. Es el ÚLTIMO RECURSO para deducir la familia cuando la visión no
+   * declaró ninguna: se compara por igualdad del texto normalizado, nunca por
+   * parecido. Un nombre de subfamilia que además es el nombre de otra —no
+   * pasa hoy, medido: 0 colisiones— se resuelve por el primero, que es estable
+   * porque el orden lo fija el JSON.
+   */
+  porNombreDeSubfamilia: Map<string, string>;
+  /** Término normalizado -> el sustituto que lo declara. Ver `Sustituto`. */
+  sustitutos: Map<string, Sustituto>;
+}
+
 export interface CatalogIndex {
   kb_version: string;
   porId: Map<string, CanonicalFood>;
@@ -146,6 +200,15 @@ export interface CatalogIndex {
    * por orden de id) y el candado tiene que sonar en CI, no en producción.
    */
   colisiones: ColisionDeIndice[];
+  /**
+   * LA TAXONOMÍA FAMILIA → SUBFAMILIA, resuelta contra estas fichas (card 5.3).
+   *
+   * Viaja en el índice y no como import suelto por la misma razón que las
+   * guardas: el motor no lee nada, recibe. Un catálogo distinto —un fixture, una
+   * versión vieja en Firestore— da una taxonomía con menos cabezas resueltas, y
+   * eso tiene que verse en el índice que se le pasó, no en un archivo global.
+   */
+  taxonomia: Taxonomia;
 }
 
 /**
@@ -207,6 +270,74 @@ export function indiceDelCatalogo(catalogo: Catalog, opciones: OpcionesDeIndice 
 }
 
 /**
+ * Resuelve la taxonomía contra las fichas VIVAS de este catálogo (card 5.3).
+ *
+ * LA CABEZA SE RESUELVE CONTRA LAS FICHAS QUE ENTRARON AL ÍNDICE, no contra el
+ * JSON. Una cabeza que este catálogo no tiene —o que se retiró con `deprecated`,
+ * regla dura 6— sale `null`, y la cascada baja al escalón siguiente exactamente
+ * como si el Bloque 0 hubiera declarado el hueco. Es la misma disciplina del
+ * matcher: un alimento retirado no vuelve por otra puerta.
+ *
+ * No lanza nunca. Una taxonomía que no cierra contra el catálogo es un candado
+ * del build (`kb/cobertura/verificar_familias.js` y su test), no un error de
+ * runtime: en producción, la respuesta correcta a una cabeza que falta es bajar
+ * un escalón, no dejar de analizar la foto.
+ */
+function resolverTaxonomia(activas: CanonicalFood[]): Taxonomia {
+  const viva = new Map(activas.map((f) => [f.id, f]));
+  const fichaViva = (id: string | null): CanonicalFood | null => (id === null ? null : (viva.get(id) ?? null));
+
+  const taxonomia: Taxonomia = {
+    porId: new Map(),
+    deLaFicha: new Map(),
+    porNombreDeSubfamilia: new Map(),
+    sustitutos: new Map(),
+  };
+
+  for (const familia of FAMILIAS) {
+    const cabezaDeFamilia = fichaViva(familia.cabeza);
+    for (const subfamilia of familia.subfamilias) {
+      const id = idCompuesto(familia, subfamilia);
+      taxonomia.porId.set(id, {
+        id,
+        familia,
+        subfamilia,
+        cabezaDeSubfamilia: fichaViva(subfamilia.cabeza),
+        cabezaDeFamilia,
+        aportaAlcohol: familia.aporta_alcohol === true,
+      });
+      for (const ficha of subfamilia.fichas) taxonomia.deLaFicha.set(ficha, id);
+      for (const nombre of [subfamilia.nombre_es, subfamilia.nombre_en]) {
+        const clave = claveDeMatching(nombre);
+        if (clave.length > 0 && !taxonomia.porNombreDeSubfamilia.has(clave)) {
+          taxonomia.porNombreDeSubfamilia.set(clave, id);
+        }
+      }
+    }
+  }
+
+  for (const sustituto of SUSTITUTOS) {
+    // La ficha del sustituto tiene que estar VIVA en este catálogo; si no, el
+    // sustituto no existe para este índice y la cascada sigue de largo.
+    if (fichaViva(sustituto.ficha) === null) continue;
+    for (const termino of sustituto.terminos) {
+      // DOS CLAVES POR TÉRMINO: la literal y la que queda al sacarle los
+      // descriptores de presentación. La curación declara EL ALIMENTO ("pizza
+      // dough") y la visión escribe cómo lo vio ("pizza dough, baked" / "masa de
+      // pizza horneada"); sin la segunda clave, el sustituto que existe para el
+      // caso de producción del 02/09 no dispararía justamente con ese caso.
+      // Son las mismas palabras que el difuso ya descuenta de la cobertura:
+      // hornear una masa no la convierte en otro alimento.
+      for (const clave of [claveDeMatching(termino), sinDescriptores(claveDeMatching(termino))]) {
+        if (clave.length > 0 && !taxonomia.sustitutos.has(clave)) taxonomia.sustitutos.set(clave, sustituto);
+      }
+    }
+  }
+
+  return taxonomia;
+}
+
+/**
  * Arma el índice. Las fichas `deprecated` NO ENTRAN: un alimento retirado no se
  * borra del catálogo (regla dura 6) pero tampoco puede volver por un match.
  *
@@ -241,6 +372,7 @@ export function construirIndice(
     // Las declaradas si vinieron; el arranque en frío si no. Ver `OpcionesDeIndice`.
     guardas: opciones.guardas ?? GUARDAS_DE_VOCABULARIO,
     colisiones: [],
+    taxonomia: resolverTaxonomia(activas),
   };
 
   const agregar = (entrada: TerminoIndexado): void => {

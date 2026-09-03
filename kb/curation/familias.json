@@ -13,7 +13,16 @@
     "la composición cuando la visión no declara preparación.",
     "`origen_de_asignacion` dice, ficha por ficha, si su `category` de USDA alcanzó para",
     "ubicarla (categoria), si hizo falta una regla sobre el nombre (regla) o una decisión",
-    "escrita a mano (manual). Es la medida de cuánto de esto puede hacer el build solo."
+    "escrita a mano (manual). Es la medida de cuánto de esto puede hacer el build solo.",
+    "CARD 5.3 — `sustitutos`: pares (términos → ficha) que la CURACIÓN declara para un ingrediente que",
+    "el catálogo no nombra y USDA no mide. No es un alias: un alias dice que la ficha SE LLAMA así, y",
+    "un sustituto dice que la ficha es lo más cercano que hay, con el motivo escrito. El motor los",
+    "prueba DESPUÉS del matcher y ANTES de las cabezas de familia — una decisión escrita a mano gana a",
+    "un promedio— y declara el reemplazo en los caveats del ítem.",
+    "CARD 5.3 — `aporta_alcohol` en una familia: sus fichas tienen calorías que NO vienen de ningún",
+    "macronutriente (el etanol aporta 7 kcal/g y no es proteína, hidrato ni grasa). Es la excepción",
+    "declarada del candado de plausibilidad (`esPlausible`, functions/src/engine/arithmetic.ts): sin",
+    "ella las 16 fichas de esta familia —de la cerveza al Martini— serían imposibles."
   ],
   "criteria_version": "5.0-familias-borrador-v1",
   "kb_version_medida": "3.8.0+843ecb80",
@@ -218,6 +227,7 @@
       "nombre_es": "Bebida alcohólica",
       "nombre_en": "Alcoholic drinks",
       "modo": "identificar",
+      "aporta_alcohol": true,
       "cabeza": "fdc-168746",
       "cabeza_de": "bebida-alcoholica/cerveza",
       "subfamilias": [
@@ -4830,5 +4840,25 @@
     "receta-tumbet": "regla",
     "receta-turron": "categoria",
     "receta-txangurro": "regla"
-  }
+  },
+  "sustitutos": [
+    {
+      "terminos": [
+        "pizza dough",
+        "pizza crust",
+        "masa de pizza",
+        "base de pizza"
+      ],
+      "ficha": "fdc-2708674",
+      "motivo": "USDA no mide la masa de pizza sola: cero coincidencias con `pizza dough` y `pizza crust` en los tres datasets (Bloque 0 de la Fase 5, punto d). `Pizza sin queso, masa fina` (276 kcal/100 g) es masa + salsa, que es lo más cerca que hay. Es el hueco que dejó sin números la pizza de producción del 02/09/2026."
+    },
+    {
+      "terminos": [
+        "mascarpone",
+        "queso mascarpone"
+      ],
+      "ficha": "fdc-173418",
+      "motivo": "USDA no mide el mascarpone (cero coincidencias). El queso crema (350 kcal/100 g) es el gemelo nutricional declarado en el Bloque 0, punto d."
+    }
+  ]
 }

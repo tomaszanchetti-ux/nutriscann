@@ -52,8 +52,26 @@ export interface Per100g {
 /** Los mismos ocho valores, ya escalados a los gramos del plato. */
 export type Per100gEscalado = Per100g;
 
-/** Cómo se llegó a la ficha (o a la falta de ficha). */
-export type TipoDeMatch = "exacto" | "alias" | "difuso" | "compuesto" | "no_catalogado";
+/**
+ * Cómo se llegó a la ficha (o a la falta de ficha).
+ *
+ * Espejo de `functions/src/engine/types.ts`. Los cuatro sellos de la card 5.3
+ * son los escalones que el motor bajó cuando el NOMBRE del alimento no llegó a
+ * ninguna ficha: un sustituto que escribió la curación, la ficha que representa
+ * a su grupo, la que representa a su familia, o una composición a la que le
+ * faltaba un ingrediente menor. Los cuatro dan número; los cuatro lo dan con
+ * menos confianza que un nombre, y por eso se muestran distinto.
+ */
+export type TipoDeMatch =
+  | "exacto"
+  | "alias"
+  | "difuso"
+  | "sustituto"
+  | "cabeza_subfamilia"
+  | "cabeza_familia"
+  | "compuesto"
+  | "compuesto_parcial"
+  | "no_catalogado";
 
 /** Un ingrediente resuelto dentro de un plato compuesto en runtime. */
 export interface ComponenteDelPlato {
@@ -65,6 +83,17 @@ export interface ComponenteDelPlato {
   match: TipoDeMatch;
   confidence_match: number;
   generic: boolean;
+  /**
+   * ESTE INGREDIENTE NO SE ENCONTRÓ POR SU NOMBRE (card 5.3). Solo cuando la
+   * ficha que se usó es un sustituto declarado o la que representa a su grupo.
+   */
+  reemplazo?: { por: "sustituto" | "cabeza_subfamilia" | "cabeza_familia"; motivo: string };
+}
+
+/** Un ingrediente que se vio y no se pudo resolver, con los gramos que pesaba. */
+export interface ComponenteFaltante {
+  termino_en: string;
+  grams: number;
 }
 
 /** La cuenta de una composición, entera y a la vista. */
@@ -76,6 +105,14 @@ export interface Composicion {
   aceite_ref: string | null;
   peso_final_g: number;
   rendimiento_de: "transformacion" | "receta";
+  /** La composición no tiene todo el plato adentro (card 5.3). */
+  parcial?: true;
+  /** Los ingredientes que se vieron y no se resolvieron. */
+  faltantes?: ComponenteFaltante[];
+  /** Cuántos gramos del plato representan esos faltantes. */
+  gramos_faltantes?: number;
+  /** Los gramos a los que se escaló el `per_100g` de lo resuelto. */
+  gramos_del_plato?: number;
 }
 
 export interface EngineItem {

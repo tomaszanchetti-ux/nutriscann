@@ -29,7 +29,44 @@ export interface Familia {
   nombre_en: string;
   modo: ModoDeFamilia;
   cabeza: string | null;
+  /**
+   * SUS FICHAS TIENEN CALORÍAS QUE NO VIENEN DE NINGÚN MACRONUTRIENTE. Solo
+   * cuando vale `true` (hoy: `bebida-alcoholica`, y nada más).
+   *
+   * El etanol aporta 7 kcal/g y no es proteína, ni hidrato, ni grasa. Es la
+   * excepción declarada del candado de plausibilidad (`esPlausible`): sin ella
+   * las 16 fichas de esa familia —el destilado son 231 kcal/100 g con CERO
+   * macros— quedarían marcadas como imposibles. Medido sobre las 1.115 fichas:
+   * con la excepción no falla ninguna; sin ella fallan esas 16 y solo esas.
+   */
+  aporta_alcohol?: true;
   subfamilias: Subfamilia[];
+}
+
+/**
+ * UN INGREDIENTE QUE EL CATÁLOGO NO NOMBRA, Y LA FICHA QUE LA CURACIÓN DECLARA
+ * EN SU LUGAR.
+ *
+ * NO ES UN ALIAS, y la diferencia es la razón de que exista este tipo: un alias
+ * afirma que la ficha SE LLAMA así, y el build lo verifica contra las guardas de
+ * vocabulario. Un sustituto afirma otra cosa —"esto no lo mide nadie, y esta
+ * ficha es lo más cerca que hay"— y por eso viaja con su motivo escrito y el
+ * motor lo declara en los `caveats` del ítem en vez de callárselo.
+ *
+ * Formato en `kb/curation/familias.json` (sección `sustitutos`):
+ *
+ *     { "terminos": ["pizza dough", "masa de pizza"],
+ *       "ficha": "fdc-2708674",
+ *       "motivo": "USDA no mide la masa de pizza sola: …" }
+ *
+ * `terminos` son los nombres tal como los escribe la visión, en los dos
+ * idiomas; se comparan por igualdad del texto normalizado, nunca por parecido:
+ * un sustituto es una decisión escrita, y el parecido ya lo cubre el difuso.
+ */
+export interface Sustituto {
+  terminos: string[];
+  ficha: string;
+  motivo: string;
 }
 
 /** La versión del catálogo con la que se midió la taxonomía. */
@@ -219,6 +256,7 @@ export const FAMILIAS: Familia[] = [
     "nombre_en": "Alcoholic drinks",
     "modo": "identificar",
     "cabeza": "fdc-168746",
+    "aporta_alcohol": true,
     "subfamilias": [
       {
         "id": "cerveza",
@@ -3473,6 +3511,27 @@ export const FAMILIAS: Familia[] = [
         ]
       }
     ]
+  }
+];
+
+export const SUSTITUTOS: Sustituto[] = [
+  {
+    "terminos": [
+      "pizza dough",
+      "pizza crust",
+      "masa de pizza",
+      "base de pizza"
+    ],
+    "ficha": "fdc-2708674",
+    "motivo": "USDA no mide la masa de pizza sola: cero coincidencias con `pizza dough` y `pizza crust` en los tres datasets (Bloque 0 de la Fase 5, punto d). `Pizza sin queso, masa fina` (276 kcal/100 g) es masa + salsa, que es lo más cerca que hay. Es el hueco que dejó sin números la pizza de producción del 02/09/2026."
+  },
+  {
+    "terminos": [
+      "mascarpone",
+      "queso mascarpone"
+    ],
+    "ficha": "fdc-173418",
+    "motivo": "USDA no mide el mascarpone (cero coincidencias). El queso crema (350 kcal/100 g) es el gemelo nutricional declarado en el Bloque 0, punto d."
   }
 ];
 

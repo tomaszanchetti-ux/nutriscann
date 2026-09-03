@@ -20,7 +20,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, it } from "node:test";
 import { COOKING_TRANSFORMS } from "./cooking.transforms";
-import { FAMILIAS, FAMILIAS_KB_VERSION, IDS_FAMILIA_SUBFAMILIA } from "./familias";
+import { FAMILIAS, FAMILIAS_KB_VERSION, IDS_FAMILIA_SUBFAMILIA, SUSTITUTOS } from "./familias";
 
 const RAIZ = resolve(__dirname, "..", "..", "..");
 const CENTINELA = Buffer.from(
@@ -79,14 +79,17 @@ describe("la taxonomía de familias no se separó de la curación", () => {
   const json = JSON.parse(readFileSync(resolve(RAIZ, "kb", "curation", "familias.json"), "utf8")) as {
     kb_version_medida: string;
     familias: {
-      id: string; nombre_es: string; nombre_en: string; modo: string; cabeza?: string | null;
+      id: string; nombre_es: string; nombre_en: string; modo: string; cabeza?: string | null; aporta_alcohol?: boolean;
       subfamilias: { id: string; nombre_es: string; nombre_en: string; modo: string; metodo_por_defecto: string; cabeza?: string | null; fichas: string[] }[];
     }[];
+    sustitutos?: { terminos: string[]; ficha: string; motivo: string }[];
   };
 
   it("son las mismas familias, subfamilias, cabezas y fichas, en el mismo orden", () => {
     const esperado = json.familias.map((f) => ({
       id: f.id, nombre_es: f.nombre_es, nombre_en: f.nombre_en, modo: f.modo, cabeza: f.cabeza ?? null,
+      // `aporta_alcohol` solo viaja cuando vale `true`, igual que en el generador.
+      ...(f.aporta_alcohol === true ? { aporta_alcohol: true } : {}),
       subfamilias: f.subfamilias.map((s) => ({
         id: s.id, nombre_es: s.nombre_es, nombre_en: s.nombre_en, modo: s.modo,
         metodo_por_defecto: s.metodo_por_defecto, cabeza: s.cabeza ?? null, fichas: s.fichas,
@@ -94,6 +97,13 @@ describe("la taxonomía de familias no se separó de la curación", () => {
     }));
     assert.deepEqual(FAMILIAS, esperado, "regenerá con `node kb/cobertura/generar_familias_ts.js`");
     assert.equal(FAMILIAS_KB_VERSION, json.kb_version_medida);
+  });
+
+  it("son los mismos sustitutos declarados, con sus términos y su motivo", () => {
+    // El candado de la card 5.3: los sustitutos son curación —"USDA no mide esto
+    // y esta es la ficha más cercana"— y viajan al motor por esta copia. Si
+    // alguien agrega uno al JSON y no regenera, el motor sigue sin encontrarlo.
+    assert.deepEqual(SUSTITUTOS, json.sustitutos ?? [], "regenerá con `node kb/cobertura/generar_familias_ts.js`");
   });
 
   it("el enum tiene una entrada por subfamilia y ninguna repetida", () => {

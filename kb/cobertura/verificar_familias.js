@@ -28,6 +28,16 @@
  *   5. EL CENSO DE HUECOS. Las subfamilias sin cabeza NO son un error: son un
  *      hallazgo declarado, y cada una tiene que traer su `motivo`. Lo que sí es
  *      un error es una sin cabeza y sin motivo — eso es un olvido disfrazado.
+ *   6. LOS SUSTITUTOS DECLARADOS (card 5.3). Cada uno nombra una ficha que
+ *      existe, trae al menos un término y su motivo escrito, y ningún término se
+ *      declara dos veces: un sustituto duplicado haría que la respuesta dependa
+ *      del orden de la lista, que es la misma clase de bug que el punto 1.
+ *
+ * LOS MÉTODOS VÁLIDOS SE LEEN DE `kb/curation/cooking.transforms.json`, no de una
+ * lista escrita acá. La card 5.3 lo cambió: la lista a mano tenía CINCO de los
+ * ocho métodos medidos, así que el candado habría rechazado como inválido un
+ * `metodo_por_defecto: "hervido"` perfectamente legítimo (es la deuda 6 del
+ * Bloque 0). Un candado que conoce su dominio de segunda mano no es un candado.
  *
  * El script no arregla nada y no escribe nada: imprime lo que midió y sale con
  * código 1 si algún candado se rompe.
@@ -40,13 +50,14 @@ const path = require("node:path");
 const RAIZ = path.resolve(__dirname, "..", "..");
 const CATALOGO = path.join(RAIZ, "kb", "build", "foods.canonical.json");
 const TAXONOMIA = path.join(RAIZ, "kb", "curation", "familias.json");
+const COCCION = path.join(RAIZ, "kb", "curation", "cooking.transforms.json");
 
 const MODOS = new Set(["identificar", "componer"]);
-const METODOS = new Set(["mezclado", "frito", "horneado", "horneado_masa", "plancha"]);
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 const catalogo = JSON.parse(fs.readFileSync(CATALOGO, "utf8"));
 const taxonomia = JSON.parse(fs.readFileSync(TAXONOMIA, "utf8"));
+const METODOS = new Set(Object.keys(JSON.parse(fs.readFileSync(COCCION, "utf8")).transforms));
 
 const errores = [];
 const avisos = [];
@@ -70,6 +81,11 @@ for (const familia of taxonomia.familias) {
     }
   }
   if (!MODOS.has(familia.modo)) fallo(`la familia "${familia.id}" declara modo "${familia.modo}"`);
+  // `aporta_alcohol` solo puede estar en `true`: la ausencia YA dice que no, y
+  // una clave en `false` sería un segundo modo de decir lo mismo (card 5.3).
+  if ("aporta_alcohol" in familia && familia.aporta_alcohol !== true) {
+    fallo(`la familia "${familia.id}" declara aporta_alcohol distinto de true: se omite la clave o se pone en true`);
+  }
 
   const idsSub = new Set();
   for (const sub of familia.subfamilias) {
@@ -124,6 +140,29 @@ for (const [id] of fichasDelCatalogo) {
 if (enCero.length > 0) fallo(`${enCero.length} fichas no están en ninguna subfamilia: ${enCero.slice(0, 10).join(", ")}${enCero.length > 10 ? "…" : ""}`);
 if (enDos.length > 0) fallo(`${enDos.length} fichas están en más de una subfamilia: ${enDos.slice(0, 10).join(" | ")}`);
 
+// ------------------------------------------------------------------- 6
+// LOS SUSTITUTOS DECLARADOS (card 5.3). Ver `Sustituto` en familias.ts.
+const terminosVistos = new Map();
+for (const sustituto of taxonomia.sustitutos ?? []) {
+  const donde = `sustituto → "${sustituto.ficha}"`;
+  if (!fichasDelCatalogo.has(sustituto.ficha)) {
+    fallo(`${donde} nombra una ficha que no está en el catálogo`);
+  }
+  if (!Array.isArray(sustituto.terminos) || sustituto.terminos.length === 0) {
+    fallo(`${donde} no declara ni un término`);
+  }
+  if (typeof sustituto.motivo !== "string" || sustituto.motivo.length === 0) {
+    fallo(`${donde} no declara motivo: un sustituto sin motivo es una ficha equivocada esperando`);
+  }
+  for (const termino of sustituto.terminos ?? []) {
+    const clave = String(termino).trim().toLowerCase();
+    if (terminosVistos.has(clave)) {
+      fallo(`el término "${termino}" está declarado en dos sustitutos (${terminosVistos.get(clave)} y ${sustituto.ficha})`);
+    }
+    terminosVistos.set(clave, sustituto.ficha);
+  }
+}
+
 // ------------------------------------------------------ el rango declarado
 if (taxonomia.familias.length < 40 || taxonomia.familias.length > 70) {
   fallo(`la taxonomía declara ${taxonomia.familias.length} familias; el rango acordado en el Bloque 0 es 40–70`);
@@ -157,6 +196,7 @@ console.log(`Método:     ${Object.entries(porMetodo).map(([k, v]) => `${k} ${v}
 console.log(`Origen:     ${Object.entries(porOrigen).map(([k, v]) => `${k} ${v}`).join(" · ")}`);
 console.log(`Sin cabeza: ${sinCabeza.length}${sinCabeza.length ? ` → ${sinCabeza.join(", ")}` : ""}`);
 console.log(`Sin fichas: ${vacias.length}${vacias.length ? ` → ${vacias.join(", ")}` : ""}`);
+console.log(`Sustitutos: ${(taxonomia.sustitutos ?? []).length} · ${terminosVistos.size} términos declarados`);
 
 for (const aviso of avisos) console.log(`AVISO · ${aviso}`);
 
