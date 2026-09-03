@@ -1548,4 +1548,46 @@ describe("card 6.3 — el desempate crudo/cocido, escrito simétrico", () => {
     assert.equal(cocidoPrimero.taxonomia.deLaFicha.get("fdc-test-sin-taxonomia-cruda"), undefined);
     assert.equal(cocidoPrimero.taxonomia.deLaFicha.get("fdc-test-sin-taxonomia-cocida"), undefined);
   });
+
+  it("EL CHEQUEO DE HERMANA IMPORTA: dos fichas SIN relación que empatan por casualidad NO se desempatan como si lo fueran", () => {
+    // Mutación adversarial del Q/A (WS14): sacar la línea
+    // `sinDescriptores(nuevo.entrada.clave) !== sinDescriptores(actual.entrada.clave)`
+    // de `desempateDeEstado` no rompía ningún test existente. Construido para
+    // matarla: dos fichas que NO son el mismo alimento —"Zonk alfabet" (crudo,
+    // reusa la lechuga real fdc-2709789 para que la taxonomía la ubique en
+    // `verdura`) y "Zonk gammaaa" (cocido, un alimento inventado sin ninguna
+    // relación)— pero que EMPATAN en confianza por casualidad: "alfabet" y
+    // "gammaaa" tienen las dos 7 letras, así que la dirección C (nombre
+    // partido) les mide la MISMA cobertura sobre el mismo núcleo ("zonk").
+    //
+    // SIN el chequeo de hermana, las dos condiciones que quedan —"la consulta
+    // no declaró estado" y "una dice crudo, la otra cocido"— las tratan como
+    // si fueran el mismo alimento en dos estados, y la ficha cocida (que es la
+    // que corresponde: no hay ninguna razón para creer que "zonk gammaaa,
+    // cocido" es en realidad "zonk alfabet" cruda) queda SUSTITUIDA por la
+    // lechuga. Es la sustitución de un alimento por otro que el chequeo de
+    // hermana existe para impedir.
+    //
+    // Medido con la mutación aplicada a mano (y revertida con `git checkout`
+    // antes de dejar este test): sin el chequeo, el ganador pasa de la ficha
+    // cocida (correcta, no hay desempate que valga entre dos alimentos
+    // distintos) a `fdc-2709789` (la lechuga cruda, sustituyendo a un alimento
+    // con el que no tiene nada que ver) — en LOS DOS `food_id` de "otra
+    // comida" que se prueban abajo.
+    const crudoVerdura = { ...fichaReal("fdc-2709789"), names: { en: "Zonk alfabet, crudo", es: null } };
+    const consulta = "zonk alfabet gammaaa";
+    // Dos ids de "otra comida" distintos, uno que ordena ANTES de "fdc-..." y
+    // otro que ordena DESPUÉS: en los dos, `porLargo` (`catalog.ts`) pone a la
+    // cocida primero en la lista igual —su clave completa ("zonk gammaaa
+    // cocido", 19 letras) es más larga que la de la cruda ("zonk alfabet
+    // crudo", 18: "crudo" pesa una letra menos que "cocido")—, así que en los
+    // dos casos la cocida llega primero a `mejor` y el chequeo de hermana es
+    // lo único que le impide a la lechuga desplazarla.
+    for (const idOtraComida of ["aaa-otra-comida-sin-relacion", "zzz-otra-comida-sin-relacion"]) {
+      const otraComida = fichaFalsa({ id: idOtraComida, names: { en: "Zonk gammaaa, cocido", es: null } });
+      const idx = indiceDeFixture([crudoVerdura, otraComida]);
+      const r = buscarAlimento(consulta, idx);
+      assert.equal(r?.ficha.id, idOtraComida, `no debería sustituirse por la lechuga (id de la otra comida: ${idOtraComida})`);
+    }
+  });
 });

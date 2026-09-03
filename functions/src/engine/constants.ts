@@ -278,10 +278,32 @@ export const PALABRAS_DE_COCIDO: readonly string[] = [
  *
  * LA TAXONOMÍA SÍ SABE LO QUE LAS KCAL NO: `Lechuga cruda` y `Tomate crudo` son
  * `verdura`, la manzana es `fruta`, y el huevo y la patata tienen FAMILIA PROPIA
- * (`huevo`, `patata`) porque el catálogo los mide aparte. Cinco de las 46
- * familias tocan alguna ficha cruda; estas dos son las únicas en las que el crudo
- * es una forma normal de comer, y las otras tres —`legumbre`, `cereal-y-grano`,
- * `cerdo`— son justamente las que la densidad ya frenaba.
+ * (`huevo`, `patata`) porque el catálogo los mide aparte.
+ *
+ * MEDIDO (Q/A de la card 6.3, WS14): **16 de las 46 familias** tocan alguna
+ * ficha que declara estar cruda —no cinco, como decía una cuenta vieja de este
+ * comentario— (`verdura`, `fruta`, `huevo`, `patata`, `legumbre`,
+ * `cereal-y-grano`, `cerdo`, `embutido`, `marisco`, `pescado`, `pollo`, `leche`,
+ * `frutos-secos`, `alternativa-vegetal`, `bolleria`, `zumo-y-batido`). Pero
+ * TOCAR una ficha cruda no es lo mismo que exponer el PATRÓN que este desempate
+ * necesita para tener algo que decidir: una hermana cruda Y una cocida con el
+ * MISMO texto sin descriptores (`sinDescriptores`, condición 2 de
+ * `desempateDeEstado`). Ese patrón, barrido sobre el catálogo real, solo lo
+ * producen **7** de esas 16: `verdura`, `fruta`, `huevo` y `patata` —donde la
+ * familia es lo que decide, en las dos direcciones— y `legumbre`,
+ * `cereal-y-grano` y `cerdo` —donde la densidad ya frenaba antes de que la
+ * familia opinara.
+ *
+ * `PESCADO` Y `FRUTOS-SECOS` NO ESTÁN EN LA LISTA, Y NO ES UN OLVIDO: son dos
+ * familias donde el crudo SÍ es una forma normal de comer (salmón crudo, frutos
+ * secos crudos), la misma situación que `verdura` y `fruta` — pero hoy el
+ * catálogo no las expone al patrón: barrido sobre las 1.115 fichas, CERO
+ * hermanas (ninguna ficha cruda de `pescado` o de `frutos-secos` tiene una
+ * cocida declarada con el mismo texto sin descriptores). El desempate nunca
+ * llega a preguntarles nada, así que agregarlas hoy sería escribir una regla que
+ * ningún dato ejercita. Si el catálogo suma esa hermana el día de mañana —un
+ * `Salmón cocido`, por ejemplo—, esta lista tiene que revisarse recién ahí, con
+ * el caso medido y no por anticipado.
  *
  * LA LISTA ES CORTA Y CERRADA A PROPÓSITO, como `DESCRIPTORES_DE_PRESENTACION`:
  * la prueba de admisión no es "¿se puede comer crudo?" —un huevo se puede— sino

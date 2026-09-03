@@ -37,16 +37,54 @@ como dice el comentario: `lechuga cruda` y `lechuga cocida` reducen las dos a
 `lechuga`.
 
 **¿Tres candidatos empatados (cruda, cocida y una tercera ficha distinta)?**
-El catálogo real SÍ tiene grupos de 3 o más fichas con el mismo texto sin
-descriptores — `huevo` (cocido/crudo/frito) y `patata`
-(hervida/cruda/frita/asada/salteada) son los dos casos reales, medidos con un
-barrido (`match.test.ts`, "tres candidatos reales..."). En los dos, el tercer
-candidato difiere por una PALABRA DE PREPARACIÓN (`frito`, `asado`,
-`salteado`), y la condición 3 de la dirección C (`mismasPreparaciones`, ya
-existía desde la card 2.8) lo saca de la competencia en cuanto la consulta no
-nombra esa preparación: nunca llega a empatar por confianza con la pareja
-hermana, así que `huevo duro` y `patata troceada` siguen resolviendo entre DOS
-candidatos, no tres.
+El catálogo real tiene, además del par hermana, **los dos casos con
+preparación real, más el de la lenteja que se resuelve por otro camino**:
+
+- `huevo` (cocido/crudo/frito) y `patata` (hervida/cruda/frita/asada/salteada)
+  son los dos casos con PREPARACIÓN real, medidos con un barrido
+  (`match.test.ts`, "tres candidatos reales..."). En los dos, el tercer
+  candidato difiere por una palabra de PREPARACIÓN (`frito`, `asado`,
+  `salteado`), y la condición 3 de la dirección C (`mismasPreparaciones`, ya
+  existía desde la card 2.8) lo saca de la competencia en cuanto la consulta
+  no nombra esa preparación: nunca llega a empatar por confianza con la
+  pareja hermana, así que `huevo duro` y `patata troceada` siguen resolviendo
+  entre DOS candidatos, no tres.
+- `lenteja` es un TERCER caso real que el primer barrido de esta card no
+  contó (agrupaba por `food_id` único, y el alias "lenteja" apunta al MISMO
+  `food_id` que "lenteja cocida" — no son dos fichas, es la misma ficha
+  encontrable por dos textos). El alias `"lenteja"` (confianza declarada 0,8,
+  `kb/curation/aliases.regional.json`) agrupa con "lenteja cruda" y "lenteja
+  cocida" sin ninguna palabra de preparación de por medio, así que
+  `mismasPreparaciones` NO lo separa. **Hoy no falla, verificado con dos
+  mecanismos, no uno:**
+  1. **El término exacto ("lenteja", "lentejas") se resuelve en el nivel
+     ALIAS (nivel 2 de la cascada, `motivo: "Coincidencia exacta con un
+     alias..."`) — ANTES de que la cascada llegue al nivel difuso (nivel 3),
+     que es donde vive `desempateDeEstado`.** No hay comparación de estado
+     posible: el alias gana solo, sin competencia.
+  2. **Con un descriptor que fuerza el nivel difuso (`"lenteja picada"`), el
+     alias sigue ganando, pero por la MISMA razón que el caso exacto, un
+     escalón más abajo:** entra por la dirección A (nombre_en_consulta,
+     cobertura 1,0, `mejorNucleo`), y la selección final es
+     `mejorAB ?? mejorC` — la dirección A/B le gana a la C SIN mirar
+     confianza, incondicionalmente. "lenteja cruda" y "lenteja cocida" sí
+     llegan a competir, pero adentro de `mejorC`, que nunca se consulta
+     porque `mejorAB` ya no es null.
+  Verificado y CORREGIDO acá el mecanismo que se había apuntado primero
+  ("los difusos pierden por 0,8 contra 1,0"): armé y probé más de una decena
+  de consultas ("lenteja picada", "lentejas troceadas", "guiso de lenteja
+  picada", con relleno antes y después de "lenteja") buscando un punto donde
+  el alias (0,8) compitiera por CONFIANZA contra "lenteja cruda"/"lenteja
+  cocida" (1,0) dentro de la MISMA reducción, y no encontré ninguno: la
+  única comparación por confianza que existe en esta cascada es entre
+  `mejorA` y `mejorB` (`mejorB.confianza > mejorA.confianza ? mejorB :
+  mejorA`), y "lenteja cruda"/"lenteja cocida" solo pueden entrar por B si el
+  texto del usuario es un PREFIJO exacto de su nombre completo — que para
+  "lenteja" sola vuelve a resolver en el nivel alias (mecanismo 1) antes de
+  llegar ahí. Así que el mecanismo real y verificado es el MISMO en los dos
+  casos (alias/exacto primero, AB antes que C después); no hay un segundo
+  mecanismo de confianza actuando por separado, y lo dejo escrito así en vez
+  de repetir una descripción que no pude reproducir.
 
 Construyendo el caso a mano (un tercero que NO declara preparación NI estado,
 solo una palabra de presentación como "sliced") sí aparece un límite real: ese
@@ -145,12 +183,30 @@ que predijo H4:
 |---|---|---|---|
 | `20-ensalada-mixta` | `red cabbage, shredded` (lombarda, componente) | `Repollo rojo cocido con sal y grasa`, 58 kcal/100 g | `Repollo rojo crudo`, 34,05 kcal/100 g |
 
-El total del plato pasa de 243,862 a 241,686 kcal (el compuesto no publica
-total: sigue bajo la compuerta del 12 %, un asunto de la card 6.2, no de
-esta). Los otros 6 componentes de la misma ensalada (lechuga, tomate, maíz,
-zanahoria, huevo duro, atún) no se mueven — `hard-boiled egg` ya daba
-`Huevo cocido` en `main` por la razón alfabética explicada arriba, así que acá
-no hay cambio que atribuirle a esta card.
+**Corrección (Q/A, WS14): la frase original decía que el compuesto "sigue
+bajo la compuerta / sin total", y es falsa para la branch actual.** Medido de
+nuevo, con `main` (sin 6.1 ni 6.3) y la branch (con las dos cards):
+
+| | kcal del compuesto | confianza | ¿publica total? |
+|---|---|---|---|
+| `main` | 243,862 | 0,107 | No — bajo la compuerta del 12 % (H1/H2 de Bloque 0) |
+| branch | 241,686 | 0,393 | **Sí** — 241,686 kcal |
+
+El SALTO de confianza (0,107 → 0,393) que hace cruzar la compuerta es de la
+**card 6.1** (el promedio ponderado por gramos en vez del mínimo): la
+confianza del ítem más débil de la ensalada (el atún, 0,157) ya no decide sola
+por los siete. **Esta card (6.3) no toca la compuerta ni la confianza**; solo
+mueve la ficha de la lombarda. La diferencia de KCAL entre las dos filas
+(243,862 − 241,686 = 2,176) es enteramente atribuible a esta card, y se
+reconstruye: el componente solo cambia de 58 a 34,0538 kcal/100 g con sus
+mismos 10 g (2,3946 kcal de diferencia "en crudo"), y la composición escala el
+total por el rendimiento del plato (`gramos_del_plato` 350 sobre
+`peso_final_g` 385, factor 0,90909) antes de sumarlo: 2,3946 × 0,90909 =
+2,177 kcal ≈ 2,176 (la diferencia redondea igual). Los otros 6 componentes de
+la misma ensalada (lechuga, tomate, maíz, zanahoria, huevo duro, atún) no se
+mueven — `hard-boiled egg` ya daba `Huevo cocido` en `main` por la razón
+alfabética explicada arriba, así que acá no hay cambio que atribuirle a esta
+card.
 
 ### (b) Respuestas grabadas `respuestas-v3` (vía `replayDeCorrida`, la misma
 función de `golden/bin/informe.js`)
@@ -194,6 +250,34 @@ vocabulario o de la cabeza-de-subfamilia (DT-63/DT-66) que esta card no tocó
 —están fuera de su territorio (`match.ts`/`constants.ts`, no `kb/curation/`
 ni `analyze.ts`).
 
+### (d) La ensalada de atún del §1 del Bloque 0, reconstruida completa
+
+**Corrección (Q/A, WS14).** El Bloque 0 (§1) dice "la de atún, 29 kcal" para
+el efecto de esta card sobre esa ensalada. Rehecha la cuenta completa —los
+seis ingredientes y gramos exactos del §1, vía `buscarConDosNombres` (con el
+`food_es` que la visión habría dicho para cada uno; H6 ya deja escrito que el
+`food_es` real de esa foto no quedó persistido, así que esto es una
+reconstrucción, igual que lo era el número del Bloque 0):
+
+| Ingrediente | g | Main | Branch | Δ kcal |
+|---|---|---|---|---|
+| `lettuce, shredded` | 100 | Lechuga cocida, 49 kcal/100 g | Lechuga cruda, 20 kcal/100 g | **29,00** |
+| `canned tuna` | 100 | Atún, 85 kcal/100 g | igual | 0 |
+| `green peas, cooked` | 90 | Arvejas cocidas, 98 kcal/100 g | igual | 0 |
+| `hard-boiled egg, chopped` | 60 | Huevo cocido, 176 kcal/100 g | igual | 0 |
+| `tomato, chopped` | 40 | Tomate cocido, 50 kcal/100 g | Tomate crudo, 20 kcal/100 g | **12,00** |
+| `carrot, shredded` | 10 | Zanahorias crudas, 41 kcal/100 g | igual | 0 |
+| **Total** | | **351,90 kcal** | **310,90 kcal** | **41,00** |
+
+**El número correcto es 41,0 kcal, no 29.** El Bloque 0 contó solo el
+movimiento de la lechuga (29 kcal, el más grande y el primero que se midió el
+03/09); esta card TAMBIÉN mueve el tomate de la misma ensalada (`tomato,
+chopped` → cocido en `main`, crudo en la branch, 12 kcal sobre 40 g) y el
+Bloque 0 no lo tenía contado — es la misma H4, aplicada a un segundo
+ingrediente de la misma foto que el informe original no llegó a sumar. No se
+edita `docs/bloque0.fase6.md`: ese documento es el registro de lo que se creyó
+el día que se escribió; la cuenta completa queda acá.
+
 ## 5. Colaterales
 
 **Cerrados por esta card:**
@@ -235,3 +319,60 @@ ni `analyze.ts`).
   (territorio de la card 6.1) ya no está: al momento de cerrar esta card,
   `node --test lib/engine/*.test.js` da 395/395 en verde — la 6.1 se cerró en
   paralelo, en el mismo working tree, y no fue trabajo de esta card.
+
+## 7. Ronda de correcciones del Q/A adversarial (WS14)
+
+El Q/A midió 6 de 8 mutaciones muertas (asimetría, precedencia, lentejas) y
+dejó un test que faltaba más tres afirmaciones de este informe que no
+aguantaban relectura. Delta sobre el estado de arriba:
+
+1. **🔴 Mutación que sobrevivía** (sacar el chequeo de hermana
+   `sinDescriptores(nuevo) !== sinDescriptores(actual)`): confirmada. Sin ese
+   chequeo, dos fichas SIN relación que empatan por casualidad de cobertura
+   —una cruda de `verdura`, otra cocida de un alimento inventado sin ningún
+   parentesco— se desempatan como si fueran el mismo alimento y la cruda
+   SUSTITUYE a la cocida. Aplicada la mutación a mano, confirmado que sustituye
+   (en los dos food_id de "otra comida" probados), revertida con
+   `git checkout -- functions/src/engine/match.ts`. Test nuevo: "EL CHEQUEO DE
+   HERMANA IMPORTA..." en `match.test.ts` — mata la mutación (verificado:
+   falla con la mutación aplicada, pasa sin ella). **112 → 118 tests** en
+   total sobre el estado de partida de esta ronda (117 → 118 sobre lo ya
+   commiteado en `fec18f2`).
+2. **🟡 "Sigue bajo la compuerta / sin total" (§4a):** era falso para la
+   branch actual. Corregido: la branch publica 241,686 kcal a confianza 0,393
+   (cruza la compuerta gracias a la card 6.1, no a esta); el delta de kcal
+   entre `main` y la branch (2,176) se reconstruye completo desde el cambio de
+   ficha de la lombarda más el factor de rendimiento del plato. Ver §4a.
+3. **🟡 "Los dos casos reales" (huevo, patata):** incompleto. Hay un tercero,
+   `lenteja` (alias 0,8, mismo `food_id` que "lenteja cocida"), que
+   `mismasPreparaciones` no separa — y que hoy no falla por DOS mecanismos que
+   verifiqué a mano (nivel alias/exacto antes de llegar al difuso; dirección
+   A/B antes que C sin mirar confianza), no por el "0,8 contra 1,0" que se
+   había apuntado primero y que no pude reproducir con ninguna consulta. Ver
+   §2, la pregunta de los tres candidatos.
+4. **🟡 "29 kcal" de la ensalada de atún:** incompleto — solo contaba la
+   lechuga. La cuenta completa con los seis ingredientes del §1 del Bloque 0
+   da **41,0 kcal** (lechuga 29 + tomate 12): esta card también mueve el
+   tomate de esa misma ensalada, y el Bloque 0 no lo había sumado. Ver §4d.
+   `docs/bloque0.fase6.md` no se tocó.
+5. **🔵 "Cinco de las 46 familias" en `constants.ts`:** medido, son **16**
+   las que tocan alguna ficha cruda (no 5). De esas 16, solo **7** producen el
+   patrón hermana-empate que este desempate necesita (`verdura`, `fruta`,
+   `huevo`, `patata`, `legumbre`, `cereal-y-grano`, `cerdo`). `pescado` y
+   `frutos-secos` —donde el crudo también es una forma normal de comer— NO
+   están en la lista porque, medido, el catálogo hoy no las expone al patrón:
+   cero hermanas crudo+cocido con el mismo texto en ninguna de las dos. No se
+   agregaron (no hay caso que las ejercite); el comentario de
+   `FAMILIAS_QUE_SE_COMEN_CRUDAS` en `constants.ts` queda con el número y la
+   explicación.
+6. **🔵 Condición 1 redundante:** agregada la aclaración en el comentario de
+   `desempateDeEstado` (`match.ts`) — redundante MEDIDO en la dirección C (la
+   condición 4 de esa dirección ya excluye contradicciones de estado antes de
+   que el candidato exista), no necesariamente en A/B (que no tienen un filtro
+   de estado equivalente); se queda como defensa y el comentario ya no da a
+   entender que hace algo que en C ya hace otra condición.
+
+No se tocó el plátano macho (ya es DT-70, del orquestador). Verificación
+final de esta ronda: lint limpio, `node --test lib/engine/match.test.js` →
+**118/118**, `match.ts` y `constants.ts` sin diferencias funcionales fuera de
+comentarios (la mutación del punto 1 se aplicó y revirtió, no queda rastro).

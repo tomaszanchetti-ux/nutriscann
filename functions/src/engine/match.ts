@@ -606,6 +606,22 @@ function difusoEnIndice(
    *   1. LA CONSULTA NO DECLARÓ ESTADO. Si la visión dijo "cooked" o "cocido"
    *      nombró la ficha que quería y nadie se la discute (`cabbage, cooked`
    *      sigue igual); si dijo "raw" tampoco hay nada que desempatar.
+   *
+   *      EN LA DIRECCIÓN C esta condición es, MEDIDO, redundante por invariante
+   *      y no por casualidad: la condición 4 de esa dirección (más abajo en este
+   *      archivo) ya excluye a cualquier candidato cuyo `estadoDeLaEntrada`
+   *      contradiga a `estadoPedido` ANTES de que llegue a competir, así que un
+   *      candidato del estado contrario nunca llega a esta función viniendo de
+   *      C — las dos leen la MISMA `estadoDeCoccion`. Se queda igual como
+   *      defensa explícita (si el día de mañana la condición 4 cambia, esta
+   *      línea no depende de que lo hagan a la vez) y porque en A y B no hay una
+   *      condición 4 equivalente que la vuelva redundante ahí también: esas dos
+   *      direcciones filtran por SUBCADENA, no por estado, así que una consulta
+   *      que nombrara los dos estados a la vez ("raw, cooked weight": el crudo
+   *      manda y `estadoPedido` da "crudo", pero la palabra "cooked" sigue
+   *      escrita ahí) sí podría, en teoría, dejar pasar un candidato cocido como
+   *      substring. No es un caso que se haya medido en producción; es la razón
+   *      por la que esta condición no se borra.
    *   2. SON HERMANAS DEL MISMO ALIMENTO, y eso se pregunta a los textos: los dos
    *      nombres, sin descriptores —y "cruda"/"cocida" SON descriptores—, tienen
    *      que quedar en la misma palabra. `lechuga cruda` y `lechuga cocida`
