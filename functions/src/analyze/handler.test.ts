@@ -16,6 +16,7 @@ import { CONSUMO_EN_CERO, decidirCupo, revertirConsumo, type EstadoDeConsumo, ty
 import { CODIGOS_QUE_DEVUELVEN_EL_CREDITO, MAX_BASE64_CHARS, manejarAnalyze, validarEntrada, type CuerpoDeAnalisis, type DatosAPersistir, type Dependencias, type PedidoDeAnalisis } from "./handler";
 import type { CuerpoDeError } from "./errores";
 import { ErrorDeAnalisis } from "./errores";
+import { referenciaDeLaFoto, rutaDeLaFoto, type AlmacenDeFotos } from "./imagen";
 import { MODELO_VISION, type ClienteDeVision } from "./vision";
 
 // ---------------------------------------------------------------------------
@@ -93,6 +94,42 @@ function cabeceras(uid: string): Record<string, string> {
 const FECHA_FIJA = new Date("2026-09-02T10:00:00Z");
 const MOMENTO_FIJO = momentoDelCupo(FECHA_FIJA);
 
+/**
+ * EL ALMACÉN DE FOTOS FALSO. Cloud Storage no se toca en ningún test.
+ *
+ * Anota lo que se subió y lo que se borró, en orden, que es lo que hace falta
+ * para probar las tres cosas de la card 6.0: que la referencia llega al
+ * expediente, que la foto de una imagen que no era comida se borra, y que un
+ * fallo de la subida no rompe el análisis.
+ */
+const BUCKET_DE_PRUEBA = "bucket-de-prueba.firebasestorage.app";
+
+interface AlmacenFalso extends AlmacenDeFotos {
+  /** Las rutas subidas, en orden. */
+  subidas: string[];
+  /** Las referencias borradas, en orden. */
+  borradas: string[];
+}
+
+function almacenFalso(opciones: { subirFalla?: Error; borrarFalla?: Error } = {}): AlmacenFalso {
+  const subidas: string[] = [];
+  const borradas: string[] = [];
+  return {
+    subidas,
+    borradas,
+    subir: async (foto) => {
+      if (opciones.subirFalla !== undefined) throw opciones.subirFalla;
+      const ruta = rutaDeLaFoto(foto.owner_id, foto.scan_id, foto.media_type);
+      subidas.push(ruta);
+      return referenciaDeLaFoto(BUCKET_DE_PRUEBA, ruta);
+    },
+    borrar: async (referencia) => {
+      if (opciones.borrarFalla !== undefined) throw opciones.borrarFalla;
+      borradas.push(referencia);
+    },
+  };
+}
+
 interface Andamio {
   deps: Dependencias;
   persistidos: DatosAPersistir[];
@@ -100,6 +137,8 @@ interface Andamio {
   consumo: Map<string, EstadoDeConsumo>;
   /** Cuántas veces se devolvió el crédito, y a quién. */
   devoluciones: string[];
+  /** El almacén de fotos falso, para mirar qué se subió y qué se borró. */
+  fotos: AlmacenFalso;
 }
 
 interface OpcionesDeAndamio {
@@ -109,6 +148,8 @@ interface OpcionesDeAndamio {
   /** El consumo con el que arranca el dueño, para construir el escenario. */
   consumoInicial?: Partial<EstadoDeConsumo>;
   fecha?: Date;
+  /** El almacén, cuando el test necesita uno que falle o uno que se demore. */
+  fotos?: AlmacenFalso;
 }
 
 function andamio(cliente: ClienteDeVision, opciones: OpcionesDeAndamio = {}): Andamio {
@@ -124,11 +165,13 @@ function andamio(cliente: ClienteDeVision, opciones: OpcionesDeAndamio = {}): An
     ...(opciones.limites?.por_mes === undefined ? {} : { max_scans_per_month: opciones.limites.por_mes }),
     ...(opciones.limites?.por_dia === undefined ? {} : { max_scans_per_day: opciones.limites.por_dia }),
   };
+  const fotos = opciones.fotos ?? almacenFalso();
   let reloj = 0;
   return {
     persistidos,
     consumo,
     devoluciones,
+    fotos,
     deps: {
       cliente,
       indice: async () => indiceReal(),
@@ -152,6 +195,7 @@ function andamio(cliente: ClienteDeVision, opciones: OpcionesDeAndamio = {}): An
         if (opciones.persistirFalla === true) throw new Error("Firestore no responde");
         persistidos.push(datos);
       },
+      almacenDeFotos: fotos,
       nuevoScanId: () => "scan-de-prueba",
       ahora: () => (reloj += 100),
       fecha: () => opciones.fecha ?? FECHA_FIJA,
@@ -833,11 +877,21 @@ test("si la persistencia falla, el crédito tampoco vuelve: el análisis se entr
 test("un error interno DESPUÉS de que el modelo contestó no devuelve el crédito", async () => {
   // El `!elModeloYaCobro` del handler, ejercido: el código del error solo no
   // alcanza, porque `error_interno` sí devuelve cuando pasa antes de la llamada.
+  //
+  // EL ESCENARIO SE CONSTRUYE con el reloj de la latencia, que el handler lee
+  // dos veces: una al entrar y otra al armar la meta, YA con la respuesta del
+  // modelo en la mano. Reventar en la segunda lectura es exactamente "algo se
+  // rompió después de que el modelo cobró". (Hasta la card 6.0 este test
+  // reventaba `nuevoScanId`, que ahora corre ANTES del modelo — es el nombre del
+  // objeto en Storage— y por lo tanto ya no sirve para construir este caso.)
   const { deps, consumo, devoluciones } = andamio(clienteQueDice(mensaje(PLATO_OK)), {
     consumoInicial: { usados_mes: 4, usados_dia: 1 },
   });
-  deps.nuevoScanId = () => {
-    throw new Error("revienta después de la visión");
+  let lecturas = 0;
+  deps.ahora = () => {
+    lecturas += 1;
+    if (lecturas > 1) throw new Error("revienta después de la visión");
+    return 0;
   };
 
   const { status, body } = await manejarAnalyze(POST(), deps);
@@ -903,4 +957,170 @@ test("el mes del cupo lo decide el reloj de Madrid, no el de la máquina", async
   const cuerpo = body as CuerpoDeAnalisis;
   assert.equal(cuerpo.quota.mes.se_renueva, "2026-11-01", "el cupo que se gastó es el de octubre");
   assert.equal(cuerpo.quota.dia.se_renueva, "2026-10-02");
+});
+
+// ---------------------------------------------------------------------------
+// Card 6.0 — el expediente guarda la foto y lo que dijo el modelo
+// ---------------------------------------------------------------------------
+
+test("el `scan_id` se genera ANTES de llamar al modelo: es el nombre de la foto", async () => {
+  // Hasta la card 6.0 se generaba después del análisis, y no podía ser de otra
+  // manera: no hacía falta antes. Ahora el id ES el nombre del objeto en
+  // Storage, así que sin él la subida no puede ni arrancar — y si no arranca
+  // antes, deja de ser gratis.
+  const orden: string[] = [];
+  const { deps } = andamio({
+    messages: {
+      create: async () => {
+        orden.push("el modelo");
+        return mensaje(PLATO_OK);
+      },
+    },
+  });
+  const generar = deps.nuevoScanId;
+  deps.nuevoScanId = () => {
+    orden.push("el scan_id");
+    return generar();
+  };
+
+  const { status } = await manejarAnalyze(POST(), deps);
+  assert.equal(status, 200);
+  assert.deepEqual(orden, ["el scan_id", "el modelo"]);
+});
+
+test("la subida de la foto ARRANCA antes de que el modelo conteste: no agrega latencia", async () => {
+  // ESTE ES EL CANDADO DE LA CERO LATENCIA, y no se mide con un cronómetro
+  // —que dependería de la máquina— sino con el ORDEN de los hechos. La subida
+  // falsa se queda trabada hasta que el modelo contesta: si el handler la
+  // lanzara después de `pedirVision`, "la subida arranca" aparecería tercero y
+  // el escaneo pagaría la subida encima de los 3-6 s del modelo.
+  const orden: string[] = [];
+  let liberarLaSubida: () => void = () => {};
+  const elModeloContesto = new Promise<void>((resolver) => {
+    liberarLaSubida = resolver;
+  });
+
+  const fotos = almacenFalso();
+  const subirDeVerdad = fotos.subir;
+  fotos.subir = async (foto) => {
+    orden.push("la subida arranca");
+    await elModeloContesto;
+    orden.push("la subida termina");
+    return subirDeVerdad(foto);
+  };
+
+  const { deps, persistidos } = andamio(
+    {
+      messages: {
+        create: async () => {
+          orden.push("el modelo contesta");
+          liberarLaSubida();
+          return mensaje(PLATO_OK);
+        },
+      },
+    },
+    { fotos },
+  );
+
+  const { status } = await manejarAnalyze(POST(), deps);
+
+  assert.equal(status, 200);
+  assert.deepEqual(orden, ["la subida arranca", "el modelo contesta", "la subida termina"]);
+  assert.notEqual(persistidos[0]?.imagen.referencia, null, "y la foto igual llegó entera al expediente");
+});
+
+test("la foto va a `scans/{dueño}/{scan}.jpg` y su `gs://` queda en el expediente", async () => {
+  const { deps, persistidos, fotos } = andamio(clienteQueDice(mensaje(PLATO_OK)));
+
+  await manejarAnalyze(POST(), deps);
+
+  const ruta = `scans/${UID}/scan-de-prueba.jpg`;
+  assert.deepEqual(fotos.subidas, [ruta], "una sola subida, en la carpeta del dueño (la de `storage.rules`)");
+  assert.equal(persistidos[0]?.imagen.referencia, `gs://${BUCKET_DE_PRUEBA}/${ruta}`);
+  assert.equal(persistidos[0]?.imagen.error, null, "no hubo error: el campo no se llena de ruido");
+});
+
+test("lo que dijo el modelo viaja al expediente TAL CUAL entró al motor", async () => {
+  // El campo `vision` es el que convierte el expediente en algo re-jugable. Acá
+  // se mira que sea el objeto saneado completo —incluido el `components: []`
+  // vacío, que significa "el modelo miró y no había nada que descomponer"—; que
+  // re-analizarlo reproduzca los mismos números se prueba en `persistencia.test`
+  // con una visión real del golden set.
+  const { deps, persistidos } = andamio(
+    clienteQueDice(
+      mensaje(
+        JSON.stringify({
+          is_food: true,
+          items: [{ food_en: "Apple, raw", food_es: "manzana", grams: 150, confidence: 0.9 }],
+        }),
+      ),
+    ),
+  );
+
+  await manejarAnalyze(POST(), deps);
+
+  assert.deepEqual(persistidos[0]?.vision, {
+    is_food: true,
+    items: [{ food_en: "Apple, raw", grams: 150, confidence: 0.9, food_es: "manzana", components: [] }],
+  });
+});
+
+test("si la subida de la foto falla, el análisis se entrega igual y el expediente dice por qué", async () => {
+  // LA FOTO NUNCA ROMPE EL ANÁLISIS: el modelo ya cobró y el reporte es correcto.
+  // Y `persisted` sigue hablando SOLO del documento —queda escrito—, que es la
+  // pregunta que el front ya sabe contestar desde la card 2.3.
+  const avisos: { mensaje: string; detalle: Record<string, unknown> }[] = [];
+  const { deps, persistidos } = andamio(clienteQueDice(mensaje(PLATO_OK)), {
+    fotos: almacenFalso({ subirFalla: new Error("el bucket no existe") }),
+  });
+  deps.advertir = (mensaje, detalle) => avisos.push({ mensaje, detalle });
+
+  const { status, body } = await manejarAnalyze(POST(), deps);
+  const cuerpo = body as CuerpoDeAnalisis;
+
+  assert.equal(status, 200);
+  assert.equal(cuerpo.items.length, 1, "el reporte sale entero");
+  assert.equal(cuerpo.persisted, true, "`persisted` habla del documento, no de la foto");
+  assert.equal(persistidos.length, 1);
+  assert.equal(persistidos[0]?.imagen.referencia, null);
+  assert.match(persistidos[0]?.imagen.error ?? "", /el bucket no existe/);
+  assert.ok(
+    avisos.some((a) => a.mensaje.includes("no se pudo guardar la foto")),
+    "y queda anotado: una foto que no se guarda en silencio es una calibración que no se puede hacer",
+  );
+});
+
+test("la foto de una imagen que NO era comida se borra del bucket", async () => {
+  // La contracara de subir antes de saber qué había en la foto: sin expediente
+  // que la nombre, no puede quedar la foto de una persona colgada en el bucket.
+  const { deps, fotos, persistidos } = andamio(
+    clienteQueDice(mensaje(JSON.stringify({ is_food: false, items: [] }))),
+  );
+
+  const { status } = await manejarAnalyze(POST(), deps);
+  const ruta = `scans/${UID}/scan-de-prueba.jpg`;
+
+  assert.equal(status, 200);
+  assert.equal(persistidos.length, 0, "sigue sin haber expediente (§7 del plan)");
+  assert.deepEqual(fotos.subidas, [ruta], "la subida ya había arrancado: todavía no se sabía");
+  assert.deepEqual(fotos.borradas, [`gs://${BUCKET_DE_PRUEBA}/${ruta}`]);
+});
+
+test("si el borrado de esa foto falla, el 200 sale igual y queda anotado con su referencia", async () => {
+  // Un objeto huérfano es molesto y barato; convertir un 200 —"eso no parece un
+  // plato"— en un 500 sería caro. El aviso trae la referencia exacta porque es
+  // lo único que hace falta para limpiarlo a mano.
+  const avisos: { mensaje: string; detalle: Record<string, unknown> }[] = [];
+  const { deps } = andamio(clienteQueDice(mensaje(JSON.stringify({ is_food: false, items: [] }))), {
+    fotos: almacenFalso({ borrarFalla: new Error("Storage no responde") }),
+  });
+  deps.advertir = (mensaje, detalle) => avisos.push({ mensaje, detalle });
+
+  const { status, body } = await manejarAnalyze(POST(), deps);
+
+  assert.equal(status, 200);
+  assert.equal((body as CuerpoDeAnalisis).is_food, false);
+  const aviso = avisos.find((a) => a.mensaje.includes("borrar la foto"));
+  assert.ok(aviso, "un huérfano que nadie sabe que existe no se limpia nunca");
+  assert.equal(aviso?.detalle["referencia"], `gs://${BUCKET_DE_PRUEBA}/scans/${UID}/scan-de-prueba.jpg`);
 });

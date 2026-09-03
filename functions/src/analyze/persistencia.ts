@@ -7,6 +7,11 @@
  *                                  `EngineResult` tal cual —con los motivos, las
  *                                  confianzas y la composición— porque un número
  *                                  sin su derivación no se puede auditar después.
+ *                                  Desde la card 6.0 guarda además LO QUE DIJO
+ *                                  EL MODELO (`vision`) y dónde quedó LA FOTO
+ *                                  (`image_ref`), que son las dos entradas del
+ *                                  análisis: con ellas el escaneo se vuelve a
+ *                                  jugar entero, sin gastar un token.
  *
  *   `curation_queue/{termino}`     lo que el catálogo NO supo nombrar. Es la
  *                                  memoria del sistema: el catálogo crece con el
@@ -19,7 +24,8 @@
  */
 import { FieldValue, Timestamp, type Firestore } from "firebase-admin/firestore";
 
-import { normalizar, type CurationCandidate, type EngineResult } from "../engine";
+import { normalizar, type CurationCandidate, type EngineResult, type VisionResult } from "../engine";
+import type { ResultadoDeLaFoto } from "./imagen";
 
 export const COLECCION_DUEÑOS = "owners";
 export const SUBCOLECCION_SCANS = "scans";
@@ -40,6 +46,17 @@ export interface EntradaDePersistencia {
   owner_id: string;
   scan_id: string;
   resultado: EngineResult;
+  /**
+   * LO QUE DIJO EL MODELO: el `VisionResult` saneado, tal cual entró al motor.
+   *
+   * Viaja SIN REFORMATEAR, y eso es el contrato de la card 6.0: guardado así,
+   * `analizarEscaneo(doc.vision, indice)` reproduce `doc.items` y `doc.totals`.
+   * Cualquier "mejora" de la forma acá rompe el replay y con él la única manera
+   * de calibrar gramos y confianza sobre escaneos reales.
+   */
+  vision: VisionResult;
+  /** Cómo terminó la foto en Storage: con su `gs://` o con el motivo del fallo. */
+  imagen: ResultadoDeLaFoto;
   meta: MetaDelScan;
   /** Inyectable para que los tests no dependan del reloj. */
   ahora?: Date;
@@ -49,9 +66,14 @@ export interface EntradaDePersistencia {
  * El documento del scan, según el §2 del plan adaptado al `EngineResult` real.
  *
  * DIFERENCIAS DECLARADAS con el boceto del §2, y por qué:
- *  - `image_ref` va en `null`: la imagen viaja como base64 en el POST y no se
- *    guarda en ningún lado (Cloud Storage llega con la DT-3). No se omite el
- *    campo para que el día que exista se llene, no se invente.
+ *  - `image_ref` es la referencia `gs://<bucket>/scans/{owner}/{scan}.{ext}` de
+ *    la foto subida, o `null` si no se pudo subir. Cuando falla, y SOLO cuando
+ *    falla, se agrega `image_error` con el motivo en texto: "no hay foto" y "la
+ *    foto falló por esto" no son lo mismo, y meses después nadie va a poder
+ *    distinguirlos de memoria. (Hasta la card 6.0 este campo era `null` fijo.)
+ *  - `vision` es lo que dijo el modelo, sin tocar. Es lo que convierte el
+ *    expediente en algo re-jugable: con la foto en Storage y la visión acá, un
+ *    escaneo de producción se puede volver a analizar sin gastar un token.
  *  - No hay `recommendation`: la v1 no muestra recomendaciones (decisión del
  *    31/08, §6 del plan). El campo llega con el esquema de la v2.
  *  - `items` y `totals` son los del motor, sin reformatear: el front de la card
@@ -63,8 +85,13 @@ export function documentoDelScan(entrada: EntradaDePersistencia): Record<string,
     owner_id: entrada.owner_id,
     created_at: Timestamp.fromDate(ahora),
     status: "done",
-    image_ref: null,
+    image_ref: entrada.imagen.referencia,
+    // El campo solo existe cuando hubo un problema. Un `image_error: null` en
+    // todo expediente sería ruido en el 99 % de los casos y encima haría más
+    // difícil encontrar el 1 % que importa.
+    ...(entrada.imagen.error === null ? {} : { image_error: entrada.imagen.error }),
     is_food: entrada.resultado.es_comida,
+    vision: entrada.vision,
     items: entrada.resultado.items,
     totals: entrada.resultado.totals,
     curation_candidates: entrada.resultado.curation_candidates,

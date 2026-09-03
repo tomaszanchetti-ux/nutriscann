@@ -15,9 +15,15 @@
  *   3. validar el pedido            (puro)
  *   4. reservar un crédito del cupo (IO: una transacción ⇒ 429 si no entra)
  *   5. índice del catálogo          (una vez por instancia caliente)
- *   6. visión                       (la ÚNICA llamada al modelo)
- *   7. `analizarEscaneo`            (puro: matching + aritmética + composición)
- *   8. persistir scan + curación    (IO)
+ *   6. la foto a Cloud Storage      (IO, EN PARALELO con el paso 7)
+ *   7. visión                       (la ÚNICA llamada al modelo)
+ *   8. `analizarEscaneo`            (puro: matching + aritmética + composición)
+ *   9. persistir scan + curación    (IO: incluye lo que dijo el modelo)
+ *
+ * El paso 6 lo estrena la card 6.0 y no está numerado antes del 7 por casualidad
+ * de escritura: la subida ARRANCA antes de la llamada al modelo y se ESPERA
+ * después del análisis, así que corre gratis debajo de los 3-6 segundos que
+ * tarda la visión. Está explicado donde ocurre, más abajo.
  *
  * Los pasos 1, 2 y 4 los estrena la Fase 4 (cards 4.2, 4.4 y 4.3) y el orden
  * entre ellos está elegido, no heredado:
@@ -37,7 +43,7 @@
  * el porqué). El 403 de App Check no aparece en esa lista y no tiene por qué:
  * ocurre ANTES de la reserva, así que no hay nada que devolver.
  */
-import { analizarEscaneo, type CatalogIndex, type EngineResult } from "../engine";
+import { analizarEscaneo, type CatalogIndex, type EngineResult, type VisionResult } from "../engine";
 import { appCheckExigido, limitesDeCupo, type AppConfig } from "../config";
 import { identificarDueño, type CabecerasDelPedido, type VerificadorDeToken } from "../auth/identidad";
 import {
@@ -65,6 +71,7 @@ import {
   type CodigoDeError,
   type CuerpoDeError,
 } from "./errores";
+import type { AlmacenDeFotos, FotoDelEscaneo, ResultadoDeLaFoto } from "./imagen";
 import { MEDIA_TYPES, pedirVision, type ClienteDeVision, type MediaType, type OpcionesDeVision } from "./vision";
 
 /**
@@ -139,6 +146,12 @@ export interface Dependencias {
   devolverCupo: (entrada: { owner_id: string; momento: Momento }) => Promise<void>;
   /** Persiste el scan y la cola. Separada para poder medirla o suprimirla. */
   persistir: (datos: DatosAPersistir) => Promise<void>;
+  /**
+   * Dónde va a parar la FOTO (card 6.0). Entra inyectada como `persistir`, así
+   * que ningún test toca Cloud Storage: el circuito completo —incluido el orden
+   * en que arranca la subida— se prueba con un almacén falso.
+   */
+  almacenDeFotos: AlmacenDeFotos;
   nuevoScanId: () => string;
   /**
    * El reloj de la LATENCIA. Cuenta milisegundos, no fechas: los tests lo mueven
@@ -160,6 +173,18 @@ export interface DatosAPersistir {
   owner_id: string;
   scan_id: string;
   resultado: EngineResult;
+  /**
+   * LO QUE DIJO EL MODELO, tal cual entró al motor (card 6.0).
+   *
+   * Es el `VisionResult` ya saneado por `interpretarVision` —el MISMO objeto que
+   * recibió `analizarEscaneo`, no una copia parecida— y por eso el expediente se
+   * puede re-jugar: `analizarEscaneo(doc.vision, indice)` reproduce `doc.items` y
+   * `doc.totals`. Sin esto, calibrar gramos y confianza sobre un escaneo real
+   * obliga a reconstruir la visión a mano (medido el 03/09).
+   */
+  vision: VisionResult;
+  /** Cómo terminó la foto: subida (con su `gs://`) o no (con el motivo). */
+  imagen: ResultadoDeLaFoto;
   meta: MetaDeRespuesta;
 }
 
@@ -366,6 +391,30 @@ export async function manejarAnalyze(
       });
     }
 
+    // EL `scan_id` SE GENERA ACÁ, ANTES DEL MODELO, y no después del análisis
+    // como hasta la card 6.0. La razón es la de abajo: el id es el NOMBRE del
+    // objeto en Storage, y sin id no se puede empezar a subir la foto.
+    const scan_id = deps.nuevoScanId();
+
+    // LA FOTO SE SUBE EN PARALELO CON LA LLAMADA AL MODELO, y por eso no le
+    // agrega ni un milisegundo al usuario: la promesa se LANZA acá —sin
+    // `await`— y se espera recién después del análisis, cuando ya hace rato que
+    // terminó. Los números: una foto comprimida son ~200 KB contra los 3-6 s
+    // que tarda la visión (medidos en el golden set). Subirla antes de llamar al
+    // modelo, o después de tener el resultado, sería sumar esa subida al reloj
+    // que corre para la persona que espera su reporte.
+    //
+    // `guardarLaFoto` NUNCA rechaza: si la subida falla devuelve el motivo por
+    // escrito. Eso importa dos veces — la foto no puede romper el análisis
+    // (abajo), y una promesa lanzada y no esperada que rechazara sería un
+    // `unhandledRejection` en el camino en que el modelo se cae antes.
+    const laFoto = guardarLaFoto(deps, {
+      owner_id: dueño.uid,
+      scan_id,
+      media_type: entrada.media_type,
+      image_base64: entrada.image_base64,
+    });
+
     const { vision, meta: metaVision } = await pedirVision(
       deps.cliente,
       { image_base64: entrada.image_base64, media_type: entrada.media_type },
@@ -392,6 +441,14 @@ export async function manejarAnalyze(
     // análisis que guardar y el expediente de una foto de un perro no le sirve
     // a nadie. `scan_id` viaja en `null` porque no hay documento que nombrar.
     if (!resultado.es_comida) {
+      // Y LA FOTO QUE YA SE SUBIÓ SE BORRA. Es la contracara de haber arrancado
+      // la subida antes de saber qué había en la imagen: si no hay expediente,
+      // no puede quedar una foto de la persona colgada en el bucket sin nada que
+      // la nombre. Se espera la subida antes de borrar porque hasta que no
+      // termina no se sabe la referencia; a esta altura ya está resuelta hace
+      // rato (arrancó antes que el modelo), así que no agrega latencia real.
+      await descartarLaFoto(deps, laFoto, scan_id);
+
       const texto = resolverTexto(CLAVE_NO_ES_COMIDA, TEXTO_NO_ES_COMIDA_EN_FRIO, copy);
       return {
         status: 200,
@@ -412,10 +469,15 @@ export async function manejarAnalyze(
       };
     }
 
-    const scan_id = deps.nuevoScanId();
+    // Se espera la subida ANTES de escribir el expediente para que `image_ref`
+    // sea un dato y no una promesa. `persisted` sigue hablando SOLO del
+    // documento: una foto que no se pudo guardar deja el expediente escrito
+    // igual, con `image_ref: null` y el motivo en `image_error`.
+    const imagen = await laFoto;
+
     let persisted = true;
     try {
-      await deps.persistir({ owner_id: dueño.uid, scan_id, resultado, meta });
+      await deps.persistir({ owner_id: dueño.uid, scan_id, resultado, vision, imagen, meta });
     } catch (err) {
       // El análisis ya se pagó: se devuelve igual, con `persisted: false` para
       // que nadie suponga que quedó escrito.
@@ -474,6 +536,56 @@ export async function manejarAnalyze(
     }
 
     return respuestaDeError(codigo, copy, err instanceof ErrorDeCupo ? err.bloqueo : undefined);
+  }
+}
+
+/**
+ * Sube la foto y NUNCA rechaza: un fallo vuelve como motivo escrito.
+ *
+ * LA FOTO NO PUEDE ROMPER EL ANÁLISIS. Es un dato para calibrar después, no
+ * parte del reporte: negarle a alguien su escaneo —que además ya se pagó, el
+ * modelo ya cobró— porque Cloud Storage tuvo un mal minuto sería cambiar un
+ * problema nuestro por un problema suyo. Lo que sí pasa es que quede escrito:
+ * en el log, con `advertir`, y en el propio expediente, en `image_error`.
+ */
+async function guardarLaFoto(deps: Dependencias, foto: FotoDelEscaneo): Promise<ResultadoDeLaFoto> {
+  try {
+    const referencia = await deps.almacenDeFotos.subir(foto);
+    return { referencia, error: null };
+  } catch (err) {
+    const error = describir(err);
+    deps.advertir?.("no se pudo guardar la foto del escaneo", {
+      owner_id: foto.owner_id,
+      scan_id: foto.scan_id,
+      error,
+    });
+    return { referencia: null, error };
+  }
+}
+
+/**
+ * Borra la foto de una imagen que no era comida. Mejor esfuerzo, y nunca lanza.
+ *
+ * Un borrado que falla deja un objeto huérfano: molesto y barato. Un borrado que
+ * lanzara convertiría un 200 perfectamente bueno —"eso no parece un plato"— en
+ * un 500, que es caro. Por eso se avisa y se sigue: el aviso trae la referencia
+ * exacta, que es lo que hace falta para limpiarlo a mano.
+ */
+async function descartarLaFoto(
+  deps: Dependencias,
+  laFoto: Promise<ResultadoDeLaFoto>,
+  scan_id: string,
+): Promise<void> {
+  const foto = await laFoto;
+  if (foto.referencia === null) return;
+  try {
+    await deps.almacenDeFotos.borrar(foto.referencia);
+  } catch (err) {
+    deps.advertir?.("no se pudo borrar la foto de una imagen que no era comida", {
+      scan_id,
+      referencia: foto.referencia,
+      error: describir(err),
+    });
   }
 }
 

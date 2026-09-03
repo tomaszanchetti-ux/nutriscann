@@ -33,14 +33,21 @@ import { getFirestore, type Firestore } from "firebase-admin/firestore";
 
 import { cargarIndice } from "./catalogo";
 import { manejarAnalyze, type CuerpoDeAnalisis, type DatosAPersistir } from "./handler";
+import { referenciaDeLaFoto, rutaDeLaFoto } from "./imagen";
 import { guardarScan, registrarCuracion } from "./persistencia";
 import { MODELO_VISION, type ClienteDeVision } from "./vision";
+import { analizarEscaneo, type VisionResult } from "../engine";
 import type { AppConfig } from "../config";
 import { momentoDelCupo } from "../cupo/calendario";
 import { devolverCredito, refDelConsumo, reservarCupo } from "../cupo/persistencia";
 
 const PROYECTO = process.env["GCLOUD_PROJECT"] as string;
 const DUEÑO = "qa-emulador";
+
+/** El bucket que simula el almacén falso de este test. Storage no se levanta acá. */
+const BUCKET = `${PROYECTO}.firebasestorage.app`;
+/** Las fotos que el circuito mandó borrar (la de una imagen que no era comida). */
+const borradas: string[] = [];
 
 async function hayEmulador(): Promise<boolean> {
   try {
@@ -142,6 +149,16 @@ test("circuito foto → motor → Firestore contra el emulador", async (t) => {
       await devolverCredito(db, entrada);
     },
     fecha: () => FECHA_FIJA,
+    // El almacén de fotos es FALSO también acá: este test mide lo que queda en
+    // FIRESTORE, y levantar el emulador de Storage para eso sería otra
+    // dependencia que puede faltar. Lo que sí se comprueba es que la referencia
+    // que devuelve la subida llega intacta al expediente.
+    almacenDeFotos: {
+      subir: async (foto) => referenciaDeLaFoto(BUCKET, rutaDeLaFoto(foto.owner_id, foto.scan_id, foto.media_type)),
+      borrar: async (referencia) => {
+        borradas.push(referencia);
+      },
+    },
     nuevoScanId: () => scan_id,
     persistir: async (datos: DatosAPersistir) => {
       await guardarScan(db, { ...datos, owner_id: DUEÑO });
@@ -188,7 +205,12 @@ test("circuito foto → motor → Firestore contra el emulador", async (t) => {
     assert.equal(datos["status"], "done");
     assert.equal(datos["is_food"], true);
     assert.equal(datos["owner_id"], DUEÑO);
-    assert.equal(datos["image_ref"], null);
+    assert.equal(
+      datos["image_ref"],
+      `gs://${BUCKET}/scans/${DUEÑO}/scan-1.jpg`,
+      "la referencia de la foto llega intacta a Firestore (card 6.0)",
+    );
+    assert.equal("image_error" in datos, false, "la subida no falló: el campo no existe");
     assert.equal(datos["kb_version"], indice?.kb_version);
     assert.ok(datos["created_at"], "el expediente lleva cuándo se hizo");
 
@@ -217,6 +239,25 @@ test("circuito foto → motor → Firestore contra el emulador", async (t) => {
     assert.equal(datos["zona"], "Europe/Madrid");
     assert.equal(datos["limite_mes_aplicado"], CONFIG.max_scans_per_month, "con qué tope se decidió");
     assert.ok(datos["primer_uso"], "el alta estampa cuándo empezó a consumir este mes");
+  });
+
+  await t.test("2 ter — el expediente guardado en Firestore se puede RE-JUGAR", async () => {
+    // El criterio de aceptación de la card 6.0, esta vez DE IDA Y VUELTA POR LA
+    // BASE: la visión no se lee de una variable en memoria sino del documento
+    // que quedó escrito, con la serialización de Firestore de por medio. Es la
+    // diferencia entre "el objeto es correcto" y "el objeto sobrevive al viaje".
+    const doc = await db.collection("owners").doc(DUEÑO).collection("scans").doc("scan-1").get();
+    const datos = doc.data() as Record<string, unknown>;
+
+    const vision = datos["vision"] as VisionResult;
+    assert.equal(vision.is_food, true, "sin `vision` guardada no hay nada que re-jugar");
+    assert.equal(vision.items.length, PLATO.items.length);
+
+    if (indice === null) throw new Error("el índice no se cargó");
+    const reJugado = analizarEscaneo(vision, indice);
+
+    assert.deepEqual(JSON.parse(JSON.stringify(reJugado.items)), datos["items"]);
+    assert.deepEqual(JSON.parse(JSON.stringify(reJugado.totals)), datos["totals"]);
   });
 
   await t.test("3 — el término sin ficha entró a la cola una sola vez", async () => {
@@ -264,6 +305,8 @@ test("circuito foto → motor → Firestore contra el emulador", async (t) => {
     assert.equal((body as CuerpoDeAnalisis).scan_id, null);
     const scansDespues = (await db.collection("owners").doc(DUEÑO).collection("scans").get()).size;
     assert.equal(scansDespues, scansAntes, "no se persiste el scan de una foto que no es comida");
+    // Y la foto tampoco queda: sin expediente que la nombre, se borra (card 6.0).
+    assert.deepEqual(borradas, [`gs://${BUCKET}/scans/${DUEÑO}/scan-3.jpg`]);
   });
 
   await t.test("6 — un catálogo a medias es un 503, no un análisis vacío", async () => {

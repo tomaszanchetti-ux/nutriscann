@@ -14,6 +14,7 @@
 import { randomUUID } from "node:crypto";
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 import { onRequest } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions/v2";
 
@@ -26,6 +27,7 @@ import { crearVerificadorDeAppCheck } from "./appcheck/procedencia";
 import { devolverCredito, reservarCupo } from "./cupo/persistencia";
 import { obtenerIndice } from "./analyze/catalogo";
 import { manejarAnalyze } from "./analyze/handler";
+import { almacenEnBucket, nombreDelBucketDeFotos } from "./analyze/imagen";
 import { guardarScan, registrarCuracion } from "./analyze/persistencia";
 import { crearClienteDeVision, type ClienteDeVision } from "./analyze/vision";
 
@@ -102,6 +104,22 @@ const clienteDeVision: ClienteDeVision = {
 };
 
 /**
+ * EL ALMACÉN DE FOTOS de esta instancia (card 6.0).
+ *
+ * El bucket se abre PEREZOSAMENTE —dentro de `almacenEnBucket`, la primera vez
+ * que se sube algo— por la misma razón que el cliente de Anthropic de arriba:
+ * `getStorage()` en la carga del módulo correría también en `health`, que no
+ * tiene nada que ver con Storage.
+ *
+ * El NOMBRE del bucket no está escrito acá: sale del entorno
+ * (`nombreDelBucketDeFotos`, que explica su cascada y por qué existe). Cuando no
+ * se puede resolver se le pasa `undefined` al Admin SDK, que cae en su propio
+ * `FIREBASE_CONFIG.storageBucket` y, si tampoco lo tiene, lanza un error claro
+ * que termina en el `image_error` del expediente — nunca en un 500 del análisis.
+ */
+const almacenDeFotos = almacenEnBucket(() => getStorage().bucket(nombreDelBucketDeFotos() ?? undefined));
+
+/**
  * `POST /analyze` — una foto entra, un reporte nutricional sale.
  *
  * Cabecera: `Authorization: Bearer <idToken de Firebase>`. OBLIGATORIA desde la
@@ -156,6 +174,7 @@ export const analyze = onRequest({ cors: true, secrets: [ANTHROPIC_API_KEY] }, a
         await devolverCredito(getFirestore(), entrada);
       },
       nuevoScanId: () => randomUUID(),
+      almacenDeFotos,
       persistir: async (datos) => {
         const db = getFirestore();
         await guardarScan(db, datos);

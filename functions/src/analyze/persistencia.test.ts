@@ -7,9 +7,15 @@
  */
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
-import type { CurationCandidate, EngineResult } from "../engine";
+import { analizarEscaneo, type CurationCandidate, type EngineResult, type VisionResult } from "../engine";
+import { indiceReal, raizDelRepo } from "../engine/testing";
 import { agruparCandidatos, documentoDelScan, idDeCuracion, sinIndefinidos } from "./persistencia";
+
+/** Una foto que se subió bien. La referencia tiene la forma que arma `imagen.ts`. */
+const FOTO_OK = { referencia: "gs://un-bucket.firebasestorage.app/scans/anon-dev/s1.jpg", error: null };
 
 function candidato(parcial: Partial<CurationCandidate> & { termino_en: string }): CurationCandidate {
   return {
@@ -97,6 +103,8 @@ test("el documento del scan guarda el resultado del motor tal cual", () => {
     owner_id: "anon-dev",
     scan_id: "s1",
     resultado,
+    vision: { is_food: true, items: [{ food_en: "apple", food_es: "manzana", grams: 150, confidence: 0.9, components: [] }] },
+    imagen: FOTO_OK,
     meta: { model: "claude-sonnet-5", kb_version: "3.0.0+abc", latency_ms: 3200, tokens_in: 1300, tokens_out: 240 },
     ahora: new Date("2026-08-31T12:00:00.000Z"),
   });
@@ -105,8 +113,110 @@ test("el documento del scan guarda el resultado del motor tal cual", () => {
   assert.equal(doc["is_food"], true);
   assert.equal(doc["kb_version"], "3.0.0+abc");
   assert.deepEqual(doc["items"], resultado.items);
-  assert.equal(doc["image_ref"], null, "la imagen no se guarda todavía (DT-3), y el campo lo dice");
+  assert.equal(doc["image_ref"], FOTO_OK.referencia, "la foto quedó en Storage y el expediente dice dónde");
+  assert.equal("image_error" in doc, false, "no hubo error: el campo no se llena de ruido");
   assert.equal("recommendation" in doc, false, "la v1 no recomienda: el campo no se inventa vacío");
+});
+
+// ---------------------------------------------------------------------------
+// Card 6.0 — la foto y lo que dijo el modelo
+// ---------------------------------------------------------------------------
+
+/** Un resultado del motor mínimo: estos tests miran el sobre, no los números. */
+function resultadoVacio(): EngineResult {
+  return { es_comida: true, items: [], totals: null, curation_candidates: [], kb_version: "3.8.0+test" };
+}
+
+function docConFoto(imagen: { referencia: string | null; error: string | null }): Record<string, unknown> {
+  return documentoDelScan({
+    owner_id: "anon-dev",
+    scan_id: "s1",
+    resultado: resultadoVacio(),
+    vision: { is_food: true, items: [] },
+    imagen,
+    meta: { model: "claude-sonnet-5", kb_version: "3.8.0+test", latency_ms: 100, tokens_in: 1, tokens_out: 1 },
+  });
+}
+
+test("cuando la foto no se pudo subir, el expediente lo dice con el motivo", () => {
+  // `image_ref: null` solo dice "no hay foto". El día que alguien vaya a
+  // calibrar y no la encuentre, la pregunta va a ser POR QUÉ, y esa respuesta
+  // no se puede reconstruir seis meses después de un log que ya rotó.
+  const doc = docConFoto({ referencia: null, error: "Error: el bucket no existe" });
+
+  assert.equal(doc["image_ref"], null);
+  assert.equal(doc["image_error"], "Error: el bucket no existe");
+});
+
+test("la visión viaja al expediente sin reformatear", () => {
+  const vision: VisionResult = {
+    is_food: true,
+    items: [
+      {
+        food_en: "spanish omelette",
+        food_es: "tortilla de patatas",
+        familia_subfamilia: "huevo/revuelto-y-tortilla",
+        grams: 200,
+        confidence: 0.85,
+        preparation: "plancha",
+        components: [{ food_en: "potato", food_es: "patata", grams: 120 }],
+      },
+    ],
+  };
+
+  const doc = documentoDelScan({
+    owner_id: "anon-dev",
+    scan_id: "s1",
+    resultado: resultadoVacio(),
+    vision,
+    imagen: FOTO_OK,
+    meta: { model: "claude-sonnet-5", kb_version: "3.8.0+test", latency_ms: 100, tokens_in: 1, tokens_out: 1 },
+  });
+
+  assert.deepEqual(doc["vision"], vision, "byte a byte: los mismos campos, en el mismo orden");
+});
+
+test("el expediente se puede RE-JUGAR: `analizarEscaneo(doc.vision)` da los mismos items y totals", () => {
+  // ESTE ES EL CRITERIO DE ACEPTACIÓN DE LA CARD 6.0, y se ejerce con una visión
+  // REAL —la ensalada mixta del golden set, con sus siete componentes— contra el
+  // catálogo REAL. Un fixture inventado probaría el andamiaje; esta visión es la
+  // que de verdad hace trabajar a la composición.
+  //
+  // Que los dos análisis coincidan es lo que hace posible calibrar gramos y
+  // confianza sobre escaneos de producción sin gastar un token. El 03/09, para
+  // mirar qué había visto el modelo en un escaneo real, hubo que reconstruir la
+  // visión a mano: eso es lo que este test impide que vuelva a pasar.
+  const grabado = JSON.parse(
+    readFileSync(resolve(raizDelRepo(), "golden", "set-30", "vision-v6", "20-ensalada-mixta.json"), "utf8"),
+  ) as { vision: VisionResult };
+
+  const indice = indiceReal();
+  const resultado = analizarEscaneo(grabado.vision, indice);
+  assert.ok(resultado.items.length > 0, "si la fixture no analizara nada, el resto del test no probaría nada");
+
+  const doc = documentoDelScan({
+    owner_id: "anon-dev",
+    scan_id: "s1",
+    resultado,
+    vision: grabado.vision,
+    imagen: FOTO_OK,
+    meta: { model: "claude-sonnet-5", kb_version: resultado.kb_version, latency_ms: 100, tokens_in: 1, tokens_out: 1 },
+  });
+
+  // Se re-juega DESDE EL DOCUMENTO, no desde la fixture: lo que se prueba es que
+  // lo que quedó guardado alcanza, no que la fixture funciona.
+  const reJugado = analizarEscaneo(doc["vision"] as VisionResult, indice);
+
+  assert.equal(
+    JSON.stringify(reJugado.items),
+    JSON.stringify(doc["items"]),
+    "los items del re-análisis son los mismos, byte a byte",
+  );
+  assert.equal(
+    JSON.stringify(reJugado.totals),
+    JSON.stringify(doc["totals"]),
+    "y los totales también: el expediente basta para volver a calcular el reporte",
+  );
 });
 
 test("los campos opcionales ausentes se van; no se convierten en null", () => {

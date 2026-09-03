@@ -329,6 +329,9 @@ function andamio(opciones: { exigido?: boolean; verificarAppCheck?: Dependencias
         return veredicto;
       },
       devolverCupo: async () => {},
+      // La card 6.0 sumó la foto al circuito. Acá no se prueba —este archivo mide
+      // la procedencia del pedido— así que el almacén es un doble que no guarda nada.
+      almacenDeFotos: { subir: async () => "gs://sin-bucket/sin-foto", borrar: async () => {} },
       nuevoScanId: () => "scan-de-appcheck",
       fecha: () => FECHA_FIJA,
       persistir: async () => {},

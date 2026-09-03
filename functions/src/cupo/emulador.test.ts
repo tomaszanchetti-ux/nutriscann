@@ -285,6 +285,9 @@ test("identidad y cupo contra los emuladores", async (t) => {
       devolverCupo: async (entrada: { owner_id: string; momento: typeof MOMENTO }) => {
         await devolverCredito(db, entrada);
       },
+      // La card 6.0 sumó la foto al circuito. Acá no se prueba —este archivo mide
+      // el cupo— así que el almacén es un doble que no guarda nada.
+      almacenDeFotos: { subir: async () => "gs://sin-bucket/sin-foto", borrar: async () => {} },
       nuevoScanId: () => "scan-del-cupo",
       fecha: () => FECHA_FIJA,
       persistir: async () => {},
@@ -332,6 +335,7 @@ test("identidad y cupo contra los emuladores", async (t) => {
         devolverCupo: async (entrada) => {
           await devolverCredito(db, entrada);
         },
+        almacenDeFotos: { subir: async () => "gs://sin-bucket/sin-foto", borrar: async () => {} },
         nuevoScanId: () => "no-deberia-existir",
         fecha: () => FECHA_FIJA,
         persistir: async () => {},
