@@ -55,7 +55,9 @@ export interface PantallaReporteProps {
  *   · `totals === null`         — ningún alimento se pudo cuantificar.
  *   · `total_no_publicable`     — la compuerta del total cerró (card 6.1): los
  *                                 ocho valores viajan en `null` a propósito.
- *   · `macro_pct === null`      — no hay nada que repartir (kcal en 0).
+ *   · `macro_pct === null`      — no hay nada que repartir: las kcal están en 0,
+ *                                 o el plato tiene calorías que no vienen de
+ *                                 ningún macronutriente (alcohol, card 5.1).
  *
  * En los tres casos el reporte muestra el motivo que escribió el motor, no un
  * anillo vacío ni un cero inventado.

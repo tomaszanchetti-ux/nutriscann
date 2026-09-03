@@ -228,17 +228,33 @@ export interface SumaDeNutrientes {
  */
 export type TotalesNutrientes = { [K in keyof SumaDeNutrientes]: number | null };
 
-/** El reparto de calorías por macro, en porcentaje del total. */
+/**
+ * EL REPARTO DE CALORÍAS POR MACRO. Los tres suman 100 y ninguno sale de 0..100.
+ *
+ * Cada porcentaje es la parte que le toca de las calorías que APORTAN LOS MACROS
+ * (`P×4 + C×4 + F×9`), no de las kcal de la ficha. Ver `porcentajesDeMacros` en
+ * `arithmetic.ts`: hasta la card 5.1 el denominador eran las kcal de la fuente y
+ * la banana publicaba `carbs: 102,7 %`.
+ */
 export interface PorcentajesDeMacros {
   protein: number;
   carbs: number;
   fat: number;
   /**
-   * Cuánto falta (o sobra) para 100. NO se normaliza a propósito: la diferencia
-   * es información —alcohol, fibra, redondeos de USDA— y taparla sería inventar
-   * un cuadre que los datos no tienen.
+   * Las kcal de la ficha que los macros NO explican, con signo y en kcal.
+   * Negativo = con 4/4/9 los macros suman MÁS de lo que declara la fuente
+   * (fuentes con factores propios, fibra contada aparte); positivo = la fuente
+   * declara calorías que no vienen de ningún macro (alcohol, redondeos).
    */
-  sin_explicar: number;
+  kcal_fuera_de_macros: number;
+  /** Lo mismo en porcentaje de las kcal de la fuente. La banana da −10,9. */
+  diferencia_pct: number;
+  /**
+   * Por qué existe esa diferencia, en una frase para leer — o `null` cuando es
+   * ruido de redondeo y no merece letra chica (`DIFERENCIA_RELEVANTE_PCT`).
+   * El umbral se decide UNA vez, acá adentro: la pantalla dibuja lo que le llega.
+   */
+  motivo_de_la_diferencia: string | null;
 }
 
 export interface EngineTotals {

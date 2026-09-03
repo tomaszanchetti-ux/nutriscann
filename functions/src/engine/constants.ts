@@ -319,6 +319,32 @@ export const RESPALDO_MINIMO_DE_IDENTIDAD = 0.6;
 /** Los factores de Atwater, en kcal por gramo. Convención universal. */
 export const ATWATER = { protein: 4, carbs: 4, fat: 9 } as const;
 
+/**
+ * CUÁNDO LA DIFERENCIA ENTRE ATWATER Y LA FUENTE MERECE LETRA CHICA (card 5.1).
+ *
+ * El reparto de macros se calcula sobre las calorías que aportan los TRES
+ * macronutrientes con los factores 4/4/9, así que suma 100 por construcción. Esa
+ * suma casi nunca coincide exactamente con las kcal que declara la ficha, y la
+ * diferencia es real: hay fuentes —USDA con la fruta y las legumbres— que
+ * calculan las calorías con factores propios más bajos, la fibra se cuenta
+ * distinto según el país, el alcohol aporta calorías que no son ningún macro, y
+ * todo redondeo de la ficha deja su resto.
+ *
+ * DE DÓNDE SALE EL 5 %, medido en producción el 02/09/2026: la banana
+ * (`fdc-173944`) declara 89 kcal/100 g y sus macros suman 98,7 con 4/4/9 —un
+ * −10,9 %—, y las cerezas (`fdc-171719`) un −11,3 %. Los platos cocinados y las
+ * fichas de carne, en cambio, cierran por debajo del 2 %. El corte se pone en 5
+ * porque separa esos dos mundos con margen: por debajo la diferencia es ruido de
+ * redondeo y contarla sería asustar con nada; por encima hay una decisión de la
+ * fuente que el usuario tiene derecho a leer.
+ *
+ * DÓNDE VIVE LA DECISIÓN: acá, y solo acá. El motor decide si la diferencia
+ * merece explicación y manda `motivo_de_la_diferencia` escrito o en `null`; la
+ * pantalla no compara contra ningún número — dibuja lo que le llega o no dibuja
+ * nada. Un umbral repetido en el front sería un segundo lugar donde cambiarlo.
+ */
+export const DIFERENCIA_RELEVANTE_PCT = 5;
+
 /** Decimales con los que se redondea todo lo que sale del motor. */
 export const DECIMALES = 3;
 

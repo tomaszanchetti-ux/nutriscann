@@ -26,7 +26,14 @@ export function gramosEnteros(valor: number): string {
   return ENTERO.format(Math.round(valor));
 }
 
-/** Porcentaje con un decimal, con signo cuando se pide (el `sin_explicar`). */
+/**
+ * Porcentaje con un decimal, con signo cuando se pide.
+ *
+ * El signo lo pide la letra chica del donut (`diferencia_pct`: cuánto se apartan
+ * las calorías de la fuente de las que suman los macronutrientes). Se dibuja con
+ * el MENOS TIPOGRÁFICO (−, U+2212) y no con el guion del teclado: en una línea
+ * de texto un guion se lee como raya y el número parece un rango.
+ */
 export function porcentaje(valor: number, conSigno = false): string {
   const texto = UN_DECIMAL.format(Math.abs(valor));
   if (!conSigno) return `${texto} %`;

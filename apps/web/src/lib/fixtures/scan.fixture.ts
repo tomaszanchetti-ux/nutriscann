@@ -246,10 +246,12 @@ export const RESPUESTA_DE_FIXTURE: RespuestaDeAnalisis = {
       "sodium_mg": "La fuente no declara este valor para: Tortilla de patatas. Un total parcial no es un total."
     },
     "macro_pct": {
-      "protein": 35.5,
-      "carbs": 16.4,
-      "fat": 48.9,
-      "sin_explicar": -0.8
+      "protein": 35.2,
+      "carbs": 16.2,
+      "fat": 48.6,
+      "kcal_fuera_de_macros": -4.5,
+      "diferencia_pct": -0.8,
+      "motivo_de_la_diferencia": null
     },
     "macro_pct_motivo": null,
     "grams_total": 378.83,
@@ -324,15 +326,52 @@ function sumarLosOcho(items: EngineItem[]): TotalesNutrientes {
   return total;
 }
 
-/** El reparto calórico con Atwater 4/4/9, igual que `porcentajesDeMacros`. */
+/**
+ * El reparto calórico, ESPEJO EXACTO de `porcentajesDeMacros` (card 5.1).
+ *
+ * Cada macro es su parte de las calorías que aportan LOS TRES —no de las kcal de
+ * la ficha—, así que los tres suman 100 y ninguno puede pasarse. El resto de las
+ * décimas se reparte por mayor sobrante, igual que en el motor, para que la suma
+ * dé 100,0 exacto y no 99,9.
+ *
+ * VERIFICADO CONTRA EL MOTOR REAL, no escrito de memoria: con los dos items de
+ * `respuestaDeFixtureCompleta()` (346,099 kcal · 41,576 P · 5,289 C · 17,724 F)
+ * `functions/lib/engine/arithmetic.js` devuelve 47,9 / 6,1 / 46,0 con
+ * `kcal_fuera_de_macros: −0,9` y `diferencia_pct: −0,3`, que es lo que da esta
+ * función. Si algún día se separan, el que manda es el motor.
+ */
 function repartoDeMacros(total: TotalesNutrientes): PorcentajesDeMacros {
-  const kcal = total.kcal ?? 0;
-  const pct = (gramos: number | null, factor: number): number =>
-    redondear(((gramos ?? 0) * factor * 100) / kcal, 1);
-  const protein = pct(total.protein_g, 4);
-  const carbs = pct(total.carbs_g, 4);
-  const fat = pct(total.fat_g, 9);
-  return { protein, carbs, fat, sin_explicar: redondear(100 - protein - carbs - fat, 1) };
+  const kcalDeLaFuente = total.kcal ?? 0;
+  const kcalDeLosMacros = (total.protein_g ?? 0) * 4 + (total.carbs_g ?? 0) * 4 + (total.fat_g ?? 0) * 9;
+
+  // Las tres partes en décimas, con el resto al de mayor sobrante.
+  const decimas = [
+    ((total.protein_g ?? 0) * 4 * 1000) / kcalDeLosMacros,
+    ((total.carbs_g ?? 0) * 4 * 1000) / kcalDeLosMacros,
+    ((total.fat_g ?? 0) * 9 * 1000) / kcalDeLosMacros,
+  ];
+  const piso = decimas.map((valor) => Math.floor(valor));
+  const porSobrante = decimas
+    .map((valor, indice) => ({ indice, sobrante: valor - Math.floor(valor) }))
+    .sort((uno, otro) => otro.sobrante - uno.sobrante);
+  let faltan = 1000 - piso.reduce((suma, valor) => suma + valor, 0);
+  for (const { indice } of porSobrante) {
+    if (faltan <= 0) break;
+    piso[indice] = (piso[indice] ?? 0) + 1;
+    faltan -= 1;
+  }
+
+  const diferencia = kcalDeLaFuente - kcalDeLosMacros;
+  const diferencia_pct = redondear((diferencia * 100) / kcalDeLaFuente, 1);
+  return {
+    protein: (piso[0] ?? 0) / 10,
+    carbs: (piso[1] ?? 0) / 10,
+    fat: (piso[2] ?? 0) / 10,
+    kcal_fuera_de_macros: redondear(diferencia, 1),
+    diferencia_pct,
+    // El umbral (5 %) lo decide el motor y este plato no lo alcanza: −0,3 %.
+    motivo_de_la_diferencia: null,
+  };
 }
 
 /**

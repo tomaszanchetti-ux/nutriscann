@@ -11,6 +11,8 @@ import { describe, it } from "node:test";
 import type { Per100g } from "../kb/types";
 import { escalar, gramosValidos, porcentajesDeMacros, sumarTotales } from "./arithmetic";
 import { CONFIANZA_MINIMA_PARA_UN_TOTAL } from "./constants";
+import { redondear } from "./match";
+import { catalogoReal, fichaReal } from "./testing";
 import type { EngineItem, SumaDeNutrientes } from "./types";
 
 const COMPLETA: Per100g = {
@@ -333,24 +335,50 @@ describe("porcentajes de macros (Atwater 4/4/9)", () => {
     sodium_mg: null,
   };
 
-  it("reparte sobre las calorías totales", () => {
+  it("reparte las calorías QUE APORTAN LOS MACROS, no las de la ficha", () => {
+    // 40 + 80 + 72 = 192 kcal de macros (la ficha declara 200).
     const p = porcentajesDeMacros(base);
     assert.ok(p);
-    assert.equal(p.protein, 20); // 10 g × 4 = 40 kcal sobre 200
-    assert.equal(p.carbs, 40);
-    assert.equal(p.fat, 36); // 8 g × 9 = 72 kcal sobre 200
+    assert.equal(p.protein, 20.8); // 40 / 192
+    assert.equal(p.carbs, 41.7); // 80 / 192
+    assert.equal(p.fat, 37.5); // 72 / 192
   });
 
-  it("NO normaliza a 100: la diferencia se declara", () => {
+  it("los tres suman 100 por construcción", () => {
     const p = porcentajesDeMacros(base);
     assert.ok(p);
-    assert.equal(p.sin_explicar, 4);
-    assert.equal(p.protein + p.carbs + p.fat + p.sin_explicar, 100);
+    assert.equal(redondear(p.protein + p.carbs + p.fat, 1), 100);
+  });
+
+  it("lo que la ficha declara de más viaja aparte, con signo", () => {
+    const p = porcentajesDeMacros(base);
+    assert.ok(p);
+    assert.equal(p.kcal_fuera_de_macros, 8); // 200 de la ficha − 192 de los macros
+    assert.equal(p.diferencia_pct, 4); // 8 sobre 200
+    // 4 % es ruido de redondeo: por debajo del umbral no hay letra chica.
+    assert.equal(p.motivo_de_la_diferencia, null);
+  });
+
+  it("una diferencia grande sí trae su motivo escrito", () => {
+    // Una ficha que declara 260 kcal con los mismos macros: 68 kcal (un 26 %)
+    // que no vienen de ningún macronutriente. Es el caso del alcohol.
+    const p = porcentajesDeMacros({ ...base, kcal: 260 });
+    assert.ok(p);
+    assert.equal(p.diferencia_pct, 26.2);
+    assert.match(p.motivo_de_la_diferencia ?? "", /alcohol/);
+    // Y el reparto NO se movió: la diferencia ya no se cuela en los porcentajes.
+    assert.equal(p.protein, 20.8);
+    assert.equal(redondear(p.protein + p.carbs + p.fat, 1), 100);
   });
 
   it("con 0 kcal no hay porcentajes: `null`, no 0 %", () => {
     assert.equal(porcentajesDeMacros({ ...base, kcal: 0 }), null);
     assert.equal(porcentajesDeMacros({ ...base, kcal: -5 }), null);
+  });
+
+  it("calorías sin un solo gramo de macro (alcohol puro): `null`, no una división por cero", () => {
+    const p = porcentajesDeMacros({ ...base, protein_g: 0, carbs_g: 0, fat_g: 0 });
+    assert.equal(p, null);
   });
 
   it("el motivo viaja en los totales cuando no hay porcentajes", () => {
@@ -359,5 +387,91 @@ describe("porcentajes de macros (Atwater 4/4/9)", () => {
     assert.ok(t);
     assert.equal(t.macro_pct, null);
     assert.match(t.macro_pct_motivo ?? "", /0/);
+  });
+
+  it("un plato con calorías y sin macros dice ESO, no que el total es 0", () => {
+    // El caso NO es hipotético y está en el catálogo: `Bebida destilada`
+    // (fdc-174815) declara 231 kcal/100 g con proteínas, hidratos y grasas en 0.
+    // Es una de las 7 fichas de 1.115 que no reparten macros.
+    const soloAlcohol = fichaReal("fdc-174815").per_100g;
+    const t = sumarTotales([
+      item({ termino_en: "gin", per_100g: soloAlcohol, nutrients: escalar(soloAlcohol, 100) }),
+    ]);
+    assert.ok(t);
+    assert.equal(t.nutrients.kcal, 231);
+    assert.equal(t.macro_pct, null);
+    assert.match(t.macro_pct_motivo ?? "", /viene de proteínas, hidratos o grasas/);
+  });
+});
+
+/**
+ * EL CANDADO DE LOS NÚMEROS IMPOSIBLES (card 5.1).
+ *
+ * No es un test de tres casos elegidos: recorre EL CATÁLOGO ENTERO. La razón es
+ * que el error que esta card arregla no se veía en ningún test —el motor sumaba
+ * bien, escalaba bien y publicaba `carbs: 102,7 %`—, y solo aparecía al mirar
+ * una ficha cuya fuente usa factores propios. Con 1.115 fichas, la única
+ * pregunta que no admite muestreo es "¿alguna publica un porcentaje imposible?".
+ */
+describe("ningún número imposible: las 1.115 fichas del catálogo real", () => {
+  const fichas = catalogoReal().foods;
+
+  it("el catálogo que se recorre es el real y está entero", () => {
+    assert.ok(fichas.length >= 1000, `esperaba el catálogo real, vinieron ${fichas.length} fichas`);
+  });
+
+  it("los tres porcentajes caen en 0..100 y suman 100 en TODAS", () => {
+    const imposibles: string[] = [];
+    let repartidas = 0;
+    let conLetraChica = 0;
+    for (const ficha of fichas) {
+      const p = porcentajesDeMacros(escalar(ficha.per_100g, 100));
+      if (p === null) continue; // fichas sin calorías o sin macros: no reparten
+      repartidas += 1;
+      if (p.motivo_de_la_diferencia !== null) conLetraChica += 1;
+      const suma = redondear(p.protein + p.carbs + p.fat, 1);
+      const fuera = [p.protein, p.carbs, p.fat].some((valor) => valor < 0 || valor > 100);
+      if (fuera || Math.abs(suma - 100) > 0.1) {
+        imposibles.push(`${ficha.id} (${ficha.names.es}): ${p.protein}/${p.carbs}/${p.fat} suma ${suma}`);
+      }
+    }
+    assert.deepEqual(imposibles, [], `fichas con porcentajes imposibles: ${imposibles.length}`);
+    // LOS CONTEOS SE AFIRMAN, porque un verde no prueba que el bucle recorrió
+    // nada: un `null` que se comiera medio catálogo pasaría igual de silencioso.
+    // Medido el 03/09/2026: 1.108 de 1.115 reparten (las otras 7 son agua, sal,
+    // café y la bebida destilada) y 253 llevan letra chica.
+    assert.ok(repartidas > fichas.length * 0.95, `solo ${repartidas} de ${fichas.length} fichas repartieron`);
+    assert.ok(conLetraChica > 50, `solo ${conLetraChica} fichas ejercitaron la rama del motivo escrito`);
+  });
+
+  it("la banana y las cerezas, que publicaban más de 100", () => {
+    // Los dos casos medidos en producción el 02/09/2026: banana `carbs 102,7 %`
+    // con `sin_explicar −10,9`, cerezas `101,7 %` con `−11,3`.
+    for (const [id, carbsViejo] of [
+      ["fdc-173944", 102.7],
+      ["fdc-171719", 101.7],
+    ] as const) {
+      const ficha = fichaReal(id);
+      const p = porcentajesDeMacros(escalar(ficha.per_100g, 100));
+      assert.ok(p, `${id} tiene que repartir`);
+      assert.ok(p.carbs <= 100, `${id}: ${p.carbs} % de hidratos sigue siendo imposible`);
+      assert.ok(p.carbs < carbsViejo, `${id}: el porcentaje viejo (${carbsViejo}) no se movió`);
+      assert.equal(redondear(p.protein + p.carbs + p.fat, 1), 100);
+      // La diferencia no se perdió: sigue publicada, con signo y con su motivo.
+      assert.ok(p.diferencia_pct < -5, `${id}: la diferencia tiene que seguir viajando`);
+      assert.ok(p.kcal_fuera_de_macros < 0);
+      assert.match(p.motivo_de_la_diferencia ?? "", /fruta|fibra/);
+    }
+  });
+
+  it("la banana: los números exactos que se publican ahora", () => {
+    // 1,09×4 + 22,84×4 + 0,33×9 = 98,69 kcal de macros; la ficha declara 89.
+    const p = porcentajesDeMacros(escalar(fichaReal("fdc-173944").per_100g, 100));
+    assert.ok(p);
+    assert.equal(p.protein, 4.4);
+    assert.equal(p.carbs, 92.6);
+    assert.equal(p.fat, 3);
+    assert.equal(p.kcal_fuera_de_macros, -9.7);
+    assert.equal(p.diferencia_pct, -10.9);
   });
 });

@@ -145,14 +145,26 @@ export interface TotalesNutrientes {
 }
 
 /**
- * El reparto de calorías por macro. `sin_explicar` NO se normaliza a propósito:
- * la diferencia con 100 es información (alcohol, fibra, redondeos de USDA).
+ * El reparto calórico: los tres suman 100 y ninguno sale de 0..100 (card 5.1).
+ *
+ * Cada uno es su parte de las calorías que APORTAN LOS MACROS (`P×4+C×4+F×9`),
+ * no de las kcal de la ficha. Lo que la ficha declara de más o de menos viaja
+ * aparte, en los tres campos de abajo, y no deforma el anillo.
  */
 export interface PorcentajesDeMacros {
   protein: number;
   carbs: number;
   fat: number;
-  sin_explicar: number;
+  /** Las kcal de la ficha que los macros no explican, con signo. */
+  kcal_fuera_de_macros: number;
+  /** Lo mismo en porcentaje de las kcal de la fuente. La banana da −10,9. */
+  diferencia_pct: number;
+  /**
+   * Por qué existe esa diferencia, o `null` cuando es ruido de redondeo. El
+   * umbral lo decide el motor: acá no se compara contra ningún número, se
+   * dibuja la letra chica si vino escrita.
+   */
+  motivo_de_la_diferencia: string | null;
 }
 
 /** Las cuatro claves opcionales que pueden faltar, con el motivo de la falta. */
