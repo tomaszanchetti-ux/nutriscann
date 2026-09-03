@@ -29,10 +29,28 @@
  *
  * Lo demás que hay acá —qué precisión esperar, las alergias, los pagos— no es
  * relleno legal: es lo que la app ya declara en sus pantallas, dicho entero en
- * un solo sitio. Y lo que NO hay tampoco es casualidad: no se promete nada sobre
- * el tratamiento de las fotos ni de los datos, porque las cuentas de usuario
- * llegan en la Fase 4 y una política de privacidad escrita antes de tiempo sería
- * una promesa que hoy nadie puede sostener. Lo dice la última sección.
+ * un solo sitio.
+ *
+ * LA CUENTA Y LAS FOTOS (WS13, 03/09/2026, DT-59). Hasta la Fase 6 este texto
+ * NO decía nada del tratamiento de las fotos ni de los datos, a propósito: no
+ * había cuentas y no se guardaba ninguna foto, y prometer una política antes de
+ * tiempo era prometer algo que nadie podía sostener. Las dos cosas cambiaron y
+ * el texto cambió con ellas: desde la Fase 4 hay cuenta obligatoria (Google o
+ * enlace por correo) y un cupo por plan; desde la card 6.0 la foto se guarda en
+ * Cloud Storage (`scans/{owner}/{scan}.jpg`, la lee solo su dueño y el backend)
+ * junto con lo que dijo el modelo (`vision`). Cada afirmación de las secciones
+ * `tu_cuenta` y `tus_fotos` corresponde a algo que el código HACE hoy: si el
+ * código cambia (retención, borrado en cascada, DT-60), esta página cambia en
+ * el mismo movimiento, y ANTES de desplegar.
+ *
+ * LO QUE VIENE se cuenta con verbos de futuro y sin fechas: los pulgares por
+ * ítem (card 6.7), las recetas nuestras y el idioma a elegir (v1.5, ver
+ * `docs/PLAN_V2.md` §10). Ninguna de esas tres cambia lo que se hace con los
+ * datos; el día que algo lo cambie —pagos, o que alguien que no seas tú pueda
+ * ver algo tuyo— la página se reescribe primero.
+ *
+ * DOS COPIAS QUE TIENEN QUE DECIR LO MISMO: este módulo (la PWA) y
+ * `apps/landing/terminos.html` (la landing pública). Se editan juntas.
  *
  * Español de España, sin voseo (DT-21). Sin jerga legal impostada: cada título
  * es corto y cada párrafo se puede leer entero de una vez.
@@ -51,7 +69,7 @@ export const COPY_TERMINOS = {
   /** La frase que resume todo lo de abajo, para quien no va a leer todo lo de abajo. */
   entrada:
     "En una línea: CaliScan te ayuda a entender lo que comes. No te diagnostica, no te trata y no sustituye a un profesional.",
-  actualizado: "Última actualización: 1 de septiembre de 2026",
+  actualizado: "Última actualización: 3 de septiembre de 2026",
   /** El enlace que lleva hasta aquí, en el pie de todas las pantallas. */
   enlace: "Términos y condiciones",
 } as const;
@@ -100,6 +118,33 @@ export const SECCIONES_DE_TERMINOS: readonly SeccionDeTerminos[] = [
     ],
   },
   {
+    id: "tu_cuenta",
+    titulo: "Tu cuenta y tu cupo",
+    parrafos: [
+      "Para analizar un plato hace falta una cuenta. Entras con Google o con un enlace que te enviamos al correo; no hay contraseña que recordar.",
+      "De ti guardamos lo mínimo para que la cuenta funcione: tu correo electrónico y un identificador interno. Nada más: ni nombre, ni edad, ni peso, ni objetivos. No te los pedimos porque no los necesitamos.",
+      "Cada plan tiene un cupo de análisis al mes y otro al día. El número exacto lo ves siempre en la pantalla de planes. Cuando se agota, la app te lo dice y espera a que se renueve; una foto que no llegamos a analizar no cuenta.",
+    ],
+  },
+  {
+    id: "tus_fotos",
+    titulo: "Qué hacemos con tus fotos",
+    parrafos: [
+      "Cuando analizas un plato, la foto viaja a nuestro servidor y de ahí al modelo de inteligencia artificial que reconoce los alimentos, un servicio externo de la empresa Anthropic. Lo usamos solo para eso: identificar qué hay en el plato y estimar cuánto. Según sus condiciones comerciales, ese proveedor no utiliza lo que le enviamos para entrenar sus modelos.",
+      "La foto se guarda junto con su análisis: los alimentos reconocidos, los gramos estimados, los totales y la respuesta exacta del modelo. Es tu expediente. Solo tú lo ves desde tu cuenta y solo nuestro sistema lo lee. No lo compartimos con nadie, no lo vendemos y no lo usamos para mostrarte publicidad.",
+      "¿Para qué lo guardamos? Para que puedas volver a tus análisis, y para mejorar el reconocimiento: cuando un plato sale mal, la única forma de arreglarlo es poder mirar la foto y lo que el modelo dijo de ella.",
+      "Todo se almacena en servidores de Google Cloud en Europa y se conserva mientras tengas la cuenta. Si quieres que borremos tu cuenta y todo lo que hay en ella, escríbenos a soporte@caliscan.app y lo hacemos: fotos, análisis y correo, sin preguntas.",
+    ],
+  },
+  {
+    id: "tu_opinion",
+    titulo: "Tu opinión sobre cada análisis",
+    parrafos: [
+      "Muy pronto podrás decirnos, plato a plato, si el análisis acertó: un pulgar arriba o abajo por cada alimento y por el total, y si algo salió mal, qué era o cuánto había en realidad.",
+      "Esa opinión se guarda con el análisis y sirve para lo mismo que la foto: encontrar lo que falla y corregirlo. Es voluntaria, y no cambia tu cupo ni tu plan.",
+    ],
+  },
+  {
     id: "planes_y_pagos",
     titulo: "Los planes y los pagos",
     parrafos: [
@@ -108,11 +153,11 @@ export const SECCIONES_DE_TERMINOS: readonly SeccionDeTerminos[] = [
     ],
   },
   {
-    id: "este_texto_crece",
-    titulo: "Este texto va a crecer",
+    id: "lo_que_viene",
+    titulo: "Lo que viene, y lo que cambiará aquí",
     parrafos: [
-      "CaliScan está en su primera versión. Cuando lleguen las cuentas de usuario y los pagos, esta página crecerá con lo que haga falta, empezando por qué se hace con tus fotos y con tus datos.",
-      "Mientras tanto no prometemos aquí nada que no podamos sostener: preferimos una página corta y cierta a una larga y prestada.",
+      "Las próximas versiones traen recetas escritas por nosotros, gratis y fuera de cualquier plan de pago; la app en español o en inglés, a tu elección; y los pulgares de arriba. Ninguna de esas tres cosas cambia lo que hacemos con tus datos.",
+      "Cuando lleguen los pagos, o el día que alguien que no seas tú pueda ver algo tuyo, esta página cambiará antes, no después. Mientras tanto no prometemos aquí nada que no podamos sostener: preferimos una página corta y cierta a una larga y prestada.",
     ],
   },
 ];
