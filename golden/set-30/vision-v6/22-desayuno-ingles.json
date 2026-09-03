@@ -1,0 +1,158 @@
+{
+  "foto": "22-desayuno-ingles",
+  "meta": {
+    "model": "claude-sonnet-5",
+    "latency_ms": 7303,
+    "tokens_in": 1061,
+    "tokens_out": 566,
+    "tokens_cache_write": 0,
+    "tokens_cache_read": 8296,
+    "intentos": 1,
+    "stop_reason": "end_turn"
+  },
+  "vision": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "whole grain rye bread, slice",
+        "grams": 60,
+        "confidence": 0.75,
+        "food_es": "pan de centeno integral, rebanada",
+        "familia_subfamilia": "pan/barra-o-molde",
+        "components": []
+      },
+      {
+        "food_en": "baked beans in tomato sauce",
+        "grams": 110,
+        "confidence": 0.85,
+        "food_es": "alubias en salsa de tomate",
+        "familia_subfamilia": "legumbre/plato",
+        "components": []
+      },
+      {
+        "food_en": "scrambled eggs",
+        "grams": 80,
+        "confidence": 0.85,
+        "food_es": "huevos revueltos",
+        "familia_subfamilia": "huevo/revuelto-y-tortilla",
+        "preparation": "plancha",
+        "components": []
+      },
+      {
+        "food_en": "cocktail sausages",
+        "grams": 50,
+        "confidence": 0.7,
+        "food_es": "salchichas cóctel",
+        "familia_subfamilia": "embutido/fresco",
+        "preparation": "frito",
+        "components": []
+      },
+      {
+        "food_en": "bacon, cooked slices",
+        "grams": 45,
+        "confidence": 0.75,
+        "food_es": "bacon, lonchas cocinadas",
+        "familia_subfamilia": "cerdo/panceta",
+        "preparation": "plancha",
+        "components": []
+      },
+      {
+        "food_en": "cucumber slices",
+        "grams": 60,
+        "confidence": 0.9,
+        "food_es": "pepino en rodajas",
+        "familia_subfamilia": "verdura/cruda",
+        "preparation": "crudo",
+        "components": []
+      },
+      {
+        "food_en": "butter portion, packaged",
+        "grams": 10,
+        "confidence": 0.6,
+        "food_es": "porción de mantequilla envasada",
+        "familia_subfamilia": "aceite-y-grasa/mantequilla",
+        "components": []
+      }
+    ]
+  },
+  "crudo": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "whole grain rye bread, slice",
+        "food_es": "pan de centeno integral, rebanada",
+        "familia_subfamilia": "pan/barra-o-molde",
+        "grams": 60,
+        "confidence": 0.75,
+        "components": []
+      },
+      {
+        "food_en": "baked beans in tomato sauce",
+        "food_es": "alubias en salsa de tomate",
+        "familia_subfamilia": "legumbre/plato",
+        "grams": 110,
+        "confidence": 0.85,
+        "components": []
+      },
+      {
+        "food_en": "scrambled eggs",
+        "food_es": "huevos revueltos",
+        "familia_subfamilia": "huevo/revuelto-y-tortilla",
+        "grams": 80,
+        "confidence": 0.85,
+        "preparation": "plancha",
+        "components": []
+      },
+      {
+        "food_en": "cocktail sausages",
+        "food_es": "salchichas cóctel",
+        "familia_subfamilia": "embutido/fresco",
+        "grams": 50,
+        "confidence": 0.7,
+        "preparation": "frito",
+        "components": []
+      },
+      {
+        "food_en": "bacon, cooked slices",
+        "food_es": "bacon, lonchas cocinadas",
+        "familia_subfamilia": "cerdo/panceta",
+        "grams": 45,
+        "confidence": 0.75,
+        "preparation": "plancha",
+        "components": []
+      },
+      {
+        "food_en": "cucumber slices",
+        "food_es": "pepino en rodajas",
+        "familia_subfamilia": "verdura/cruda",
+        "grams": 60,
+        "confidence": 0.9,
+        "preparation": "crudo",
+        "components": []
+      },
+      {
+        "food_en": "butter portion, packaged",
+        "food_es": "porción de mantequilla envasada",
+        "familia_subfamilia": "aceite-y-grasa/mantequilla",
+        "grams": 10,
+        "confidence": 0.6,
+        "components": []
+      }
+    ]
+  },
+  "usage": {
+    "input_tokens": 1061,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 8296,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 566,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "inference_geo": "global"
+  }
+}

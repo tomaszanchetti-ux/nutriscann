@@ -1,0 +1,82 @@
+{
+  "foto": "09-arepa",
+  "meta": {
+    "model": "claude-sonnet-5",
+    "latency_ms": 5499,
+    "tokens_in": 802,
+    "tokens_out": 402,
+    "tokens_cache_write": 0,
+    "tokens_cache_read": 8296,
+    "intentos": 1,
+    "stop_reason": "end_turn"
+  },
+  "vision": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "corn arepa with cheese filling",
+        "grams": 140,
+        "confidence": 0.8,
+        "food_es": "arepa con queso",
+        "familia_subfamilia": "pan/plano-y-tortilla",
+        "preparation": "plancha",
+        "components": [
+          {
+            "food_en": "corn arepa",
+            "grams": 95,
+            "food_es": "arepa de maíz",
+            "familia_subfamilia": "pan/plano-y-tortilla"
+          },
+          {
+            "food_en": "white cheese slice",
+            "grams": 45,
+            "food_es": "queso blanco fresco",
+            "familia_subfamilia": "queso/fresco"
+          }
+        ]
+      }
+    ]
+  },
+  "crudo": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "corn arepa with cheese filling",
+        "food_es": "arepa con queso",
+        "familia_subfamilia": "pan/plano-y-tortilla",
+        "grams": 140,
+        "confidence": 0.8,
+        "preparation": "plancha",
+        "components": [
+          {
+            "food_en": "corn arepa",
+            "food_es": "arepa de maíz",
+            "grams": 95,
+            "familia_subfamilia": "pan/plano-y-tortilla"
+          },
+          {
+            "food_en": "white cheese slice",
+            "food_es": "queso blanco fresco",
+            "grams": 45,
+            "familia_subfamilia": "queso/fresco"
+          }
+        ]
+      }
+    ]
+  },
+  "usage": {
+    "input_tokens": 802,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 8296,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 402,
+    "output_tokens_details": {
+      "thinking_tokens": 194
+    },
+    "service_tier": "standard",
+    "inference_geo": "global"
+  }
+}

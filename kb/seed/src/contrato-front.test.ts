@@ -73,7 +73,9 @@ function cuerpoDeInterface(fuente: string, nombre: string, archivo: string): str
 
 /** El lado derecho de `export type X = … ;`, normalizado. */
 function aliasDeTipo(fuente: string, nombre: string, archivo: string): string {
-  const encontrado = new RegExp(`export type ${nombre} = ([\\s\\S]*?);`).exec(sinComentarios(fuente));
+  // `=\\s*`: el alias puede abrir en la misma línea o en la siguiente (una unión
+  // de nueve sellos, como `TipoDeMatch` desde la card 5.3, se escribe una por línea).
+  const encontrado = new RegExp(`export type ${nombre} =\\s*([\\s\\S]*?);`).exec(sinComentarios(fuente));
   assert.ok(encontrado, `no encontré 'export type ${nombre}' en ${archivo}`);
   return (encontrado[1] as string).replace(/\s+/g, " ").trim();
 }
@@ -104,7 +106,7 @@ const catalogo = readFileSync(TIPOS_DEL_CATALOGO, "utf8");
 
 for (const nombre of TIPOS_COMPARTIDOS) {
   test(`${nombre}: el front declara exactamente lo que declara el motor`, () => {
-    const esAlias = new RegExp(`export type ${nombre} = `).test(motor);
+    const esAlias = new RegExp(`export type ${nombre} =\\s`).test(motor);
     if (esAlias) {
       assert.equal(
         aliasDeTipo(front, nombre, TIPOS_DEL_FRONT),

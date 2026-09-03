@@ -29,10 +29,13 @@
  * salga el match de donde salga.
  */
 import type { CanonicalFood } from "../kb/types";
-import type { CatalogIndex, GuardaDeVocabulario, TerminoIndexado } from "./catalog";
+import type { CatalogIndex, EntradaDeTaxonomia, GuardaDeVocabulario, TerminoIndexado } from "./catalog";
 import {
   COBERTURA_DIFUSA_MIN,
+  CONFIANZA_CABEZA_FAMILIA,
+  CONFIANZA_CABEZA_SUBFAMILIA,
   CONFIANZA_DIFUSA_MAX,
+  CONFIANZA_SUSTITUTO_DECLARADO,
   DECIMALES,
   FACTOR_GENERICO,
   RESPALDO_MINIMO_DE_IDENTIDAD,
@@ -51,7 +54,15 @@ import {
   tokens,
 } from "./normalize";
 
-export type NivelDeMatch = "exacto" | "alias" | "difuso";
+/**
+ * Los niveles que puede devolver este archivo.
+ *
+ * Los tres de siempre salen de COMPARAR TEXTO. Los tres de la card 5.3 no
+ * comparan nada: son respuestas DECLARADAS —por la curación (`sustituto`) o por
+ * la taxonomía (las dos cabezas)— para cuando el texto no llegó a ninguna ficha.
+ * Por eso viven en la misma cascada y no en la misma familia de ideas.
+ */
+export type NivelDeMatch = "exacto" | "alias" | "difuso" | "sustituto" | "cabeza_subfamilia" | "cabeza_familia";
 
 export interface MatchResult {
   ficha: CanonicalFood;
@@ -163,6 +174,190 @@ function contradiceAlIngles(termino_en: string, porEn: MatchResult, porEs: Match
   const respaldoEn = respaldoDeIdentidad(termino_en, porEn.ficha);
   if (respaldoEn === 1) return true;
   return respaldoEn > 0 && porEn.nivel === "difuso" && porEs.nivel === "difuso";
+}
+
+/* ===========================================================================
+ * LA TAXONOMÍA COMO RESPALDO DEL TEXTO (card 5.3)
+ *
+ * Todo lo que sigue existe por un escaneo de producción del 02/09/2026: una
+ * pizza que el catálogo tiene cinco veces y que ninguna de las cinco alcanzó,
+ * porque la visión escribió "pizza with ham and mushrooms" y el término «pizza»
+ * a secas no es el nombre de ninguna ficha. El plato salió SIN NÚMEROS.
+ *
+ * Desde la card 5.2 la visión no solo escribe palabras: además ELIGE un valor de
+ * una lista cerrada de 191 (`familia/subfamilia`). Esa elección es una identidad
+ * declarada, y estas funciones la convierten en una ficha.
+ *
+ * LA REGLA QUE ORDENA TODO, Y ES LA MEDIDA DEL BLOQUE 0: **la cabeza es un
+ * RESPALDO, nunca un reemplazo.** De los 68 ítems del golden, 31 llegan hoy por
+ * `exacto` o `alias` y reemplazarlos por la cabeza de su subfamilia empeoraría 8
+ * — el atún en lata pasaría de 85 a 238 kcal (+180 %), el kétchup de 109 a 24
+ * (−78 %). La cabeza solo baja al ruedo cuando el término no llegó a nada.
+ * =========================================================================== */
+
+/**
+ * LA SUBFAMILIA CON LA QUE SE VA A TRABAJAR: la que declaró la visión, o —solo
+ * si no declaró ninguna— la que se deduce del nombre.
+ *
+ * `declarada` viaja en la respuesta y no es un detalle: la regla de la
+ * contradicción (`contradiceALaFamilia`) solo puede correr sobre una familia que
+ * ELIGIÓ el modelo de una lista cerrada. Una familia deducida del propio término
+ * no puede contradecir a ese término — salió de él.
+ *
+ * LA DEDUCCIÓN ES EL ÚLTIMO RECURSO Y COMPARA POR IGUALDAD, no por parecido: la
+ * visión tiene que haber escrito exactamente el nombre de una subfamilia
+ * («ensalada verde», «huevo revuelto y tortilla»). Buscar la subfamilia con el
+ * matcher difuso sería volver a adivinar con otro vocabulario, y el Bloque 0 ya
+ * midió adónde lleva eso: de los 191 nombres de subfamilia, 9 caen hoy en OTRA
+ * familia por difuso.
+ */
+export function subfamiliaDeclarada(
+  familia_subfamilia: string | undefined | null,
+  termino_en: string,
+  termino_es: string | undefined | null,
+  index: CatalogIndex,
+): { entrada: EntradaDeTaxonomia; declarada: boolean } | null {
+  if (typeof familia_subfamilia === "string" && familia_subfamilia.length > 0) {
+    const entrada = index.taxonomia.porId.get(familia_subfamilia);
+    // Un valor fuera del enum no es una familia: es basura del modelo, y se
+    // ignora como cualquier otra entrada que no se entiende (ver `analyze.ts`).
+    if (entrada !== undefined) return { entrada, declarada: true };
+  }
+  for (const termino of [termino_en, termino_es]) {
+    if (typeof termino !== "string" || termino.length === 0) continue;
+    const id = index.taxonomia.porNombreDeSubfamilia.get(claveDeMatching(termino));
+    if (id === undefined) continue;
+    const entrada = index.taxonomia.porId.get(id);
+    if (entrada !== undefined) return { entrada, declarada: false };
+  }
+  return null;
+}
+
+/**
+ * ¿LA FICHA QUE GANÓ EL MATCH CONTRADICE LA FAMILIA QUE DECLARÓ LA VISIÓN?
+ *
+ * Es el arreglo del peor caso del Bloque 0: **«perrito caliente» llega por ALIAS
+ * con confianza 1,00 a `Hot dog`, que es la salchicha SOLA, sin pan** — otra
+ * familia (embutido) y otro alimento. Con la familia declarada, el motor tiene
+ * por primera vez una segunda opinión sobre el mismo alimento.
+ *
+ * Y LA REGLA ES ASIMÉTRICA A PROPÓSITO, que es la mitad de la decisión:
+ *
+ *   · un `exacto` o un `alias` GANA IGUAL. Ese término lo escribió alguien —es
+ *     el nombre de la ficha, o un alias que la curación revisó a mano— y una
+ *     lista de 191 valores elegida por un modelo no le gana a eso. Si «perrito
+ *     caliente» sigue llevando a la salchicha sola, el arreglo es la guarda de
+ *     vocabulario (deuda 7 del Bloque 0), no esta regla;
+ *   · un `difuso` PIERDE. Ahí el motor estaba adivinando por parecido de
+ *     palabras, y una identidad declarada le gana a una conjetura. Es el mismo
+ *     criterio de la DT-37: una contradicción no se gana por puntaje.
+ *
+ * Y solo se aplica si hay con qué reemplazarla: sin una cabeza a la que caer,
+ * tirar el difuso dejaría el plato sin número, que es peor que un número flojo
+ * con su reserva escrita.
+ */
+export function contradiceALaFamilia(match: MatchResult, entrada: EntradaDeTaxonomia, index: CatalogIndex): boolean {
+  if (match.nivel !== "difuso") return false;
+  if (entrada.cabezaDeSubfamilia === null && entrada.cabezaDeFamilia === null) return false;
+  const suya = index.taxonomia.deLaFicha.get(match.ficha.id);
+  // Una ficha que la taxonomía no ubica no contradice a nadie: no se sabe dónde
+  // vive. Medido: 0 de 1.115 en el catálogo de hoy, pero un catálogo más nuevo
+  // que la taxonomía es exactamente el caso que hay que sobrevivir.
+  if (suya === undefined) return false;
+  return suya.split("/")[0] !== entrada.familia.id;
+}
+
+/**
+ * LA FICHA QUE LA CURACIÓN DECLARÓ PARA UN INGREDIENTE QUE USDA NO MIDE.
+ *
+ * Se compara por igualdad del texto normalizado contra los dos nombres que dijo
+ * la visión. Nunca por parecido: el parecido ya lo cubre el difuso, y un
+ * sustituto es una decisión escrita a mano que tiene que disparar exactamente
+ * donde se la escribió. Ver `Sustituto` en `kb/familias.ts`.
+ */
+export function sustitutoDeclarado(
+  termino_en: string,
+  termino_es: string | undefined | null,
+  index: CatalogIndex,
+): MatchResult | null {
+  for (const termino of [termino_en, termino_es]) {
+    if (typeof termino !== "string" || termino.length === 0) continue;
+    const clave = claveDeMatching(termino);
+    // La clave literal primero y la de la identidad después: ver el indexado en
+    // `catalog.ts`. "pizza dough, baked" tiene que llegar al sustituto que la
+    // curación escribió como "pizza dough".
+    const sustituto = index.taxonomia.sustitutos.get(clave) ?? index.taxonomia.sustitutos.get(sinDescriptores(clave));
+    if (sustituto === undefined) continue;
+    const ficha = index.porId.get(sustituto.ficha);
+    if (ficha === undefined || ficha.deprecated) continue;
+    return {
+      ficha,
+      nivel: "sustituto",
+      confianza_match: CONFIANZA_SUSTITUTO_DECLARADO,
+      termino_matcheado: termino,
+      idioma: termino === termino_en ? "en" : "es",
+      motivo:
+        `El catálogo no tiene este alimento y la curación declaró un sustituto: "${ficha.names.es ?? ficha.names.en}". ` +
+        sustituto.motivo,
+      // La identidad está respaldada por escrito: alguien fue a los datasets,
+      // comprobó que el alimento no está medido y eligió el más cercano.
+      identidad_respaldada: true,
+    };
+  }
+  return null;
+}
+
+/**
+ * LA CABEZA DE LA SUBFAMILIA, Y SI NO HAY, LA DE LA FAMILIA. `null` si ninguna.
+ *
+ * Los dos escalones en una función porque son el mismo movimiento —contestar con
+ * lo declarado en vez de callarse— y el nivel que sale dice por cuál de los dos
+ * se pasó. Las 13 subfamilias sin cabeza del Bloque 0 son huecos declarados con
+ * su motivo, no olvidos: acá se traducen en bajar un escalón.
+ */
+export function cabezaDeLaTaxonomia(entrada: EntradaDeTaxonomia): MatchResult | null {
+  const nombre = (ficha: CanonicalFood): string => ficha.names.es ?? ficha.names.en;
+
+  if (entrada.cabezaDeSubfamilia !== null) {
+    return {
+      ficha: entrada.cabezaDeSubfamilia,
+      nivel: "cabeza_subfamilia",
+      confianza_match: CONFIANZA_CABEZA_SUBFAMILIA,
+      termino_matcheado: entrada.subfamilia.nombre_es,
+      idioma: "es",
+      motivo:
+        `El catálogo no tiene este alimento por su nombre, pero se declaró como ` +
+        `"${entrada.subfamilia.nombre_es}" (${entrada.familia.nombre_es}) y esa subfamilia responde con ` +
+        `"${nombre(entrada.cabezaDeSubfamilia)}". Es la ficha que representa al grupo, no la de este plato: ` +
+        `dentro de un mismo grupo los valores varían.`,
+      // La identidad SÍ está respaldada: la visión no escribió una palabra que
+      // se parece, eligió un valor de una lista cerrada, y la taxonomía declara
+      // qué ficha responde por ese valor. Es lo que la compuerta del total
+      // necesita para no apagar un plato que sí se identificó (DT-37).
+      identidad_respaldada: true,
+    };
+  }
+
+  if (entrada.cabezaDeFamilia !== null) {
+    return {
+      ficha: entrada.cabezaDeFamilia,
+      nivel: "cabeza_familia",
+      confianza_match: CONFIANZA_CABEZA_FAMILIA,
+      termino_matcheado: entrada.familia.nombre_es,
+      idioma: "es",
+      motivo:
+        `El catálogo no tiene este alimento por su nombre y su subfamilia ` +
+        `("${entrada.subfamilia.nombre_es}") tampoco tiene una ficha que la represente, así que responde la ` +
+        `familia entera con "${nombre(entrada.cabezaDeFamilia)}". Es el último recurso antes de no dar número: ` +
+        `dentro de una familia los valores varían mucho más que dentro de una subfamilia.`,
+      // Y acá NO. Una familia agrupa cosas que se parecen poco —dentro de
+      // «verdura», la cruda son 30 kcal/100 g y la cocida con grasa 86— así que
+      // esto contesta de qué CLASE de comida se trata y poco más. Que publique
+      // total o no queda en manos de la confianza, como cualquier match flojo.
+    };
+  }
+
+  return null;
 }
 
 /**

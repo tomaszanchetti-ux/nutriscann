@@ -148,6 +148,14 @@ export interface CopyDeLaApp {
   match_alias_ayuda: string;
   match_difuso: string;
   match_difuso_ayuda: string;
+  match_sustituto: string;
+  match_sustituto_ayuda: string;
+  match_cabeza_subfamilia: string;
+  match_cabeza_subfamilia_ayuda: string;
+  match_cabeza_familia: string;
+  match_cabeza_familia_ayuda: string;
+  match_compuesto_parcial: string;
+  match_compuesto_parcial_ayuda: string;
   match_compuesto: string;
   match_compuesto_ayuda: string;
   match_no_catalogado: string;
@@ -306,6 +314,18 @@ export const COPY_DE_ARRANQUE: CopyDeLaApp = {
   match_difuso: "Coincidencia aproximada",
   match_difuso_ayuda:
     "No hubo un nombre exacto: se usó el alimento más parecido de la base nutricional. Es una estimación, no una medición de ESTE plato.",
+  match_sustituto: "Sustituto revisado",
+  match_sustituto_ayuda:
+    "La base nutricional no mide este alimento. Se usó el más parecido que sí está medido, elegido a mano y con el motivo a la vista.",
+  match_cabeza_subfamilia: "Por su grupo",
+  match_cabeza_subfamilia_ayuda:
+    "No hubo un nombre exacto: se respondió con el alimento que representa a su grupo, como “arroz cocido” o “queso curado”. Los valores son los del grupo, no los de este plato.",
+  match_cabeza_familia: "Por su familia",
+  match_cabeza_familia_ayuda:
+    "Ni el nombre ni su grupo llegaron a un alimento concreto: se respondió con el que representa a toda su familia. Es lo más general que se puede decir antes de no dar ningún número.",
+  match_compuesto_parcial: "Compuesto en parte",
+  match_compuesto_parcial_ayuda:
+    "Se sumó a partir de los ingredientes visibles, menos alguno que la base nutricional no tiene. Lo que falta pesaba poco y está declarado con sus gramos.",
   match_compuesto: "Compuesto en el momento",
   match_compuesto_ayuda:
     "La base nutricional no tiene este plato: se sumó a partir de sus ingredientes visibles y del método de cocción.",

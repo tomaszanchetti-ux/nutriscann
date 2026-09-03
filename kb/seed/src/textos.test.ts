@@ -121,7 +121,7 @@ test("los pasos se parten y se recortan igual que en el front", () => {
 // ── El archivo real del repo: es lo que se publica ───────────────────────────
 
 /**
- * Las 106 claves del contrato, al 02/09/2026.
+ * Las 114 claves del contrato, al 03/09/2026.
  *
  * Eran 18 (DT-18, card 2.5). La card 3.1 sumó las 29 de la DT-22: los textos
  * que el usuario leía y estaban escritos adentro de los componentes del front.
@@ -145,6 +145,11 @@ test("los pasos se parten y se recortan igual que en el front", () => {
  *       sin pantalla, y `donut_unexplained` y `donut_rest`, que se quedaron sin
  *       lector cuando el donut volvió al anillo simple y la card 4.5 podó la
  *       maquinaria muerta. 64 + 8 + 39 − 5 = 106.
+ *
+ * Y LA CARD 5.3 (03/09/2026) SUMÓ 8: los cuatro sellos nuevos del matcher
+ *   (`match_sustituto`, `match_cabeza_subfamilia`, `match_cabeza_familia`,
+ *   `match_compuesto_parcial`) con su `_ayuda`. Son los escalones que el motor
+ *   baja cuando el nombre del alimento no llega a ninguna ficha. 106 + 8 = 114.
  *
  * Quitar una clave es el mismo cambio de las dos puntas que agregarla: se va de
  * `config/copy.json` (de `keys` y de `copy`), se va de quien la leía y se va de
@@ -182,14 +187,22 @@ const CLAVES_ESPERADAS = [
   "item_source_label",
   "match_alias",
   "match_alias_ayuda",
+  "match_cabeza_familia",
+  "match_cabeza_familia_ayuda",
+  "match_cabeza_subfamilia",
+  "match_cabeza_subfamilia_ayuda",
   "match_compuesto",
   "match_compuesto_ayuda",
+  "match_compuesto_parcial",
+  "match_compuesto_parcial_ayuda",
   "match_difuso",
   "match_difuso_ayuda",
   "match_exacto",
   "match_exacto_ayuda",
   "match_no_catalogado",
   "match_no_catalogado_ayuda",
+  "match_sustituto",
+  "match_sustituto_ayuda",
   "not_food_title",
   "nutrient_carbs",
   "nutrient_fat",
@@ -262,7 +275,7 @@ const CLAVES_ESPERADAS = [
   "v2_title",
 ];
 
-test("config/copy.json valida y trae las 106 claves del contrato", () => {
+test("config/copy.json valida y trae las 114 claves del contrato", () => {
   const textos = cargarTextos(TEXTOS_DEL_REPO);
   assert.deepEqual(textos.claves, CLAVES_ESPERADAS);
   assert.equal(textos.pasos.length, 3, "la pantalla de espera muestra tres pasos");

@@ -7,7 +7,13 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { analizarEscaneo } from "./analyze";
-import { CONFIANZA_MINIMA_PARA_UN_TOTAL, FACTOR_COMPOSICION, FACTOR_GENERICO } from "./constants";
+import {
+  CONFIANZA_CABEZA_FAMILIA,
+  CONFIANZA_CABEZA_SUBFAMILIA,
+  CONFIANZA_MINIMA_PARA_UN_TOTAL,
+  FACTOR_COMPOSICION,
+  FACTOR_GENERICO,
+} from "./constants";
 import { redondear } from "./match";
 import { fichaFalsa, indiceDeFixture, indiceReal } from "./testing";
 import type { VisionResult } from "./types";
@@ -564,5 +570,323 @@ describe("DT-37 — la lasaña del plato 05 vuelve a publicar su total", () => {
     assert.equal(r.totals.total_no_publicable, true);
     assert.equal(r.totals.nutrients.kcal, null);
     assert.equal(r.totals.completo, false);
+  });
+});
+
+/* ===========================================================================
+ * CARD 5.3 — LA CASCADA NUEVA, DE PUNTA A PUNTA
+ *
+ * Seis escalones y el orden es la card entera. Cada test de acá abajo fija UNO
+ * de los escalones con el caso que lo justifica, y todos los casos salen del
+ * Bloque 0 de la Fase 5 (`kb/cobertura/familias.bloque0.md`).
+ * =========================================================================== */
+
+describe("card 5.3 — escalón 1: el término gana SIEMPRE que llegue", () => {
+  it("EL ATÚN EN LATA: la cabeza no le pisa la ficha ni cuando el término entró por difuso", () => {
+    // El caso que ordena toda la cascada. `tuna, canned` llega a `Atún` (85
+    // kcal/100 g) por un difuso flojo, 0,27. La cabeza de su subfamilia
+    // (`pescado/cocinado`) es `Pescado`, 238 kcal: reemplazarla sería un +180 %.
+    const r = analizarEscaneo(
+      escaneo([
+        { food_en: "tuna, canned", food_es: "atún en lata", grams: 100, confidence: 0.9, familia_subfamilia: "pescado/cocinado" },
+      ]),
+      index,
+    );
+    const item = r.items[0];
+    assert.ok(item);
+    assert.equal(item.match, "difuso");
+    assert.equal(item.name_es, "Atún");
+    assert.equal(item.per_100g?.kcal, 85);
+  });
+
+  it("un exacto tampoco se mueve, ni declarando otra familia entera", () => {
+    // `Kétchup` es el nombre exacto de fdc-2709733. Aunque la visión declarara
+    // una familia que no tiene nada que ver, un término que escribió la curación
+    // no se resuelve por una lista que eligió un modelo.
+    const r = analizarEscaneo(
+      escaneo([
+        { food_en: "ketchup", food_es: "kétchup", grams: 20, confidence: 0.9, familia_subfamilia: "fruta/fresca" },
+      ]),
+      index,
+    );
+    assert.equal(r.items[0]?.match, "exacto");
+    assert.equal(r.items[0]?.name_es, "Kétchup");
+  });
+
+  it("un `familia_subfamilia` que no existe en el enum no rompe nada: se ignora", () => {
+    const r = analizarEscaneo(
+      escaneo([{ food_en: "ketchup", grams: 20, confidence: 0.9, familia_subfamilia: "no-existe/para-nada" }]),
+      index,
+    );
+    assert.equal(r.items[0]?.match, "exacto");
+  });
+});
+
+describe("card 5.3 — la contradicción entre el término y la familia declarada", () => {
+  it("«Verdura» dejaba de ser verdura: el difuso la llevaba a ACEITE vegetal", () => {
+    // Uno de los 15 casos graves del Bloque 0. El término «Verdura» caía en
+    // `Aceite vegetal` (otra familia) con un difuso de 0,41.
+    const r = analizarEscaneo(
+      escaneo([
+        { food_en: "Vegetables", food_es: "Verdura", grams: 100, confidence: 0.9, familia_subfamilia: "verdura/cruda" },
+      ]),
+      index,
+    );
+    const item = r.items[0];
+    assert.ok(item);
+    assert.equal(item.match, "cabeza_subfamilia");
+    assert.equal(item.name_es, "Verdura cruda");
+    // Y lo que pasó se cuenta donde se lee: qué ofrecía el nombre y por qué perdió.
+    assert.match(item.caveats?.join(" ") ?? "", /Aceite vegetal.*otra familia/s);
+  });
+
+  it("«perrito caliente» NO se toca: entra por alias, y un alias lo escribió alguien", () => {
+    // El peor caso del informe —lleva a la salchicha sin pan— y sobrevive a
+    // propósito. La regla desarma conjeturas del motor, no decisiones curadas.
+    // El arreglo de este caso es una guarda de vocabulario (deuda 7).
+    const r = analizarEscaneo(
+      escaneo([
+        { food_en: "Hot dog", food_es: "Perrito caliente", grams: 100, confidence: 0.9, familia_subfamilia: "bocadillo/perrito" },
+      ]),
+      index,
+    );
+    assert.equal(r.items[0]?.match, "alias");
+  });
+});
+
+describe("card 5.3 — escalones 4 y 5: las cabezas y la composición", () => {
+  it("«arroz cocido» no llegaba a NADA y ahora llega a su cabeza", () => {
+    // Uno de los 35 nombres de subfamilia mudos del Bloque 0. Con la subfamilia
+    // declarada, sale con número y con la identidad respaldada.
+    const r = analizarEscaneo(
+      escaneo([
+        { food_en: "cooked rice", food_es: "arroz cocido", grams: 150, confidence: 0.9, familia_subfamilia: "arroz/cocido" },
+      ]),
+      index,
+    );
+    const item = r.items[0];
+    assert.ok(item);
+    assert.equal(item.match, "cabeza_subfamilia");
+    assert.equal(item.identidad_respaldada, true);
+    assert.ok(item.nutrients !== null);
+    // Y la cabeza llega con DOS reservas encima, no una: casi todas las cabezas
+    // son fichas `generic` —miden el promedio de una familia, que es justamente
+    // por lo que fueron elegidas— así que además del 0,5 de la cabeza se lleva
+    // el descuento de genérico de la DT-13.
+    assert.equal(item.generic, true);
+    assert.equal(item.confidence_match, redondear(CONFIANZA_CABEZA_SUBFAMILIA * FACTOR_GENERICO));
+    // Y publica total: es exactamente lo que la compuerta tenía que dejar pasar.
+    assert.equal(r.totals?.total_no_publicable, undefined);
+  });
+
+  it("una subfamilia SIN cabeza baja a la de la familia, y confía menos", () => {
+    // `ensalada/verdura` es uno de los 13 huecos declarados: cuatro ensaladas
+    // con nombre propio y ningún promedio.
+    const r = analizarEscaneo(
+      escaneo([
+        { food_en: "Zzzz qqq inexistente", food_es: "Zzzz qqq inexistente", grams: 150, confidence: 0.9, familia_subfamilia: "ensalada/verdura" },
+      ]),
+      index,
+    );
+    const item = r.items[0];
+    assert.ok(item);
+    assert.equal(item.match, "cabeza_familia");
+    assert.equal(item.confidence_match, redondear(CONFIANZA_CABEZA_FAMILIA * (item.generic === true ? FACTOR_GENERICO : 1)));
+    assert.ok(item.confidence_match < CONFIANZA_CABEZA_SUBFAMILIA);
+    // La cabeza de familia NO respalda la identidad: dentro de una familia los
+    // valores varían demasiado. Que publique o no queda en la confianza.
+    assert.equal(item.identidad_respaldada, undefined);
+  });
+
+  it("EN MODO `componer` LA COMPOSICIÓN VA PRIMERO, aunque la subfamilia TENGA cabeza", () => {
+    // Medido en el Bloque 0: responder un plato combinado por identidad le
+    // aplica al plato entero la densidad de UN ingrediente (+76 % en el salmón).
+    // `bocadillo/sandwich-frio` es de `componer` y ADEMÁS tiene cabeza
+    // (`Sándwich`): es el escenario donde el orden importa de verdad.
+    const bocadillo = (familia_subfamilia: string) =>
+      analizarEscaneo(
+        escaneo([
+          {
+            // Un nombre que NO llega a ninguna ficha, a propósito: si llegara,
+            // ganaría el escalón 1 y este test no mediría el orden entre la
+            // composición y la cabeza, que es lo que vino a medir.
+            food_en: "Zzzz qqq wwww vvvv",
+            food_es: "Zzzz qqq wwww vvvv",
+            grams: 200,
+            confidence: 0.9,
+            familia_subfamilia,
+            components: [
+              { food_en: "Bread, NFS", grams: 120 },
+              { food_en: "Ham, sliced", grams: 80 },
+            ],
+          },
+        ]),
+        index,
+      );
+    const componiendo = bocadillo("bocadillo/sandwich-frio").items[0];
+    assert.ok(componiendo);
+    assert.equal(componiendo.match, "compuesto");
+    assert.ok(componiendo.composicion);
+
+    // Y la contraprueba, que es la que demuestra que el `modo` es lo que decide:
+    // el MISMO plato declarado en una subfamilia de `identificar` contesta con
+    // la ficha, no con la suma.
+    const identificando = bocadillo("pizza/con-carne").items[0];
+    assert.ok(identificando);
+    assert.equal(identificando.match, "cabeza_subfamilia");
+  });
+
+  it("en modo `identificar` manda la cabeza, y la composición queda de respaldo", () => {
+    // La pizza: `pizza/*` es `identificar`, así que con la subfamilia declarada
+    // contesta `Pizza con carne` (280 kcal/100 g) y no la suma de ingredientes.
+    const r = analizarEscaneo(
+      escaneo([
+        {
+          food_en: "pizza with ham and mushrooms",
+          food_es: "pizza de jamón y champiñones",
+          grams: 150,
+          confidence: 0.85,
+          familia_subfamilia: "pizza/con-carne",
+          preparation: "horneado_masa",
+          components: [
+            { food_en: "pizza dough, baked", grams: 80 },
+            { food_en: "mozzarella cheese, melted", grams: 35 },
+            { food_en: "ham, sliced", grams: 20 },
+            { food_en: "mushrooms, sliced", grams: 15 },
+          ],
+        },
+      ]),
+      index,
+    );
+    const item = r.items[0];
+    assert.ok(item);
+    assert.equal(item.match, "cabeza_subfamilia");
+    assert.equal(item.food_id, "fdc-2708649");
+    assert.equal(item.per_100g?.kcal, 280);
+    assert.equal(item.nutrients?.kcal, 420);
+    assert.equal(r.totals?.total_no_publicable, undefined);
+    assert.equal(r.totals?.completo, true);
+  });
+});
+
+describe("card 5.3 — LA PIZZA DEL 02/09, tal como salió de la visión ese día", () => {
+  // Sin `familia_subfamilia` en ningún lado: es la salida VIEJA, la que dejó al
+  // usuario sin números. Con el motor nuevo tiene que salir con número, y sale
+  // componiendo, porque la curación declaró el sustituto de la masa.
+  const pizza = () =>
+    analizarEscaneo(
+      escaneo([
+        {
+          food_en: "pizza with ham and mushrooms",
+          food_es: "pizza de jamón y champiñones",
+          grams: 150,
+          confidence: 0.85,
+          preparation: "horneado_masa",
+          components: [
+            { food_en: "pizza dough, baked", food_es: "masa de pizza horneada", grams: 80 },
+            { food_en: "mozzarella cheese, melted", food_es: "mozzarella fundida", grams: 35 },
+            { food_en: "ham, sliced", food_es: "jamón en lonchas", grams: 20 },
+            { food_en: "mushrooms, sliced", food_es: "champiñones laminados", grams: 15 },
+          ],
+        },
+      ]),
+      index,
+    );
+
+  it("sale CON números, y con el total publicable", () => {
+    const r = pizza();
+    const item = r.items[0];
+    assert.ok(item);
+    assert.equal(item.match, "compuesto");
+    assert.ok(item.nutrients !== null && item.nutrients.kcal > 0);
+    assert.equal(r.totals?.total_no_publicable, undefined);
+    assert.ok((r.totals?.nutrients.kcal ?? 0) > 300);
+  });
+
+  it("DT-19 — el plato compuesto tiene nombre en ESPAÑOL, no el inglés de la visión", () => {
+    // Un usuario español leía "Chicken and pepper skewer" sobre su brocheta.
+    assert.equal(pizza().items[0]?.name_es, "pizza de jamón y champiñones");
+  });
+
+  it("y el reparto de macros del total suma 100", () => {
+    const macro = pizza().totals?.macro_pct;
+    assert.ok(macro);
+    assert.equal(redondear(macro.protein + macro.carbs + macro.fat, 1), 100);
+  });
+});
+
+describe("card 5.3 — la composición parcial, en el reporte", () => {
+  it("sale con su propio sello, declara qué faltó, y el faltante va a la curación", () => {
+    const r = analizarEscaneo(
+      escaneo([
+        {
+          food_en: "plato raro",
+          food_es: "plato raro",
+          grams: 250,
+          confidence: 0.9,
+          components: [
+            { food_en: "Rice noodles, cooked", grams: 200 },
+            { food_en: "Zzzz ingrediente inexistente qqq", grams: 50 },
+          ],
+        },
+      ]),
+      index,
+    );
+    const item = r.items[0];
+    assert.ok(item);
+    assert.equal(item.match, "compuesto_parcial");
+    assert.equal(item.composicion?.parcial, true);
+    assert.equal(item.composicion?.gramos_faltantes, 50);
+    // El per_100g de lo resuelto se escala a la masa ENTERA del plato, y eso se
+    // declara: `gramos_del_plato` es el número con el que se rehace la cuenta.
+    assert.equal(item.composicion?.gramos_del_plato, 250);
+    assert.equal(item.grams, 250);
+    assert.match(item.caveats?.join(" ") ?? "", /Faltó 50 g/);
+    assert.ok(r.curation_candidates.some((c) => c.motivo === "componente_sin_match"));
+  });
+
+  it("cuando falta demasiado, el plato cae a su cabeza CON EL MOTIVO de por qué no se compuso", () => {
+    const r = analizarEscaneo(
+      escaneo([
+        {
+          food_en: "Zzzz qqq plato inexistente",
+          food_es: "Zzzz qqq plato inexistente",
+          grams: 300,
+          confidence: 0.9,
+          familia_subfamilia: "arroz/plato",
+          components: [
+            { food_en: "Rice noodles, cooked", grams: 200 },
+            { food_en: "Zzzz ingrediente inexistente qqq", grams: 100 },
+          ],
+        },
+      ]),
+      index,
+    );
+    const item = r.items[0];
+    assert.ok(item);
+    assert.equal(item.match, "cabeza_subfamilia");
+    assert.match(item.caveats?.join(" ") ?? "", /33\.3 % de lo que se vio/);
+  });
+});
+
+describe("card 5.3 — la masa del plato contra la de sus ingredientes, en el reporte", () => {
+  it("cuando la visión se contradice con ella misma, manda la suma de los ingredientes", () => {
+    // 900 g de plato contra 200 g de ingredientes: los dos números no pueden ser
+    // del mismo plato, y el que se puede rehacer es el segundo.
+    const r = analizarEscaneo(
+      escaneo([
+        {
+          food_en: "plato raro",
+          grams: 900,
+          confidence: 0.9,
+          components: [{ food_en: "Rice noodles, cooked", grams: 200 }],
+        },
+      ]),
+      index,
+    );
+    const item = r.items[0];
+    assert.ok(item);
+    assert.equal(item.grams, 200);
+    assert.match(item.caveats?.join(" ") ?? "", /no pueden ser del mismo plato/);
   });
 });

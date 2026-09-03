@@ -1,0 +1,130 @@
+{
+  "foto": "17-pollo-arroz-verduras",
+  "meta": {
+    "model": "claude-sonnet-5",
+    "latency_ms": 6133,
+    "tokens_in": 1061,
+    "tokens_out": 486,
+    "tokens_cache_write": 0,
+    "tokens_cache_read": 8296,
+    "intentos": 1,
+    "stop_reason": "end_turn"
+  },
+  "vision": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "chicken thigh, roasted",
+        "grams": 110,
+        "confidence": 0.85,
+        "food_es": "contramuslo de pollo asado",
+        "familia_subfamilia": "pollo/pieza",
+        "preparation": "horneado",
+        "components": []
+      },
+      {
+        "food_en": "white rice, cooked",
+        "grams": 130,
+        "confidence": 0.85,
+        "food_es": "arroz blanco cocido",
+        "familia_subfamilia": "arroz/cocido",
+        "preparation": "hervido",
+        "components": []
+      },
+      {
+        "food_en": "mixed vegetables (peas, carrots, potato), cooked with oil",
+        "grams": 100,
+        "confidence": 0.75,
+        "food_es": "verduras mixtas (guisantes, zanahoria, patata) rehogadas",
+        "familia_subfamilia": "verdura/cocida-con-grasa",
+        "preparation": "cocido_cebolla",
+        "components": [
+          {
+            "food_en": "green peas, cooked",
+            "grams": 60,
+            "food_es": "guisantes cocidos",
+            "familia_subfamilia": "verdura/cocida-con-grasa"
+          },
+          {
+            "food_en": "carrot, cooked, diced",
+            "grams": 25,
+            "food_es": "zanahoria cocida en dados",
+            "familia_subfamilia": "verdura/cocida-con-grasa"
+          },
+          {
+            "food_en": "potato, cooked, diced",
+            "grams": 15,
+            "food_es": "patata cocida en dados",
+            "familia_subfamilia": "patata/hervida-o-al-horno"
+          }
+        ]
+      }
+    ]
+  },
+  "crudo": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "chicken thigh, roasted",
+        "food_es": "contramuslo de pollo asado",
+        "familia_subfamilia": "pollo/pieza",
+        "grams": 110,
+        "confidence": 0.85,
+        "preparation": "horneado",
+        "components": []
+      },
+      {
+        "food_en": "white rice, cooked",
+        "food_es": "arroz blanco cocido",
+        "familia_subfamilia": "arroz/cocido",
+        "grams": 130,
+        "confidence": 0.85,
+        "preparation": "hervido",
+        "components": []
+      },
+      {
+        "food_en": "mixed vegetables (peas, carrots, potato), cooked with oil",
+        "food_es": "verduras mixtas (guisantes, zanahoria, patata) rehogadas",
+        "familia_subfamilia": "verdura/cocida-con-grasa",
+        "grams": 100,
+        "confidence": 0.75,
+        "preparation": "cocido_cebolla",
+        "components": [
+          {
+            "food_en": "green peas, cooked",
+            "food_es": "guisantes cocidos",
+            "grams": 60,
+            "familia_subfamilia": "verdura/cocida-con-grasa"
+          },
+          {
+            "food_en": "carrot, cooked, diced",
+            "food_es": "zanahoria cocida en dados",
+            "grams": 25,
+            "familia_subfamilia": "verdura/cocida-con-grasa"
+          },
+          {
+            "food_en": "potato, cooked, diced",
+            "food_es": "patata cocida en dados",
+            "grams": 15,
+            "familia_subfamilia": "patata/hervida-o-al-horno"
+          }
+        ]
+      }
+    ]
+  },
+  "usage": {
+    "input_tokens": 1061,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 8296,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 486,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "inference_geo": "global"
+  }
+}

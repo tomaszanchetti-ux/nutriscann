@@ -11,9 +11,10 @@
  * LA ARITMÉTICA, QUE ES LO ÚNICO QUE NO SE NEGOCIA
  *
  * El anillo dibuja el reparto CALÓRICO. Son los `macro_pct` que manda el motor:
- * gramos × Atwater (4 proteínas / 4 hidratos / 9 grasas) sobre las kcal totales
- * (`porcentajesDeMacros` en `functions/src/engine/arithmetic.ts`). Acá no se
- * recalcula nada: se dibuja lo que el motor ya calculó.
+ * gramos × Atwater (4 proteínas / 4 hidratos / 9 grasas) sobre LAS CALORÍAS QUE
+ * APORTAN LOS TRES MACROS (`porcentajesDeMacros` en
+ * `functions/src/engine/arithmetic.ts`). Acá no se recalcula nada: se dibuja lo
+ * que el motor ya calculó.
  *
  * EL SODIO NO ESTÁ, y no es un olvido: no aporta calorías, y este anillo reparte
  * calorías. Se sigue midiendo y sigue en el payload; en pantalla aparece en la
@@ -33,16 +34,24 @@
  * que revivirlo es volver a escribir el dibujo, no volver a conseguir el dato.
  *
  * ---------------------------------------------------------------------------
- * HONESTIDAD DEL ANILLO (la doctrina de la card 2.3)
+ * HONESTIDAD DEL ANILLO (card 2.3, REESCRITA POR LA CARD 5.1)
  *
- * El motor NO normaliza los porcentajes para que sumen 100: la diferencia
- * (`sin_explicar`) es información real —alcohol, fibra, redondeos de USDA— y
- * taparla sería inventar un cuadre. Pero un anillo tiene 360 grados sí o sí:
+ * Hasta la card 5.1 cada porcentaje se dividía por las kcal de la ficha y los
+ * tres NO sumaban 100: había un arco apagado para el hueco, un reparto sobre la
+ * suma cuando pasaban de 100, y una nota que decía cuánto quedaba "sin
+ * explicar". Estaba medido lo que eso publicaba: la banana salía con
+ * `carbs: 102,7 %`. Un porcentaje mayor que 100 no es honestidad, es un número
+ * imposible, y lo detecta cualquiera en un segundo.
  *
- *   · si los tres suman MENOS de 100, lo que falta se dibuja como un tramo
- *     apagado y la nota del final dice cuánto es;
- *   · si suman MÁS de 100, el reparto se hace sobre esa suma (el anillo cierra)
- *     y esa misma nota dice cuánto sobra.
+ * Ahora el motor reparte las calorías QUE APORTAN LOS MACROS: los tres suman 100
+ * por construcción y el anillo cierra sin hacer nada. No hay arco apagado ni
+ * reparto sobre otra base — el dibujo es el dato.
+ *
+ * LA DIFERENCIA CON LA FUENTE SIGUE CONTÁNDOSE, en la letra chica del final y
+ * solo cuando es relevante. Quién decide si lo es: EL MOTOR. Manda
+ * `motivo_de_la_diferencia` escrito o en `null` (umbral
+ * `DIFERENCIA_RELEVANTE_PCT`, en `engine/constants.ts`); acá no se compara
+ * contra ningún número.
  *
  * Y UN `null` NO ES UN CERO: un macro sin gramos medidos dice "sin dato" en su
  * fila de la leyenda, nunca un 0.
@@ -117,11 +126,16 @@ export function DonutMacros({ copy, macro_pct, nutrients, centro }: DonutMacrosP
     },
   ];
 
-  // ── El reparto calórico, con su base honesta ──────────────────────────────
+  // ── El reparto calórico: una vuelta entera, ni más ni menos ───────────────
+  //
+  // Los tres porcentajes suman 100 por construcción desde la card 5.1, así que
+  // la vuelta cierra sola. La base se calcula igual con la SUMA REAL de lo que
+  // llegó y no con un 100 escrito acá: si algún día el motor mandara otra cosa,
+  // el anillo la dibujaría comprimida en sus 360 grados en vez de pasarse de
+  // vuelta y pintar dos veces encima del mismo arco. Un dibujo que se pasa de
+  // 360 no se ve mal, se ve BIEN y miente, que es peor.
   const suma = macros.reduce((total, macro) => total + Math.max(0, macro.pct), 0);
-  const base = suma > 100 ? suma : 100;
-  const sobrante = base - suma;
-  const haySobrante = sobrante > 0.05;
+  const base = suma > 0 ? suma : 100;
 
   const gajos: Gajo[] = [];
   let acumulado = 0;
@@ -129,15 +143,6 @@ export function DonutMacros({ copy, macro_pct, nutrients, centro }: DonutMacrosP
     const largo = (Math.max(0, macro.pct) / base) * VUELTA;
     gajos.push({ id: macro.clave, color: macro.color, inicio: acumulado, largo });
     acumulado += largo;
-  }
-
-  if (haySobrante) {
-    gajos.push({
-      id: "sin_explicar",
-      color: "var(--color-line)",
-      inicio: acumulado,
-      largo: (sobrante / base) * VUELTA,
-    });
   }
 
   /**
@@ -181,9 +186,10 @@ export function DonutMacros({ copy, macro_pct, nutrients, centro }: DonutMacrosP
               recorre de arriba abajo.
             · NÚMEROS ENTEROS, sin coma: los decimales descuadraban la columna en
               móvil y no cambiaban ninguna decisión de quien mira su plato.
-            · SIN la fila «Sin explicar»: el hueco sigue dibujado como arco
-              apagado y la nota de abajo lo explica en palabras cuando existe.
-              Una fila con "sin dato" en su columna de gramos no informaba. */}
+            · SIN la fila «Sin explicar»: una fila con "sin dato" en su columna
+              de gramos no informaba. Desde la card 5.1 ese hueco directamente no
+              existe —los tres suman 100— y lo que antes intentaba decir se
+              cuenta en la letra chica del final, cuando hay algo que contar. */}
       <dl className="flex flex-col gap-2">
         {[...macros]
           .sort((uno, otro) => otro.pct - uno.pct)
@@ -215,12 +221,20 @@ export function DonutMacros({ copy, macro_pct, nutrients, centro }: DonutMacrosP
           ))}
       </dl>
 
-      {Math.abs(macro_pct.sin_explicar) >= 0.05 && (
+      {/* LA LETRA CHICA — la conciliación con las calorías de la fuente.
+          Aparece SOLO cuando el motor mandó el motivo escrito, que es cuando la
+          diferencia pasa el umbral que él decide (`DIFERENCIA_RELEVANTE_PCT`).
+          Acá no hay ningún número que comparar: si vino, se cuenta; si no vino,
+          la diferencia era ruido de redondeo y no hay nada que decir. */}
+      {macro_pct.motivo_de_la_diferencia !== null && (
         <p className="text-xs leading-relaxed text-ink-faint">
-          Los tres porcentajes se calculan cada uno contra las calorías totales y{" "}
-          <strong className="font-medium text-ink-soft">no se ajustan para que sumen 100</strong>:
-          quedan {porcentaje(macro_pct.sin_explicar, true)} sin explicar. Esa diferencia es real
-          (fibra, alcohol, redondeos de la fuente), no un error de la cuenta.
+          El anillo reparte las calorías que aportan proteínas, hidratos y grasas, y por eso los
+          tres porcentajes suman 100. {macro_pct.motivo_de_la_diferencia} La diferencia con las
+          calorías que declara la fuente es de{" "}
+          <strong className="font-medium text-ink-soft">
+            {porcentaje(macro_pct.diferencia_pct, true)}
+          </strong>
+          .
         </p>
       )}
     </div>

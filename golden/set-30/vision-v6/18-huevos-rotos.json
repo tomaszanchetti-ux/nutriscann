@@ -1,0 +1,94 @@
+{
+  "foto": "18-huevos-rotos",
+  "meta": {
+    "model": "claude-sonnet-5",
+    "latency_ms": 5324,
+    "tokens_in": 1061,
+    "tokens_out": 256,
+    "tokens_cache_write": 0,
+    "tokens_cache_read": 8296,
+    "intentos": 1,
+    "stop_reason": "end_turn"
+  },
+  "vision": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "fried eggs with french fries and cured ham (huevos rotos)",
+        "grams": 420,
+        "confidence": 0.85,
+        "food_es": "huevos rotos con jamón",
+        "familia_subfamilia": "huevo/plato",
+        "preparation": "frito",
+        "components": [
+          {
+            "food_en": "french fries",
+            "grams": 220,
+            "food_es": "patatas fritas",
+            "familia_subfamilia": "patata/frita"
+          },
+          {
+            "food_en": "fried egg",
+            "grams": 110,
+            "food_es": "huevo frito",
+            "familia_subfamilia": "huevo/frito"
+          },
+          {
+            "food_en": "cured ham (jamón serrano)",
+            "grams": 90,
+            "food_es": "jamón curado",
+            "familia_subfamilia": "embutido/jamon"
+          }
+        ]
+      }
+    ]
+  },
+  "crudo": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "fried eggs with french fries and cured ham (huevos rotos)",
+        "food_es": "huevos rotos con jamón",
+        "familia_subfamilia": "huevo/plato",
+        "grams": 420,
+        "confidence": 0.85,
+        "preparation": "frito",
+        "components": [
+          {
+            "food_en": "french fries",
+            "food_es": "patatas fritas",
+            "grams": 220,
+            "familia_subfamilia": "patata/frita"
+          },
+          {
+            "food_en": "fried egg",
+            "food_es": "huevo frito",
+            "grams": 110,
+            "familia_subfamilia": "huevo/frito"
+          },
+          {
+            "food_en": "cured ham (jamón serrano)",
+            "food_es": "jamón curado",
+            "grams": 90,
+            "familia_subfamilia": "embutido/jamon"
+          }
+        ]
+      }
+    ]
+  },
+  "usage": {
+    "input_tokens": 1061,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 8296,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 256,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "inference_geo": "global"
+  }
+}

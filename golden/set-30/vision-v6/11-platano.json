@@ -1,0 +1,56 @@
+{
+  "foto": "11-platano",
+  "meta": {
+    "model": "claude-sonnet-5",
+    "latency_ms": 2801,
+    "tokens_in": 1061,
+    "tokens_out": 85,
+    "tokens_cache_write": 0,
+    "tokens_cache_read": 8296,
+    "intentos": 1,
+    "stop_reason": "end_turn"
+  },
+  "vision": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "banana, raw",
+        "grams": 120,
+        "confidence": 0.98,
+        "food_es": "plátano",
+        "familia_subfamilia": "fruta/fresca",
+        "preparation": "crudo",
+        "components": []
+      }
+    ]
+  },
+  "crudo": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "banana, raw",
+        "food_es": "plátano",
+        "familia_subfamilia": "fruta/fresca",
+        "grams": 120,
+        "confidence": 0.98,
+        "preparation": "crudo",
+        "components": []
+      }
+    ]
+  },
+  "usage": {
+    "input_tokens": 1061,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 8296,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 85,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "inference_geo": "global"
+  }
+}

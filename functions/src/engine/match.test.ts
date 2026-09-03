@@ -16,9 +16,13 @@ import { COBERTURA_DIFUSA_MIN, CONFIANZA_DIFUSA_MAX } from "./constants";
 import {
   buscarAlimento,
   buscarConDosNombres,
+  cabezaDeLaTaxonomia,
+  contradiceALaFamilia,
   guardaQueViola,
   redondear,
   respaldoDeIdentidad,
+  subfamiliaDeclarada,
+  sustitutoDeclarado,
   vocabularioDeLaFicha,
 } from "./match";
 import {
@@ -1037,5 +1041,121 @@ describe("DT-37 — el respaldo de identidad", () => {
     assert.equal(r?.nivel, "difuso");
     assert.equal(respaldoDeIdentidad("flatbread", r.ficha), 1);
     assert.equal(r?.identidad_respaldada, undefined);
+  });
+});
+
+/* ===========================================================================
+ * CARD 5.3 — LAS TRES PUERTAS DECLARADAS: sustituto, cabeza y contradicción
+ *
+ * Los tres niveles nuevos no comparan texto: contestan con lo que declararon la
+ * curación o la taxonomía. Estos tests fijan CUÁNDO entra cada uno, que es la
+ * única decisión que tienen.
+ * =========================================================================== */
+describe("card 5.3 — la subfamilia con la que trabaja el motor", () => {
+  it("la declarada gana, y viaja marcada como declarada", () => {
+    const r = subfamiliaDeclarada("pizza/con-carne", "cualquier cosa", "cualquier cosa", index);
+    assert.ok(r);
+    assert.equal(r.entrada.id, "pizza/con-carne");
+    assert.equal(r.declarada, true);
+  });
+
+  it("un id que no está en el enum se ignora, y se intenta deducir", () => {
+    // El motor no rechaza escaneos: los declara. Un valor inventado se comporta
+    // como si la visión no hubiera dicho nada.
+    assert.equal(subfamiliaDeclarada("no-existe/para-nada", "zzz qqq", "zzz qqq", index), null);
+  });
+
+  it("SIN declaración se deduce del nombre, y solo por igualdad exacta", () => {
+    // Es el último recurso: la visión tiene que haber escrito EL NOMBRE de una
+    // subfamilia. Buscarla por parecido sería volver a adivinar con otro
+    // vocabulario, que es lo que el Bloque 0 midió que no funciona.
+    const deducida = subfamiliaDeclarada(undefined, "cooked rice", "arroz cocido", index);
+    assert.ok(deducida);
+    assert.equal(deducida.entrada.id, "arroz/cocido");
+    // Y `declarada: false` es lo que impide que una familia deducida DEL TÉRMINO
+    // pueda después contradecir a ese mismo término.
+    assert.equal(deducida.declarada, false);
+    assert.equal(subfamiliaDeclarada(undefined, "arroz cocido con algo más", "arroz cocido con algo más", index), null);
+  });
+});
+
+describe("card 5.3 — la contradicción con la familia declarada", () => {
+  const pizza = index.taxonomia.porId.get("pizza/con-carne");
+
+  it("un DIFUSO que cae en otra familia contradice", () => {
+    // `Vegetables` → `Aceite vegetal` (familia `aceite-y-grasa`) con difuso 0,41:
+    // uno de los 15 casos graves del Bloque 0.
+    const verdura = index.taxonomia.porId.get("verdura/cruda");
+    assert.ok(verdura);
+    const m = buscarConDosNombres("Vegetables", "Verdura", index);
+    assert.ok(m);
+    assert.equal(m.nivel, "difuso");
+    assert.equal(contradiceALaFamilia(m, verdura, index), true);
+  });
+
+  it("un EXACTO o un ALIAS no contradicen nunca: los escribió una persona", () => {
+    assert.ok(pizza);
+    const exacto = buscarConDosNombres("ketchup", "kétchup", index);
+    assert.ok(exacto && exacto.nivel === "exacto");
+    assert.equal(contradiceALaFamilia(exacto, pizza, index), false);
+    const alias = buscarConDosNombres("Hot dog", "Perrito caliente", index);
+    assert.ok(alias && alias.nivel === "alias");
+    assert.equal(contradiceALaFamilia(alias, pizza, index), false);
+  });
+
+  it("dentro de la MISMA familia no hay contradicción, aunque cambie la subfamilia", () => {
+    // El atún en lata: la visión puede declarar `pescado/conserva` y el término
+    // resolver a una ficha de `pescado/cocinado`. Es la misma comida; el motor
+    // no tiene por qué preferir un promedio a una ficha concreta.
+    const conserva = index.taxonomia.porId.get("pescado/conserva");
+    assert.ok(conserva);
+    const m = buscarConDosNombres("tuna, canned", "atún en lata", index);
+    assert.ok(m);
+    assert.equal(index.taxonomia.deLaFicha.get(m.ficha.id), "pescado/cocinado");
+    assert.equal(contradiceALaFamilia(m, conserva, index), false);
+  });
+
+  it("sin ninguna cabeza a la que caer, la contradicción no se declara", () => {
+    // Tirar el difuso sin nada con que reemplazarlo dejaría el plato sin número,
+    // que es peor que un número flojo con su reserva escrita. `ensalada/verde`
+    // no tiene cabeza propia... pero su familia sí, así que hay que construir el
+    // caso: una entrada sin ninguna de las dos.
+    const sinCabezas = { ...(index.taxonomia.porId.get("verdura/cruda") as NonNullable<ReturnType<typeof index.taxonomia.porId.get>>), cabezaDeSubfamilia: null, cabezaDeFamilia: null };
+    const m = buscarConDosNombres("Vegetables", "Verdura", index);
+    assert.ok(m);
+    assert.equal(contradiceALaFamilia(m, sinCabezas, index), false);
+  });
+});
+
+describe("card 5.3 — la cabeza y el sustituto, sueltos", () => {
+  it("la cabeza de subfamilia respalda la identidad; la de familia no", () => {
+    const conCabeza = index.taxonomia.porId.get("arroz/cocido");
+    assert.ok(conCabeza);
+    const sub = cabezaDeLaTaxonomia(conCabeza);
+    assert.ok(sub);
+    assert.equal(sub.nivel, "cabeza_subfamilia");
+    assert.equal(sub.identidad_respaldada, true);
+
+    // `ensalada/verdura` es uno de los 13 huecos declarados del Bloque 0.
+    const sinCabeza = index.taxonomia.porId.get("ensalada/verdura");
+    assert.ok(sinCabeza);
+    const fam = cabezaDeLaTaxonomia(sinCabeza);
+    assert.ok(fam);
+    assert.equal(fam.nivel, "cabeza_familia");
+    assert.equal(fam.identidad_respaldada, undefined);
+  });
+
+  it("el sustituto declarado llega a su ficha y arrastra el motivo de la curación", () => {
+    const m = sustitutoDeclarado("pizza dough, baked", "masa de pizza horneada", index);
+    assert.ok(m);
+    assert.equal(m.ficha.id, "fdc-2708674");
+    assert.equal(m.nivel, "sustituto");
+    assert.match(m.motivo, /USDA no mide la masa de pizza/);
+    assert.equal(m.identidad_respaldada, true);
+  });
+
+  it("y no dispara con nada que no se le haya escrito", () => {
+    assert.equal(sustitutoDeclarado("pizza", "pizza", index), null);
+    assert.equal(sustitutoDeclarado("dough", "masa", index), null);
   });
 });

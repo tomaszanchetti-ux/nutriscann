@@ -1,0 +1,84 @@
+{
+  "foto": "09-arepa",
+  "meta": {
+    "model": "claude-sonnet-5",
+    "latency_ms": 8274,
+    "tokens_in": 802,
+    "tokens_out": 438,
+    "tokens_cache_write": 0,
+    "tokens_cache_read": 16090,
+    "intentos": 1,
+    "stop_reason": "end_turn"
+  },
+  "vision": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "corn arepa with cheese",
+        "grams": 140,
+        "confidence": 0.75,
+        "food_es": "arepa con queso",
+        "familia_subfamilia": "pan/plano-y-tortilla",
+        "etiqueta_del_envase": ", the tag says",
+        "preparation": "plancha",
+        "components": [
+          {
+            "food_en": "corn arepa",
+            "grams": 95,
+            "food_es": "arepa de maíz",
+            "familia_subfamilia": "pan/plano-y-tortilla"
+          },
+          {
+            "food_en": "white cheese",
+            "grams": 45,
+            "food_es": "queso blanco",
+            "familia_subfamilia": "queso/fresco"
+          }
+        ]
+      }
+    ]
+  },
+  "crudo": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "corn arepa with cheese",
+        "food_es": "arepa con queso",
+        "familia_subfamilia": "pan/plano-y-tortilla",
+        "grams": 140,
+        "confidence": 0.75,
+        "preparation": "plancha",
+        "components": [
+          {
+            "food_en": "corn arepa",
+            "food_es": "arepa de maíz",
+            "grams": 95,
+            "familia_subfamilia": "pan/plano-y-tortilla"
+          },
+          {
+            "food_en": "white cheese",
+            "food_es": "queso blanco",
+            "grams": 45,
+            "familia_subfamilia": "queso/fresco"
+          }
+        ],
+        "etiqueta_del_envase": ", the tag says "
+      }
+    ]
+  },
+  "usage": {
+    "input_tokens": 802,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 16090,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 438,
+    "output_tokens_details": {
+      "thinking_tokens": 206
+    },
+    "service_tier": "standard",
+    "inference_geo": "global"
+  }
+}

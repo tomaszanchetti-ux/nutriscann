@@ -44,6 +44,31 @@ const SELLOS: Record<TipoDeMatch, { texto: ClaveDeCopy; explicacion: ClaveDeCopy
       explicacion: "match_difuso_ayuda",
       clases: "bg-carbs/15 text-carbs",
     },
+    // LOS CUATRO DE LA CARD 5.3. El color agrupa por PARENTESCO, no por
+    // confianza: lo que la curación escribió a mano se pinta como un alias
+    // (`sustituto`), lo que sale de la taxonomía se pinta como una aproximación
+    // (las dos cabezas), y lo que sale de una suma de ingredientes se pinta como
+    // un compuesto (`compuesto_parcial`).
+    sustituto: {
+      texto: "match_sustituto",
+      explicacion: "match_sustituto_ayuda",
+      clases: "bg-accent-soft text-accent",
+    },
+    cabeza_subfamilia: {
+      texto: "match_cabeza_subfamilia",
+      explicacion: "match_cabeza_subfamilia_ayuda",
+      clases: "bg-carbs/15 text-carbs",
+    },
+    cabeza_familia: {
+      texto: "match_cabeza_familia",
+      explicacion: "match_cabeza_familia_ayuda",
+      clases: "bg-carbs/15 text-carbs",
+    },
+    compuesto_parcial: {
+      texto: "match_compuesto_parcial",
+      explicacion: "match_compuesto_parcial_ayuda",
+      clases: "bg-fat/15 text-fat",
+    },
     compuesto: {
       texto: "match_compuesto",
       explicacion: "match_compuesto_ayuda",

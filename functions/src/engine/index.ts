@@ -51,24 +51,55 @@
  */
 export { analizarEscaneo } from "./analyze";
 export { construirIndice, indiceDelCatalogo, GUARDAS_DE_VOCABULARIO, MINIMO_DE_FICHAS } from "./catalog";
-export type { CatalogIndex, ColisionDeIndice, GuardaDeVocabulario, TerminoIndexado } from "./catalog";
-export { buscarAlimento, guardaQueViola, redondear } from "./match";
+export type {
+  CatalogIndex,
+  ColisionDeIndice,
+  EntradaDeTaxonomia,
+  GuardaDeVocabulario,
+  Taxonomia,
+  TerminoIndexado,
+} from "./catalog";
+export {
+  buscarAlimento,
+  cabezaDeLaTaxonomia,
+  contradiceALaFamilia,
+  guardaQueViola,
+  redondear,
+  subfamiliaDeclarada,
+  sustitutoDeclarado,
+} from "./match";
 export type { MatchResult, NivelDeMatch } from "./match";
 export { componerPlato } from "./compose";
 export type { ComposicionLograda, ComposicionImposible, ResultadoDeComposicion } from "./compose";
-export { escalar, gramosValidos, interpretarGramos, porcentajesDeMacros, sumarTotales } from "./arithmetic";
+export {
+  escalar,
+  esPlausible,
+  gramosValidos,
+  interpretarGramos,
+  masaCoherente,
+  porcentajesDeMacros,
+  sumarTotales,
+} from "./arithmetic";
+export type { ContextoDePlausibilidad, VeredictoDePlausibilidad } from "./arithmetic";
 export {
   ATWATER,
   COBERTURA_DIFUSA_MIN,
+  CONFIANZA_CABEZA_FAMILIA,
+  CONFIANZA_CABEZA_SUBFAMILIA,
   CONFIANZA_DIFUSA_MAX,
+  CONFIANZA_SUSTITUTO_DECLARADO,
   DECIMALES,
   FACTOR_COMPOSICION,
+  FACTOR_COMPOSICION_PARCIAL,
   FACTOR_GENERICO,
+  KCAL_MAXIMAS_POR_100G,
+  MASA_FALTANTE_MAXIMA,
   PREPARACION_POR_DEFECTO,
 } from "./constants";
 export { contieneSecuencia, empiezaConPalabra, normalizar, tokens } from "./normalize";
 export type {
   ComponenteDelPlato,
+  ComponenteFaltante,
   Composicion,
   CurationCandidate,
   EngineItem,

@@ -12,7 +12,19 @@
  */
 import { OPTIONAL_KEYS, REQUIRED_KEYS, type OptionalNutrientKey } from "../kb/nutrients";
 import type { Per100g } from "../kb/types";
-import { ATWATER, CONFIANZA_MINIMA_PARA_UN_TOTAL } from "./constants";
+import {
+  ATWATER,
+  CONFIANZA_MINIMA_PARA_UN_TOTAL,
+  DIFERENCIA_RELEVANTE_PCT,
+  FACTOR_DE_MASA_COHERENTE,
+  KCAL_DE_ALCOHOL_TOLERADAS,
+  KCAL_MAXIMAS_POR_100G,
+  KCAL_MINIMAS_PARA_ATWATER,
+  KCAL_SIN_MACROS_TOLERADAS,
+  MARGEN_ATWATER_INFERIOR,
+  MARGEN_ATWATER_SUPERIOR,
+  TOLERANCIA_DE_MASA_G,
+} from "./constants";
 import { redondear } from "./match";
 import type {
   EngineItem,
@@ -98,20 +110,265 @@ export function interpretarGramos(gramos: number): { gramos: number; problema: s
   };
 }
 
-/**
- * El reparto de calorías por macro, con los factores de Atwater (4/4/9).
+/* ===========================================================================
+ * EL HALO DE PLAUSIBILIDAD (card 5.3)
  *
- * NO SE NORMALIZA A 100 a propósito. La diferencia es información: alcohol,
- * fibra que USDA cuenta distinto, redondeos de la fuente. `sin_explicar` la
- * muestra en vez de esconderla repartiéndola entre los tres macros.
+ * REGLA NUEVA DEL PROYECTO: **toda ficha que el motor CONSTRUYE pasa por acá
+ * antes de publicarse.** Un compuesto y un compuesto parcial no vienen medidos
+ * por nadie — son una cuenta nuestra sobre gramos que estimó una foto — y una
+ * cuenta rota da un número con la misma cara de firmeza que uno bueno.
+ *
+ * QUÉ NO ES ESTO. No es un juicio sobre si la ficha es la CORRECTA: `Fish, NFS`
+ * declara 238 kcal/100 g para un genérico de pescado y es perfectamente
+ * plausible — está mal elegida, no es imposible (deuda 2 del Bloque 0). Este
+ * halo contesta una pregunta más chica y más dura: **¿esto puede existir?**
+ * Que un plato no pueda pesar más que él mismo, que nada supere a la grasa pura,
+ * que las calorías tengan de dónde salir.
+ *
+ * QUÉ PASA CUANDO NO PASA. La composición NO se publica con cara de medida: el
+ * ítem cae a la cabeza de su subfamilia o de su familia con el motivo escrito, y
+ * si tampoco hay, sale sin número. Ver `resolverItem` en `analyze.ts`.
+ *
+ * LAS FICHAS DEL CATÁLOGO NO PASAN POR ACÁ EN RUNTIME. Vienen medidas por USDA y
+ * su garantía es la trazabilidad, no un rango. Sí pasan en un TEST
+ * (`catalogo.test.ts`), que es donde una ficha imposible es un hallazgo de
+ * curación: medido sobre las 1.115, pasan las 1.115.
+ * =========================================================================== */
+
+/** El veredicto del halo: pasa o no pasa, y por qué no. */
+export interface VeredictoDePlausibilidad {
+  plausible: boolean;
+  /** Vacío cuando pasa. Cada motivo es una frase para leer, no un código. */
+  motivos: string[];
+}
+
+/** Lo que el halo necesita saber del plato que no está en los números. */
+export interface ContextoDePlausibilidad {
+  /**
+   * Algún ingrediente pertenece a una familia que declara `aporta_alcohol`. Sale
+   * de la taxonomía (`EntradaDeTaxonomia.aportaAlcohol`), nunca de adivinar el
+   * número: el etanol aporta 7 kcal/g y no es ningún macronutriente, así que sin
+   * esta declaración un mojito es matemáticamente imposible.
+   */
+  aporta_alcohol?: boolean;
+}
+
+/**
+ * ¿ESTOS VALORES POR 100 g PUEDEN EXISTIR? Cuatro preguntas, ninguna opinable.
+ *
+ * 1. NINGÚN VALOR PUEDE SER NEGATIVO NI DEJAR DE SER UN NÚMERO. Es la primera
+ *    porque es la que atrapa una cuenta rota de verdad: un `NaN` propagado o un
+ *    peso final negativo salen de acá y no de ningún rango.
+ * 2. LA MASA. Proteína + hidratos + grasa no pueden pasar de 100 g en 100 g de
+ *    comida — nada pesa más que sí mismo. OJO: la fibra NO se suma aparte, ya
+ *    está adentro de `carbs_g` (USDA los declara *by difference*); lo que sí se
+ *    verifica es que no pase a los hidratos que la contienen. Ver
+ *    `TOLERANCIA_DE_MASA_G`, donde está medido por qué.
+ * 3. EL TECHO. Nada supera a la grasa pura (`KCAL_MAXIMAS_POR_100G`, 902, que es
+ *    lo que declaran las dos fichas de grasa al 100 % del catálogo).
+ * 4. ATWATER. Las calorías tienen que estar cerca de las que explican sus
+ *    propios macros con 4/4/9, con un margen ancho por abajo (la fruta y la
+ *    verdura de USDA cierran hasta un −37 %) y angosto por arriba salvo alcohol.
+ */
+export function esPlausible(per_100g: Per100g, contexto: ContextoDePlausibilidad = {}): VeredictoDePlausibilidad {
+  const motivos: string[] = [];
+  const { kcal, protein_g, carbs_g, fat_g, fiber_g } = per_100g;
+
+  // 1 — números que son números, y ninguno negativo.
+  for (const [nombre, valor] of Object.entries(per_100g)) {
+    if (valor === null || valor === undefined) continue;
+    if (!Number.isFinite(valor)) {
+      motivos.push(`El valor de ${nombre} no es un número (${String(valor)}): la cuenta no cerró.`);
+    } else if (valor < 0) {
+      motivos.push(`El valor de ${nombre} salió negativo (${valor}): ningún alimento aporta menos que nada.`);
+    }
+  }
+  if (motivos.length > 0) return { plausible: false, motivos };
+
+  // 2 — la masa.
+  const masa = protein_g + carbs_g + fat_g;
+  if (masa > 100 + TOLERANCIA_DE_MASA_G) {
+    motivos.push(
+      `Proteínas, hidratos y grasas suman ${redondear(masa, 1)} g en 100 g de comida: un alimento no puede ` +
+        `pesar más que él mismo.`,
+    );
+  }
+  if (fiber_g !== null && fiber_g !== undefined && fiber_g > carbs_g + TOLERANCIA_DE_MASA_G) {
+    motivos.push(
+      `La fibra (${fiber_g} g) pasa a los hidratos que la contienen (${carbs_g} g): la fuente declara los ` +
+        `hidratos por diferencia, así que la fibra ya está adentro.`,
+    );
+  }
+
+  // 3 — el techo.
+  if (kcal > KCAL_MAXIMAS_POR_100G) {
+    motivos.push(
+      `${kcal} kcal en 100 g, y el máximo posible son ${KCAL_MAXIMAS_POR_100G}: ni la grasa pura llega ahí.`,
+    );
+  }
+
+  // 4 — Atwater.
+  const deLosMacros = protein_g * ATWATER.protein + carbs_g * ATWATER.carbs + fat_g * ATWATER.fat;
+  if (kcal >= KCAL_MINIMAS_PARA_ATWATER || deLosMacros >= KCAL_MINIMAS_PARA_ATWATER) {
+    const piso = deLosMacros * (1 - MARGEN_ATWATER_INFERIOR);
+    const extra = contexto.aporta_alcohol === true ? KCAL_DE_ALCOHOL_TOLERADAS : KCAL_SIN_MACROS_TOLERADAS;
+    const techo = deLosMacros * (1 + MARGEN_ATWATER_SUPERIOR) + extra;
+    if (kcal < piso) {
+      motivos.push(
+        `${kcal} kcal en 100 g cuando sus propios macronutrientes explican ${redondear(deLosMacros, 1)} con los ` +
+          `factores 4/4/9: faltan más calorías de las que puede justificar ninguna fuente.`,
+      );
+    }
+    if (kcal > techo) {
+      motivos.push(
+        `${kcal} kcal en 100 g cuando sus macronutrientes solo explican ${redondear(deLosMacros, 1)}: sobran ` +
+          `calorías que no vienen de ningún sitio` +
+          (contexto.aporta_alcohol === true ? ", ni siquiera del alcohol declarado." : "."),
+      );
+    }
+  }
+
+  return { plausible: motivos.length === 0, motivos };
+}
+
+/**
+ * LOS GRAMOS DEL PLATO Y LA SUMA DE SUS INGREDIENTES TIENEN QUE PARECERSE.
+ *
+ * La visión estima dos cosas por separado —cuánto pesa el plato y cuánto pesa
+ * cada ingrediente— y cuando las dos no se parecen, una está mal. **Se cree a la
+ * suma de los ingredientes**: son varias estimaciones sobre objetos chicos y
+ * separados, contra una sola sobre un montón.
+ *
+ * No devuelve un veredicto sino LOS GRAMOS QUE HAY QUE USAR, porque la
+ * consecuencia acá no es callarse: es elegir el número que se puede rehacer y
+ * decirlo. Ver `FACTOR_DE_MASA_COHERENTE`.
+ */
+export function masaCoherente(
+  gramosDelPlato: number,
+  gramosDeLosIngredientes: number,
+): { gramos: number; motivo: string | null } {
+  const plato = Number.isFinite(gramosDelPlato) && gramosDelPlato > 0 ? gramosDelPlato : 0;
+  const ingredientes = Number.isFinite(gramosDeLosIngredientes) && gramosDeLosIngredientes > 0 ? gramosDeLosIngredientes : 0;
+  if (plato <= 0) return { gramos: ingredientes, motivo: null };
+  if (ingredientes <= 0) return { gramos: plato, motivo: null };
+
+  const factor = plato / ingredientes;
+  if (factor <= FACTOR_DE_MASA_COHERENTE && factor >= 1 / FACTOR_DE_MASA_COHERENTE) {
+    return { gramos: plato, motivo: null };
+  }
+  return {
+    gramos: redondear(ingredientes),
+    motivo:
+      `La visión estimó ${redondear(plato)} g para el plato entero y ${redondear(ingredientes)} g sumando sus ` +
+      `ingredientes uno por uno: los dos números no pueden ser del mismo plato. Se usó la suma de los ` +
+      `ingredientes, que es la que se puede rehacer mirando la composición.`,
+  };
+}
+
+/**
+ * UN REPARTO SUMA 100, Y NINGÚN PORCENTAJE SE VA DE 0..100 (card 5.1).
+ *
+ * QUÉ ESTABA MAL, medido en producción el 02/09/2026. Hasta esta card cada macro
+ * se dividía por las kcal DE LA FICHA: `gramos × factor / kcal_de_la_fuente`. Con
+ * la banana (`fdc-173944`, 89 kcal/100 g) eso daba **`carbs: 102,7 %`** y un
+ * `sin_explicar: −10,9`; con las cerezas (`fdc-171719`), 101,7 % y −11,3. El
+ * motivo no era un error de cuenta: USDA calcula las calorías de la fruta con
+ * factores específicos —3,6 kcal/g de hidratos en la banana, no 4— y dividir una
+ * cuenta hecha con 4/4/9 por un total hecho con otros factores no da un reparto,
+ * da dos cosas distintas puestas en una fracción. Un 102,7 % es lo primero que
+ * ve cualquiera que mire su plato, y no hay letra chica que lo arregle.
+ *
+ * LA REGLA NUEVA: cada macro es su parte de LAS CALORÍAS QUE APORTAN LOS MACROS.
+ *
+ *     kcal_de_los_macros = P×4 + C×4 + F×9
+ *     porcentaje_i       = kcal_i / kcal_de_los_macros × 100
+ *
+ * El denominador es la suma de los tres numeradores, así que los tres suman 100
+ * por construcción y ninguno puede salir de 0..100. No hay nada que normalizar:
+ * la fracción ya es un reparto.
+ *
+ * LA DIFERENCIA NO SE PIERDE, CAMBIA DE LUGAR. `kcal_de_los_macros` casi nunca
+ * coincide con las kcal de la ficha, y esa distancia sigue siendo información:
+ * viaja con signo en `kcal_fuera_de_macros` y `diferencia_pct`, y cuando pasa el
+ * umbral de `DIFERENCIA_RELEVANTE_PCT` viene además con el motivo escrito. Lo
+ * que ya no hace es deformar el reparto: antes se colaba adentro de los tres
+ * porcentajes y los empujaba por encima de 100.
+ *
+ * EL SIGNO, para leerlo sin dudar: la diferencia se mide contra las kcal de la
+ * FUENTE, que son las que el reporte publica en el centro del anillo.
+ *   · negativo → los macros con 4/4/9 explican MÁS calorías que las publicadas
+ *     (la banana: −10,9 %). Fuente con factores propios, o fibra contada aparte.
+ *   · positivo → la fuente declara calorías que ningún macro explica: alcohol,
+ *     o el resto de sus propios redondeos.
  */
 export function porcentajesDeMacros(totales: SumaDeNutrientes): PorcentajesDeMacros | null {
   if (!Number.isFinite(totales.kcal) || totales.kcal <= 0) return null;
-  const pct = (gramos: number, factor: number): number => redondear((gramos * factor * 100) / totales.kcal, 1);
-  const protein = pct(totales.protein_g, ATWATER.protein);
-  const carbs = pct(totales.carbs_g, ATWATER.carbs);
-  const fat = pct(totales.fat_g, ATWATER.fat);
-  return { protein, carbs, fat, sin_explicar: redondear(100 - protein - carbs - fat, 1) };
+
+  const kcalDeLosMacros =
+    totales.protein_g * ATWATER.protein + totales.carbs_g * ATWATER.carbs + totales.fat_g * ATWATER.fat;
+
+  // ALCOHOL PURO, Y CUALQUIER OTRO PLATO CON CALORÍAS Y SIN MACROS: no hay
+  // reparto. `null` con su motivo, nunca una división por cero ni tres ceros que
+  // dibujarían un anillo vacío como si fuera un dato.
+  if (!Number.isFinite(kcalDeLosMacros) || kcalDeLosMacros <= 0) return null;
+
+  const [protein, carbs, fat] = repartoQueSuma100([
+    (totales.protein_g * ATWATER.protein * 100) / kcalDeLosMacros,
+    (totales.carbs_g * ATWATER.carbs * 100) / kcalDeLosMacros,
+    (totales.fat_g * ATWATER.fat * 100) / kcalDeLosMacros,
+  ]);
+
+  const diferencia = totales.kcal - kcalDeLosMacros;
+  const diferencia_pct = redondear((diferencia * 100) / totales.kcal, 1);
+
+  return {
+    protein,
+    carbs,
+    fat,
+    kcal_fuera_de_macros: redondear(diferencia, 1),
+    diferencia_pct,
+    motivo_de_la_diferencia:
+      Math.abs(diferencia_pct) < DIFERENCIA_RELEVANTE_PCT
+        ? null
+        : diferencia < 0
+          ? "Con los factores 4/4/9 los macronutrientes suman más calorías de las que declara la fuente. " +
+            "Pasa sobre todo con la fruta y las legumbres, donde la fuente calcula las calorías con " +
+            "factores propios más bajos, y con la fibra, que cuenta aparte."
+          : "La fuente declara más calorías de las que aportan proteínas, hidratos y grasas. " +
+            "Esa diferencia son calorías de otro origen —el alcohol, sobre todo— o el resto de los " +
+            "redondeos de la propia ficha.",
+  };
+}
+
+/**
+ * Los tres porcentajes a un decimal, sumando 100,0 EXACTO.
+ *
+ * Redondear cada uno por su cuenta puede dejar la suma en 99,9 o en 100,1: tres
+ * redondeos de hasta media décima cada uno. Es poquísimo, pero es exactamente la
+ * clase de número imposible que esta card vino a sacar de la pantalla — y en la
+ * lista del reporte los tres porcentajes se leen uno debajo del otro, donde
+ * cualquiera los suma.
+ *
+ * El reparto del resto va POR MAYOR SOBRANTE (el método de los restos mayores,
+ * el mismo con el que se reparten escaños): las décimas que faltan se le dan a
+ * los macros cuya parte decimal quedó más cerca de subir. Así ningún porcentaje
+ * se aleja más de una décima de su valor real, que es el error mínimo posible
+ * con un decimal.
+ */
+function repartoQueSuma100(exactos: readonly [number, number, number]): [number, number, number] {
+  const decimas = exactos.map((valor) => valor * 10);
+  const piso = decimas.map((valor) => Math.floor(valor));
+  const porSobrante = decimas
+    .map((valor, indice) => ({ indice, sobrante: valor - Math.floor(valor) }))
+    .sort((uno, otro) => otro.sobrante - uno.sobrante);
+
+  let faltan = 1000 - piso.reduce((suma, valor) => suma + valor, 0);
+  for (const { indice } of porSobrante) {
+    if (faltan <= 0) break;
+    piso[indice] = (piso[indice] ?? 0) + 1;
+    faltan -= 1;
+  }
+  return [(piso[0] ?? 0) / 10, (piso[1] ?? 0) / 10, (piso[2] ?? 0) / 10];
 }
 
 /**
@@ -195,12 +452,19 @@ export function sumarTotales(items: EngineItem[]): EngineTotals | null {
     ...(sinNadieIdentificado ? { total_no_publicable: true as const } : {}),
     opcionales_ausentes: ausentes,
     macro_pct,
+    // DOS AUSENCIAS DISTINTAS DEL REPARTO, Y NO SE LEEN IGUAL (card 5.1). Sin
+    // calorías no hay nada que repartir; CON calorías y sin un solo gramo de
+    // macro —alcohol puro— sí las hay, pero no vienen de ningún macronutriente.
+    // Decir "el total es 0" en ese caso sería mentir sobre un total que no es 0.
     macro_pct_motivo:
       macro_pct !== null
         ? null
         : sinNadieIdentificado
           ? motivoDeLaCompuerta
-          : "El total de calorías es 0: no hay nada que repartir entre los macronutrientes.",
+          : nutrients.kcal <= 0
+            ? "El total de calorías es 0: no hay nada que repartir entre los macronutrientes."
+            : "Ninguna de las calorías de este plato viene de proteínas, hidratos o grasas: " +
+              "no hay reparto de macronutrientes que mostrar.",
     grams_total: gramsTotal,
     grams_cuantificados: redondear(conDatos.reduce((s, i) => s + i.grams, 0)),
     items_incluidos: conDatos.length,
