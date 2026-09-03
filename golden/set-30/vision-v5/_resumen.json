@@ -1,0 +1,502 @@
+[
+  {
+    "foto": "01-manzana",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "fruta/fresca"
+    ],
+    "componentes": 0,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 85,
+    "latency_ms": 3942
+  },
+  {
+    "foto": "02-croissant",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "bolleria/bolleria"
+    ],
+    "componentes": 0,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 88,
+    "latency_ms": 5136
+  },
+  {
+    "foto": "03-paella",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "arroz/plato"
+    ],
+    "componentes": 6,
+    "etiquetas": 0,
+    "tokens_in": 1209,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 418,
+    "latency_ms": 5802
+  },
+  {
+    "foto": "04-tortilla",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "huevo/revuelto-y-tortilla"
+    ],
+    "componentes": 0,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 109,
+    "latency_ms": 4122
+  },
+  {
+    "foto": "05-lasagna",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "pasta/plato"
+    ],
+    "componentes": 0,
+    "etiquetas": 0,
+    "tokens_in": 1135,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 109,
+    "latency_ms": 4135
+  },
+  {
+    "foto": "06-risotto",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "arroz/plato"
+    ],
+    "componentes": 5,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 386,
+    "latency_ms": 6015
+  },
+  {
+    "foto": "07-bife-combinado",
+    "ok": true,
+    "is_food": true,
+    "items": 5,
+    "subfamilias": [
+      "vacuno/filete",
+      "patata/frita",
+      "ensalada/verdura",
+      "salsa-y-aderezo/tomate",
+      "salsa-y-aderezo/carne"
+    ],
+    "componentes": 3,
+    "etiquetas": 0,
+    "tokens_in": 950,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 583,
+    "latency_ms": 6729
+  },
+  {
+    "foto": "08-lentejas",
+    "ok": true,
+    "is_food": true,
+    "items": 7,
+    "subfamilias": [
+      "guiso/carne",
+      "pan/panecillo",
+      "snack-salado/cracker",
+      "pan/tostado",
+      "fruta/fresca",
+      "salsa-y-aderezo/otra",
+      "zumo-y-batido/batido"
+    ],
+    "componentes": 3,
+    "etiquetas": 1,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 1599,
+    "latency_ms": 18509
+  },
+  {
+    "foto": "09-arepa",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "pan/plano-y-tortilla"
+    ],
+    "componentes": 2,
+    "etiquetas": 1,
+    "tokens_in": 802,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 438,
+    "latency_ms": 8274
+  },
+  {
+    "foto": "10-bicicleta",
+    "ok": true,
+    "is_food": false,
+    "items": 0,
+    "subfamilias": [],
+    "componentes": 0,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 15,
+    "latency_ms": 2351
+  },
+  {
+    "foto": "11-platano",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "fruta/fresca"
+    ],
+    "componentes": 0,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 90,
+    "latency_ms": 4266
+  },
+  {
+    "foto": "12-naranja",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "fruta/fresca"
+    ],
+    "componentes": 0,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 95,
+    "latency_ms": 3564
+  },
+  {
+    "foto": "13-huevos-fritos",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "huevo/frito"
+    ],
+    "componentes": 0,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 84,
+    "latency_ms": 4557
+  },
+  {
+    "foto": "14-queso-manchego",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "queso/curado"
+    ],
+    "componentes": 0,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 90,
+    "latency_ms": 4182
+  },
+  {
+    "foto": "15-pan-tostado",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "pan/tostado"
+    ],
+    "componentes": 0,
+    "etiquetas": 0,
+    "tokens_in": 1394,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 87,
+    "latency_ms": 4507
+  },
+  {
+    "foto": "16-jamon-serrano",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "embutido/jamon"
+    ],
+    "componentes": 0,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 102,
+    "latency_ms": 3768
+  },
+  {
+    "foto": "17-pollo-arroz-verduras",
+    "ok": true,
+    "is_food": true,
+    "items": 3,
+    "subfamilias": [
+      "pollo/pieza",
+      "arroz/cocido",
+      "verdura/cocida-con-grasa"
+    ],
+    "componentes": 3,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 453,
+    "latency_ms": 5660
+  },
+  {
+    "foto": "18-huevos-rotos",
+    "ok": true,
+    "is_food": true,
+    "items": 2,
+    "subfamilias": [
+      "huevo/plato",
+      "embutido/jamon"
+    ],
+    "componentes": 2,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 667,
+    "latency_ms": 10268
+  },
+  {
+    "foto": "19-hamburguesa-papas",
+    "ok": true,
+    "is_food": true,
+    "items": 2,
+    "subfamilias": [
+      "bocadillo/hamburguesa",
+      "patata/frita"
+    ],
+    "componentes": 6,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 483,
+    "latency_ms": 5942
+  },
+  {
+    "foto": "20-ensalada-mixta",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "ensalada/verde"
+    ],
+    "componentes": 7,
+    "etiquetas": 0,
+    "tokens_in": 950,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 457,
+    "latency_ms": 5562
+  },
+  {
+    "foto": "21-cocido",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "guiso/cocido-y-potaje"
+    ],
+    "componentes": 7,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 504,
+    "latency_ms": 7902
+  },
+  {
+    "foto": "22-desayuno-ingles",
+    "ok": true,
+    "is_food": true,
+    "items": 7,
+    "subfamilias": [
+      "pan/barra-o-molde",
+      "legumbre/plato",
+      "huevo/revuelto-y-tortilla",
+      "embutido/fresco",
+      "cerdo/panceta",
+      "verdura/cruda",
+      "aceite-y-grasa/mantequilla"
+    ],
+    "componentes": 0,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 579,
+    "latency_ms": 6974
+  },
+  {
+    "foto": "23-salmon-patatas",
+    "ok": true,
+    "is_food": true,
+    "items": 6,
+    "subfamilias": [
+      "pescado/cocinado",
+      "patata/hervida-o-al-horno",
+      "verdura/cocida-con-grasa",
+      "ensalada/verdura",
+      "pan/tostado",
+      "fruta/fresca"
+    ],
+    "componentes": 6,
+    "etiquetas": 0,
+    "tokens_in": 950,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 868,
+    "latency_ms": 8900
+  },
+  {
+    "foto": "24-espaguetis-albondigas",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "pasta/plato"
+    ],
+    "componentes": 3,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 274,
+    "latency_ms": 4292
+  },
+  {
+    "foto": "25-gazpacho",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "sopa/fria"
+    ],
+    "componentes": 3,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 249,
+    "latency_ms": 4832
+  },
+  {
+    "foto": "26-croquetas",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "empanada/masa-frita"
+    ],
+    "componentes": 0,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 88,
+    "latency_ms": 2622
+  },
+  {
+    "foto": "27-bocadillo-calamares",
+    "ok": true,
+    "is_food": true,
+    "items": 2,
+    "subfamilias": [
+      "bocadillo/bocadillo",
+      "bebida-alcoholica/cerveza"
+    ],
+    "componentes": 2,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 783,
+    "latency_ms": 12021
+  },
+  {
+    "foto": "28-comida-plastico",
+    "ok": true,
+    "is_food": false,
+    "items": 0,
+    "subfamilias": [],
+    "componentes": 0,
+    "etiquetas": 0,
+    "tokens_in": 1061,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 264,
+    "latency_ms": 5457
+  },
+  {
+    "foto": "29-plato-vacio",
+    "ok": true,
+    "is_food": false,
+    "items": 0,
+    "subfamilias": [],
+    "componentes": 0,
+    "etiquetas": 0,
+    "tokens_in": 950,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 15,
+    "latency_ms": 2858
+  },
+  {
+    "foto": "30-envase-cerrado",
+    "ok": true,
+    "is_food": true,
+    "items": 1,
+    "subfamilias": [
+      "bocadillo/sandwich-frio"
+    ],
+    "componentes": 0,
+    "etiquetas": 1,
+    "tokens_in": 950,
+    "cache_write": 0,
+    "cache_read": 16090,
+    "tokens_out": 140,
+    "latency_ms": 4164
+  }
+]

@@ -1,0 +1,99 @@
+{
+  "foto": "27-bocadillo-calamares",
+  "meta": {
+    "model": "claude-sonnet-5",
+    "latency_ms": 12021,
+    "tokens_in": 1061,
+    "tokens_out": 783,
+    "tokens_cache_write": 0,
+    "tokens_cache_read": 16090,
+    "intentos": 1,
+    "stop_reason": "end_turn"
+  },
+  "vision": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "fried squid sandwich (bocadillo de calamares)",
+        "grams": 360,
+        "confidence": 0.85,
+        "food_es": "bocadillo de calamares",
+        "familia_subfamilia": "bocadillo/bocadillo",
+        "preparation": "frito",
+        "components": [
+          {
+            "food_en": "bread roll, baguette-style",
+            "grams": 180,
+            "food_es": "pan de barra",
+            "familia_subfamilia": "pan/barra-o-molde"
+          },
+          {
+            "food_en": "fried squid rings, battered",
+            "grams": 180,
+            "food_es": "calamares a la romana",
+            "familia_subfamilia": "marisco/rebozado"
+          }
+        ]
+      },
+      {
+        "food_en": "beer, draft",
+        "grams": 700,
+        "confidence": 0.9,
+        "food_es": "cerveza de barril",
+        "familia_subfamilia": "bebida-alcoholica/cerveza",
+        "components": []
+      }
+    ]
+  },
+  "crudo": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "fried squid sandwich (bocadillo de calamares)",
+        "food_es": "bocadillo de calamares",
+        "familia_subfamilia": "bocadillo/bocadillo",
+        "grams": 360,
+        "confidence": 0.85,
+        "preparation": "frito",
+        "components": [
+          {
+            "food_en": "bread roll, baguette-style",
+            "food_es": "pan de barra",
+            "grams": 180,
+            "familia_subfamilia": "pan/barra-o-molde"
+          },
+          {
+            "food_en": "fried squid rings, battered",
+            "food_es": "calamares a la romana",
+            "grams": 180,
+            "familia_subfamilia": "marisco/rebozado"
+          }
+        ],
+        "etiqueta_del_envase": ""
+      },
+      {
+        "food_en": "beer, draft",
+        "food_es": "cerveza de barril",
+        "familia_subfamilia": "bebida-alcoholica/cerveza",
+        "grams": 700,
+        "confidence": 0.9,
+        "components": []
+      }
+    ]
+  },
+  "usage": {
+    "input_tokens": 1061,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 16090,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 783,
+    "output_tokens_details": {
+      "thinking_tokens": 475
+    },
+    "service_tier": "standard",
+    "inference_geo": "global"
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "foto": "22-desayuno-ingles",
+  "meta": {
+    "model": "claude-sonnet-5",
+    "latency_ms": 6974,
+    "tokens_in": 1061,
+    "tokens_out": 579,
+    "tokens_cache_write": 0,
+    "tokens_cache_read": 16090,
+    "intentos": 1,
+    "stop_reason": "end_turn"
+  },
+  "vision": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "rye bread, sliced",
+        "grams": 60,
+        "confidence": 0.75,
+        "food_es": "pan de centeno",
+        "familia_subfamilia": "pan/barra-o-molde",
+        "components": []
+      },
+      {
+        "food_en": "baked beans in tomato sauce",
+        "grams": 130,
+        "confidence": 0.85,
+        "food_es": "alubias con salsa de tomate",
+        "familia_subfamilia": "legumbre/plato",
+        "components": []
+      },
+      {
+        "food_en": "scrambled eggs",
+        "grams": 90,
+        "confidence": 0.85,
+        "food_es": "huevo revuelto",
+        "familia_subfamilia": "huevo/revuelto-y-tortilla",
+        "preparation": "mezclado",
+        "components": []
+      },
+      {
+        "food_en": "cocktail sausages",
+        "grams": 60,
+        "confidence": 0.75,
+        "food_es": "salchichas cóctel",
+        "familia_subfamilia": "embutido/fresco",
+        "components": []
+      },
+      {
+        "food_en": "back bacon, cooked",
+        "grams": 50,
+        "confidence": 0.75,
+        "food_es": "bacon a la plancha",
+        "familia_subfamilia": "cerdo/panceta",
+        "preparation": "plancha",
+        "components": []
+      },
+      {
+        "food_en": "cucumber, sliced raw",
+        "grams": 60,
+        "confidence": 0.9,
+        "food_es": "pepino en rodajas",
+        "familia_subfamilia": "verdura/cruda",
+        "preparation": "crudo",
+        "components": []
+      },
+      {
+        "food_en": "butter, portion pack",
+        "grams": 10,
+        "confidence": 0.6,
+        "food_es": "mantequilla en porción",
+        "familia_subfamilia": "aceite-y-grasa/mantequilla",
+        "components": []
+      }
+    ]
+  },
+  "crudo": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "rye bread, sliced",
+        "food_es": "pan de centeno",
+        "familia_subfamilia": "pan/barra-o-molde",
+        "grams": 60,
+        "confidence": 0.75,
+        "components": []
+      },
+      {
+        "food_en": "baked beans in tomato sauce",
+        "food_es": "alubias con salsa de tomate",
+        "familia_subfamilia": "legumbre/plato",
+        "grams": 130,
+        "confidence": 0.85,
+        "components": []
+      },
+      {
+        "food_en": "scrambled eggs",
+        "food_es": "huevo revuelto",
+        "familia_subfamilia": "huevo/revuelto-y-tortilla",
+        "grams": 90,
+        "confidence": 0.85,
+        "preparation": "mezclado",
+        "components": []
+      },
+      {
+        "food_en": "cocktail sausages",
+        "food_es": "salchichas cóctel",
+        "familia_subfamilia": "embutido/fresco",
+        "grams": 60,
+        "confidence": 0.75,
+        "components": []
+      },
+      {
+        "food_en": "back bacon, cooked",
+        "food_es": "bacon a la plancha",
+        "familia_subfamilia": "cerdo/panceta",
+        "grams": 50,
+        "confidence": 0.75,
+        "preparation": "plancha",
+        "components": []
+      },
+      {
+        "food_en": "cucumber, sliced raw",
+        "food_es": "pepino en rodajas",
+        "familia_subfamilia": "verdura/cruda",
+        "grams": 60,
+        "confidence": 0.9,
+        "preparation": "crudo",
+        "components": []
+      },
+      {
+        "food_en": "butter, portion pack",
+        "food_es": "mantequilla en porción",
+        "familia_subfamilia": "aceite-y-grasa/mantequilla",
+        "grams": 10,
+        "confidence": 0.6,
+        "components": []
+      }
+    ]
+  },
+  "usage": {
+    "input_tokens": 1061,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 16090,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 579,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "inference_geo": "global"
+  }
+}

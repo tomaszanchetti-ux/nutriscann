@@ -1,0 +1,140 @@
+{
+  "foto": "20-ensalada-mixta",
+  "meta": {
+    "model": "claude-sonnet-5",
+    "latency_ms": 5562,
+    "tokens_in": 950,
+    "tokens_out": 457,
+    "tokens_cache_write": 0,
+    "tokens_cache_read": 16090,
+    "intentos": 1,
+    "stop_reason": "end_turn"
+  },
+  "vision": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "mixed salad with tuna and egg",
+        "grams": 450,
+        "confidence": 0.85,
+        "food_es": "ensalada verde con atún y huevo",
+        "familia_subfamilia": "ensalada/verde",
+        "components": [
+          {
+            "food_en": "lettuce, shredded",
+            "grams": 150,
+            "food_es": "lechuga",
+            "familia_subfamilia": "verdura/cruda"
+          },
+          {
+            "food_en": "tomato, sliced",
+            "grams": 90,
+            "food_es": "tomate",
+            "familia_subfamilia": "verdura/cruda"
+          },
+          {
+            "food_en": "corn, canned",
+            "grams": 60,
+            "food_es": "maíz dulce",
+            "familia_subfamilia": "verdura/conserva"
+          },
+          {
+            "food_en": "carrot, shredded",
+            "grams": 30,
+            "food_es": "zanahoria rallada",
+            "familia_subfamilia": "verdura/cruda"
+          },
+          {
+            "food_en": "tuna, canned, drained",
+            "grams": 70,
+            "food_es": "atún en conserva",
+            "familia_subfamilia": "pescado/conserva"
+          },
+          {
+            "food_en": "egg, hard-boiled",
+            "grams": 100,
+            "food_es": "huevo cocido",
+            "familia_subfamilia": "huevo/cocido"
+          },
+          {
+            "food_en": "beet relish",
+            "grams": 10,
+            "food_es": "remolacha encurtida",
+            "familia_subfamilia": "verdura/encurtido"
+          }
+        ]
+      }
+    ]
+  },
+  "crudo": {
+    "is_food": true,
+    "items": [
+      {
+        "food_en": "mixed salad with tuna and egg",
+        "food_es": "ensalada verde con atún y huevo",
+        "familia_subfamilia": "ensalada/verde",
+        "grams": 450,
+        "confidence": 0.85,
+        "components": [
+          {
+            "food_en": "lettuce, shredded",
+            "food_es": "lechuga",
+            "grams": 150,
+            "familia_subfamilia": "verdura/cruda"
+          },
+          {
+            "food_en": "tomato, sliced",
+            "food_es": "tomate",
+            "grams": 90,
+            "familia_subfamilia": "verdura/cruda"
+          },
+          {
+            "food_en": "corn, canned",
+            "food_es": "maíz dulce",
+            "grams": 60,
+            "familia_subfamilia": "verdura/conserva"
+          },
+          {
+            "food_en": "carrot, shredded",
+            "food_es": "zanahoria rallada",
+            "grams": 30,
+            "familia_subfamilia": "verdura/cruda"
+          },
+          {
+            "food_en": "tuna, canned, drained",
+            "food_es": "atún en conserva",
+            "grams": 70,
+            "familia_subfamilia": "pescado/conserva"
+          },
+          {
+            "food_en": "egg, hard-boiled",
+            "food_es": "huevo cocido",
+            "grams": 100,
+            "familia_subfamilia": "huevo/cocido"
+          },
+          {
+            "food_en": "beet relish",
+            "food_es": "remolacha encurtida",
+            "grams": 10,
+            "familia_subfamilia": "verdura/encurtido"
+          }
+        ]
+      }
+    ]
+  },
+  "usage": {
+    "input_tokens": 950,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 16090,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 457,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "inference_geo": "global"
+  }
+}
